@@ -1,4 +1,4 @@
-# Grid-level Water-Energy Interdependencies & Interconnections
+# Grid-level Water-Energy Interdependencies & Interconnections for Sankeys
 GWEII is an open source Python-based Jupyter Notebook for compiling energy and water flow data across and within the water and energy sectors at the U.S. Electricity Grid interconnection level.
 
 ## Purpose
