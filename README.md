@@ -1,6 +1,6 @@
 # WPISF
 
-Integrated Water Power Resilience - Water & Power Interconnection Sankey Flows (WPSF) is an open source Python-based Jupyter Notebook for compiling energy and water flow data across and within the water and energy sectors at the U.S. Electricity Grid interconnection level.
+Water & Power Interconnection Sankey Flows (WPSF) is an open source Python-based Jupyter Notebook for compiling and computing flow data across and within the water and energy sectors at the U.S. Electricity Grid interconnection-level. The notebook was developed as part of the Integrated Water Power Resilience project at Pacific Northwest National Laboratory.
 
 ## Purpose
 The dependencies of the water sector on energy and the energy sector on water can lead to multi-faceted and multi-scale vulnerabilities and risks that are further exacerbated in a changing climate. Whether it is threats to water availability for electricity generation or public water supply sources facing the impacts of a power disruption event, the crossovers and interconnections between water and energy are ubiquitous and can have large impacts. While previous research has explored energy-water interconnection visualizations and data at the country-, state-, or even application-level for the U.S., this notebook calculates flows at the U.S. electricity grid interconnection scale. Data output from this notebooke provides water and energy flow values for the Western Interconnection, Eastern Interconnection, and the Electric Reliability Council of Texas (ERCOT). 
