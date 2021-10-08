@@ -1,5 +1,6 @@
-# Grid-level Water-Energy Interdependencies & Interconnections for Sankeys
-GWEII is an open source Python-based Jupyter Notebook for compiling energy and water flow data across and within the water and energy sectors at the U.S. Electricity Grid interconnection level.
+# IWPR-WPSF
+
+Integrated Water Power Resilience - Water & Power Sankey Flows (IWPR-WPSF) is an open source Python-based Jupyter Notebook for compiling energy and water flow data across and within the water and energy sectors at the U.S. Electricity Grid interconnection level.
 
 ## Purpose
 The dependencies of the water sector on energy and the energy sector on water can lead to multi-faceted and multi-scale vulnerabilities and risks that are further exacerbated in a changing climate. Whether it is threats to water availability for electricity generation or public water supply sources facing the impacts of a power disruption event, the crossovers and interconnections between water and energy are ubiquitous and can have large impacts. While previous research has explored energy-water interconnection visualizations and data at the country-, state-, or even application-level for the U.S., this notebook calculates flows at the U.S. electricity grid interconnection scale. 
