@@ -9,7 +9,7 @@ notebooks/.ipynb_checkpoints/
 
 build/
 *.pyc
-cerf.egg-info/
+flow.egg-info/
 dist/
 
 # pycharm
