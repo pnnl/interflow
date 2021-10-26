@@ -1,6 +1,7 @@
 import re
 from setuptools import setup, find_packages
 
+
 # get version from __init__ of package
 version = re.search(r"__version__ = ['\"]([^'\"]*)['\"]", open('flow/__init__.py').read(), re.M).group(1)
 
