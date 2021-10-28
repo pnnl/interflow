@@ -1,3 +1,5 @@
+[![build](https://github.com/kmongird/flow/actions/workflows/build.yml/badge.svg)](https://github.com/kmongird/flow/actions/workflows/build.yml)
+
 # WPISF
 
 Water & Power Interconnection Sankey Flows (WPISF) is an open-source Python-based Jupyter Notebook for compiling and computing flow data across and within the water and energy sectors at the U.S. Electricity Grid interconnection-level. The notebook was developed as part of the Integrated Water Power Resilience project at Pacific Northwest National Laboratory.
