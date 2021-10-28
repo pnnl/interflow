@@ -15,4 +15,8 @@ def add(x: float, y: float) -> float:
 
     """
 
+    if type(x) == str:
+        msg = f"'x' must be numeric your type was {type(x)}"
+        raise TypeError(msg)
+
     return x + y
