@@ -1,1 +1,2 @@
-include flow/data/usco2015v2.0.xlsx
+include flow/data/*.xlsx
+include flow/data/*.csv
