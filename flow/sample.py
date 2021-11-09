@@ -20,3 +20,12 @@ def add(x: float, y: float) -> float:
         raise TypeError(msg)
 
     return x + y
+
+
+def fake_df():
+    """fake df"""
+
+    d = {'a': [1, 2, 3], 'b': [4.4, 5, 7.7]}
+
+    return pd.DataFrame(d)
+

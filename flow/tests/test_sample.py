@@ -1,6 +1,8 @@
 import unittest
 
-from flow.sample import add
+import pandas as pd
+
+from flow.sample import add, fake_df
 
 
 class TestSample(unittest.TestCase):
@@ -17,6 +19,16 @@ class TestSample(unittest.TestCase):
         result = add(1, 2.2)
         expected = 3.2
         self.assertEqual(result, expected)
+
+    def test_fake_df(self):
+        """asdf"""
+
+        d = {'a': [1, 2, 3], 'b': [4.4, 5, 7.7]}
+        expected_df = pd.DataFrame(d)
+
+        df = fake_df()
+
+        pd.testing.assert_frame_equal(expected_df, df)
 
 
 if __name__ == '__main__':
