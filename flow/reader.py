@@ -6,7 +6,7 @@ import pandas as pd
 def get_water_use_2015():
     """Read in a dataframe of 2015 USGS Water Use Data.
 
-        :return:                        Dataframe of a number of water values for 2015 at the county level
+        :return:                        dataframe of values
 
         """
 
@@ -18,7 +18,7 @@ def get_water_use_2015():
 def get_interconnect_data():
     """Read in a dataframe of FIPS code - Interconnect crosswalk.
 
-        :return:                        Dataframe of each US county's associated electricity interconnection
+        :return:                        dataframe of values
 
         """
 
@@ -29,9 +29,9 @@ def get_interconnect_data():
 
 
 def get_water_use_1995():
-     """Read in a dataframe of 1995 USGS Water Use Data.
+    """Read in a dataframe of 1995 USGS Water Use Data.
 
-        :return:                        Dataframe of a number of water values for 1995 at the county level
+        :return:                        dataframe of values
 
         """
 
