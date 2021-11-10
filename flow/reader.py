@@ -4,7 +4,11 @@ import pandas as pd
 
 
 def get_water_use_2015():
-    """asdf"""
+    """Read in a dataframe of 2015 USGS Water Use Data.
+
+        :return:                        dataframe of values
+
+        """
 
     data = pkg_resources.resource_filename('flow', 'data/usco2015v2.0.xlsx')
 
