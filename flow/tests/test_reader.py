@@ -42,5 +42,17 @@ class TestReader(unittest.TestCase):
         # expect Interconnect as a column name
         self.assertTrue('Interconnect' in df.columns)
 
+    def test_get_population_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_population_data()
+
+        # expect STATE FIPS as a column name
+        self.assertTrue('STATE FIPS' in df.columns)
+
+        # expect COUNTY FIPS as a column name
+        self.assertTrue('COUNTY FIPS' in df.columns)
+
 if __name__ == '__main__':
     unittest.main()
