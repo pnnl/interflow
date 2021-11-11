@@ -54,5 +54,33 @@ class TestReader(unittest.TestCase):
         # expect COUNTY FIPS as a column name
         self.assertTrue('COUNTY FIPS' in df.columns)
 
+    def test_get_wastewater_flow_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_wastewater_flow_data()
+
+        # expect STATE FIPS as a column name
+        self.assertTrue('CWNS_NUMBER' in df.columns)
+
+        # expect COUNTY FIPS as a column name
+        self.assertTrue('EXIST_TOTAL' in df.columns)
+
+        # expect COUNTY FIPS as a column name
+        self.assertTrue('EXIST_MUNICIPAL' in df.columns)
+
+        # expect COUNTY FIPS as a column name
+        self.assertTrue('EXIST_INDUSTRIAL' in df.columns)
+
+        # expect COUNTY FIPS as a column name
+        self.assertTrue('EXIST_INFILTRATION' in df.columns)
+
+        # expect COUNTY FIPS as a column name
+        self.assertTrue('EXIST_WET_WEATHER_PEAK' in df.columns)
+
+        # expect COUNTY FIPS as a column name
+        self.assertTrue('PRES_WET_WEATHER_PEAK' in df.columns)
+
+
 if __name__ == '__main__':
     unittest.main()

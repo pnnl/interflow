@@ -50,3 +50,16 @@ def get_population_data():
 
     # read in county-interconnect crosswalk
     return pd.read_csv(data, dtype={'STATE FIPS': str, 'COUNTY FIPS': str}, encoding='latin-1')
+
+
+def get_wastewater_flow_data():
+    """Read in a dataframe of wastewater treatment facility water flows (MGS) by facility ID
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/WW_Facility_Flow.csv')
+
+    # read in county-interconnect crosswalk
+    return pd.read_csv(data)
