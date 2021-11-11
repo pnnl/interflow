@@ -10,9 +10,20 @@ def get_water_use_2015():
 
         """
 
-    data = pkg_resources.resource_filename('flow', 'data/usco2015v2.0.xlsx')
+    data = pkg_resources.resource_filename('flow', 'data/usco2015v2.0.csv')
 
-    return pd.read_excel(data, skiprows=1, dtype={'FIPS': str})
+    return pd.read_csv(data, skiprows=1, dtype={'FIPS': str})
+
+def get_water_use_1995():
+    """Read in a dataframe of 1995 USGS Water Use Data.
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/usco1995.csv')
+
+    return pd.read_csv(data,  dtype={'StateCode': str, 'CountyCode': str})
 
 
 def get_interconnect_data():
@@ -22,19 +33,20 @@ def get_interconnect_data():
 
         """
 
-    data = pkg_resources.resource_filename('flow', 'data/county_interconnect_list.xlsx')
+    data = pkg_resources.resource_filename('flow', 'data/county_interconnect_list.csv')
 
     # read in county-interconnect crosswalk
-    return pd.read_excel(data, dtype={'FIPS': str}, usecols=["FIPS", "Interconnect"])
+    return pd.read_csv(data, dtype={'FIPS': str}, usecols=["FIPS", "Interconnect"])
 
 
-def get_water_use_1995():
-    """Read in a dataframe of 1995 USGS Water Use Data.
+def get_population_data():
+    """Read in a dataframe of population by FIPS code.
 
         :return:                        dataframe of values
 
         """
 
-    data = pkg_resources.resource_filename('flow', 'data/usco1995.xlsx')
+    data = pkg_resources.resource_filename('flow', 'data/county-population.csv')
 
-    return pd.read_excel(data,  dtype={'StateCode': str, 'CountyCode': str})
+    # read in county-interconnect crosswalk
+    return pd.read_csv(data, dtype={'STATE FIPS': str, 'COUNTY FIPS': str}, encoding='latin-1')
