@@ -14,6 +14,7 @@ def get_water_use_2015():
 
     return pd.read_csv(data, skiprows=1, dtype={'FIPS': str})
 
+
 def get_water_use_1995():
     """Read in a dataframe of 1995 USGS Water Use Data.
 
@@ -60,6 +61,19 @@ def get_wastewater_flow_data():
         """
 
     data = pkg_resources.resource_filename('flow', 'data/WW_Facility_Flow.csv')
+
+    # read in county-interconnect crosswalk
+    return pd.read_csv(data)
+
+
+def get_wastewater_facility_type_data():
+    """Read in a dataframe of wastewater treatment facility type by facility ID
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/WW_Facility_Type.csv')
 
     # read in county-interconnect crosswalk
     return pd.read_csv(data)

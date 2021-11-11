@@ -81,6 +81,18 @@ class TestReader(unittest.TestCase):
         # expect COUNTY FIPS as a column name
         self.assertTrue('PRES_WET_WEATHER_PEAK' in df.columns)
 
+    def test_get_wastewater_facility_type_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_wastewater_facility_type_data()
+
+        # expect STATE FIPS as a column name
+        self.assertTrue('CWNS_NUMBER' in df.columns)
+
+        # expect COUNTY FIPS as a column name
+        self.assertTrue('PRES_EFFLUENT_TREATMENT_LEVEL' in df.columns)
+
 
 if __name__ == '__main__':
     unittest.main()
