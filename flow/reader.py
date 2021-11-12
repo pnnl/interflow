@@ -77,3 +77,29 @@ def get_wastewater_facility_type_data():
 
     # read in county-interconnect crosswalk
     return pd.read_csv(data)
+
+
+def get_wastewater_facility_loc_data():
+    """Read in a dataframe of wastewater treatment facility location by facility ID
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/WW_Facility_Loc.csv')
+
+    # read in county-interconnect crosswalk
+    return pd.read_csv(data)
+
+
+def get_wastewater_facility_discharge_data():
+    """Read in a dataframe of wastewater treatment facility discharge location by facility ID
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/WW_Discharge.csv')
+
+    # read in county-interconnect crosswalk
+    return pd.read_csv(data)
