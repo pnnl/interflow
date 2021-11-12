@@ -171,7 +171,6 @@ def get_residential_electricity_demand_data():
     return pd.read_csv(data, skiprows=2)
 
 
-
 def get_commercial_electricity_demand_data():
     """Read in a dataframe of commercial electricity sales data by state
 
