@@ -103,3 +103,17 @@ def get_wastewater_facility_discharge_data():
 
     # read in wastewater treatment facility discharge data
     return pd.read_csv(data)
+
+
+def get_electricity_generation_data():
+    """Read in a dataframe of electricity generation by power plant
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow',
+                                           'data/EIA923_Schedules_2_3_4_5_M_12_2015_Final_Revision.csv')
+
+    # read in wastewater treatment facility discharge data
+    return pd.read_csv(data)
