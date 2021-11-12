@@ -49,12 +49,12 @@ def get_population_data():
 
     data = pkg_resources.resource_filename('flow', 'data/county-population.csv')
 
-    # read in county-interconnect crosswalk
+    # read in population data by county
     return pd.read_csv(data, dtype={'STATE FIPS': str, 'COUNTY FIPS': str}, encoding='latin-1')
 
 
 def get_wastewater_flow_data():
-    """Read in a dataframe of wastewater treatment facility water flows (MGS) by facility ID
+    """Read in a dataframe of wastewater treatment facility water flows (MGD) by facility ID
 
         :return:                        dataframe of values
 
@@ -62,7 +62,7 @@ def get_wastewater_flow_data():
 
     data = pkg_resources.resource_filename('flow', 'data/WW_Facility_Flow.csv')
 
-    # read in county-interconnect crosswalk
+    # read in wastewater treatment facility water flow data
     return pd.read_csv(data)
 
 
@@ -75,7 +75,7 @@ def get_wastewater_facility_type_data():
 
     data = pkg_resources.resource_filename('flow', 'data/WW_Facility_Type.csv')
 
-    # read in county-interconnect crosswalk
+    # read in wastewater treatment facility type data
     return pd.read_csv(data)
 
 
@@ -88,12 +88,12 @@ def get_wastewater_facility_loc_data():
 
     data = pkg_resources.resource_filename('flow', 'data/WW_Facility_Loc.csv')
 
-    # read in county-interconnect crosswalk
+    # read in wastewater treatment facility location data
     return pd.read_csv(data)
 
 
 def get_wastewater_facility_discharge_data():
-    """Read in a dataframe of wastewater treatment facility discharge location by facility ID
+    """Read in a dataframe of wastewater treatment facility discharge by facility ID
 
         :return:                        dataframe of values
 
@@ -101,5 +101,5 @@ def get_wastewater_facility_discharge_data():
 
     data = pkg_resources.resource_filename('flow', 'data/WW_Discharge.csv')
 
-    # read in county-interconnect crosswalk
+    # read in wastewater treatment facility discharge data
     return pd.read_csv(data)
