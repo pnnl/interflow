@@ -156,3 +156,56 @@ def get_west_inter_basin_transfer_data():
 
     # read in Texas inter-basin transfer data by FIPS
     return pd.read_csv(data, dtype={'FIPS': str})
+
+
+def get_residential_electricity_demand_data():
+    """Read in a dataframe of residential electricity sales data by state
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/EIA_table6_Res.csv')
+
+    # read in residential electricity sales data
+    return pd.read_csv(data, skiprows=2)
+
+
+
+def get_commercial_electricity_demand_data():
+    """Read in a dataframe of commercial electricity sales data by state
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/EIA_table7_Com.csv')
+
+    # read in commercial electricity sales data
+    return pd.read_csv(data, skiprows=2)
+
+
+def get_industrial_electricity_demand_data():
+    """Read in a dataframe of industrial electricity sales data by state
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/EIA_table8_Ind.csv')
+
+    # read in industrial electricity sales data
+    return pd.read_csv(data, skiprows=2)
+
+
+def get_transportation_electricity_demand_data():
+    """Read in a dataframe of transportation electricity sales data by state
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/EIA_table9_Trans.csv')
+
+    # read in transportation electricity sales data
+    return pd.read_csv(data, skiprows=2)
