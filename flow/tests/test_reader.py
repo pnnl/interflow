@@ -178,5 +178,30 @@ class TestReader(unittest.TestCase):
         self.assertTrue('Gas_Total_Acres' in df.columns)
 
 
+    def test_get_TX_IBT_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_TX_IBT_data()
+
+        # expect State as a column name
+        self.assertTrue('State' in df.columns)
+
+        # expect County_Used as a column name
+        self.assertTrue('County_Used' in df.columns)
+
+        # expect Used_FIPS as a column name
+        self.assertTrue('Used_FIPS' in df.columns)
+
+        # expect Source_FIPS as a column name
+        self.assertTrue('Source_FIPS' in df.columns)
+
+        # expect Elevation Difference (Feet) as a column name
+        self.assertTrue('Elevation Difference (Feet)' in df.columns)
+
+        # expect Total_Intake__Gallons (Acre-Feet/Year) as a column name
+        self.assertTrue('Total_Intake__Gallons (Acre-Feet/Year)' in df.columns)
+
+
 if __name__ == '__main__':
     unittest.main()
