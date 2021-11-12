@@ -127,5 +127,27 @@ class TestReader(unittest.TestCase):
         self.assertTrue('PRES_FLOW_PERCENTAGE' in df.columns)
 
 
+    def test_get_electricity_generation_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_electricity_generation_data()
+
+        # expect Plant Id as a column name
+        self.assertTrue('Plant Id' in df.columns)
+
+        # expect AER\nFuel Type Code as a column name
+        self.assertTrue('AER\nFuel Type Code' in df.columns)
+
+        # expect Plant State as a column name
+        self.assertTrue('Plant State' in df.columns)
+
+        # expect Total Fuel Consumption\nMMBtu as a column name
+        self.assertTrue('Total Fuel Consumption\nMMBtu' in df.columns)
+
+        # expect Net Generation\n(Megawatthours) as a column name
+        self.assertTrue('Net Generation\n(Megawatthours)' in df.columns)
+
+
 if __name__ == '__main__':
     unittest.main()

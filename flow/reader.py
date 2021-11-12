@@ -113,7 +113,7 @@ def get_electricity_generation_data():
         """
 
     data = pkg_resources.resource_filename('flow',
-                                           'data/EIA923_Schedules_2_3_4_5_M_12_2015_Final_Revision.csv')
+                                           'data/EIA923_Schedules_2_3_4_5_M_12_2015_Final_Revision.csv'                                           )
 
     # read in wastewater treatment facility discharge data
-    return pd.read_csv(data)
+    return pd.read_csv(data, skiprows=5)
