@@ -120,7 +120,7 @@ def get_electricity_generation_data():
 
 
 def get_irrigation_depth_pressure_data():
-    """Read in a dataframe of electricity generation by power plant
+    """Read in a dataframe of irrigation well depth, pressure, and pump fuel type by state
 
         :return:                        dataframe of values
 
@@ -128,5 +128,18 @@ def get_irrigation_depth_pressure_data():
 
     data = pkg_resources.resource_filename('flow', 'data/FRIS2013tab8.csv')
 
-    # read in wastewater treatment facility discharge data
+    # read in irrigation well depth, pressure, and pump fuel type data
     return pd.read_csv(data, skiprows=3)
+
+
+def get_TX_IBT_data():
+    """Read in a dataframe of Texas inter-basin transfer data by FIPS
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/TX_IBT_2015.csv')
+
+    # read in Texas inter-basin transfer data by FIPS
+    return pd.read_csv(data, dtype={'USed_FIPS': str, 'Source_FIPS': str})
