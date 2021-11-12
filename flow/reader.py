@@ -132,7 +132,7 @@ def get_irrigation_depth_pressure_data():
     return pd.read_csv(data, skiprows=3)
 
 
-def get_TX_IBT_data():
+def get_tx_inter_basin_transfer_data():
     """Read in a dataframe of Texas inter-basin transfer data by FIPS
 
         :return:                        dataframe of values
@@ -143,3 +143,16 @@ def get_TX_IBT_data():
 
     # read in Texas inter-basin transfer data by FIPS
     return pd.read_csv(data, dtype={'USed_FIPS': str, 'Source_FIPS': str})
+
+
+def get_west_inter_basin_transfer_data():
+    """Read in a dataframe of western inter-basin transfer data by FIPS
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/West_IBT_county.csv')
+
+    # read in Texas inter-basin transfer data by FIPS
+    return pd.read_csv(data, dtype={'FIPS':str})

@@ -178,7 +178,7 @@ class TestReader(unittest.TestCase):
         self.assertTrue('Gas_Total_Acres' in df.columns)
 
 
-    def test_get_TX_IBT_data(self):
+    def test_tx_inter_basin_transfer_data(self):
         """Ensure we get what is expected from the input file."""
 
         # load the data
