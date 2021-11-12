@@ -203,5 +203,24 @@ class TestReader(unittest.TestCase):
         self.assertTrue('Total_Intake__Gallons (Acre-Feet/Year)' in df.columns)
 
 
+    def test_get_west_inter_basin_transfer_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_west_inter_basin_transfer_data()
+
+        # expect State as a column name
+        self.assertTrue('State' in df.columns)
+
+        # expect FIPS as a column name
+        self.assertTrue('FIPS' in df.columns)
+
+        # expect Mwh/yr (Low) as a column name
+        self.assertTrue('Mwh/yr (Low)' in df.columns)
+
+        # expect Mwh/yr (High) as a column name
+        self.assertTrue('Mwh/yr (High)' in df.columns)
+
+
 if __name__ == '__main__':
     unittest.main()
