@@ -97,7 +97,7 @@ class TestReader(unittest.TestCase):
         """Ensure we get what is expected from the input file."""
 
         # load the data
-        df = get_wastewater_facility_type_data()
+        df = get_wastewater_facility_loc_data()
 
         # expect STATE FIPS as a column name
         self.assertTrue('CWNS_NUMBER' in df.columns)
@@ -107,6 +107,9 @@ class TestReader(unittest.TestCase):
 
         # expect COUNTY FIPS as a column name
         self.assertTrue('PRIMARY_COUNTY' in df.columns)
+
+        # expect PRES_FACILITY_OVERALL_TYPE as a column name
+        self.assertTrue('PRES_FACILITY_OVERALL_TYPE' in df.columns)
 
     def test_get_wastewater_facility_discharge_data(self):
         """Ensure we get what is expected from the input file."""
