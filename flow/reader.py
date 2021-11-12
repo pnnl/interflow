@@ -126,7 +126,7 @@ def get_irrigation_depth_pressure_data():
 
         """
 
-    data = pkg_resources.resource_filename('flow', 'FRIS2013tab8.xlsx.csv')
+    data = pkg_resources.resource_filename('flow', 'data/FRIS2013tab8.csv')
 
     # read in wastewater treatment facility discharge data
     return pd.read_csv(data, skiprows=3)

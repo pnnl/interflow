@@ -126,7 +126,6 @@ class TestReader(unittest.TestCase):
         # expect PRES_FLOW_PERCENTAGE as a column name
         self.assertTrue('PRES_FLOW_PERCENTAGE' in df.columns)
 
-
     def test_get_electricity_generation_data(self):
         """Ensure we get what is expected from the input file."""
 
@@ -147,6 +146,36 @@ class TestReader(unittest.TestCase):
 
         # expect Net Generation\n(Megawatthours) as a column name
         self.assertTrue('Net Generation\n(Megawatthours)' in df.columns)
+
+    def test_get_irrigation_depth_pressure_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_irrigation_depth_pressure_data()
+
+        # expect STATE as a column name
+        self.assertTrue('STATE' in df.columns)
+
+        # expect Average Well Depth (ft) as a column name
+        self.assertTrue('Average Well Depth (ft)' in df.columns)
+
+        # expect Average operating pressure (psi) as a column name
+        self.assertTrue('Average operating pressure (psi)' in df.columns)
+
+        # expect Elec_Total_Acres as a column name
+        self.assertTrue('Elec_Total_Acres' in df.columns)
+
+        # expect NG_Total_Acres as a column name
+        self.assertTrue('NG_Total_Acres' in df.columns)
+
+        # expect Propane_Total_Acres as a column name
+        self.assertTrue('Propane_Total_Acres' in df.columns)
+
+        # expect Diesel_Total_Acres as a column name
+        self.assertTrue('Diesel_Total_Acres' in df.columns)
+
+        # expect Gas_Total_Acres as a column name
+        self.assertTrue('Gas_Total_Acres' in df.columns)
 
 
 if __name__ == '__main__':
