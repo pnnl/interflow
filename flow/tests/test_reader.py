@@ -177,12 +177,11 @@ class TestReader(unittest.TestCase):
         # expect Gas_Total_Acres as a column name
         self.assertTrue('Gas_Total_Acres' in df.columns)
 
-
     def test_tx_inter_basin_transfer_data(self):
         """Ensure we get what is expected from the input file."""
 
         # load the data
-        df = get_TX_IBT_data()
+        df = get_tx_inter_basin_transfer_data()
 
         # expect State as a column name
         self.assertTrue('State' in df.columns)
@@ -202,7 +201,6 @@ class TestReader(unittest.TestCase):
         # expect Total_Intake__Gallons (Acre-Feet/Year) as a column name
         self.assertTrue('Total_Intake__Gallons (Acre-Feet/Year)' in df.columns)
 
-
     def test_get_west_inter_basin_transfer_data(self):
         """Ensure we get what is expected from the input file."""
 
@@ -220,6 +218,54 @@ class TestReader(unittest.TestCase):
 
         # expect Mwh/yr (High) as a column name
         self.assertTrue('Mwh/yr (High)' in df.columns)
+
+    def test_get_residential_electricity_demand_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_residential_electricity_demand_data()
+
+        # expect State as a column name
+        self.assertTrue('State' in df.columns)
+
+        # expect Sales (Megawatthours) as a column name
+        self.assertTrue('Sales (Megawatthours)' in df.columns)
+
+    def test_get_commercial_electricity_demand_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_commercial_electricity_demand_data()
+
+        # expect State as a column name
+        self.assertTrue('State' in df.columns)
+
+        # expect Sales (Megawatthours) as a column name
+        self.assertTrue('Sales (Megawatthours)' in df.columns)
+
+    def test_get_industrial_electricity_demand_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_industrial_electricity_demand_data()
+
+        # expect State as a column name
+        self.assertTrue('State' in df.columns)
+
+        # expect Sales (Megawatthours) as a column name
+        self.assertTrue('Sales (Megawatthours)' in df.columns)
+
+    def test_get_transportation_electricity_demand_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_transportation_electricity_demand_data()
+
+        # expect State as a column name
+        self.assertTrue('State' in df.columns)
+
+        # expect Sales (Megawatthours) as a column name
+        self.assertTrue('Sales (Megawatthours)' in df.columns)
 
 
 if __name__ == '__main__':
