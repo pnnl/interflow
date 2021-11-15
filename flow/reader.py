@@ -208,3 +208,16 @@ def get_transportation_electricity_demand_data():
 
     # read in transportation electricity sales data
     return pd.read_csv(data, skiprows=2)
+
+
+def get_energy_production_data():
+    """Read in a dataframe of energy production (fuel) data by state
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/eia_SEDS_Prod_dataset.csv')
+
+    # read in energy production (fuel) data
+    return pd.read_csv(data, skiprows=1)
