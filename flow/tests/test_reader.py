@@ -324,7 +324,6 @@ class TestReader(unittest.TestCase):
         # expect 2015_Pet as a column name
         self.assertTrue('2015_Pet' in df.columns)
 
-
     def test_get_state_gas_production_data(self):
         """Ensure we get what is expected from the input file."""
 
@@ -339,7 +338,6 @@ class TestReader(unittest.TestCase):
 
         # expect 2015_Pet as a column name
         self.assertTrue('2015_NG' in df.columns)
-
 
     def test_get_unconventional_oil_gas_production_data(self):
         """Ensure we get what is expected from the input file."""
@@ -362,7 +360,6 @@ class TestReader(unittest.TestCase):
         # expect FGW_Unconventional_NG (MGD) as a column name
         self.assertTrue('FGW_Unconventional_NG (MGD)' in df.columns)
 
-
     def test_get_conventional_oil_water_intensity_data(self):
         """Ensure we get what is expected from the input file."""
 
@@ -374,7 +371,6 @@ class TestReader(unittest.TestCase):
 
         # expect GalWater_GalOil as a column name
         self.assertTrue('GalWater_GalOil' in df.columns)
-
 
     def test_get_oil_gas_discharge_data(self):
         """Ensure we get what is expected from the input file."""

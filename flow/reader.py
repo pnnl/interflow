@@ -325,3 +325,30 @@ def get_oil_gas_discharge_data():
 
     # read in read in state level water discharge data from oil and natural gas
     return pd.read_csv(data)
+
+
+def get_coal_production_data():
+    """Read in a dataframe of coal mine production by county
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/coalpublic2015.csv')
+
+    # read in read in state level water discharge data from oil and natural gas
+    return pd.read_csv(data, skiprows=3)
+
+
+def get_coal_mine_location_data():
+    """Read in a dataframe of coal mine locations
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/Coal_Mine_Loc.csv')
+
+    # read in read in state level water discharge data from oil and natural gas
+    return pd.read_csv(data, dtype={'FIPS_CNTY_CD': str})
+
