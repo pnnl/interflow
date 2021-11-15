@@ -234,3 +234,16 @@ def get_corn_irrigation_data():
 
     # read in corn irrigation data
     return pd.read_csv(data)
+
+
+def get_corn_production_data():
+    """Read in a dataframe of corn production for biomass data by state
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/USDA_NASS_CornProd_2015.csv')
+
+    # read in corn irrigation data
+    return pd.read_csv(data, dtype={'State ANSI': str, 'County ANSI': str, 'Value': float})
