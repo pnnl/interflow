@@ -294,6 +294,21 @@ class TestReader(unittest.TestCase):
         # expect Value as a column name
         self.assertTrue('Value' in df.columns)
 
+    def test_get_county_oil_gas_production_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_county_oil_gas_production_data()
+
+        # expect geoid as a column name
+        self.assertTrue('geoid' in df.columns)
+
+        # expect gas2011 as a column name
+        self.assertTrue('gas2011' in df.columns)
+
+        # expect oil2011 as a column name
+        self.assertTrue('oil2011' in df.columns)
+
 
 if __name__ == '__main__':
     unittest.main()
