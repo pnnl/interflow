@@ -396,6 +396,42 @@ class TestReader(unittest.TestCase):
         # expect Evaporation/ Consumption (%) as a column name
         self.assertTrue('Evaporation/ Consumption (%)' in df.columns)
 
+    def test_get_coal_production_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_coal_production_data()
+
+        # expect MSHA ID as a column name
+        self.assertTrue('MSHA ID' in df.columns)
+
+        # expect Mine State as a column name
+        self.assertTrue('Mine State' in df.columns)
+
+        # expect Mine County as a column name
+        self.assertTrue('Mine County' in df.columns)
+
+        # expect Mine Type as a column name
+        self.assertTrue('Mine Type' in df.columns)
+
+        # expect Production (short tons) as a column name
+        self.assertTrue('Production (short tons)' in df.columns)
+
+    def test_get_coal_mine_location_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_coal_mine_location_data()
+
+        # expect MINE_ID as a column name
+        self.assertTrue('MINE_ID' in df.columns)
+
+        # expect STATE as a column name
+        self.assertTrue('STATE' in df.columns)
+
+        # expect FIPS_CNTY_CD as a column name
+        self.assertTrue('FIPS_CNTY_CD' in df.columns)
+
 
 if __name__ == '__main__':
     unittest.main()
