@@ -267,6 +267,18 @@ class TestReader(unittest.TestCase):
         # expect Sales (Megawatthours) as a column name
         self.assertTrue('Sales (Megawatthours)' in df.columns)
 
+    def test_get_energy_production_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_energy_production_data()
+
+        # expect StateCode as a column name
+        self.assertTrue('StateCode' in df.columns)
+
+        # expect MSN as a column name
+        self.assertTrue('MSN' in df.columns)
+
 
 if __name__ == '__main__':
     unittest.main()
