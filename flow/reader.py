@@ -221,3 +221,16 @@ def get_energy_production_data():
 
     # read in energy production (fuel) data
     return pd.read_csv(data, skiprows=1)
+
+
+def get_corn_irrigation_data():
+    """Read in a dataframe of corn irrigation for biomass data by state
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/USDA_FRIS.csv')
+
+    # read in corn irrigation data
+    return pd.read_csv(data)
