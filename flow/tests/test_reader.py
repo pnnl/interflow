@@ -279,6 +279,33 @@ class TestReader(unittest.TestCase):
         # expect MSN as a column name
         self.assertTrue('MSN' in df.columns)
 
+    def test_get_corn_irrigation_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_corn_irrigation_data()
+
+        # expect StateAbb as a column name
+        self.assertTrue('StateAbb' in df.columns)
+
+        # expect Acre-feet-Applied_All as a column name
+        self.assertTrue('Acre-feet-Applied_All' in df.columns)
+
+        # expect Acres_Corn_Harvested as a column name
+        self.assertTrue('Acres_Corn_Harvested' in df.columns)
+
+        # expect Total_Acres_Irrigated_All as a column name
+        self.assertTrue('Total_Acres_Irrigated_All' in df.columns)
+
+        # expect Ground as a column name
+        self.assertTrue('Ground' in df.columns)
+
+        # expect Surface as a column name
+        self.assertTrue('Surface' in df.columns)
+
+        # expect Off as a column name
+        self.assertTrue('Off' in df.columns)
+
 
 if __name__ == '__main__':
     unittest.main()
