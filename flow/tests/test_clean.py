@@ -13,7 +13,7 @@ class TestClean(unittest.TestCase):
         df = prep_water_use_2015()
 
         # expected number of columns
-        self.assertEqual(df.columns.shape[0], 26)
+        self.assertEqual(df.columns.shape[0], 32)
 
         # FIPS code is a string
         self.assertTrue(df['FIPS'].dtype, 'str')
