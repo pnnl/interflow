@@ -432,6 +432,18 @@ class TestReader(unittest.TestCase):
         # expect FIPS_CNTY_CD as a column name
         self.assertTrue('FIPS_CNTY_CD' in df.columns)
 
+    def test_get_state_fips_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_state_fips_data()
+
+        # expect STATE as a column name
+        self.assertTrue('STATE' in df.columns)
+
+        # expect STATEFIPS as a column name
+        self.assertTrue('STATEFIPS' in df.columns)
+
 
 if __name__ == '__main__':
     unittest.main()

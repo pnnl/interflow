@@ -352,3 +352,15 @@ def get_coal_mine_location_data():
     # read in read in coal mine data
     return pd.read_csv(data, dtype={'FIPS_CNTY_CD': str})
 
+
+def get_state_fips_data():
+    """Read in a dataframe of state FIPS code by state abbreviation
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/State_FIPS_Code.csv')
+
+    # read in read in state fips code to state abbrev. data
+    return pd.read_csv(data, dtype={'STATEFIPS': str})
