@@ -5,6 +5,8 @@ from .clean import *
 
 
 def calc_consumption_frac() -> pd.DataFrame:
+    # TODO prepare test for consumption fraction calculations
+
     """calculating consumption fractions for various sectors from 1995 water use data.
 
     :return:                DataFrame of water consumption fractions for various sectors by county
@@ -32,6 +34,8 @@ def calc_consumption_frac() -> pd.DataFrame:
 
 
 def calc_conveyance_loss_frac() -> pd.DataFrame:
+    # TODO prepare test for conveyance loss fraction
+
     """calculating the fraction of water lost during conveyance for irrigation.
 
     :return:                DataFrame of water consumption fractions for various sectors by county
@@ -48,6 +52,7 @@ def calc_conveyance_loss_frac() -> pd.DataFrame:
 
 
 def calc_hydroelectric_water_intensity(intensity_cap=165) -> pd.DataFrame:
+    # TODO prepare test for hydro water intensity
     """calculating the MGD used per megawatt-hour generated from hydroelectric generation.
 
     :return:                DataFrame of water intensity of hydroelectric generation by county

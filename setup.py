@@ -20,6 +20,7 @@ setup(
     install_requires=[
         'numpy>=1.21.3',
         'pandas>=1.3.4',
-        'openpyxl>=3.0.9'
+        'openpyxl>=3.0.9',
+        'plotly>=5.4'
     ]
 )
