@@ -27,5 +27,4 @@ def prep_water_use_2015() -> pd.DataFrame:
     # reducing dataframe to variables in variables_list
     df = df[variables_list]
 
-
     return df
