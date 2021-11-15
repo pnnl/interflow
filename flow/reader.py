@@ -247,3 +247,81 @@ def get_corn_production_data():
 
     # read in corn irrigation data
     return pd.read_csv(data, dtype={'State ANSI': str, 'County ANSI': str, 'Value': float})
+
+
+def get_county_oil_gas_production_data():
+    """Read in a dataframe of oil and natural gas production by county
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/oilgascounty.csv')
+
+    # read in county level oil and gas production data
+    return pd.read_csv(data, dtype={'geoid': str})
+
+
+def get_petroleum_production_data():
+    """Read in a dataframe of oil production by state
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/petroleum_eia.csv')
+
+    # read in state level petroleum production data
+    return pd.read_csv(data, skiprows=4)
+
+
+def get_gas_production_data():
+    """Read in a dataframe of natural gas production by state
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/natgas_eia.csv')
+
+    # read in read in state level natural gas production data
+    return pd.read_csv(data, skiprows=4)
+
+
+def get_unconventional_oil_gas_production_data():
+    """Read in a dataframe of unconventional oil and natural gas production water use by state
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/Unconventional_Oil_NG_State.csv')
+
+    # read in read in state level unconventional natural gas and oil production data
+    return pd.read_csv(data)
+
+
+def get_conventional_oil_water_intensity_data():
+    """Read in a dataframe of conventional oil water intensity by state
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/PADD_intensity.csv')
+
+    # read in read in state level water to oil intensity data
+    return pd.read_csv(data)
+
+
+def get_oil_gas_discharge_data():
+    """Read in a dataframe of water discharge data from oil and natural gas production
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/Oil_NG_WOR_WGR.csv')
+
+    # read in read in state level water discharge data from oil and natural gas
+    return pd.read_csv(data)
