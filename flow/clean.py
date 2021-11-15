@@ -45,7 +45,7 @@ def prep_water_use_1995() -> pd.DataFrame:
     df["FIPS"] = df["StateCode"] + df["CountyCode"]
 
     # creating a list of required variables from full 1995 dataset
-    variables_list = ['FIPS', 'DO-CUTot', 'DO-WDelv', 'CO-CUTot', 'IN-CUsFr',
+    variables_list = ['FIPS', 'State', 'DO-CUTot', 'DO-WDelv', 'CO-CUTot', 'IN-CUsFr',
                       'CO-WDelv', 'IN-WFrTo', 'IN-PSDel', 'IN-CUsSa', 'IN-WSaTo', 'MI-CUTot',
                       'MI-WTotl', 'PT-WSWFr', 'MI-CUsFr', 'MI-WFrTo', 'MI-CUsSa', 'MI-WSaTo',
                       'LV-CUTot', 'LV-WTotl', 'LA-CUTot', 'LA-WTotl', 'IR-CUTot', 'IR-WTotl',
