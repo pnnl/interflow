@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 
 from .reader import *
 
@@ -76,6 +75,5 @@ def prep_water_use_1995() -> pd.DataFrame:
 
     boulder_index = df.index[df['FIPS'] == "08013"].tolist()  # Broomfield County, CO from Boulder County, CO
     df = df.append(df.loc[boulder_index * 1].assign(FIPS="08014"), ignore_index=True)
-
 
     return df
