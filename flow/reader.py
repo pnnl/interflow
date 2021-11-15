@@ -262,7 +262,7 @@ def get_county_oil_gas_production_data():
     return pd.read_csv(data, dtype={'geoid': str})
 
 
-def get_petroleum_production_data():
+def get_state_petroleum_production_data():
     """Read in a dataframe of oil production by state
 
         :return:                        dataframe of values
@@ -275,7 +275,7 @@ def get_petroleum_production_data():
     return pd.read_csv(data, skiprows=4)
 
 
-def get_gas_production_data():
+def get_state_gas_production_data():
     """Read in a dataframe of natural gas production by state
 
         :return:                        dataframe of values

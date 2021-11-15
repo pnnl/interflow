@@ -309,6 +309,97 @@ class TestReader(unittest.TestCase):
         # expect oil2011 as a column name
         self.assertTrue('oil2011' in df.columns)
 
+    def test_get_state_petroleum_production_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_state_petroleum_production_data()
+
+        # expect State as a column name
+        self.assertTrue('State' in df.columns)
+
+        # expect 2010_Pet as a column name
+        self.assertTrue('2010_Pet' in df.columns)
+
+        # expect 2015_Pet as a column name
+        self.assertTrue('2015_Pet' in df.columns)
+
+
+    def test_get_state_gas_production_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_state_gas_production_data()
+
+        # expect State as a column name
+        self.assertTrue('State' in df.columns)
+
+        # expect 2010_Pet as a column name
+        self.assertTrue('2010_NG' in df.columns)
+
+        # expect 2015_Pet as a column name
+        self.assertTrue('2015_NG' in df.columns)
+
+
+    def test_get_unconventional_oil_gas_production_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_unconventional_oil_gas_production_data()
+
+        # expect State as a column name
+        self.assertTrue('State' in df.columns)
+
+        # expect FSW_Unconventional_Oil (MGD) as a column name
+        self.assertTrue('FSW_Unconventional_Oil (MGD)' in df.columns)
+
+        # expect FGW_Unconventional_Oil (MGD)	 as a column name
+        self.assertTrue('FGW_Unconventional_Oil (MGD)' in df.columns)
+
+        # expect FSW_Unconventional_NG (MGD) as a column name
+        self.assertTrue('FSW_Unconventional_NG (MGD)' in df.columns)
+
+        # expect FGW_Unconventional_NG (MGD) as a column name
+        self.assertTrue('FGW_Unconventional_NG (MGD)' in df.columns)
+
+
+    def test_get_conventional_oil_water_intensity_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_conventional_oil_water_intensity_data()
+
+        # expect State as a column name
+        self.assertTrue('State' in df.columns)
+
+        # expect GalWater_GalOil as a column name
+        self.assertTrue('GalWater_GalOil' in df.columns)
+
+
+    def test_get_oil_gas_discharge_data(self):
+        """Ensure we get what is expected from the input file."""
+
+        # load the data
+        df = get_oil_gas_discharge_data()
+
+        # expect State as a column name
+        self.assertTrue('State' in df.columns)
+
+        # expect WOR (bbl/bbl)	 as a column name
+        self.assertTrue('WOR (bbl/bbl)' in df.columns)
+
+        # expect WGR (bbl/Mmcf)	 as a column name
+        self.assertTrue('WGR (bbl/Mmcf)' in df.columns)
+
+        # expect Total injected (%)	 as a column name
+        self.assertTrue('Total injected (%)' in df.columns)
+
+        # expect Surface Discharge (%)	as a column name
+        self.assertTrue('Surface Discharge (%)' in df.columns)
+
+        # expect Evaporation/ Consumption (%) as a column name
+        self.assertTrue('Evaporation/ Consumption (%)' in df.columns)
+
 
 if __name__ == '__main__':
     unittest.main()
