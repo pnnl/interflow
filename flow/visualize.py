@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 
 from .calculate import *
 
-def plot_bar(df, region="State", variable):
+def plot_bar(data, x, y, region, y_axis="Value", x_axis_title="Region",  y_axis_title="Value"):
     """Plot the results of a cerf run on a map where each technology has its own color.
     :param df:                       Result data frame from running 'cerf.run()'
     :type df:                        DataFrame
@@ -23,7 +23,18 @@ def plot_bar(df, region="State", variable):
                                             for the file to be saved to
     """
 
+    fig = plt.subplots(figsize=(20, 10))
 
+    df = data
 
-    plt.bar(region, variable, align='center', alpha=0.5)
+    df = df.groupby(region, as_index=False).mean()
+    df = df.sort_values(y, ascending=False)
+
+    x = df[x].tolist()
+    y = df[y].tolist()
+
+    plt.bar(x, y, align='center', alpha=0.5)
+    plt.xlabel(f"{x_axis_title}")
+    plt.ylabel(f"{y_axis_title}")
+    plt.title(f"Barchart of {y_axis_title} by {x_axis_title}, Averaged across {region}")
     plt.show()

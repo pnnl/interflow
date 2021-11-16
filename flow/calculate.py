@@ -33,28 +33,36 @@ def calc_consumption_frac() -> pd.DataFrame:
     return df
 
 
-def calc_conveyance_loss_frac(loss_cap=True, loss_cap_amt=.90, all_variables=False) -> pd.DataFrame:
+def calc_conveyance_loss_frac(df: pd.DataFrame, loss_cap=True, loss_cap_amt=.90,
+                              all_variables=False, output_regions = ["State"]) -> pd.DataFrame:
     # TODO prepare test for conveyance loss fraction
 
-    """calculating the fraction of water lost during conveyance for irrigation to apply to total irrigation
-    water withdrawals in any year. The fraction is calculated as water lost in conveyance of irrigation water
-    divided by total water withdrawn for irrigation.
-    :param loss_cap:                       If True, a cap is placed on the conveyance loss fraction and
-                                            the regional average is substituted.
+    """
+    This function calculates the fraction of water lost during conveyance for irrigation for each row in the provided
+    dataframe. The fraction is calculated as water lost in conveyance of irrigation water divided by total water
+    withdrawn for irrigation.
+
+    :param df:                             A pandas dataframe with required values
+    :type df:                              pd.DataFrame
+
+    :param loss_cap:                       If True, a cap is placed on the conveyance loss fraction
     :type loss_cap:                        bool
 
-    :param loss_cap_amt:                   The amount at which irrigation losses are replaced by regional avg.
+    :param loss_cap_amt:                   The amount at which irrigation losses are capped and values beyond are
+                                            replaced by the specified cap amount. The default value is .90.
     :type loss_cap_amt:                    float
 
-    :param all_variables:                  If True, displays all dataframe columns from origin dataframe.
+    :param all_variables:                  If True, displays all dataframe columns from provided dataframe. If False,
+                                            only displays specified region(s) and IR_CLoss_Frac.
     :type all_variables:                   bool
 
-    :return:                               DataFrame of conveyance loss fractions by county
+    :param output_regions:                 A list of regions to include in identifying location of values.
+    :type output_regions:                  list
+
+
+    :return:                               DataFrame of conveyance loss fractions by row
 
     """
-
-    # read in cleaned water use data for 1995
-    df = prep_water_use_1995()
 
     # calculate conveyance loss fraction of total water withdrawn for irrigation if irrigation water > 0
     df["IR_CLoss_Frac"] = np.where(df['IR-WTotl'] == 0, 0, df['IR-CLoss'] / df['IR-WTotl'])
@@ -64,23 +72,27 @@ def calc_conveyance_loss_frac(loss_cap=True, loss_cap_amt=.90, all_variables=Fal
         raise ValueError(f"loss_cap_amt must be a float between 0 and 1")
 
     if loss_cap:
-        df_state = df[["StateCode", "IR_CLoss_Frac"]].groupby("StateCode", as_index=False).mean()
-        df_state = df_state.rename(columns={"IR_CLoss_Frac": "IR_CLoss_Frac_avg"})
-        df = pd.merge(df, df_state, how="left", on="StateCode")
-        df["IR_CLoss_Frac"] = np.where(df['IR_CLoss_Frac'] > loss_cap_amt, df["IR_CLoss_Frac_avg"], df["IR_CLoss_Frac"])
+        df["IR_CLoss_Frac"] = np.where(df['IR_CLoss_Frac'] > loss_cap_amt, loss_cap_amt, df["IR_CLoss_Frac"])
     else:
         df["IR_CLoss_Frac"] = df["IR_CLoss_Frac"]
+
+    # Replacing infinite (from divide by zero) with nan and filling with 0
+    df.replace([np.inf, -np.inf], np.nan, inplace=True)
+    df.fillna(0, inplace=True)
 
     if all_variables:
         df = df
     else:
-        df = df[["State", "CountyName", "FIPS", "IR_CLoss_Frac"]]
+        region_list = output_regions
+        region_list.append("IR_CLoss_Frac")
+        df = df[region_list]
 
     return df
 
 
 def calc_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165,
-                                       region_avg=True, region="StateCode", all_variables=False) -> pd.DataFrame:
+                                       region_avg=True, region="StateCode", all_variables=False,
+                                       output_regions = ["State"]) -> pd.DataFrame:
     # TODO prepare test for hydro water intensity
     # TODO fill in parameter information
     """calculating the MGD used per megawatt-hour generated from hydroelectric generation.
@@ -107,6 +119,7 @@ def calc_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165
         df_region_avg = df_region_avg.rename(columns={"HY_IF": "HY_IF_avg"})
         df = pd.merge(df, df_region_avg, how="left", on="StateCode")
         df["HY_IF"] = df["HY_IF_avg"]
+        df['HY_IF'] = np.where(df['HY_IF'] is not, intensity_cap_amt, df['HY_IF'])
 
     else:
         df = df
@@ -114,6 +127,8 @@ def calc_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165
     if all_variables:
         df = df
     else:
-        df = df[["State", "CountyName", "FIPS", "HY_IF"]]
+        region_list = output_regions
+        region_list.append("HY_IF")
+        df = df[region_list]
 
     return df

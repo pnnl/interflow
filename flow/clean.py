@@ -21,8 +21,7 @@ def prep_water_use_2015() -> pd.DataFrame:
                       'DO-PSDel', 'PS-Wtotl', 'DO-WGWFr', 'DO-WSWFr', 'PT-WGWFr', 'PT-WGWSa',
                       'PT-WSWFr', 'PT-WSWSa', 'PT-RecWW', 'PT-PSDel', 'PT-CUTot', 'IN-WGWFr',
                       'IN-WSWFr', 'IN-WGWSa', 'IN-WSWSa', 'MI-WGWFr', 'MI-WSWFr', 'MI-WGWSa',
-                      'MI-WSWSa', 'IC-WGWFr', 'IC-WSWFr', 'IC-CUsFr', 'IG-WGWFr', 'IG-WSWFr',
-                      'IG-CUsFr'
+                      'MI-WSWSa', 'IR-WGWFr', 'IR-WSWFr', 'IR-CUsFr'
                       ]
     # reducing dataframe to variables in variables_list
     df = df[variables_list]
