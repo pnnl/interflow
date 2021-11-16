@@ -30,8 +30,6 @@ def calc_consumption_frac() -> pd.DataFrame:
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
     df.fillna(0, inplace=True)
 
-
-
     return df
 
 
@@ -39,8 +37,17 @@ def calc_conveyance_loss_frac(loss_cap=True, loss_cap_amt=.90, all_variables=Fal
     # TODO prepare test for conveyance loss fraction
 
     """calculating the fraction of water lost during conveyance for irrigation.
+    :param loss_cap:                       If True, a cap is placed on the conveyance loss fraction and
+                                            the regional average is substituted.
+    :type loss_cap:                        bool
 
-    :return:                DataFrame of water consumption fractions for various sectors by county
+    :param loss_cap_amt:                   The amount at which irrigation losses are replaced by regional avg.
+    :type loss_cap_amt:                    float
+
+    :param all_variables:                  If True, displays all dataframe columns from origin dataframe.
+    :type all_variables:                   bool
+
+    :return:                               DataFrame of conveyance loss fractions by county
 
     """
 
@@ -72,6 +79,7 @@ def calc_conveyance_loss_frac(loss_cap=True, loss_cap_amt=.90, all_variables=Fal
 
 def calc_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165, region_avg=True, region="StateCode", all_variables=False) -> pd.DataFrame:
     # TODO prepare test for hydro water intensity
+    # TODO fill in parameter information
     """calculating the MGD used per megawatt-hour generated from hydroelectric generation.
 
     :return:                DataFrame of water intensity of hydroelectric generation by county
