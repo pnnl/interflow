@@ -70,7 +70,7 @@ def calc_conveyance_loss_frac(loss_cap=True, loss_cap_amt=.90, all_variables=Fal
     return df
 
 
-def calc_hydroelectric_water_intensity(intensity_cap=165, region_avg=True) -> pd.DataFrame:
+def calc_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165, region_avg=True, region="StateCode", all_variables=False) -> pd.DataFrame:
     # TODO prepare test for hydro water intensity
     """calculating the MGD used per megawatt-hour generated from hydroelectric generation.
 
@@ -85,14 +85,24 @@ def calc_hydroelectric_water_intensity(intensity_cap=165, region_avg=True) -> pd
     df["HY_IF"] = df["HY-InUse"] / df["HY-InPow"]
 
     # removing outlier intensities
-    df = df[df.HY_IF <= intensity_cap]
+    if intensity_cap:
+        df['HY_IF'] = np.where(df['HY_IF'] >= intensity_cap_amt, intensity_cap_amt, df['HY_IF'])
+    else:
+        df = df
 
+    # if region_avg = True, the specified regional average hydroelectric intensity is supplemented at all levels
     if region_avg:
-        pass
+        df_region_avg = df[["StateCode", 'HY_IF']].groupby(region, as_index=False).mean()
+        df_region_avg = df_region_avg.rename(columns={"HY_IF": "HY_IF_avg"})
+        df = pd.merge(df, df_region_avg, how="left", on="StateCode")
+        df["HY_IF"] = df["HY_IF_avg"]
 
     else:
-        df = df[["FIPS", "HY_IF"]]
+        df = df
 
-    df = df[["FIPS", "HY_IF"]]
+    if all_variables:
+        df = df
+    else:
+        df = df[["State", "CountyName", "FIPS", "HY_IF"]]
 
     return df
