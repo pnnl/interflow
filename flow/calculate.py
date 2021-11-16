@@ -30,10 +30,12 @@ def calc_consumption_frac() -> pd.DataFrame:
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
     df.fillna(0, inplace=True)
 
+
+
     return df
 
 
-def calc_conveyance_loss_frac() -> pd.DataFrame:
+def calc_conveyance_loss_frac(loss_cap=True, loss_cap_amt=.90, all_variables=False) -> pd.DataFrame:
     # TODO prepare test for conveyance loss fraction
 
     """calculating the fraction of water lost during conveyance for irrigation.
@@ -45,13 +47,30 @@ def calc_conveyance_loss_frac() -> pd.DataFrame:
     # read in cleaned water use data for 1995
     df = prep_water_use_1995()
 
-    # calculate conveyance loss fraction of total water withdrawn for irrigation
-    df["IR_CLoss_Frac"] = df['IR-CLoss'] / df['IR-WTotl']
+    # calculate conveyance loss fraction of total water withdrawn for irrigation if irrigation water > 0
+    df["IR_CLoss_Frac"] = np.where(df['IR-WTotl'] == 0, 0, df['IR-CLoss'] / df['IR-WTotl'])
+
+    # if a cap is placed on irrigation loss fraction, apply state average
+    if loss_cap_amt < 0 or loss_cap_amt > 1:
+        raise ValueError(f"loss_cap_amt must be a float between 0 and 1")
+
+    if loss_cap:
+        df_state = df[["StateCode", "IR_CLoss_Frac"]].groupby("StateCode", as_index=False).mean()
+        df_state = df_state.rename(columns={"IR_CLoss_Frac": "IR_CLoss_Frac_avg"})
+        df = pd.merge(df, df_state, how="left", on="StateCode")
+        df["IR_CLoss_Frac"] = np.where(df['IR_CLoss_Frac'] > loss_cap_amt, df["IR_CLoss_Frac_avg"], df["IR_CLoss_Frac"])
+    else:
+        df["IR_CLoss_Frac"] = df["IR_CLoss_Frac"]
+
+    if all_variables:
+        df = df
+    else:
+        df = df[["State", "CountyName", "FIPS", "IR_CLoss_Frac"]]
 
     return df
 
 
-def calc_hydroelectric_water_intensity(intensity_cap=165) -> pd.DataFrame:
+def calc_hydroelectric_water_intensity(intensity_cap=165, region_avg=True) -> pd.DataFrame:
     # TODO prepare test for hydro water intensity
     """calculating the MGD used per megawatt-hour generated from hydroelectric generation.
 
@@ -67,6 +86,12 @@ def calc_hydroelectric_water_intensity(intensity_cap=165) -> pd.DataFrame:
 
     # removing outlier intensities
     df = df[df.HY_IF <= intensity_cap]
+
+    if region_avg:
+        pass
+
+    else:
+        df = df[["FIPS", "HY_IF"]]
 
     df = df[["FIPS", "HY_IF"]]
 

@@ -33,13 +33,13 @@ class TestClean(unittest.TestCase):
         df = prep_water_use_1995()
 
         # expected number of columns
-        self.assertEqual(df.columns.shape[0], 27)
+        self.assertEqual(df.columns.shape[0], 29)
 
         # FIPS code is a string
         self.assertTrue(df['FIPS'].dtype, 'str')
 
         # ensure data columns are type float
-        df_float = df.iloc[:, 1:]
+        df_float = df.iloc[:, 2:]
         self.assertTrue(df_float.columns.dtype, 'float')
 
         # no null data rows
