@@ -36,7 +36,9 @@ def calc_consumption_frac() -> pd.DataFrame:
 def calc_conveyance_loss_frac(loss_cap=True, loss_cap_amt=.90, all_variables=False) -> pd.DataFrame:
     # TODO prepare test for conveyance loss fraction
 
-    """calculating the fraction of water lost during conveyance for irrigation.
+    """calculating the fraction of water lost during conveyance for irrigation to apply to total irrigation
+    water withdrawals in any year. The fraction is calculated as water lost in conveyance of irrigation water
+    divided by total water withdrawn for irrigation.
     :param loss_cap:                       If True, a cap is placed on the conveyance loss fraction and
                                             the regional average is substituted.
     :type loss_cap:                        bool
@@ -77,7 +79,8 @@ def calc_conveyance_loss_frac(loss_cap=True, loss_cap_amt=.90, all_variables=Fal
     return df
 
 
-def calc_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165, region_avg=True, region="StateCode", all_variables=False) -> pd.DataFrame:
+def calc_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165,
+                                       region_avg=True, region="StateCode", all_variables=False) -> pd.DataFrame:
     # TODO prepare test for hydro water intensity
     # TODO fill in parameter information
     """calculating the MGD used per megawatt-hour generated from hydroelectric generation.
