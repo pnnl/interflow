@@ -3,7 +3,7 @@ import numpy as np
 from .reader import *
 
 
-def prep_water_use_2015() -> pd.DataFrame:
+def prep_water_use_2015(variables:list=['FIPS','State'], all_variables=False) -> pd.DataFrame:
     """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
 
     :return:                DataFrame of a number of water values for 2015 at the county level
@@ -23,12 +23,23 @@ def prep_water_use_2015() -> pd.DataFrame:
                       'IN-WSWFr', 'IN-WGWSa', 'IN-WSWSa', 'MI-WGWFr', 'MI-WSWFr', 'MI-WGWSa',
                       'MI-WSWSa', 'IR-WGWFr', 'IR-WSWFr', 'IR-CUsFr'
                       ]
+    numerical_list = variables_list[3:]
+    for col in numerical_list:
+        df[col] = df[col].astype(float)
+
     # reducing dataframe to variables in variables_list
     df = df[variables_list]
 
     # change column names
     df = df.rename(columns={"COUNTY": "County"})
     df = df.rename(columns={"STATE": "State"})
+
+    if all_variables and (variables is None):
+        df = df
+    elif (all_variables is True) and (variables is not None):
+        raise ValueError(f"If a variable list is provided, all_variables must be set to False.")
+    else:
+        df = df[variables]
 
     return df
 
@@ -53,7 +64,8 @@ def prep_water_use_1995() -> pd.DataFrame:
                       'CO-WDelv', 'IN-WFrTo', 'IN-PSDel', 'IN-CUsSa', 'IN-WSaTo', 'MI-CUTot',
                       'MI-WTotl', 'PT-WSWFr', 'MI-CUsFr', 'MI-WFrTo', 'MI-CUsSa', 'MI-WSaTo',
                       'LV-CUTot', 'LV-WTotl', 'LA-CUTot', 'LA-WTotl', 'IR-CUTot', 'IR-WTotl',
-                      'HY-InUse', 'HY-InPow', 'IR-CLoss'
+                      'HY-InUse', 'HY-InPow', 'IR-CLoss', 'PS-DelCO', 'PS-DelIN', 'PS-UsLos',
+                      'PS-DelTO', 'PS-DelDO', 'PS-DelPT', 'PS-WTotl'
                       ]
 
     # reducing dataframe to variables in variables_list

@@ -30,6 +30,39 @@ def calc_consumption_frac() -> pd.DataFrame:
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
     df.fillna(0, inplace=True)
 
+    df = [["FIPS", "DO_CF_Fr","CO_CF_Fr", "IN_CF_Fr","IN_CF_Sa",
+            "MI_CF_Fr","MI_CF_Sa","LV_CF_Fr","LA_CF_Fr"]]
+
+    return df
+
+
+def calc_pws_frac() -> pd.DataFrame:
+    # TODO prepare test for consumption fraction calculations
+
+    """calculating ratio of public water supply deliveries for the commercial and industrial sectors to the sum of
+        public water supply deliveries to residential end users and thermoelectric cooling. Used in calculation
+        of public water supply demand to all sectors.
+
+    :return:                DataFrame of public water supply ratios for commercial and industrial sector.
+
+    """
+
+    # read in cleaned water use data for 1995
+    df = prep_water_use_1995()
+
+    # calculate ratio of commercial pws to sum of domestic and thermoelectric cooling pws
+    df["CO_PWS_frac"] = np.where((df['PS-DelDO'] + df['PS-DelPT']) <= 0,
+                                 0,
+                                 df['PS-DelCO'] / (df['PS-DelDO'] + df['PS-DelPT']))
+
+    # calculate ratio of industrial pws to sum of domestic and thermoelectric cooling pws
+    df["IN_PWS_frac"] = np.where((df['PS-DelDO'] + df['PS-DelPT']) <= 0,
+                                 0,
+                                 df['PS-DelIN'] / (df['PS-DelDO'] + df['PS-DelPT']))
+
+    # reduce dataframe to required output
+    df = df[["FIPS", "CO_PWS_frac", "IN_PWS_frac"]]
+
     return df
 
 
@@ -115,5 +148,48 @@ def calc_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165
         region_list = [output_regions]
         region_list.append("HY_IF")
         df = df[region_list]
+
+    return df
+
+
+
+def calc_pws_demand() -> pd.DataFrame:
+    # TODO prepare test for consumption fraction calculations
+
+    """calculating public water supply demand for the commercial and industrial sectors along with total
+        public water supply exports or imports for each row of dataset.
+
+    :return:                DataFrame of public water supply demand by sector, pws imports, and pws exports
+
+    """
+
+    # read in cleaned water use data for 2015
+    df = prep_water_use_2015()
+
+    # read in dataframe of commercial and industrial pws ratios
+    df_pws = calc_pws_frac()
+
+    # reduce 2015 dataframe to required variables
+    df = df[["FIPS", 'PS-Wtotl', 'DO-PSDel', 'PT-PSDel']]
+
+    # merge dataframes
+    df = pd.merge(df, df_pws, how="left", on="FIPS")
+
+    # calculate public water supply deliveries to commercial and industrial sectors
+    df['CO-PSDel'] = df["CO_PWS_frac"]*(df['DO-PSDel'] + df['PT-PSDel'])
+    df['IN-PSDel'] =  df["IN_PWS_frac"]*(df['DO-PSDel'] + df['PT-PSDel'])
+
+    #calculate total deliveries from public water supply to all sectors
+    df['PS-del'] = df['DO-PSDel'] + df['PT-PSDel'] + df['CO-PSDel'] + df['IN-PSDel']
+
+    # calculate public water supply imports and exports
+    df['PS-IX'] = np.where(df['PS-Wtotl'] - df['PS-del'] < 0,  # if withdrawals < deliveries
+                           df['PS-del'] - df['PS-Wtotl'],  # import quantity
+                           0)
+    df['PS-EX'] = np.where(df['PS-Wtotl'] - df['PS-del'] > 0,  # if withdrawals > deliveries
+                            df['PS-Wtotl'] - df['PS-del'],  # export quantity
+                           0)
+
+    df = df[["FIPS", 'State', 'PS-Wtotl', 'DO-PSDel', 'PT-PSDel', "CO-PSDel", "IN-PSDel", "PS-IX", 'PS-EX']]
 
     return df
