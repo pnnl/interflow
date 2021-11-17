@@ -3,7 +3,7 @@ import numpy as np
 from .reader import *
 
 
-def prep_water_use_2015(variables:list=['FIPS','State'], all_variables=False) -> pd.DataFrame:
+def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
     """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
 
     :return:                DataFrame of a number of water values for 2015 at the county level
@@ -34,10 +34,11 @@ def prep_water_use_2015(variables:list=['FIPS','State'], all_variables=False) ->
     df = df.rename(columns={"COUNTY": "County"})
     df = df.rename(columns={"STATE": "State"})
 
-    if all_variables and (variables is None):
+    if variables is None and all_variables is False:
+        variables = ['FIPS', "State", "County"]
+        df = df[variables]
+    elif variables is None and all_variables is True:
         df = df
-    elif (all_variables is True) and (variables is not None):
-        raise ValueError(f"If a variable list is provided, all_variables must be set to False.")
     else:
         df = df[variables]
 
