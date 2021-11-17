@@ -26,6 +26,10 @@ def prep_water_use_2015() -> pd.DataFrame:
     # reducing dataframe to variables in variables_list
     df = df[variables_list]
 
+    # change column names
+    df = df.rename(columns={"COUNTY": "County"})
+    df = df.rename(columns={"STATE": "State"})
+
     return df
 
 
@@ -44,7 +48,8 @@ def prep_water_use_1995() -> pd.DataFrame:
     df["FIPS"] = df["StateCode"] + df["CountyCode"]
 
     # creating a list of required variables from full 1995 dataset
-    variables_list = ['FIPS', 'State', 'CountyName', 'StateCode', 'DO-CUTot', 'DO-WDelv', 'CO-CUTot', 'IN-CUsFr',
+    variables_list = ['FIPS', 'State', 'CountyName', 'StateCode', 'DO-CUTot', 'DO-WDelv',
+                      'CO-CUTot', 'IN-CUsFr',
                       'CO-WDelv', 'IN-WFrTo', 'IN-PSDel', 'IN-CUsSa', 'IN-WSaTo', 'MI-CUTot',
                       'MI-WTotl', 'PT-WSWFr', 'MI-CUsFr', 'MI-WFrTo', 'MI-CUsSa', 'MI-WSaTo',
                       'LV-CUTot', 'LV-WTotl', 'LA-CUTot', 'LA-WTotl', 'IR-CUTot', 'IR-WTotl',
@@ -74,5 +79,50 @@ def prep_water_use_1995() -> pd.DataFrame:
 
     boulder_index = df.index[df['FIPS'] == "08013"].tolist()  # Broomfield County, CO from Boulder County, CO
     df = df.append(df.loc[boulder_index * 1].assign(FIPS="08014"), ignore_index=True)
+
+    # change column names
+    df = df.rename(columns={"CountyName": "County"})
+
+    return df
+
+
+def prep_population_data() -> pd.DataFrame:
+    """prepping population by county data by creating single FIPS code, filling in missing population data,
+        and making sure population data is available for all counties in main dataset.
+
+    :return:                DataFrame of population data at the county level
+
+    """
+
+    # read in population data by county
+    df = get_population_data()
+    df_statenames = get_state_fips_data()
+
+    # Add leading zeros to County FIPS and State FIPS
+    df["STATE FIPS"] = df["STATE FIPS"].apply(lambda x: '{0:0>2}'.format(x))
+    df["COUNTY FIPS"] = df["COUNTY FIPS"].apply(lambda x: '{0:0>3}'.format(x))
+
+    # creating a single FIPS columns from state and county FIPS
+    df["FIPS"] = df["STATE FIPS"] + df["COUNTY FIPS"]
+
+    # Fixing missing county population & state name data
+    df['2015 POPULATION'] = np.where(df['FIPS'] == "46102", 13881.5, df['2015 POPULATION'])  # Oglala County, SD
+    df['STATE/TERRITORY NAME'] = np.where(df['FIPS'] == "46102", "South Dakota", df['STATE/TERRITORY NAME'])
+    df['2015 POPULATION'] = np.where(df['FIPS'] == "02158", 7913.5, df['2015 POPULATION'])  # Kusilvak Census Area, AK
+    df['STATE/TERRITORY NAME'] = np.where(df['FIPS'] == "02158", "Alaska", df['STATE/TERRITORY NAME'])
+    df['2015 POPULATION'] = np.where(df['FIPS'] == "78010", 50601, df['2015 POPULATION'])  # St. Croix, VI
+    df['2015 POPULATION'] = np.where(df['FIPS'] == "78020", 4170, df['2015 POPULATION'])  # St. John, VI
+    df['2015 POPULATION'] = np.where(df['FIPS'] == "78030", 51634, df['2015 POPULATION'])  # St. Thomas, VI
+
+    # merge state abbreviation and state name crosswalk data to supply common State column
+    df = pd.merge(df, df_statenames, how="left", on="STATE/TERRITORY NAME")
+
+    # change column names
+    df = df.rename(columns={"2015 POPULATION": "Population"})
+    df = df.rename(columns={"COUNTY NAME": "County"})
+
+    # reduce variables to required
+    variables_list = ['FIPS', 'State', 'County', 'Population']
+    df = df[variables_list]
 
     return df

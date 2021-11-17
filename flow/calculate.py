@@ -20,7 +20,7 @@ def calc_consumption_frac() -> pd.DataFrame:
     df["DO_CF_Fr"] = df["DO-CUTot"] / df["DO-WDelv"]  # residential (domestic) sector freshwater consumption fraction
     df["CO_CF_Fr"] = df["CO-CUTot"] / df["CO-WDelv"]  # commercial sector freshwater consumption fraction
     df["IN_CF_Fr"] = df["IN-CUsFr"] / (df["IN-WFrTo"] + df["IN-PSDel"])  # ind sector freshwater consumption fraction
-    df["IN_CF_Sa"] = (df["IN-CUsSa"]) / (df["IN-WSaTo"])  # ind sector saline water consumption fraction
+    df["IN_CF_Sa"] = df["IN-CUsSa"] / df["IN-WSaTo"]  # industrial sector saline water consumption fraction
     df["MI_CF_Fr"] = df["MI-CUsFr"] / df["MI-WFrTo"]  # mining sector freshwater consumption fraction
     df["MI_CF_Sa"] = df["MI-CUsSa"] / df["MI-WSaTo"]  # mining sector saline water consumption fraction
     df["LV_CF_Fr"] = df["LV-CUTot"] / df["LV-WTotl"]  # livestock freshwater water consumption fraction
@@ -33,8 +33,7 @@ def calc_consumption_frac() -> pd.DataFrame:
     return df
 
 
-def calc_conveyance_loss_frac(df: pd.DataFrame, loss_cap=True, loss_cap_amt=.90,
-                              all_variables=False, output_regions = ["State"]) -> pd.DataFrame:
+def calc_conveyance_loss_frac(df: pd.DataFrame, loss_cap=True, loss_cap_amt=.90) -> pd.DataFrame:
     # TODO prepare test for conveyance loss fraction
 
     """
@@ -52,20 +51,12 @@ def calc_conveyance_loss_frac(df: pd.DataFrame, loss_cap=True, loss_cap_amt=.90,
                                             replaced by the specified cap amount. The default value is .90.
     :type loss_cap_amt:                    float
 
-    :param all_variables:                  If True, displays all dataframe columns from provided dataframe. If False,
-                                            only displays specified region(s) and IR_CLoss_Frac.
-    :type all_variables:                   bool
-
-    :param output_regions:                 A list of regions to include in identifying location of values.
-    :type output_regions:                  list
-
-
     :return:                               DataFrame of conveyance loss fractions by row
 
     """
 
     # calculate conveyance loss fraction of total water withdrawn for irrigation if irrigation water > 0
-    df["IR_CLoss_Frac"] = np.where(df['IR-WTotl'] == 0, 0, df['IR-CLoss'] / df['IR-WTotl'])
+    df["IR_CLoss_Frac"] = df['IR-CLoss'] / df['IR-WTotl']
 
     # if a cap is placed on irrigation loss fraction, apply state average
     if loss_cap_amt < 0 or loss_cap_amt > 1:
@@ -80,19 +71,14 @@ def calc_conveyance_loss_frac(df: pd.DataFrame, loss_cap=True, loss_cap_amt=.90,
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
     df.fillna(0, inplace=True)
 
-    if all_variables:
-        df = df
-    else:
-        region_list = output_regions
-        region_list.append("IR_CLoss_Frac")
-        df = df[region_list]
+    df = df[["FIPS", "State", "County", "IR_CLoss_Frac"]]
 
     return df
 
 
 def calc_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165,
                                        region_avg=True, region="StateCode", all_variables=False,
-                                       output_regions = ["State"]) -> pd.DataFrame:
+                                       output_regions="State") -> pd.DataFrame:
     # TODO prepare test for hydro water intensity
     # TODO fill in parameter information
     """calculating the MGD used per megawatt-hour generated from hydroelectric generation.
@@ -119,7 +105,6 @@ def calc_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165
         df_region_avg = df_region_avg.rename(columns={"HY_IF": "HY_IF_avg"})
         df = pd.merge(df, df_region_avg, how="left", on="StateCode")
         df["HY_IF"] = df["HY_IF_avg"]
-        df['HY_IF'] = np.where(df['HY_IF'] is not, intensity_cap_amt, df['HY_IF'])
 
     else:
         df = df
@@ -127,7 +112,7 @@ def calc_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165
     if all_variables:
         df = df
     else:
-        region_list = output_regions
+        region_list = [output_regions]
         region_list.append("HY_IF")
         df = df[region_list]
 
