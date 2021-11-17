@@ -40,19 +40,6 @@ def get_interconnect_data():
     return pd.read_csv(data, dtype={'FIPS': str}, usecols=["FIPS", "Interconnect"])
 
 
-def get_population_data():
-    """Read in a dataframe of population by FIPS code.
-
-        :return:                        dataframe of values
-
-        """
-
-    data = pkg_resources.resource_filename('flow', 'data/county-population.csv')
-
-    # read in population data by county
-    return pd.read_csv(data, dtype={'STATE FIPS': str, 'COUNTY FIPS': str}, encoding='latin-1')
-
-
 def get_wastewater_flow_data():
     """Read in a dataframe of wastewater treatment facility water flows (MGD) by facility ID
 
