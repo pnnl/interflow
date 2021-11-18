@@ -17,11 +17,12 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
     df.replace("--", 0, inplace=True)
 
     # creating a list of required variables from full dataset
-    variables_list = ['FIPS', 'STATE', 'COUNTY', 'TP-TotPop', 'PS-WGWFr', 'PS-WSWFr', 'PS-WGWSa', 'PS-WSWSa',
-                      'DO-PSDel', 'PS-Wtotl', 'DO-WGWFr', 'DO-WSWFr', 'PT-WGWFr', 'PT-WGWSa',
-                      'PT-WSWFr', 'PT-WSWSa', 'PT-RecWW', 'PT-PSDel', 'PT-CUTot', 'IN-WGWFr',
-                      'IN-WSWFr', 'IN-WGWSa', 'IN-WSWSa', 'MI-WGWFr', 'MI-WSWFr', 'MI-WGWSa',
-                      'MI-WSWSa', 'IR-WGWFr', 'IR-WSWFr', 'IR-CUsFr'
+    variables_list = ['FIPS', 'STATE', 'COUNTY',
+                      'TP-TotPop', 'PS-WGWFr', 'PS-WSWFr', 'PS-WGWSa', 'PS-WSWSa','DO-PSDel',
+                      'PS-Wtotl', 'DO-WGWFr', 'DO-WSWFr', 'PT-WGWFr', 'PT-WGWSa', 'PT-WSWFr',
+                      'PT-WSWSa', 'PT-RecWW', 'PT-PSDel', 'PT-CUTot', 'IN-WGWFr', 'IN-WSWFr',
+                      'IN-WGWSa', 'IN-WSWSa', 'MI-WGWFr', 'MI-WSWFr', 'MI-WGWSa', 'MI-WSWSa',
+                      'IR-WGWFr', 'IR-WSWFr', 'IR-CUsFr'
                       ]
     numerical_list = variables_list[3:]
     for col in numerical_list:
@@ -61,12 +62,11 @@ def prep_water_use_1995() -> pd.DataFrame:
 
     # creating a list of required variables from full 1995 dataset
     variables_list = ['FIPS', 'State', 'CountyName', 'StateCode', 'DO-CUTot', 'DO-WDelv',
-                      'CO-CUTot', 'IN-CUsFr',
-                      'CO-WDelv', 'IN-WFrTo', 'IN-PSDel', 'IN-CUsSa', 'IN-WSaTo', 'MI-CUTot',
-                      'MI-WTotl', 'PT-WSWFr', 'MI-CUsFr', 'MI-WFrTo', 'MI-CUsSa', 'MI-WSaTo',
-                      'LV-CUTot', 'LV-WTotl', 'LA-CUTot', 'LA-WTotl', 'IR-CUTot', 'IR-WTotl',
-                      'HY-InUse', 'HY-InPow', 'IR-CLoss', 'PS-DelCO', 'PS-DelIN', 'PS-UsLos',
-                      'PS-DelTO', 'PS-DelDO', 'PS-DelPT', 'PS-WTotl'
+                      'CO-CUTot', 'IN-CUsFr', 'CO-WDelv', 'IN-WFrTo', 'IN-PSDel', 'IN-CUsSa',
+                      'IN-WSaTo', 'MI-CUTot', 'MI-WTotl', 'PT-WSWFr', 'MI-CUsFr', 'MI-WFrTo',
+                      'MI-CUsSa', 'MI-WSaTo', 'LV-CUTot', 'LV-WTotl', 'LA-CUTot', 'LA-WTotl',
+                      'IR-CUTot', 'IR-WTotl', 'HY-InUse', 'HY-InPow', 'IR-CLoss', 'PS-DelCO',
+                      'PS-DelIN', 'PS-UsLos', 'PS-DelTO', 'PS-DelDO', 'PS-DelPT', 'PS-WTotl'
                       ]
 
     # reducing dataframe to variables in variables_list

@@ -10,13 +10,14 @@ class TestClean(unittest.TestCase):
         """Ensure we get what is expected from prep_water_use_2015()."""
 
         # load data
-        df = prep_water_use_2015()
+        df = prep_water_use_2015(all_variables = True)
 
         # expected number of columns
-        self.assertEqual(df.columns.shape[0], 32)
+        self.assertEqual(df.columns.shape[0], 30)
 
-        # FIPS code is a string
-        self.assertTrue(df['FIPS'].dtype, 'str')
+        # string variables are strings
+        df_str = df.iloc[:, 3:]
+        self.assertTrue(df_str.columns.dtype, 'str')
 
         # ensure data columns are type float
         df_float = df.iloc[:, 3:]
