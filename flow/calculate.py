@@ -155,7 +155,7 @@ def calc_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165
 
 
 def calc_pws_discharge() -> pd.DataFrame:
-    # TODO prepare test for consumption fraction calculations
+    # TODO prepare test
 
     """calculating public water supply demand for the commercial and industrial sectors along with total
         public water supply exports or imports for each row of dataset.
