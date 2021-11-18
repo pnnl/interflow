@@ -60,6 +60,7 @@ def calc_pws_frac() -> pd.DataFrame:
                                  0,
                                  df['PS-DelIN'] / (df['PS-DelDO'] + df['PS-DelPT']))
 
+
     # reduce dataframe to required output
     df = df[["FIPS", "CO_PWS_frac", "IN_PWS_frac"]]
 
@@ -153,7 +154,7 @@ def calc_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165
 
 
 
-def calc_pws_demand() -> pd.DataFrame:
+def calc_pws_discharge() -> pd.DataFrame:
     # TODO prepare test for consumption fraction calculations
 
     """calculating public water supply demand for the commercial and industrial sectors along with total
@@ -163,21 +164,18 @@ def calc_pws_demand() -> pd.DataFrame:
 
     """
 
-    # read in cleaned water use data for 2015
-    df = prep_water_use_2015()
+    # read in cleaned water use data variables for 2015
+    df = prep_water_use_2015(variables=["FIPS", 'State', 'County','PS-Wtotl', 'DO-PSDel', 'PT-PSDel'])
 
     # read in dataframe of commercial and industrial pws ratios
     df_pws = calc_pws_frac()
-
-    # reduce 2015 dataframe to required variables
-    df = df[["FIPS", 'PS-Wtotl', 'DO-PSDel', 'PT-PSDel']]
 
     # merge dataframes
     df = pd.merge(df, df_pws, how="left", on="FIPS")
 
     # calculate public water supply deliveries to commercial and industrial sectors
     df['CO-PSDel'] = df["CO_PWS_frac"]*(df['DO-PSDel'] + df['PT-PSDel'])
-    df['IN-PSDel'] =  df["IN_PWS_frac"]*(df['DO-PSDel'] + df['PT-PSDel'])
+    df['IN-PSDel'] = df["IN_PWS_frac"]*(df['DO-PSDel'] + df['PT-PSDel'])
 
     #calculate total deliveries from public water supply to all sectors
     df['PS-del'] = df['DO-PSDel'] + df['PT-PSDel'] + df['CO-PSDel'] + df['IN-PSDel']
@@ -186,10 +184,11 @@ def calc_pws_demand() -> pd.DataFrame:
     df['PS-IX'] = np.where(df['PS-Wtotl'] - df['PS-del'] < 0,  # if withdrawals < deliveries
                            df['PS-del'] - df['PS-Wtotl'],  # import quantity
                            0)
+
     df['PS-EX'] = np.where(df['PS-Wtotl'] - df['PS-del'] > 0,  # if withdrawals > deliveries
                             df['PS-Wtotl'] - df['PS-del'],  # export quantity
                            0)
 
-    df = df[["FIPS", 'State', 'PS-Wtotl', 'DO-PSDel', 'PT-PSDel', "CO-PSDel", "IN-PSDel", "PS-IX", 'PS-EX']]
+    df = df[["FIPS", 'State', 'County', 'DO-PSDel', 'PT-PSDel', "CO-PSDel", "IN-PSDel", "PS-IX", 'PS-EX', 'PS-loss']]
 
     return df
