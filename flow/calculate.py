@@ -30,7 +30,7 @@ def calc_consumption_frac() -> pd.DataFrame:
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
     df.fillna(0, inplace=True)
 
-    df = [["FIPS", "DO_CF_Fr","CO_CF_Fr", "IN_CF_Fr","IN_CF_Sa",
+    df = df[["FIPS", "DO_CF_Fr","CO_CF_Fr", "IN_CF_Fr","IN_CF_Sa",
             "MI_CF_Fr","MI_CF_Sa","LV_CF_Fr","LA_CF_Fr"]]
 
     return df
@@ -189,6 +189,7 @@ def calc_pws_discharge() -> pd.DataFrame:
                             df['PS-Wtotl'] - df['PS-del'],  # export quantity
                            0)
 
-    df = df[["FIPS", 'State', 'County', 'DO-PSDel', 'PT-PSDel', "CO-PSDel", "IN-PSDel", "PS-IX", 'PS-EX', 'PS-loss']]
+    df = df[["FIPS", 'State', 'County', 'PS-Wtotl', 'DO-PSDel', 'PT-PSDel',
+             "CO-PSDel", "IN-PSDel", "PS-IX", 'PS-EX', 'PS-del']]
 
     return df
