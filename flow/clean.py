@@ -99,10 +99,3 @@ def prep_water_use_1995() -> pd.DataFrame:
     return df
 
 
-def prep_population_data() -> pd.DataFrame:
-    """prepping population by county data by creating single FIPS code, filling in missing population data,
-        and making sure population data is available for all counties in main dataset.
-
-    :return:                DataFrame of population data at the county level
-
-    """
