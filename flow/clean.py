@@ -24,12 +24,13 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'IN-WGWSa', 'IN-WSWSa', 'MI-WGWFr', 'MI-WSWFr', 'MI-WGWSa', 'MI-WSWSa',
                       'IR-WGWFr', 'IR-WSWFr', 'IR-CUsFr'
                       ]
-    numerical_list = variables_list[3:]
-    for col in numerical_list:
-        df[col] = df[col].astype(float)
 
     # reducing dataframe to variables in variables_list
     df = df[variables_list]
+
+    numerical_list = variables_list[3:]
+    for col in numerical_list:
+        df[col] = df[col].astype(float)
 
     # change column names
     df = df.rename(columns={"COUNTY": "County"})
@@ -95,6 +96,10 @@ def prep_water_use_1995() -> pd.DataFrame:
 
     # change column names
     df = df.rename(columns={"CountyName": "County"})
+
+    numerical_list = variables_list[4:]
+    for col in numerical_list:
+        df[col] = df[col].astype(float)
 
     return df
 
