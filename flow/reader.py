@@ -27,7 +27,7 @@ def get_water_use_1995():
     return pd.read_csv(data,  dtype={'StateCode': str, 'CountyCode': str})
 
 
-def get_interconnect_data():
+def get_county_identifier_data():
     """Read in a dataframe of FIPS code - Interconnect crosswalk.
 
         :return:                        dataframe of values
@@ -37,7 +37,7 @@ def get_interconnect_data():
     data = pkg_resources.resource_filename('flow', 'data/county_interconnect_list.csv')
 
     # read in county-interconnect crosswalk
-    return pd.read_csv(data, dtype={'FIPS': str}, usecols=["FIPS", "Interconnect"])
+    return pd.read_csv(data, dtype={'FIPS': str,'STATEFIPS': str })
 
 
 def get_wastewater_flow_data():
@@ -50,7 +50,7 @@ def get_wastewater_flow_data():
     data = pkg_resources.resource_filename('flow', 'data/WW_Facility_Flow.csv')
 
     # read in wastewater treatment facility water flow data
-    return pd.read_csv(data)
+    return pd.read_csv(data, dtype={'CWNS_NUMBER': str})
 
 
 def get_wastewater_facility_type_data():
@@ -63,7 +63,7 @@ def get_wastewater_facility_type_data():
     data = pkg_resources.resource_filename('flow', 'data/WW_Facility_Type.csv')
 
     # read in wastewater treatment facility type data
-    return pd.read_csv(data)
+    return pd.read_csv(data, dtype={'CWNS_NUMBER': str})
 
 
 def get_wastewater_facility_loc_data():
@@ -76,7 +76,7 @@ def get_wastewater_facility_loc_data():
     data = pkg_resources.resource_filename('flow', 'data/WW_Facility_Loc.csv')
 
     # read in wastewater treatment facility location data
-    return pd.read_csv(data)
+    return pd.read_csv(data, dtype={'CWNS_NUMBER': str})
 
 
 def get_wastewater_facility_discharge_data():
@@ -89,7 +89,7 @@ def get_wastewater_facility_discharge_data():
     data = pkg_resources.resource_filename('flow', 'data/WW_Discharge.csv')
 
     # read in wastewater treatment facility discharge data
-    return pd.read_csv(data)
+    return pd.read_csv(data, dtype={'CWNS_NUMBER': str})
 
 
 def get_electricity_generation_data():
