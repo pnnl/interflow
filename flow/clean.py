@@ -105,6 +105,7 @@ def prep_water_use_1995() -> pd.DataFrame:
 
 
 def prep_wastewater_data() -> pd.DataFrame:
+    # TODO write tests
     """preps each wastewater treatment facility data file, cleans input,
     and brings them together.
 
