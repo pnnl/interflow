@@ -105,6 +105,20 @@ def get_electricity_generation_data():
     # read in wastewater treatment facility discharge data
     return pd.read_csv(data, skiprows=5)
 
+def get_power_plant_county_data():
+    # TODO add test
+    """Read in a dataframe of power plant locations
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow',
+                                           'data/EIA860_Generator_Y2015.csv')
+
+    # read in data
+    return pd.read_csv(data, skiprows=1)
+
 
 def get_irrigation_depth_pressure_data():
     """Read in a dataframe of irrigation well depth, pressure, and pump fuel type by state

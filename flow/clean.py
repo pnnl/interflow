@@ -105,9 +105,9 @@ def prep_water_use_1995() -> pd.DataFrame:
 
 
 def prep_wastewater_data() -> pd.DataFrame:
-    # TODO write tests
     """preps each wastewater treatment facility data file, cleans input,
-    and brings them together.
+    and brings them together to produce a single wastewater treatment datafile
+    by FIPS county code.
 
     :return:                DataFrame county level wastewater treatment data
 
@@ -253,3 +253,24 @@ def prep_wastewater_data() -> pd.DataFrame:
     df_ww = df_ww.groupby("FIPS", as_index=False).sum()
 
     return df_ww
+
+
+def prep_electricity_generation() -> pd.DataFrame:
+    """prepping USGS 1995 water use data by replacing missing values, fixing FIPS codes,
+     and reducing to needed variables
+
+    :return:                DataFrame of a number of water values for 1995 at the county level
+
+    """
+
+    # read in water use data for 2015 in million gallons per day by county
+    df = get_electricity_generation_data()
+
+    df = df.rename(columns={"Plant Id": "PlantID"})  # rename column name for filtering
+    df = df[df.PlantID != 99999]  # removing state level estimated differences rows
+
+
+
+
+
+    return df
