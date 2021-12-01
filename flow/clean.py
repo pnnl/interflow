@@ -103,6 +103,22 @@ def prep_water_use_1995() -> pd.DataFrame:
 
     return df
 
+def prep_county_identifier() -> pd.DataFrame:
+    """preps each wastewater treatment facility data file, cleans input,
+            and brings them together to produce a single wastewater treatment datafile
+            by FIPS county code.
+
+            :return:                DataFrame county level wastewater treatment data
+
+            """
+    df = get_county_identifier_data()
+    df["COUNTY_SHORT"] = df["COUNTY_SHORT"].str.replace(' ', '')  # remove spaces between words
+    df['COUNTY_SHORT'] = df['COUNTY_SHORT'].str.lower()  # change to lowercase
+    df["identifier"] = df["STATE"] + df["COUNTY_SHORT"]  # add identifier column
+    df['FIPS'] = df['FIPS'].apply(lambda x: '{0:0>5}'.format(x))  # add leading zero
+    df = df[["FIPS", 'identifier']]
+
+    return df
 
 def prep_wastewater_data() -> pd.DataFrame:
     """preps each wastewater treatment facility data file, cleans input,
@@ -114,6 +130,7 @@ def prep_wastewater_data() -> pd.DataFrame:
     """
 
     # read in each of the wastewater facility data files
+    df_county = prep_county_identifier()
     df_ww_flow = get_wastewater_flow_data()
     df_ww_type = get_wastewater_facility_type_data()
     df_ww_loc = get_wastewater_facility_loc_data()
@@ -146,13 +163,7 @@ def prep_wastewater_data() -> pd.DataFrame:
                   'secondary': 'ww_sec',
                   'advanced treatment': 'ww_adv'}
 
-    # county data
-    df_county = get_county_identifier_data()
-    df_county["COUNTY_SHORT"] = df_county["COUNTY_SHORT"].str.replace(' ', '')  # remove spaces between words
-    df_county['COUNTY_SHORT'] = df_county['COUNTY_SHORT'].str.lower()  # change to lowercase
-    df_county["identifier"] = df_county["STATE"] + df_county["COUNTY_SHORT"]  # add identifier column
-    df_county['FIPS'] = df_county['FIPS'].apply(lambda x: '{0:0>5}'.format(x))  # add leading zero
-    df_county = df_county[["FIPS", 'identifier']]
+
 
     # wastewater facility locations by plant number
 
@@ -255,22 +266,61 @@ def prep_wastewater_data() -> pd.DataFrame:
     return df_ww
 
 
-def prep_electricity_generation() -> pd.DataFrame:
+def prep_power_plant_location() -> pd.DataFrame:
     """prepping USGS 1995 water use data by replacing missing values, fixing FIPS codes,
      and reducing to needed variables
 
     :return:                DataFrame of a number of water values for 1995 at the county level
 
     """
+    # county data
+    df_county = prep_county_identifier()
+    df_county["identifier"] = df_county['identifier'].str.replace("'", '', regex=True)
+    df_county["identifier"] = df_county["identifier"].str.replace('.', '', regex=True)  # remove periods
+    df_county["identifier"] = df_county["identifier"].str.replace('-', '', regex=True)  # remove dashes
+    df_county["identifier"] = df_county["identifier"].str.replace(r"[^\w ]", '',  regex=True)
 
-    # read in water use data for 2015 in million gallons per day by county
-    df = get_electricity_generation_data()
+    df_plant = get_power_plant_county_data()
 
-    df = df.rename(columns={"Plant Id": "PlantID"})  # rename column name for filtering
-    df = df[df.PlantID != 99999]  # removing state level estimated differences rows
+    df_plant = df_plant.drop_duplicates()
+    df_plant = df_plant.dropna(subset=["Plant Code"])
+    df_plant['County'] = df_plant['County'].str.lower()  # change to lowercase
+    df_plant["County"] = df_plant["County"].str.replace(' ', '')  # remove spaces between words
+    df_plant["identifier"] = df_plant["State"] + df_plant["County"]  # add identifier column
+    df_plant["identifier"] = df_plant["identifier"].str.replace(r"[^\w ]", '',  regex=True)
 
 
+    city_list = ['VAchesapeakecity', 'VAportsmouthcity', 'VAhopewellcity', 'VAalexandriacity',
+                 'VAcovingtoncity', 'VAsuffolkcity', 'VAharrisonburgcity', 'VAsalemcity',
+                 'VAlynchburgcity', 'VAdanvillecity', 'VAmanassascity', 'VAhamptoncity',
+                 'VAvirginiabeachcity', 'VAbristolcity', 'MOstlouiscity']
+
+    for i in city_list:
+        df_plant["identifier"] = np.where(df_plant["identifier"] == i,
+                                          df_plant["identifier"].str.replace('city', '', regex=True),
+                                          df_plant["identifier"])
+    df_plant["identifier"] = np.where(df_plant["identifier"] == "MEchainofponds", "MEfranklin", df_plant["identifier"])
+    df_plant["identifier"] = np.where(df_plant["identifier"] == "AKwadehampton", "AKkusilvak", df_plant["identifier"])
+    df_plant["identifier"] = np.where(df_plant["identifier"] == "AKprinceofwalesketchikan",
+                                      "AKprinceofwaleshyder", df_plant["identifier"])
+    df_plant["identifier"] = np.where(df_plant["identifier"] == "AKwrangellpetersburg",
+                                      "AKpetersburg", df_plant["identifier"])
+    df_plant["identifier"] = np.where(df_plant["identifier"] == "AKwrangellpetersburg",
+                                      "AKpetersburg", df_plant["identifier"])
+
+    skagway_list = [66, 7751, 56542]
+    for s in skagway_list:
+        df_plant["identifier"] = np.where(df_plant["Plant Code"] == s,
+                                          "AKskagway",
+                                          df_plant["identifier"])
+    hoonah_list = [6702, 7462, 7463]
+    for h in hoonah_list:
+        df_plant["identifier"] = np.where(df_plant["Plant Code"] == h,
+                                          "AKhoonahangoon",
+                                          df_plant["identifier"])
+
+    df_plant = pd.merge(df_plant, df_county, how="left", on="identifier")  # merge dataframes
 
 
+    return df_plant
 
-    return df
