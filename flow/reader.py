@@ -117,7 +117,7 @@ def get_power_plant_county_data():
                                            'data/EIA860_Generator_Y2015.csv')
 
     # read in data
-    return pd.read_csv(data, skiprows=1)
+    return pd.read_csv(data, skiprows=1, usecols= ['Plant Code', "State", 'County'])
 
 
 def get_irrigation_depth_pressure_data():
