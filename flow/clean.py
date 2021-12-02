@@ -320,7 +320,67 @@ def prep_power_plant_location() -> pd.DataFrame:
                                           df_plant["identifier"])
 
     df_plant = pd.merge(df_plant, df_county, how="left", on="identifier")  # merge dataframes
+    df_plant = df_plant.rename(columns={"Plant Code": "plant_code"})
 
 
     return df_plant
 
+def prep_electricity_generation() -> pd.DataFrame:
+    """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
+
+    :return:                DataFrame of a number of water values for 2015 at the county level
+
+    """
+
+    # read in water use data for 2015 in million gallons per day by county
+    df = get_electricity_generation_data()
+    df_loc = prep_power_plant_location()
+    df_loc = df_loc[['FIPS', 'plant_code']]
+
+    fuel_dict = {'SUN': 'solar',  #solar
+                'COL': 'coal',  # coal
+                'DFO': 'oil',  #distillate petroleum
+                "GEO": 'geothermal',  # geothermal
+                'HPS': 'hydro',  # hydro pumped storage
+                'HYC': 'hydro',  # hydro conventional
+                'MLG': 'biomass',  # biogenic municipal solid waste and landfill gas
+                'NG': 'natgas',  # natural gas
+                'NUC': 'nuclear',  # nuclear
+                'OOG': 'other',  # other gases
+                'ORW': 'other',  # other renewables
+                'OTH': 'other',  # other
+                'PC': 'oil',  # petroleum coke
+                'RFO': 'oil',  # residual petroleum
+                'WND': 'wind',  # wind
+                'WOC': 'coal',  # waste coal
+                'WOO': 'oil',  # waste oil
+                'WWW': 'biomass'}  # wood and wood waste
+
+
+
+    df = df[['Plant Id', "AER\nFuel Type Code", "Total Fuel Consumption\nMMBtu","Net Generation\n(Megawatthours)"]]
+    df = df.rename(columns={"Plant Id": "plant_code"})
+    df = df.rename(columns={"AER\nFuel Type Code": "fuel_type"})
+    df = df.rename(columns={"Total Fuel Consumption\nMMBtu": "fuel_amt"})
+    df = df.rename(columns={"Net Generation\n(Megawatthours)": "generation_mwh"})
+
+    string_col = df.columns[2:]  # create list of discharge columns
+    for col in string_col:  # fill nan rows with 0
+        df[col] = df[col].str.replace(r"[^\w ]", '',  regex=True)
+        df[col] = df[col].astype(float)
+
+    df = df[df.plant_code != 99999]  # removing state level estimated differences rows
+    df['fuel_type'] = df['fuel_type'].map(fuel_dict)  # bin fuel types
+
+    df["fuel_amt"] = df["fuel_amt"]/1000  # convert to billion btu from million btu
+
+    df = df.groupby(['plant_code','fuel_type'], as_index = False).sum()
+
+    df = pd.merge(df, df_loc, how = 'left', on= 'plant_code')
+
+    # TODO add comments into this code block
+    # TODO calculate fuel consumption by county
+    # TODO calculate generation amount by type by county
+    #  above should be in calculate
+
+    return df
