@@ -401,8 +401,50 @@ def prep_electricity_generation() -> pd.DataFrame:
 
     return df
 
-def prep_irrigation_data() -> pd.DataFrame:
-    """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
+def prep_irrigation_fuel_data() -> pd.DataFrame:
+    """prepping irrigation data so that the outcome is a dataframe of groundwater and surface water pumping energy
+    intensities (billion BTU per million gallons) by county
+
+    :return:                DataFrame of a number of water values for 2015 at the county level
+
+    """
+
+    # read in water use data for 2015 in million gallons per day by county
+    df = get_irrigation_data()
+    df_loc = prep_water_use_2015()
+
+
+    # determine percent of irrigated acres that use each pump type (electricity, diesel, natural gas, or propane)
+    col_list = df.columns[4:]  # list of pump fuel type columns
+    df['total_Irr'] = df[col_list].sum(axis=1)  # calculate sum of fuel type columns
+    for col in col_list:
+        df[col] = (df[col]/df['total_Irr'])  # determine percent of total acres irrigated for each fuel type
+
+    df = df
+
+    elec_avg = df['Elec_Total_Acres'].mean(axis=0)
+    ng_avg = df['NG_Total_Acres'].mean(axis=0)
+    prop_avg = df['Propane_Total_Acres'].mean(axis=0)
+    disel_avg = df['Diesel_Total_Acres'].mean(axis=0)
+    other_avg = df['Gas_Total_Acres'].mean(axis=0)
+
+    df = df[['State', 'Elec_Total_Acres','NG_Total_Acres', 'Propane_Total_Acres',
+             'Diesel_Total_Acres', 'Gas_Total_Acres']]
+
+    df = pd.merge(df_loc, df, how='left',on='State')
+
+    df['Elec_Total_Acres'].fillna(elec_avg, inplace=True)
+    df['NG_Total_Acres'].fillna(ng_avg, inplace=True)
+    df['Propane_Total_Acres'].fillna(prop_avg, inplace=True)
+    df['Diesel_Total_Acres'].fillna(disel_avg, inplace=True)
+    df['Gas_Total_Acres'].fillna(other_avg, inplace=True)
+
+    return df
+
+
+def prep_irrigation_pumping_data() -> pd.DataFrame:
+    """prepping irrigation data so that the outcome is a dataframe of groundwater and surface water pumping energy
+    intensities (billion BTU per million gallons) by county
 
     :return:                DataFrame of a number of water values for 2015 at the county level
 
@@ -411,9 +453,22 @@ def prep_irrigation_data() -> pd.DataFrame:
     # read in water use data for 2015 in million gallons per day by county
     df = get_irrigation_data()
 
-    
+    # establish variables
+    acc_grav = 9.81  # Acceleration of gravity  (m/s^2)
+    water_den = 997  # Water density (kg/m^3)
+    ag_pump_eff = .466  # assumed pump efficiency rate
+    flow_conv = 3785.41178  # conversion factor for m^3 to MG
+    kWh_BBTU = 3412.1416416 / 1000000000  # 1 kWh is equal to 3412.1416416 btu
+    meter_conv = 0.3048  # meters in a foot
+    joules_kWh = 1 / 3600000  # conversion factor from joules to kWh
+
 
     return df
+
+
+
+
+
 
 def prep_interbasin_transfer_data() -> pd.DataFrame:
     """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables

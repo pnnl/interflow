@@ -1,7 +1,7 @@
 "2013 Farm and Ranch Irrigation Survey (FRIS): Released November 13, 2014, by the National Agricultural Statistics Service (NASS), Agricultural Statistics Board, U.S. Department of Agriculture.",,,,,,,,
 Table 12.  On0Farm Energy Expense for Pumping Irrigation Water by Water Source and Type of Energy:  2013,,,,,,,,
 Table 8. Characteristics of Irrigation Wells Used on Farms: 2013,,,,,,,,
-STATE,Average Well Depth (ft),Average operating pressure (psi),Average pumping capacity (gpm),Elec_Total_Acres,NG_Total_Acres,Propane_Total_Acres,Diesel_Total_Acres,Gas_Total_Acres
+State,Average Well Depth (ft),Average operating pressure (psi),Average pumping capacity (gpm),Elec_Total_Acres,NG_Total_Acres,Propane_Total_Acres,Diesel_Total_Acres,Gas_Total_Acres
 AL,177,49,302,49864,180,0,55664,373
 AK,80,46,92,0,0,0,0,10
 AZ,392,35,732,484696,22620,0,61001,3774
@@ -9,7 +9,7 @@ AR,128,27,1362,2585513,112821,51919,2948504,42723
 CA,354,38,680,5989989,48304,48514,1349858,32
 CO,189,41,775,1272232,70105,4750,114570,2958
 CT,212,55,114,2336,0,187,1505,360
-DE,99,44, 633.00 ,51329,0,824,62937,1411
+DE,99,44,633,51329,0,824,62937,1411
 FL,324,41,679,347757,2512,1615,1031672,2528
 GA,381,48,554,868953,0,3510,373675,142
 HI,435,55,1567,80326,0,0,7926,42
@@ -52,3 +52,4 @@ WA,291,64,483,1375659,0,4002,59409,1039
 WV,220,51,41,764,0,0,0,192
 WI,149,56,634,388413,0,1184,89520,454
 WY,268,42,839,657133,5218,16312,49999,1949
+,,,,,,,,
