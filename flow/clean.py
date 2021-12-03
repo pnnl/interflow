@@ -275,15 +275,17 @@ def prep_power_plant_location() -> pd.DataFrame:
     """
     # county data
     df_county = prep_county_identifier()
+    df_plant = get_power_plant_county_data()
+
+
     df_county["identifier"] = df_county['identifier'].str.replace("'", '', regex=True)
     df_county["identifier"] = df_county["identifier"].str.replace('.', '', regex=True)  # remove periods
     df_county["identifier"] = df_county["identifier"].str.replace('-', '', regex=True)  # remove dashes
     df_county["identifier"] = df_county["identifier"].str.replace(r"[^\w ]", '',  regex=True)
 
-    df_plant = get_power_plant_county_data()
-
     df_plant = df_plant.drop_duplicates()
     df_plant = df_plant.dropna(subset=["Plant Code"])
+
     df_plant['County'] = df_plant['County'].str.lower()  # change to lowercase
     df_plant["County"] = df_plant["County"].str.replace(' ', '')  # remove spaces between words
     df_plant["identifier"] = df_plant["State"] + df_plant["County"]  # add identifier column
@@ -370,6 +372,11 @@ def prep_electricity_generation() -> pd.DataFrame:
         df[col] = df[col].astype(float)
 
     df = df[df.plant_code != 99999]  # removing state level estimated differences rows
+
+    # dropping power plants with zero fuel use and zero output
+    index_names = df[(df['fuel_amt'] <= 0) & (df['generation_mwh'] <= 0)].index
+    df.drop(index_names, inplace=True)
+
     df['fuel_type'] = df['fuel_type'].map(fuel_dict)  # bin fuel types
 
     df["fuel_amt"] = df["fuel_amt"]/1000  # convert to billion btu from million btu
