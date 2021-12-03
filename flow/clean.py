@@ -163,8 +163,6 @@ def prep_wastewater_data() -> pd.DataFrame:
                   'secondary': 'ww_sec',
                   'advanced treatment': 'ww_adv'}
 
-
-
     # wastewater facility locations by plant number
 
     df_ww_loc["PRIMARY_COUNTY"] = np.where(df_ww_loc["PRIMARY_COUNTY"] == "Mayaguez",
@@ -395,10 +393,72 @@ def prep_electricity_generation() -> pd.DataFrame:
     df = df.groupby(['plant_code','fuel_type'], as_index = False).sum()
 
     # merging power plant location data with power plant generation data
-    df = pd.merge(df, df_loc, how = 'left', on= 'plant_code')
+    df = pd.merge(df, df_loc, how='left', on= 'plant_code')
 
     # TODO calculate fuel consumption by county
     # TODO calculate generation amount by type by county
     #  above should be in calculate
+
+    return df
+
+def prep_irrigation_data() -> pd.DataFrame:
+    """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
+
+    :return:                DataFrame of a number of water values for 2015 at the county level
+
+    """
+
+    # read in water use data for 2015 in million gallons per day by county
+    df = get_irrigation_data()
+
+    
+
+    return df
+
+def prep_interbasin_transfer_data() -> pd.DataFrame:
+    """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
+
+    :return:                DataFrame of a number of water values for 2015 at the county level
+
+    """
+
+    # read in water use data for 2015 in million gallons per day by county
+    df = get_water_use_2015()
+
+    return df
+
+def prep_electricity_demand_data() -> pd.DataFrame:
+    """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
+
+    :return:                DataFrame of a number of water values for 2015 at the county level
+
+    """
+
+    # read in water use data for 2015 in million gallons per day by county
+    df = get_water_use_2015()
+
+    return df
+
+def prep_fuel_demand_data() -> pd.DataFrame:
+    """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
+
+    :return:                DataFrame of a number of water values for 2015 at the county level
+
+    """
+
+    # read in water use data for 2015 in million gallons per day by county
+    df = get_water_use_2015()
+
+    return df
+
+def prep_fuel_production_data() -> pd.DataFrame:
+    """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
+
+    :return:                DataFrame of a number of water values for 2015 at the county level
+
+    """
+
+    # read in water use data for 2015 in million gallons per day by county
+    df = get_water_use_2015()
 
     return df

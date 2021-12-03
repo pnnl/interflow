@@ -120,7 +120,7 @@ def get_power_plant_county_data():
     return pd.read_csv(data, skiprows=1, usecols= ['Plant Code', "State", 'County'])
 
 
-def get_irrigation_depth_pressure_data():
+def get_irrigation_data():
     """Read in a dataframe of irrigation well depth, pressure, and pump fuel type by state
 
         :return:                        dataframe of values
