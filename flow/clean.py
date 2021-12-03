@@ -447,8 +447,14 @@ def prep_irrigation_fuel_data() -> pd.DataFrame:
 
 
 def prep_irrigation_pumping_data() -> pd.DataFrame:
-    """prepping irrigation data so that the outcome is a dataframe of groundwater and surface water pumping energy
-    intensities (billion BTU per million gallons) by county
+    """Prepares irrigation data so that the outcome is a dataframe of groundwater and surface water pumping energy
+    intensities (billion BTU per million gallons) by county. For groundwater pumping intensity, The total differential
+    height is calculated as the sum of the average well depth and the pressurization head. The pressure data is provided
+    in pounds per square inch (psi). This is converted to feet using a coefficient of 2.31. This analysis also follows
+    the assumption that average well depth is used instead of depth to water to counteract some of the
+    undocumented friction that would occur in the pumping process. Surface water pumping intensity follows the same
+    methodology as groundwater pumping intensity except the total differential height has a value of zero for well
+    depth.
 
     :return:                DataFrame of a number of water values for 2015 at the county level
 
@@ -456,15 +462,47 @@ def prep_irrigation_pumping_data() -> pd.DataFrame:
 
     # read in water use data for 2015 in million gallons per day by county
     df = get_irrigation_data()
+    df = df[['State', 'Average Well Depth (ft)', 'Average operating pressure (psi)', 'Average pumping capacity (gpm)']]
+
+    # read in FIPS codes and states from 2015 water dataset
+    df_loc = prep_water_use_2015()
 
     # establish variables
-    acc_grav = 9.81  # Acceleration of gravity  (m/s^2)
-    water_den = 997  # Water density (kg/m^3)
+    acc_gravity = 9.81  # Acceleration of gravity  (m/s^2)
+    water_density = 997  # Water density (kg/m^3)
     ag_pump_eff = .466  # assumed pump efficiency rate
-    flow_conv = 3785.41178  # conversion factor for m^3 to MG
-    kWh_BBTU = 3412.1416416 / 1000000000  # 1 kWh is equal to 3412.1416416 btu
-    meter_conv = 0.3048  # meters in a foot
-    joules_kWh = 1 / 3600000  # conversion factor from joules to kWh
+    psi_psf_conversion = 2.31  # conversion of pounds per square inch (psi) to pounds per square foot (psf)
+    m3_mg_conversion = 3785.41178  # conversion factor for m^3 to million gallons
+    joules_kWh_conversion = 1 / 3600000  # conversion factor from joules to kWh
+    kwh_bbtu_conversion = 3412.1416416 / 1000000000  # 1 kWh is equal to 3412.1416416 btu
+    meter_ft_conversion = 0.3048  # meters in a foot
+
+    # determine groundwater pumping intensity by state
+    head_ft = psi_psf_conversion * df["Average operating pressure (psi)"] # conversion of psi to head (p sqft)
+    diff_height_gw = meter_ft_conversion * (df["Average Well Depth (ft)"] + head_ft)  # calc. differential height (m)
+    pump_power_gw = (water_density * diff_height_gw * acc_gravity * m3_mg_conversion) / ag_pump_eff  # joules/MG
+    df['gw_pump_bbtu_per_mg'] = pump_power_gw * joules_kWh_conversion * kwh_bbtu_conversion  # power intensity (bbtu/mg)
+
+    # calculating average groundwater pumping to apply to regions without values
+    gw_pump_bbtu_per_mg_avg = df['gw_pump_bbtu_per_mg'].mean()
+
+    # determine surface water pumping intensity by state
+    diff_height_sw = meter_ft_conversion * head_ft  # calc. differential height (m)
+    pump_power_sw = (water_density * diff_height_sw * acc_gravity * m3_mg_conversion) / ag_pump_eff  # joules/MG
+    df['sw_pump_bbtu_per_mg'] = pump_power_sw * joules_kWh_conversion * kwh_bbtu_conversion  # power intensity (bbtu/mg)
+
+    # calculating average surface water pumping to apply to regions without values
+    sw_pump_bbtu_per_mg_avg = df['sw_pump_bbtu_per_mg'].mean()
+
+    # reducing dataframe to required variables
+    df = df[['State', 'gw_pump_bbtu_per_mg', 'sw_pump_bbtu_per_mg']]
+
+    # merge with county data to distribute value to each county in a state
+    df = pd.merge(df_loc, df, how='left', on='State')
+
+    # filling states that were not in the irrigation dataset with the average for each fuel type
+    df['gw_pump_bbtu_per_mg'].fillna(gw_pump_bbtu_per_mg_avg, inplace=True)  # groundwater intensity
+    df['sw_pump_bbtu_per_mg'].fillna(sw_pump_bbtu_per_mg_avg, inplace=True)  # surface water intensity
 
 
     return df
