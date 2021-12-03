@@ -402,17 +402,19 @@ def prep_electricity_generation() -> pd.DataFrame:
     return df
 
 def prep_irrigation_fuel_data() -> pd.DataFrame:
-    """prepping irrigation data so that the outcome is a dataframe of groundwater and surface water pumping energy
-    intensities (billion BTU per million gallons) by county
+    """prepping irrigation data so that the outcome is a dataframe showing the percent of total acres of irrigation
+    that use each type of fuel for pumping (electricity, natural gas, propane, diesel, and other gas). This dataframe
+    is used to calculate the total electricity and fuels to irrigation based on total water flows in irrigation.
 
-    :return:                DataFrame of a number of water values for 2015 at the county level
+    :return:                DataFrame of ____________________
 
     """
 
-    # read in water use data for 2015 in million gallons per day by county
+    # read in irrigation pumping dataset
     df = get_irrigation_data()
-    df_loc = prep_water_use_2015()
 
+    #read in FIPS codes and states from 2015 water dataset
+    df_loc = prep_water_use_2015()
 
     # determine percent of irrigated acres that use each pump type (electricity, diesel, natural gas, or propane)
     col_list = df.columns[4:]  # list of pump fuel type columns
@@ -420,19 +422,21 @@ def prep_irrigation_fuel_data() -> pd.DataFrame:
     for col in col_list:
         df[col] = (df[col]/df['total_Irr'])  # determine percent of total acres irrigated for each fuel type
 
-    df = df
+    # calculate the mean percent across all states in dataset
+    elec_avg = df['Elec_Total_Acres'].mean(axis=0)  # electricity
+    ng_avg = df['NG_Total_Acres'].mean(axis=0)  # natural gas
+    prop_avg = df['Propane_Total_Acres'].mean(axis=0)  # propane
+    disel_avg = df['Diesel_Total_Acres'].mean(axis=0)  # diesel
+    other_avg = df['Gas_Total_Acres'].mean(axis=0)  # other gas
 
-    elec_avg = df['Elec_Total_Acres'].mean(axis=0)
-    ng_avg = df['NG_Total_Acres'].mean(axis=0)
-    prop_avg = df['Propane_Total_Acres'].mean(axis=0)
-    disel_avg = df['Diesel_Total_Acres'].mean(axis=0)
-    other_avg = df['Gas_Total_Acres'].mean(axis=0)
-
+    # reducing dataframe to required variables
     df = df[['State', 'Elec_Total_Acres','NG_Total_Acres', 'Propane_Total_Acres',
              'Diesel_Total_Acres', 'Gas_Total_Acres']]
 
+    # merge with county data to distribute value to each county in a state
     df = pd.merge(df_loc, df, how='left',on='State')
 
+    # filling states that were not in the irrigation dataset with the average for each fuel type
     df['Elec_Total_Acres'].fillna(elec_avg, inplace=True)
     df['NG_Total_Acres'].fillna(ng_avg, inplace=True)
     df['Propane_Total_Acres'].fillna(prop_avg, inplace=True)
