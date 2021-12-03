@@ -328,20 +328,28 @@ def prep_power_plant_location() -> pd.DataFrame:
     return df_plant
 
 def prep_electricity_generation() -> pd.DataFrame:
-    """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
+    """ Provides a dataframe of electricity generation (MWh) and fuel use (BBTU) per year by generating technology type
+    and by FIPS code. Can be used to estimate fuel use for electricity generation by type for each county
+    and total electricity generation by county.
 
-    :return:                DataFrame of a number of water values for 2015 at the county level
+    :return:                DataFrame of ____________________
 
     """
 
-    # read in water use data for 2015 in million gallons per day by county
+    # read in electricity generation data by power plant id
     df = get_electricity_generation_data()
-    df_loc = prep_power_plant_location()
-    df_loc = df_loc[['FIPS', 'plant_code']]
 
+    # read in power plant location data by power plant id
+    df_loc = prep_power_plant_location()
+
+    # remove unnecessary variables
+    df_loc = df_loc[['FIPS', 'plant_code']]
+    df = df[['Plant Id', "AER\nFuel Type Code", "Total Fuel Consumption\nMMBtu", "Net Generation\n(Megawatthours)"]]
+
+    # create a dictionary to bin power plant fuel types
     fuel_dict = {'SUN': 'solar',  #solar
                 'COL': 'coal',  # coal
-                'DFO': 'oil',  #distillate petroleum
+                'DFO': 'oil',  # distillate petroleum
                 "GEO": 'geothermal',  # geothermal
                 'HPS': 'hydro',  # hydro pumped storage
                 'HYC': 'hydro',  # hydro conventional
@@ -358,34 +366,37 @@ def prep_electricity_generation() -> pd.DataFrame:
                 'WOO': 'oil',  # waste oil
                 'WWW': 'biomass'}  # wood and wood waste
 
-
-
-    df = df[['Plant Id', "AER\nFuel Type Code", "Total Fuel Consumption\nMMBtu","Net Generation\n(Megawatthours)"]]
+    # rename columns in power plant generation data file
     df = df.rename(columns={"Plant Id": "plant_code"})
     df = df.rename(columns={"AER\nFuel Type Code": "fuel_type"})
     df = df.rename(columns={"Total Fuel Consumption\nMMBtu": "fuel_amt"})
     df = df.rename(columns={"Net Generation\n(Megawatthours)": "generation_mwh"})
 
-    string_col = df.columns[2:]  # create list of discharge columns
-    for col in string_col:  # fill nan rows with 0
-        df[col] = df[col].str.replace(r"[^\w ]", '',  regex=True)
-        df[col] = df[col].astype(float)
+    # changing string columns to numeric
+    string_col = df.columns[2:]  # create list of string columns
+    for col in string_col:
+        df[col] = df[col].str.replace(r"[^\w ]", '',  regex=True)  # replace any non alphanumeric values
+        df[col] = df[col].astype(float)  # convert to float
 
+    # removing power plant generation rows that should not be included
     df = df[df.plant_code != 99999]  # removing state level estimated differences rows
 
     # dropping power plants with zero fuel use and zero output
-    index_names = df[(df['fuel_amt'] <= 0) & (df['generation_mwh'] <= 0)].index
-    df.drop(index_names, inplace=True)
+    index_list = df[(df['fuel_amt'] <= 0) & (df['generation_mwh'] <= 0)].index  # list of indices with both zero values
+    df.drop(index_list, inplace=True)  # dropping rows with zero fuel and zero generation amount
 
+    # using fuel type dictionary to bin fuel types
     df['fuel_type'] = df['fuel_type'].map(fuel_dict)  # bin fuel types
 
-    df["fuel_amt"] = df["fuel_amt"]/1000  # convert to billion btu from million btu
+    # converting units to billion btu from million btu
+    df["fuel_amt"] = df["fuel_amt"]/1000
 
+    # grouping rows by both plant code and fuel type
     df = df.groupby(['plant_code','fuel_type'], as_index = False).sum()
 
+    # merging power plant location data with power plant generation data
     df = pd.merge(df, df_loc, how = 'left', on= 'plant_code')
 
-    # TODO add comments into this code block
     # TODO calculate fuel consumption by county
     # TODO calculate generation amount by type by county
     #  above should be in calculate
