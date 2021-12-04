@@ -261,7 +261,10 @@ def prep_wastewater_data() -> pd.DataFrame:
     # group by FIPS code to get wastewater treatment flows, treatment type flows, and discharge flows by county
     df_ww = df_ww.groupby("FIPS", as_index=False).sum()
 
+    # TODO map to county list from water data
+
     return df_ww
+
 
 
 def prep_power_plant_location() -> pd.DataFrame:
@@ -398,7 +401,7 @@ def prep_electricity_generation() -> pd.DataFrame:
     # TODO calculate fuel consumption by county
     # TODO calculate generation amount by type by county
     #  above should be in calculate
-
+    # TODO map to county list from water data
     return df
 
 def prep_irrigation_fuel_data() -> pd.DataFrame:
@@ -516,9 +519,10 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
 
     """
 
-    # read in inter basin transfer data for texas
-    df_TX = get_tx_inter_basin_transfer_data()
-    df_west = get_west_inter_basin_transfer_data()
+    # read in
+    df_TX = get_tx_inter_basin_transfer_data() # interbasin transfer data for texas
+    df_west = get_west_inter_basin_transfer_data()  # interbasin transfer data for western states
+    df_loc = prep_water_use_2015()  # full county list
 
     feet_meter_conversion = 1/3.281  # feet to meter conversion
     af_mps_conversion = 1/25567  # acre-ft-year to meters per second^3 conversion
@@ -527,25 +531,48 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     acc_gravity = 9.81  # Acceleration of gravity  (m/s^2)
     water_density = 997  # Water density (kg/m^3)
 
+    # calculate texas interbasin transfer energy
     elevation_meters = df_TX["Elevation Difference (Feet)"] * feet_meter_conversion  # elevation in meters
     mps_cubed = df_TX["Total_Intake__Gallons (Acre-Feet/Year)"] * af_mps_conversion  # meters per second cubed
     interbasin_mwh = ((elevation_meters * mps_cubed * acc_gravity * water_density) / ag_pump_eff) / (10**6)  # mwh total
     interbasin_bbtu = interbasin_mwh * mwh_bbtu  # convert mwh to bbtu
-    df_TX["interbasin_bbtu"] = interbasin_bbtu / 2  # dividing in half to split across source and used counties
+    df_TX["interbasin_bbtu"] = interbasin_bbtu / 2  # dividing in half to split across source and target counties
 
+    # split out target county data
     df_TX_target = df_TX[["State", "Used_FIPS", "interbasin_bbtu"]].copy()
     df_TX_target = df_TX_target.rename(columns={"Used_FIPS": "FIPS"})
 
+    # split out source county data
     df_TX_source = df_TX[["State", "Source_FIPS", "interbasin_bbtu"]].copy()
     df_TX_source = df_TX_source.rename(columns={"Source_FIPS": "FIPS"})
 
+    # stack source and target county interbasin transfer data
     dataframe_list = [df_TX_target, df_TX_source]
     df_TX = pd.concat(dataframe_list)
 
+    # group by state and county fips code
     df_TX = df_TX.groupby(["State", "FIPS"], as_index=False).sum()
 
+    # prep western state interbasin transfer energy
+    df_west = df_west[['FIPS', 'Mwh/yr (Low)', 'Mwh/yr (High)']]
+    df_west['FIPS'] = df_west['FIPS'].apply(lambda x: '{0:0>5}'.format(x))  # add leading zero to fips
 
-    return df_TX
+
+    df_west["interbasin_bbtu"] = (df_west["Mwh/yr (Low)"] + df_west["Mwh/yr (High)"]) / 2  # average energy use by row
+    df_west = df_west.groupby(["FIPS"], as_index=False).sum()  # group by county fips code
+    df_west["interbasin_bbtu"] = df_west["interbasin_bbtu"] * mwh_bbtu  # convert mwh values to bbtu
+
+    ibt_dataframe_list = [df_TX, df_west]  # bring west IBT data together with TX data
+    df = pd.concat(ibt_dataframe_list)
+    df = df[["FIPS", "interbasin_bbtu"]]
+
+    # merge with county data to distribute value to each county in a state
+    df = pd.merge(df_loc, df, how='left', on='FIPS')
+
+    # filling counties that were not in the interbasin transfer datasets with 0
+    df['interbasin_bbtu'].fillna(0, inplace=True)
+
+    return df
 
 def prep_electricity_demand_data() -> pd.DataFrame:
     """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
