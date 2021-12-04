@@ -1,7 +1,7 @@
 import unittest
 
 from flow.prep import *
-from flow.reader import get_interconnect_data
+from flow.reader import *
 
 
 class TestReader(unittest.TestCase):
