@@ -103,6 +103,7 @@ def prep_water_use_1995() -> pd.DataFrame:
 
     return df
 
+
 def prep_county_identifier() -> pd.DataFrame:
     """preps each wastewater treatment facility data file, cleans input,
             and brings them together to produce a single wastewater treatment datafile
@@ -119,6 +120,7 @@ def prep_county_identifier() -> pd.DataFrame:
     df = df[["FIPS", 'identifier']]
 
     return df
+
 
 def prep_wastewater_data() -> pd.DataFrame:
     """preps each wastewater treatment facility data file, cleans input,
@@ -252,11 +254,11 @@ def prep_wastewater_data() -> pd.DataFrame:
     df_ww_flow['sum_type'] = df_ww_flow.iloc[:, 15:-1].sum(axis=1)  # recalculate sum
 
     # reducing list of variables
-    df_ww = df_ww_flow.drop(['sum_type', 'sum_pct'], axis = 1)
+    df_ww = df_ww_flow.drop(['sum_type', 'sum_pct'], axis=1)
 
     column_list = df_ww.columns[6:]
     for column in column_list:
-        df_ww[column] = df_ww[column]*df_ww['EXIST_TOTAL']
+        df_ww[column] = df_ww[column] * df_ww['EXIST_TOTAL']
 
     # group by FIPS code to get wastewater treatment flows, treatment type flows, and discharge flows by county
     df_ww = df_ww.groupby("FIPS", as_index=False).sum()
@@ -264,7 +266,6 @@ def prep_wastewater_data() -> pd.DataFrame:
     # TODO map to county list from water data
 
     return df_ww
-
 
 
 def prep_power_plant_location() -> pd.DataFrame:
@@ -278,11 +279,10 @@ def prep_power_plant_location() -> pd.DataFrame:
     df_county = prep_county_identifier()
     df_plant = get_power_plant_county_data()
 
-
     df_county["identifier"] = df_county['identifier'].str.replace("'", '', regex=True)
     df_county["identifier"] = df_county["identifier"].str.replace('.', '', regex=True)  # remove periods
     df_county["identifier"] = df_county["identifier"].str.replace('-', '', regex=True)  # remove dashes
-    df_county["identifier"] = df_county["identifier"].str.replace(r"[^\w ]", '',  regex=True)
+    df_county["identifier"] = df_county["identifier"].str.replace(r"[^\w ]", '', regex=True)
 
     df_plant = df_plant.drop_duplicates()
     df_plant = df_plant.dropna(subset=["Plant Code"])
@@ -290,8 +290,7 @@ def prep_power_plant_location() -> pd.DataFrame:
     df_plant['County'] = df_plant['County'].str.lower()  # change to lowercase
     df_plant["County"] = df_plant["County"].str.replace(' ', '')  # remove spaces between words
     df_plant["identifier"] = df_plant["State"] + df_plant["County"]  # add identifier column
-    df_plant["identifier"] = df_plant["identifier"].str.replace(r"[^\w ]", '',  regex=True)
-
+    df_plant["identifier"] = df_plant["identifier"].str.replace(r"[^\w ]", '', regex=True)
 
     city_list = ['VAchesapeakecity', 'VAportsmouthcity', 'VAhopewellcity', 'VAalexandriacity',
                  'VAcovingtoncity', 'VAsuffolkcity', 'VAharrisonburgcity', 'VAsalemcity',
@@ -325,8 +324,8 @@ def prep_power_plant_location() -> pd.DataFrame:
     df_plant = pd.merge(df_plant, df_county, how="left", on="identifier")  # merge dataframes
     df_plant = df_plant.rename(columns={"Plant Code": "plant_code"})
 
-
     return df_plant
+
 
 def prep_electricity_generation() -> pd.DataFrame:
     """ Provides a dataframe of electricity generation (MWh) and fuel use (BBTU) per year by generating technology type
@@ -348,24 +347,24 @@ def prep_electricity_generation() -> pd.DataFrame:
     df = df[['Plant Id', "AER\nFuel Type Code", "Total Fuel Consumption\nMMBtu", "Net Generation\n(Megawatthours)"]]
 
     # create a dictionary to bin power plant fuel types
-    fuel_dict = {'SUN': 'solar',  #solar
-                'COL': 'coal',  # coal
-                'DFO': 'oil',  # distillate petroleum
-                "GEO": 'geothermal',  # geothermal
-                'HPS': 'hydro',  # hydro pumped storage
-                'HYC': 'hydro',  # hydro conventional
-                'MLG': 'biomass',  # biogenic municipal solid waste and landfill gas
-                'NG': 'natgas',  # natural gas
-                'NUC': 'nuclear',  # nuclear
-                'OOG': 'other',  # other gases
-                'ORW': 'other',  # other renewables
-                'OTH': 'other',  # other
-                'PC': 'oil',  # petroleum coke
-                'RFO': 'oil',  # residual petroleum
-                'WND': 'wind',  # wind
-                'WOC': 'coal',  # waste coal
-                'WOO': 'oil',  # waste oil
-                'WWW': 'biomass'}  # wood and wood waste
+    fuel_dict = {'SUN': 'solar',  # solar
+                 'COL': 'coal',  # coal
+                 'DFO': 'oil',  # distillate petroleum
+                 "GEO": 'geothermal',  # geothermal
+                 'HPS': 'hydro',  # hydro pumped storage
+                 'HYC': 'hydro',  # hydro conventional
+                 'MLG': 'biomass',  # biogenic municipal solid waste and landfill gas
+                 'NG': 'natgas',  # natural gas
+                 'NUC': 'nuclear',  # nuclear
+                 'OOG': 'other',  # other gases
+                 'ORW': 'other',  # other renewables
+                 'OTH': 'other',  # other
+                 'PC': 'oil',  # petroleum coke
+                 'RFO': 'oil',  # residual petroleum
+                 'WND': 'wind',  # wind
+                 'WOC': 'coal',  # waste coal
+                 'WOO': 'oil',  # waste oil
+                 'WWW': 'biomass'}  # wood and wood waste
 
     # rename columns in power plant generation data file
     df = df.rename(columns={"Plant Id": "plant_code"})
@@ -376,7 +375,7 @@ def prep_electricity_generation() -> pd.DataFrame:
     # changing string columns to numeric
     string_col = df.columns[2:]  # create list of string columns
     for col in string_col:
-        df[col] = df[col].str.replace(r"[^\w ]", '',  regex=True)  # replace any non alphanumeric values
+        df[col] = df[col].str.replace(r"[^\w ]", '', regex=True)  # replace any non alphanumeric values
         df[col] = df[col].astype(float)  # convert to float
 
     # removing power plant generation rows that should not be included
@@ -390,19 +389,20 @@ def prep_electricity_generation() -> pd.DataFrame:
     df['fuel_type'] = df['fuel_type'].map(fuel_dict)  # bin fuel types
 
     # converting units to billion btu from million btu
-    df["fuel_amt"] = df["fuel_amt"]/1000
+    df["fuel_amt"] = df["fuel_amt"] / 1000
 
     # grouping rows by both plant code and fuel type
-    df = df.groupby(['plant_code','fuel_type'], as_index = False).sum()
+    df = df.groupby(['plant_code', 'fuel_type'], as_index=False).sum()
 
     # merging power plant location data with power plant generation data
-    df = pd.merge(df, df_loc, how='left', on= 'plant_code')
+    df = pd.merge(df, df_loc, how='left', on='plant_code')
 
     # TODO calculate fuel consumption by county
     # TODO calculate generation amount by type by county
     #  above should be in calculate
     # TODO map to county list from water data
     return df
+
 
 def prep_irrigation_fuel_data() -> pd.DataFrame:
     """prepping irrigation data so that the outcome is a dataframe showing the percent of total acres of irrigation
@@ -416,14 +416,14 @@ def prep_irrigation_fuel_data() -> pd.DataFrame:
     # read in irrigation pumping dataset
     df = get_irrigation_data()
 
-    #read in FIPS codes and states from 2015 water dataset
+    # read in FIPS codes and states from 2015 water dataset
     df_loc = prep_water_use_2015()
 
     # determine percent of irrigated acres that use each pump type (electricity, diesel, natural gas, or propane)
     col_list = df.columns[4:]  # list of pump fuel type columns
     df['total_Irr'] = df[col_list].sum(axis=1)  # calculate sum of fuel type columns
     for col in col_list:
-        df[col] = (df[col]/df['total_Irr'])  # determine percent of total acres irrigated for each fuel type
+        df[col] = (df[col] / df['total_Irr'])  # determine percent of total acres irrigated for each fuel type
 
     # calculate the mean percent across all states in dataset
     elec_avg = df['Elec_Total_Acres'].mean(axis=0)  # electricity
@@ -433,11 +433,11 @@ def prep_irrigation_fuel_data() -> pd.DataFrame:
     other_avg = df['Gas_Total_Acres'].mean(axis=0)  # other gas
 
     # reducing dataframe to required variables
-    df = df[['State', 'Elec_Total_Acres','NG_Total_Acres', 'Propane_Total_Acres',
+    df = df[['State', 'Elec_Total_Acres', 'NG_Total_Acres', 'Propane_Total_Acres',
              'Diesel_Total_Acres', 'Gas_Total_Acres']]
 
     # merge with county data to distribute value to each county in a state
-    df = pd.merge(df_loc, df, how='left',on='State')
+    df = pd.merge(df_loc, df, how='left', on='State')
 
     # filling states that were not in the irrigation dataset with the average for each fuel type
     df['Elec_Total_Acres'].fillna(elec_avg, inplace=True)
@@ -476,15 +476,15 @@ def prep_irrigation_pumping_data() -> pd.DataFrame:
     ag_pump_eff = .466  # assumed pump efficiency rate
     psi_psf_conversion = 2.31  # conversion of pounds per square inch (psi) to pounds per square foot (psf)
     m3_mg_conversion = 3785.41178  # conversion factor for m^3 to million gallons
-    joules_kWh_conversion = 1 / 3600000  # conversion factor from joules to kWh
+    joules_kwh_conversion = 1 / 3600000  # conversion factor from joules to kWh
     kwh_bbtu_conversion = 3412.1416416 / 1000000000  # 1 kWh is equal to 3412.1416416 btu
     meter_ft_conversion = 0.3048  # meters in a foot
 
     # determine groundwater pumping intensity by state
-    head_ft = psi_psf_conversion * df["Average operating pressure (psi)"] # conversion of psi to head (p sqft)
+    head_ft = psi_psf_conversion * df["Average operating pressure (psi)"]  # conversion of psi to head (p sqft)
     diff_height_gw = meter_ft_conversion * (df["Average Well Depth (ft)"] + head_ft)  # calc. differential height (m)
     pump_power_gw = (water_density * diff_height_gw * acc_gravity * m3_mg_conversion) / ag_pump_eff  # joules/MG
-    df['gw_pump_bbtu_per_mg'] = pump_power_gw * joules_kWh_conversion * kwh_bbtu_conversion  # power intensity (bbtu/mg)
+    df['gw_pump_bbtu_per_mg'] = pump_power_gw * joules_kwh_conversion * kwh_bbtu_conversion  # power intensity (bbtu/mg)
 
     # calculating average groundwater pumping to apply to regions without values
     gw_pump_bbtu_per_mg_avg = df['gw_pump_bbtu_per_mg'].mean()
@@ -492,7 +492,7 @@ def prep_irrigation_pumping_data() -> pd.DataFrame:
     # determine surface water pumping intensity by state
     diff_height_sw = meter_ft_conversion * head_ft  # calc. differential height (m)
     pump_power_sw = (water_density * diff_height_sw * acc_gravity * m3_mg_conversion) / ag_pump_eff  # joules/MG
-    df['sw_pump_bbtu_per_mg'] = pump_power_sw * joules_kWh_conversion * kwh_bbtu_conversion  # power intensity (bbtu/mg)
+    df['sw_pump_bbtu_per_mg'] = pump_power_sw * joules_kwh_conversion * kwh_bbtu_conversion  # power intensity (bbtu/mg)
 
     # calculating average surface water pumping to apply to regions without values
     sw_pump_bbtu_per_mg_avg = df['sw_pump_bbtu_per_mg'].mean()
@@ -507,7 +507,6 @@ def prep_irrigation_pumping_data() -> pd.DataFrame:
     df['gw_pump_bbtu_per_mg'].fillna(gw_pump_bbtu_per_mg_avg, inplace=True)  # groundwater intensity
     df['sw_pump_bbtu_per_mg'].fillna(sw_pump_bbtu_per_mg_avg, inplace=True)  # surface water intensity
 
-
     return df
 
 
@@ -520,49 +519,49 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     """
 
     # read in
-    df_TX = get_tx_inter_basin_transfer_data() # interbasin transfer data for texas
+    df_tx = get_tx_inter_basin_transfer_data()  # interbasin transfer data for texas
     df_west = get_west_inter_basin_transfer_data()  # interbasin transfer data for western states
     df_loc = prep_water_use_2015()  # full county list
 
-    feet_meter_conversion = 1/3.281  # feet to meter conversion
-    af_mps_conversion = 1/25567  # acre-ft-year to meters per second^3 conversion
-    mwh_bbtu = 3412000/(10**9)  # megawatthour to billion btu conversion
+    feet_meter_conversion = 1 / 3.281  # feet to meter conversion
+    af_mps_conversion = 1 / 25567  # acre-ft-year to meters per second^3 conversion
+    mwh_bbtu = 3412000 / (10 ** 9)  # megawatthour to billion btu conversion
     ag_pump_eff = .466  # assumed pump efficiency rate
     acc_gravity = 9.81  # Acceleration of gravity  (m/s^2)
     water_density = 997  # Water density (kg/m^3)
 
     # calculate texas interbasin transfer energy
-    elevation_meters = df_TX["Elevation Difference (Feet)"] * feet_meter_conversion  # elevation in meters
-    mps_cubed = df_TX["Total_Intake__Gallons (Acre-Feet/Year)"] * af_mps_conversion  # meters per second cubed
-    interbasin_mwh = ((elevation_meters * mps_cubed * acc_gravity * water_density) / ag_pump_eff) / (10**6)  # mwh total
+    elevation_meters = df_tx["Elevation Difference (Feet)"] * feet_meter_conversion  # elevation in meters
+    mps_cubed = df_tx["Total_Intake__Gallons (Acre-Feet/Year)"] * af_mps_conversion  # meters per second cubed
+    interbasin_mwh = ((elevation_meters * mps_cubed * acc_gravity * water_density) / ag_pump_eff) / (
+                10 ** 6)  # mwh total
     interbasin_bbtu = interbasin_mwh * mwh_bbtu  # convert mwh to bbtu
-    df_TX["interbasin_bbtu"] = interbasin_bbtu / 2  # dividing in half to split across source and target counties
+    df_tx["interbasin_bbtu"] = interbasin_bbtu / 2  # dividing in half to split across source and target counties
 
     # split out target county data
-    df_TX_target = df_TX[["State", "Used_FIPS", "interbasin_bbtu"]].copy()
-    df_TX_target = df_TX_target.rename(columns={"Used_FIPS": "FIPS"})
+    df_tx_target = df_tx[["State", "Used_FIPS", "interbasin_bbtu"]].copy()
+    df_tx_target = df_tx_target.rename(columns={"Used_FIPS": "FIPS"})
 
     # split out source county data
-    df_TX_source = df_TX[["State", "Source_FIPS", "interbasin_bbtu"]].copy()
-    df_TX_source = df_TX_source.rename(columns={"Source_FIPS": "FIPS"})
+    df_tx_source = df_tx[["State", "Source_FIPS", "interbasin_bbtu"]].copy()
+    df_tx_source = df_tx_source.rename(columns={"Source_FIPS": "FIPS"})
 
     # stack source and target county interbasin transfer data
-    dataframe_list = [df_TX_target, df_TX_source]
-    df_TX = pd.concat(dataframe_list)
+    dataframe_list = [df_tx_target, df_tx_source]
+    df_tx = pd.concat(dataframe_list)
 
     # group by state and county fips code
-    df_TX = df_TX.groupby(["State", "FIPS"], as_index=False).sum()
+    df_tx = df_tx.groupby(["State", "FIPS"], as_index=False).sum()
 
     # prep western state interbasin transfer energy
     df_west = df_west[['FIPS', 'Mwh/yr (Low)', 'Mwh/yr (High)']]
     df_west['FIPS'] = df_west['FIPS'].apply(lambda x: '{0:0>5}'.format(x))  # add leading zero to fips
 
-
     df_west["interbasin_bbtu"] = (df_west["Mwh/yr (Low)"] + df_west["Mwh/yr (High)"]) / 2  # average energy use by row
     df_west = df_west.groupby(["FIPS"], as_index=False).sum()  # group by county fips code
     df_west["interbasin_bbtu"] = df_west["interbasin_bbtu"] * mwh_bbtu  # convert mwh values to bbtu
 
-    ibt_dataframe_list = [df_TX, df_west]  # bring west IBT data together with TX data
+    ibt_dataframe_list = [df_tx, df_west]  # bring west IBT data together with TX data
     df = pd.concat(ibt_dataframe_list)
     df = df[["FIPS", "interbasin_bbtu"]]
 
@@ -573,6 +572,7 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     df['interbasin_bbtu'].fillna(0, inplace=True)
 
     return df
+
 
 def prep_electricity_demand_data() -> pd.DataFrame:
     """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
@@ -586,6 +586,7 @@ def prep_electricity_demand_data() -> pd.DataFrame:
 
     return df
 
+
 def prep_fuel_demand_data() -> pd.DataFrame:
     """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
 
@@ -597,6 +598,7 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     df = get_water_use_2015()
 
     return df
+
 
 def prep_fuel_production_data() -> pd.DataFrame:
     """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
