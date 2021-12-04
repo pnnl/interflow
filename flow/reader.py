@@ -143,7 +143,7 @@ def get_tx_inter_basin_transfer_data():
     data = pkg_resources.resource_filename('flow', 'data/TX_IBT_2015.csv')
 
     # read in Texas inter-basin transfer data by FIPS
-    return pd.read_csv(data, dtype={'USed_FIPS': str, 'Source_FIPS': str})
+    return pd.read_csv(data, dtype={'Used_FIPS': str, 'Source_FIPS': str})
 
 
 def get_west_inter_basin_transfer_data():

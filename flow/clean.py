@@ -508,21 +508,44 @@ def prep_irrigation_pumping_data() -> pd.DataFrame:
     return df
 
 
-
-
-
-
 def prep_interbasin_transfer_data() -> pd.DataFrame:
-    """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
+    """Prepares interbasin water transfer data so that output is a dataframe of energy use (BBTU) and total
+        water transferred for irrigation and public water supply in total.
 
     :return:                DataFrame of a number of water values for 2015 at the county level
 
     """
 
-    # read in water use data for 2015 in million gallons per day by county
-    df = get_water_use_2015()
+    # read in inter basin transfer data for texas
+    df_TX = get_tx_inter_basin_transfer_data()
+    df_west = get_west_inter_basin_transfer_data()
 
-    return df
+    feet_meter_conversion = 1/3.281  # feet to meter conversion
+    af_mps_conversion = 1/25567  # acre-ft-year to meters per second^3 conversion
+    mwh_bbtu = 3412000/(10**9)  # megawatthour to billion btu conversion
+    ag_pump_eff = .466  # assumed pump efficiency rate
+    acc_gravity = 9.81  # Acceleration of gravity  (m/s^2)
+    water_density = 997  # Water density (kg/m^3)
+
+    elevation_meters = df_TX["Elevation Difference (Feet)"] * feet_meter_conversion  # elevation in meters
+    mps_cubed = df_TX["Total_Intake__Gallons (Acre-Feet/Year)"] * af_mps_conversion  # meters per second cubed
+    interbasin_mwh = ((elevation_meters * mps_cubed * acc_gravity * water_density) / ag_pump_eff) / (10**6)  # mwh total
+    interbasin_bbtu = interbasin_mwh * mwh_bbtu  # convert mwh to bbtu
+    df_TX["interbasin_bbtu"] = interbasin_bbtu / 2  # dividing in half to split across source and used counties
+
+    df_TX_target = df_TX[["State", "Used_FIPS", "interbasin_bbtu"]].copy()
+    df_TX_target = df_TX_target.rename(columns={"Used_FIPS": "FIPS"})
+
+    df_TX_source = df_TX[["State", "Source_FIPS", "interbasin_bbtu"]].copy()
+    df_TX_source = df_TX_source.rename(columns={"Source_FIPS": "FIPS"})
+
+    dataframe_list = [df_TX_target, df_TX_source]
+    df_TX = pd.concat(dataframe_list)
+
+    df_TX = df_TX.groupby(["State", "FIPS"], as_index=False).sum()
+
+
+    return df_TX
 
 def prep_electricity_demand_data() -> pd.DataFrame:
     """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
