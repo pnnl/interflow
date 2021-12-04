@@ -22,10 +22,6 @@ class TestClean(unittest.TestCase):
         # ensure data columns are type float
         self.assertEqual(df['FIPS'].dtype, 'O')
 
-        # ensure data columns are type float
-        df_float = df[:,3:]
-        self.assertEqual(df_float.columns.dtype, 'float')
-
 
         # no null data rows
         rows_with_null = [index for index, row in df.iterrows() if row.isnull().any()]

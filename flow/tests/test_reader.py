@@ -30,11 +30,11 @@ class TestReader(unittest.TestCase):
         # expect CountyCode as a column name
         self.assertTrue('CountyCode' in df.columns)
 
-    def test_get_interconnect_data(self):
+    def test_get_county_identifier_data(self):
         """Ensure we get what is expected from the input file."""
 
         # load the data
-        df = get_interconnect_data()
+        df = get_county_identifier_data()
 
         # expect FIPS as a column name
         self.assertTrue('FIPS' in df.columns)
@@ -135,14 +135,14 @@ class TestReader(unittest.TestCase):
         # expect Net Generation\n(Megawatthours) as a column name
         self.assertTrue('Net Generation\n(Megawatthours)' in df.columns)
 
-    def test_get_irrigation_depth_pressure_data(self):
+    def test_get_irrigation_data(self):
         """Ensure we get what is expected from the input file."""
 
         # load the data
-        df = get_irrigation_depth_pressure_data()
+        df = get_irrigation_data()
 
         # expect STATE as a column name
-        self.assertTrue('STATE' in df.columns)
+        self.assertTrue('State' in df.columns)
 
         # expect Average Well Depth (ft) as a column name
         self.assertTrue('Average Well Depth (ft)' in df.columns)
@@ -427,7 +427,7 @@ class TestReader(unittest.TestCase):
         df = get_state_fips_data()
 
         # expect STATE as a column name
-        self.assertTrue('STATE' in df.columns)
+        self.assertTrue('State' in df.columns)
 
         # expect STATEFIPS as a column name
         self.assertTrue('STATEFIPS' in df.columns)
