@@ -1,6 +1,7 @@
 import numpy as np
 
 from .reader import *
+from .calculate import *
 
 
 def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
@@ -581,28 +582,37 @@ def prep_electricity_demand_data() -> pd.DataFrame:
 
     """
 
-    # read in water use data for 2015 in million gallons per day by county
+    # read in state and territory electricity demand data
     df_states = get_state_electricity_demand_data()
     df_terr = get_territory_electricity_demand_data()
 
+    # concatenate state and territory demand data
     df_list = [df_states, df_terr]
     df = pd.concat(df_list)
+
+    # drop rows where month is nan
     df = df.dropna(subset=["Month"])
 
-    # Rename columns appropriately
+    # rename columns appropriately
     rename_dict = {"RESIDENTIAL": "elec_demand_res",
                    "COMMERCIAL": "elec_demand_co",
                    "INDUSTRIAL": "elec_demand_in",
                    "TRANSPORTATION": "elec_demand_tr"}
     df.rename(columns=rename_dict, inplace=True)
-    df = df[["Month", "State", "Ownership", "elec_demand_res", "elec_demand_co",
-             "elec_demand_in", "elec_demand_tr"]]
 
     df = df.dropna(subset=["Ownership"])  # Drop state totals and state adjustments
     df = df[df.Ownership != "Behind the Meter"]  # removing behind the meter generation
+    df = df.groupby("State", as_index=False).sum()  # get total by state
 
+    # reduce dataframe
+    df = df[["State", "elec_demand_res", "elec_demand_co", "elec_demand_in", "elec_demand_tr"]]
 
-    df = df.groupby("State", as_index=False).sum()
+    # convert values from mwh to bbtu
+    column_list = df.columns[1:]
+    for col in column_list:
+        df[col] = df[col].apply(convert_mwh_bbtu)
+
+    
 
     return df
 

@@ -193,3 +193,15 @@ def calc_pws_discharge() -> pd.DataFrame:
              "CO-PSDel", "IN-PSDel", "PS-IX", 'PS-EX', 'PS-del']]
 
     return df
+
+def convert_mwh_bbtu(x:float) -> float:
+    # TODO prepare test
+
+    """calculating consumption fractions for various sectors from 1995 water use data.
+
+    :return:                DataFrame of water consumption fractions for various sectors by county
+
+    """
+    bbtu = x*0.003412
+
+    return bbtu
