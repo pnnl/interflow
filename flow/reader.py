@@ -210,6 +210,35 @@ def get_transportation_electricity_demand_data():
     # read in transportation electricity sales data
     return pd.read_csv(data, skiprows=2)
 
+def get_state_electricity_demand_data():
+    """Read in a dataframe of transportation electricity sales data by state
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/eia_861m_states.csv')
+
+    # read in transportation electricity sales data
+    return pd.read_csv(data, skipfooter=2, engine='python',
+                       dtype={'RESIDENTIAL': float, 'COMMERCIAL': float,
+                              'INDUSTRIAL': float, 'TRANSPORTATION': float})
+
+def get_territory_electricity_demand_data():
+    """Read in a dataframe of transportation electricity sales data by state
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/eia_861m_terr.csv')
+
+    # read in transportation electricity sales data
+    return pd.read_csv(data, skipfooter=1, engine='python',
+                       dtype={'RESIDENTIAL': float, 'COMMERCIAL': float,
+                              'INDUSTRIAL': float, 'TRANSPORTATION': float}
+                       )
+
 
 def get_energy_production_data():
     """Read in a dataframe of energy production (fuel) data by state
