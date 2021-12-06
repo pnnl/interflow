@@ -194,6 +194,7 @@ def calc_pws_discharge() -> pd.DataFrame:
 
     return df
 
+
 def convert_mwh_bbtu(x:float) -> float:
     # TODO prepare test
 
@@ -205,3 +206,24 @@ def convert_mwh_bbtu(x:float) -> float:
     bbtu = x*0.003412
 
     return bbtu
+
+
+def calc_population_county_weight() -> pd.DataFrame:
+    # TODO prepare test
+
+    """calculating consumption fractions for various sectors from 1995 water use data.
+
+    :return:                DataFrame of water consumption fractions for various sectors by county
+
+    """
+    df_state = prep_water_use_2015(variables=['FIPS', 'State', 'TP-TotPop'])
+    df_state_sum = df_state.groupby("State", as_index=False).sum()
+    df_state_sum = df_state_sum.rename(columns={"TP-TotPop": "state_pop_sum"})
+    df_state = pd.merge(df_state, df_state_sum, how='left', on='State')
+    df_state['pop_weight'] = df_state['TP-TotPop']/df_state['state_pop_sum']
+    df_state = df_state[['FIPS', 'State']]
+
+    df = df_state
+    #df: pd.DataFrame, columns
+
+    return df

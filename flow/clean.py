@@ -26,6 +26,7 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'IR-WGWFr', 'IR-WSWFr', 'IR-CUsFr'
                       ]
 
+
     # reducing dataframe to variables in variables_list
     df = df[variables_list]
 
@@ -612,7 +613,7 @@ def prep_electricity_demand_data() -> pd.DataFrame:
     for col in column_list:
         df[col] = df[col].apply(convert_mwh_bbtu)
 
-    
+
 
     return df
 
