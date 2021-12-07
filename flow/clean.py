@@ -661,7 +661,40 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     """
 
     # read in water use data for 2015 in million gallons per day by county
-    df = get_water_use_2015()
+    df = get_energy_production_data()
+
+    # list of fuel demand codes that are relevant from dataset
+    fuel_list = ["NGRCB",  # Natural gas consumed by (delivered to) the residential sector (BBTU)
+                 "PARCB",  # All petroleum products consumed by the residential sector (BBTU)
+                 "WDRCB",  # Wood energy consumed by the residential sector (BBTU)
+                 "GERCB",  # Geothermal energy consumed by the residential sector (BBTU)
+                 "SORCB",  # Solar energy consumed by the residential sector (BBTU)
+
+                 "NGCCB",  # Natural gas consumed by (delivered to) the commercial sector (BBTU)
+                 "PACCB",  # All petroleum products consumed by the commercial sector (BBTU)
+                 "WWCCB",  # Wood and waste energy consumed in the commercial sector (BBTU)
+                 "CLCCB",  # Coal consumed by the commercial sector (BBTU)
+                 "GECCB",  # Geothermal energy consumed by the commercial sector (BBTU)
+                 "SOCCB",  # Solar energy consumed by the commercial sector (BBTU)
+                 "WYCCB",  # Wind energy consumed by the commercial sector (BBTU)
+
+                 "NGACB",  # Natural gas consumed by the transportation sector  (BBTU)
+                 "PAACB",  # All petroleum products consumed by the transportation sector (BBTU)
+                 "EMACB",  # Fuel ethanol, excluding denaturant, consumed by the transportation sector (BBTU)
+
+                 "PAICB",  # All petroleum products consumed by the industrial sector (BBTU)
+                 "WWICB",  # Wood and waste energy consumed in the industrial sector (BBTU)
+                 "NGICB",  # Natural gas consumed by the industrial sector (BBTU)
+                 "CLICB"  # Coal consumed by the industrial sector (BBTU)
+                        ]
+    df = df[df['MSN'].isin(fuel_list)]  # grabbing MSN codes that are relevant
+
+    df = pd.pivot_table(df, values='2015', index=['State'],  # pivoting to get fuel codes as columns
+                               columns=['MSN'], aggfunc=np.sum)
+    df = df.reset_index()  # reset index to remove multi-index
+    df = df.rename_axis(None, axis=1)  # drop index name
+
+    df.fillna(0, inplace=True)  # filling blanks with zero
 
     return df
 
