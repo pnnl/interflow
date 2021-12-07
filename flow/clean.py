@@ -536,7 +536,7 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     elevation_meters = df_tx["Elevation Difference (Feet)"] * feet_meter_conversion  # elevation in meters
     mps_cubed = df_tx["Total_Intake__Gallons (Acre-Feet/Year)"] * af_mps_conversion  # meters per second cubed
     interbasin_mwh = ((elevation_meters * mps_cubed * acc_gravity * water_density) / ag_pump_eff) / (
-                10 ** 6)  # mwh total
+            10 ** 6)  # mwh total
     interbasin_bbtu = interbasin_mwh * mwh_bbtu  # convert mwh to bbtu
     df_tx["interbasin_bbtu"] = interbasin_bbtu / 2  # dividing in half to split across source and target counties
 
@@ -620,13 +620,13 @@ def prep_electricity_demand_data() -> pd.DataFrame:
     df = df.append(df.loc[puertorico_index * 1].assign(State="VI"), ignore_index=True)
     multiply_columns = df.columns[1:]
     for m in multiply_columns:
-        df[m] = np.where(df['State'] == "VI", df[m]*virgin_islands_percent, df[m])
+        df[m] = np.where(df['State'] == "VI", df[m] * virgin_islands_percent, df[m])
 
     # split out into county values and multiply by population weighting
     df = calc_population_county_weight(df)
     demand_columns = df.columns[3:7]
     for d in demand_columns:
-        df[d] = df[d]*df['pop_weight']
+        df[d] = df[d] * df['pop_weight']
         df[d] = df[d].round(4)
 
     df = df.drop(['pop_weight'], axis=1)
@@ -641,56 +641,34 @@ def prep_fuel_demand_data() -> pd.DataFrame:
 
     """
 
-    # read in water use data for 2015 in million gallons per day by county
+    # read in energy consumption data
     df = get_fuel_demand_data()
 
     # list of fuel demand codes that are relevant from dataset
-    fuel_list = ["NGRCB",  # Natural gas consumed by (delivered to) the residential sector (BBTU)
-                 "PARCB",  # All petroleum products consumed by the residential sector (BBTU)
-                 "WDRCB",  # Wood energy consumed by the residential sector (BBTU)
-                 "GERCB",  # Geothermal energy consumed by the residential sector (BBTU)
-                 "SORCB",  # Solar energy consumed by the residential sector (BBTU)
-
-                 "NGCCB",  # Natural gas consumed by (delivered to) the commercial sector (BBTU)
-                 "PACCB",  # All petroleum products consumed by the commercial sector (BBTU)
-                 "WWCCB",  # Wood and waste energy consumed in the commercial sector (BBTU)
-                 "CLCCB",  # Coal consumed by the commercial sector (BBTU)
-                 "GECCB",  # Geothermal energy consumed by the commercial sector (BBTU)
-                 "SOCCB",  # Solar energy consumed by the commercial sector (BBTU)
-                 "WYCCB",  # Wind energy consumed by the commercial sector (BBTU)
-
-                 "NGACB",  # Natural gas consumed by the transportation sector  (BBTU)
-                 "PAACB",  # All petroleum products consumed by the transportation sector (BBTU)
-                 "EMACB",  # Fuel ethanol, excluding denaturant, consumed by the transportation sector (BBTU)
-
-                 "PAICB",  # All petroleum products consumed by the industrial sector (BBTU)
-                 "WWICB",  # Wood and waste energy consumed in the industrial sector (BBTU)
-                 "NGICB",  # Natural gas consumed by the industrial sector (BBTU)
-                 "CLICB"  # Coal consumed by the industrial sector (BBTU)
-                        ]
-    rename_dict = {"CLCCB":"commercial_coal_consumption",
-                   "CLICB" : "industrial_coal_consumption",
-                   "EMACB" : "transporation_biomass_consumption",
-                   "GECCB" : "commercial_geothermal_consumption",
-                   "GERCB" : "residential_geothermal_consumption",
-                   "NGACB" : "transporation_natgas_consumption",
-                   "NGCCB" : "commercial_natgas_consumption",
-                   "NGICB" : "industrial_natgas_consumption",
-                   "NGRCB" : "residential_natgas_consumption",
-                   "PAACB" : "transporation_petroleum_consumption",
-                   "PACCB" : "commercial_petroleum_consumption",
-                   "PAICB" : "industrial_petroleum_consumption",
-                   "PARCB" : "residential_petroleum_consumption",
-                   "SOCCB" : "commercial_solar_consumption",
-                   "SORCB" : "residential_solar_consumption",
-                   "WDRCB" : "residential_biomass_consumption",
-                   "WWCCB" : "commercial_biomass_consumption",
-                   "WWICB" : "industrial_biomass_consumption",
-                   "WYCCB" : "commercial_wind_consumption"}
-    df = df[df['MSN'].isin(fuel_list)]  # grabbing MSN codes that are relevant
+    msn_dict = {"CLCCB": "commercial_coal_consumption",  # Coal, commercial sector (bbtu)
+                "CLICB": "industrial_coal_consumption",  # Coal, industrial sector (bbtu)
+                "EMACB": "transportation_biomass_consumption",  # Fuel ethanol, transportation sector (bbtu)
+                "GECCB": "commercial_geothermal_consumption",  # Geothermal, commercial sector (bbtu)
+                "GERCB": "residential_geothermal_consumption",  # Geothermal, residential sector (bbtu)
+                "NGACB": "transportation_natgas_consumption",  # Natural gas, transportation sector  (bbtu)
+                "NGCCB": "commercial_natgas_consumption",  # Natural gas, commercial sector (bbtu)
+                "NGICB": "industrial_natgas_consumption",  # Natural gas, industrial sector (bbtu)
+                "NGRCB": "residential_natgas_consumption",  # Natural gas, residential sector (bbtu
+                "PAACB": "transportation_petroleum_consumption",  # petroleum products, transportation sector (bbtu)
+                "PACCB": "commercial_petroleum_consumption",  # petroleum products, commercial sector (bbtu)
+                "PAICB": "industrial_petroleum_consumption",  # petroleum products, industrial sector (bbtu)
+                "PARCB": "residential_petroleum_consumption",  # petroleum products, residential sector (bbtu)
+                "SOCCB": "commercial_solar_consumption",  # Solar, commercial sector (bbtu)
+                "SORCB": "residential_solar_consumption",  # Solar, residential sector (bbtu)
+                "WDRCB": "residential_biomass_consumption",  # Wood energy, residential sector (bbtu)
+                "WWCCB": "commercial_biomass_consumption",  # Wood and waste energy, commercial sector (bbtu)
+                "WWICB": "industrial_biomass_consumption",  # Wood and waste energy, industrial sector (bbtu)
+                "WYCCB": "commercial_wind_consumption"  # Wind energy, commercial sector (bbtu)
+                }
+    df = df[df['MSN'].isin(msn_dict)]  # grabbing MSN codes that are relevant
 
     df = pd.pivot_table(df, values='2015', index=['State'],  # pivoting to get fuel codes as columns
-                               columns=['MSN'], aggfunc=np.sum)
+                        columns=['MSN'], aggfunc=np.sum)
     df = df.reset_index()  # reset index to remove multi-index
     df = df.rename_axis(None, axis=1)  # drop index name
     df.fillna(0, inplace=True)  # filling blanks with zero
@@ -702,10 +680,10 @@ def prep_fuel_demand_data() -> pd.DataFrame:
         df[d] = df[d] * df['pop_weight']
         df[d] = df[d].round(2)
 
-        # rename columns appropriately
+    # rename columns to add descriptive language
+    df.rename(columns=msn_dict, inplace=True)
 
-    df.rename(columns=rename_dict, inplace=True)
-
+    # remove unneeded columns
     df = df.drop(['pop_weight'], axis=1)
 
     return df
