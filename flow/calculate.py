@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
 
-from .clean import *
+#from .clean import *
 from .reader import *
-
+import flow.clean as cl
 
 
 def calc_consumption_frac() -> pd.DataFrame:
@@ -16,7 +16,7 @@ def calc_consumption_frac() -> pd.DataFrame:
     """
 
     # read in cleaned water use data for 1995
-    df = prep_water_use_1995()
+    df = cl.prep_water_use_1995()
 
     # calculate water consumption fractions as consumptive use divided by delivered water
     df["DO_CF_Fr"] = df["DO-CUTot"] / df["DO-WDelv"]  # residential (domestic) sector freshwater consumption fraction
@@ -50,7 +50,7 @@ def calc_pws_frac() -> pd.DataFrame:
     """
 
     # read in cleaned water use data for 1995
-    df = prep_water_use_1995()
+    df = cl.prep_water_use_1995()
 
     # calculate ratio of commercial pws to sum of domestic and thermoelectric cooling pws
     df["CO_PWS_frac"] = np.where((df['PS-DelDO'] + df['PS-DelPT']) <= 0,
@@ -124,7 +124,7 @@ def calc_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165
     """
 
     # read in cleaned water use data for 1995
-    df = prep_water_use_1995()
+    df = cl.prep_water_use_1995()
 
     # calculate water intensity fraction (IF) by dividing total water use (MGD) by total generation (MWh) by county
     df["HY_IF"] = df["HY-InUse"] / df["HY-InPow"]
@@ -167,7 +167,7 @@ def calc_pws_discharge() -> pd.DataFrame:
     """
 
     # read in cleaned water use data variables for 2015
-    df = prep_water_use_2015(variables=["FIPS", 'State', 'County','PS-Wtotl', 'DO-PSDel', 'PT-PSDel'])
+    df = cl.prep_water_use_2015(variables=["FIPS", 'State', 'County','PS-Wtotl', 'DO-PSDel', 'PT-PSDel'])
 
     # read in dataframe of commercial and industrial pws ratios
     df_pws = calc_pws_frac()

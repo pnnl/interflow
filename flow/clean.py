@@ -699,6 +699,34 @@ def prep_fuel_demand_data() -> pd.DataFrame:
 
     # split out into county values and multiply by population weighting
     df = calc_population_county_weight(df)
+    energy_columns = df.columns[3:]
+    for d in energy_columns:
+        df[d] = df[d] * df['pop_weight']
+        df[d] = df[d].round(2)
+
+        # rename columns appropriately
+    #rename_dict = {"CLCCB":"commercial_coal_consumption",
+    #               "CLICB":"industrial_coal_consumption",
+    #               "EMACB" : "transporation_biomass_consumption",
+    #               "GECCB",
+    #               "GERCB",
+    #               "NGACB",
+    #               "NGCCB",
+    #               "NGICB",
+    #               "NGRCB",
+    #               "PAACB",
+    #               "PACCB",
+    #               "PAICB",
+    #               "PARCB",
+    #               "SOCCB",
+    #               "SORCB",
+    #               "WDRCB",
+    #               "WWCCB",
+    #               "WWICB",
+    #               "WYCCB"}
+    #df.rename(columns=rename_dict, inplace=True)
+
+    df = df.drop(['pop_weight'], axis=1)
 
     return df
 
