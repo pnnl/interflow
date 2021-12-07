@@ -654,6 +654,7 @@ def prep_electricity_demand_data() -> pd.DataFrame:
 
 
 def prep_fuel_demand_data() -> pd.DataFrame:
+    # TODO fill in trailing rows for puerto rico and VI
     """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
 
     :return:                DataFrame of a number of water values for 2015 at the county level
@@ -695,6 +696,9 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     df = df.rename_axis(None, axis=1)  # drop index name
     #df = df.rename(columns={"StateCode": "State"})  # rename state column
     df.fillna(0, inplace=True)  # filling blanks with zero
+
+    # split out into county values and multiply by population weighting
+    df = calc_population_county_weight(df)
 
     return df
 
