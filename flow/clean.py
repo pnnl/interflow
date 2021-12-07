@@ -689,11 +689,11 @@ def prep_fuel_demand_data() -> pd.DataFrame:
                         ]
     df = df[df['MSN'].isin(fuel_list)]  # grabbing MSN codes that are relevant
 
-    df = pd.pivot_table(df, values='2015', index=['State'],  # pivoting to get fuel codes as columns
+    df = pd.pivot_table(df, values='2015', index=['StateCode'],  # pivoting to get fuel codes as columns
                                columns=['MSN'], aggfunc=np.sum)
     df = df.reset_index()  # reset index to remove multi-index
     df = df.rename_axis(None, axis=1)  # drop index name
-
+    df = df.rename(columns={"StateCode": "State"})  # rename state column
     df.fillna(0, inplace=True)  # filling blanks with zero
 
     return df
