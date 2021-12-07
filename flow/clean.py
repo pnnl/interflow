@@ -597,6 +597,7 @@ def calc_population_county_weight(df:pd.DataFrame) -> pd.DataFrame:
 
 
 def prep_electricity_demand_data() -> pd.DataFrame:
+    # TODO add tests, add code comments
     """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
 
     :return:                DataFrame of a number of water values for 2015 at the county level
