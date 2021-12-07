@@ -661,7 +661,7 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     """
 
     # read in water use data for 2015 in million gallons per day by county
-    df = get_energy_production_data()
+    df = get_fuel_demand_data()
 
     # list of fuel demand codes that are relevant from dataset
     fuel_list = ["NGRCB",  # Natural gas consumed by (delivered to) the residential sector (BBTU)

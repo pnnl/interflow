@@ -239,6 +239,17 @@ def get_territory_electricity_demand_data():
                               'INDUSTRIAL': float, 'TRANSPORTATION': float}
                        )
 
+def get_fuel_demand_data():
+    """Read in a dataframe of energy production (fuel) data by state
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/use_all_btu.csv')
+
+    # read in energy production (fuel) data
+    return pd.read_csv(data)
 
 def get_energy_production_data():
     """Read in a dataframe of energy production (fuel) data by state
