@@ -668,13 +668,31 @@ def prep_fuel_demand_data() -> pd.DataFrame:
                  "NGICB",  # Natural gas consumed by the industrial sector (BBTU)
                  "CLICB"  # Coal consumed by the industrial sector (BBTU)
                         ]
+    rename_dict = {"CLCCB":"commercial_coal_consumption",
+                   "CLICB" : "industrial_coal_consumption",
+                   "EMACB" : "transporation_biomass_consumption",
+                   "GECCB" : "commercial_geothermal_consumption",
+                   "GERCB" : "residential_geothermal_consumption",
+                   "NGACB" : "transporation_natgas_consumption",
+                   "NGCCB" : "commercial_natgas_consumption",
+                   "NGICB" : "industrial_natgas_consumption",
+                   "NGRCB" : "residential_natgas_consumption",
+                   "PAACB" : "transporation_petroleum_consumption",
+                   "PACCB" : "commercial_petroleum_consumption",
+                   "PAICB" : "industrial_petroleum_consumption",
+                   "PARCB" : "residential_petroleum_consumption",
+                   "SOCCB" : "commercial_solar_consumption",
+                   "SORCB" : "residential_solar_consumption",
+                   "WDRCB" : "residential_biomass_consumption",
+                   "WWCCB" : "commercial_biomass_consumption",
+                   "WWICB" : "industrial_biomass_consumption",
+                   "WYCCB" : "commercial_wind_consumption"}
     df = df[df['MSN'].isin(fuel_list)]  # grabbing MSN codes that are relevant
 
     df = pd.pivot_table(df, values='2015', index=['State'],  # pivoting to get fuel codes as columns
                                columns=['MSN'], aggfunc=np.sum)
     df = df.reset_index()  # reset index to remove multi-index
     df = df.rename_axis(None, axis=1)  # drop index name
-    #df = df.rename(columns={"StateCode": "State"})  # rename state column
     df.fillna(0, inplace=True)  # filling blanks with zero
 
     # split out into county values and multiply by population weighting
@@ -685,26 +703,8 @@ def prep_fuel_demand_data() -> pd.DataFrame:
         df[d] = df[d].round(2)
 
         # rename columns appropriately
-    #rename_dict = {"CLCCB":"commercial_coal_consumption",
-    #               "CLICB":"industrial_coal_consumption",
-    #               "EMACB" : "transporation_biomass_consumption",
-    #               "GECCB",
-    #               "GERCB",
-    #               "NGACB",
-    #               "NGCCB",
-    #               "NGICB",
-    #               "NGRCB",
-    #               "PAACB",
-    #               "PACCB",
-    #               "PAICB",
-    #               "PARCB",
-    #               "SOCCB",
-    #               "SORCB",
-    #               "WDRCB",
-    #               "WWCCB",
-    #               "WWICB",
-    #               "WYCCB"}
-    #df.rename(columns=rename_dict, inplace=True)
+
+    df.rename(columns=rename_dict, inplace=True)
 
     df = df.drop(['pop_weight'], axis=1)
 
