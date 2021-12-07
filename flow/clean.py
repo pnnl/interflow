@@ -575,26 +575,6 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
 
     return df
 
-def calc_population_county_weight(df:pd.DataFrame) -> pd.DataFrame:
-    # TODO move to calculate
-
-    """calculates the percentage of state total population by county and merges to provided dataframe
-    by 'State'
-
-    :return:                DataFrame of water consumption fractions for various sectors by county
-
-    """
-    df_state = prep_water_use_2015(variables=["FIPS", "State", "TP-TotPop"])
-    df_state_sum = df_state.groupby("State", as_index=False).sum()
-    df_state_sum = df_state_sum.rename(columns={"TP-TotPop": "state_pop_sum"})
-    df_state = pd.merge(df_state, df_state_sum, how='left', on='State')
-    df_state['pop_weight'] = df_state['TP-TotPop']/df_state['state_pop_sum']
-    df_state = df_state[['FIPS', 'State', 'pop_weight']]
-
-    df_state = pd.merge(df_state, df, how="left", on="State")
-
-    return df_state
-
 
 def prep_electricity_demand_data() -> pd.DataFrame:
     # TODO add tests, add code comments

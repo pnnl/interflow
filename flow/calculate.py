@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-#from .clean import *
+
 from .reader import *
 import flow.clean as cl
 
@@ -208,5 +208,25 @@ def convert_mwh_bbtu(x:float) -> float:
     bbtu = x*0.003412
 
     return bbtu
+
+def calc_population_county_weight(df:pd.DataFrame) -> pd.DataFrame:
+    # TODO move to calculate
+
+    """calculates the percentage of state total population by county and merges to provided dataframe
+    by 'State'
+
+    :return:                DataFrame of water consumption fractions for various sectors by county
+
+    """
+    df_state = cl.prep_water_use_2015(variables=["FIPS", "State", "TP-TotPop"])
+    df_state_sum = df_state.groupby("State", as_index=False).sum()
+    df_state_sum = df_state_sum.rename(columns={"TP-TotPop": "state_pop_sum"})
+    df_state = pd.merge(df_state, df_state_sum, how='left', on='State')
+    df_state['pop_weight'] = df_state['TP-TotPop']/df_state['state_pop_sum']
+    df_state = df_state[['FIPS', 'State', 'pop_weight']]
+
+    df_state = pd.merge(df_state, df, how="left", on="State")
+
+    return df_state
 
 
