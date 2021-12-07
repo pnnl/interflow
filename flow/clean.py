@@ -575,25 +575,25 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
 
     return df
 
-def calc_population_county_weight() -> pd.DataFrame:
+def calc_population_county_weight(df:pd.DataFrame) -> pd.DataFrame:
     # TODO move to calculate
 
-    """calculating consumption fractions for various sectors from 1995 water use data.
+    """calculates the percentage of state total population by county and merges to provided dataframe
+    by 'State'
 
     :return:                DataFrame of water consumption fractions for various sectors by county
 
     """
-    df_state = prep_water_use_2015()
-    df_state_sum = df_state.groupby("STATE", as_index=False).sum()
+    df_state = prep_water_use_2015(variables=["FIPS", "State", "TP-TotPop"])
+    df_state_sum = df_state.groupby("State", as_index=False).sum()
     df_state_sum = df_state_sum.rename(columns={"TP-TotPop": "state_pop_sum"})
-    df_state = pd.merge(df_state, df_state_sum, how='left', on='STATE')
+    df_state = pd.merge(df_state, df_state_sum, how='left', on='State')
     df_state['pop_weight'] = df_state['TP-TotPop']/df_state['state_pop_sum']
-    df_state = df_state[['FIPS', 'STATE']]
+    df_state = df_state[['FIPS', 'State', 'pop_weight']]
 
-    df = df_state
+    df_state = pd.merge(df_state, df, how="left", on="State")
 
-
-    return df
+    return df_state
 
 
 def prep_electricity_demand_data() -> pd.DataFrame:
@@ -633,6 +633,22 @@ def prep_electricity_demand_data() -> pd.DataFrame:
     for col in column_list:
         df[col] = df[col].apply(convert_mwh_bbtu)
 
+    # add a row for the US Virgin Islands at 2.98% of puerto rico values
+    virgin_islands_percent = 0.0298  # percent of puerto rico total population
+    puertorico_index = df.index[df['State'] == "PR"].tolist()  # copy puerto rico values to list
+    df = df.append(df.loc[puertorico_index * 1].assign(State="VI"), ignore_index=True)
+    multiply_columns = df.columns[1:]
+    for m in multiply_columns:
+        df[m] = np.where(df['State'] == "VI", df[m]*virgin_islands_percent, df[m])
+
+    # split out into county values and multiply by population weighting
+    df = calc_population_county_weight(df)
+    demand_columns = df.columns[3:7]
+    for d in demand_columns:
+        df[d] = df[d]*df['pop_weight']
+        df[d] = df[d].round(4)
+
+    df = df.drop(['pop_weight'], axis=1)
     return df
 
 

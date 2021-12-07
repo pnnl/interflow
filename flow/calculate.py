@@ -210,15 +210,3 @@ def convert_mwh_bbtu(x:float) -> float:
     return bbtu
 
 
-def calc_population_county_weight() -> pd.DataFrame:
-    # TODO prepare test
-
-    """calculating consumption fractions for various sectors from 1995 water use data.
-
-    :return:                DataFrame of water consumption fractions for various sectors by county
-
-    """
-    df = prep_water_use_2015()
-
-    return df
-
