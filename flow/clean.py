@@ -1,7 +1,8 @@
 import numpy as np
+import pandas as pd
 
-from .reader import *
 from .calculate import *
+from .reader import *
 
 
 def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
@@ -25,7 +26,6 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'IN-WGWSa', 'IN-WSWSa', 'MI-WGWFr', 'MI-WSWFr', 'MI-WGWSa', 'MI-WSWSa',
                       'IR-WGWFr', 'IR-WSWFr', 'IR-CUsFr'
                       ]
-
 
     # reducing dataframe to variables in variables_list
     df = df[variables_list]
@@ -575,6 +575,26 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
 
     return df
 
+def calc_population_county_weight() -> pd.DataFrame:
+    # TODO move to calculate
+
+    """calculating consumption fractions for various sectors from 1995 water use data.
+
+    :return:                DataFrame of water consumption fractions for various sectors by county
+
+    """
+    df_state = prep_water_use_2015()
+    df_state_sum = df_state.groupby("STATE", as_index=False).sum()
+    df_state_sum = df_state_sum.rename(columns={"TP-TotPop": "state_pop_sum"})
+    df_state = pd.merge(df_state, df_state_sum, how='left', on='STATE')
+    df_state['pop_weight'] = df_state['TP-TotPop']/df_state['state_pop_sum']
+    df_state = df_state[['FIPS', 'STATE']]
+
+    df = df_state
+
+
+    return df
+
 
 def prep_electricity_demand_data() -> pd.DataFrame:
     """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
@@ -612,8 +632,6 @@ def prep_electricity_demand_data() -> pd.DataFrame:
     column_list = df.columns[1:]
     for col in column_list:
         df[col] = df[col].apply(convert_mwh_bbtu)
-
-
 
     return df
 
