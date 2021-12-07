@@ -667,7 +667,7 @@ def prep_fuel_demand_data() -> pd.DataFrame:
                 }
     df = df[df['MSN'].isin(msn_dict)]  # grabbing MSN codes that are relevant
 
-    df = pd.pivot_table(df, values='2015', index=['StateCode'],  # pivoting to get fuel codes as columns
+    df = pd.pivot_table(df, values='2015', index=['State'],  # pivoting to get fuel codes as columns
                         columns=['MSN'], aggfunc=np.sum)
     df = df.reset_index()  # reset index to remove multi-index
     df = df.rename_axis(None, axis=1)  # drop index name
@@ -689,7 +689,7 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     return df
 
 
-def prep_fuel_production_data() -> pd.DataFrame:
+def prep_state_fuel_production_data() -> pd.DataFrame:
     """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
 
     :return:                DataFrame of a number of water values for 2015 at the county level
@@ -697,46 +697,48 @@ def prep_fuel_production_data() -> pd.DataFrame:
     """
 
     # read in water use data for 2015 in million gallons per day by county
-    # TODO fill in trailing rows for puerto rico and VI
+
+    # read in energy production data
+    df = get_energy_production_data()
+    df_oil_ng_loc = get_county_oil_gas_production_data()
+
+    # list of fuel demand codes that are relevant from dataset
+    msn_prod_dict = {"PAPRB": "petroleum_production",  # crude oil production (including lease condensate) (BBTU)
+                     "EMFDB": "biomass_production",  # biomass inputs to the production of fuel ethanol (BBTU)
+                     "NGMPB": "natgas_production",  # natural gas marketed production (BBTU)
+                     "CLPRB": "coal_production",  # coal production (BBTU)
+                     }
+    df = df[df['MSN'].isin(msn_prod_dict)]  # grabbing MSN codes that are relevant
+
+    df = pd.pivot_table(df, values='2015', index=['StateCode'],  # pivoting to get fuel codes as columns
+                        columns=['MSN'], aggfunc=np.sum)
+    df = df.reset_index()  # reset index to remove multi-index
+    df = df.rename_axis(None, axis=1)  # drop index name
+    df = df.rename(columns={"StateCode": "State"})
+    df = df[df.State != "X3"]  # drop offshore (gulf of mexico) values
+    df = df[df.State != "X5"]  # drop offshore (pacific) values
+    df = df[df.State != "US"]  # drop total US values
+    df.fillna(0, inplace=True)  # filling blanks with zero
+    df.rename(columns=msn_prod_dict, inplace=True)  # rename columns to add descriptive language
+
+    return df
+
+
+def prep_county_petroleum_production_data() -> pd.DataFrame:
     """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
 
     :return:                DataFrame of a number of water values for 2015 at the county level
 
     """
 
+    # read in water use data for 2015 in million gallons per day by county
+
     # read in energy production data
-    df = get_energy_production_data()
+    df = prep_state_fuel_production_data()
+    df_petroleum_loc = get_county_oil_gas_production_data()
 
-    # list of fuel demand codes that are relevant from dataset
-    msn_prod_dict = {"PAPRB": "petroleum_production", # Crude oil production (including lease condensate) (BBTU)
-                    "EMFDB": "biomass_production",  # Biomass inputs (feedstock) to the production of fuel ethanol (BBTU)
-                    "NGMPB": "natgas_production",  #Natural gas marketed production (BBTU)
-                    "CLPRB": "coal_production",  #Coal production (BBTU)
-                    "NUETB": "nuclear_production",  #Nuclear energy consumed for electricity generation, total (BBTU)
-                    "GETCB": "geothermal_production",  #Geothermal energy total consumption (BBTU)
-                    "HYTCB": "hydropower_production",  #Hydropower total consumption (BBTU)
-                    "WYTCB": "wind_production",  #Wind energy total consumption (BBTU)
-                    "SOTCB": "solar_production"  #Solar energy total consumption (BBTU)
-                    }
-    df = df[df['MSN'].isin(msn_prod_dict)]  # grabbing MSN codes that are relevant
-
-    df = pd.pivot_table(df, values='2015', index=['State'],  # pivoting to get fuel codes as columns
-                        columns=['MSN'], aggfunc=np.sum)
-    df = df.reset_index()  # reset index to remove multi-index
-    df = df.rename_axis(None, axis=1)  # drop index name
-    df.fillna(0, inplace=True)  # filling blanks with zero
-
-    # split out into county values and multiply by population weighting
-    #df = calc_population_county_weight(df)
-    #energy_columns = df.columns[3:]
-    #for d in energy_columns:
-    #    df[d] = df[d] * df['pop_weight']
-    #    df[d] = df[d].round(2)
-
-    # rename columns to add descriptive language
-    df.rename(columns=msn_prod_dict, inplace=True)
-
-    # remove unneeded columns
-    #df = df.drop(['pop_weight'], axis=1)
+    df = df[["State", "petroleum_production"]]
+    df_petroleum_loc = df_petroleum_loc[['FIPS', 'Stabr', 'oil2011']]
+    
 
     return df
