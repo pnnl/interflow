@@ -764,12 +764,12 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
 
     # add missing states (Idaho, and Alaska)
     idaho_df = {'State': 'ID', 'FIPS': '16075', 'oil_pct': 1}  # Idaho
-    df = df.append(idaho_df, ignore_index=True)
+    df_petroleum_loc = df_petroleum_loc.append(idaho_df, ignore_index=True)
 
     ak_arctic_df = {'State': 'AK', 'FIPS': '02185', 'oil_pct': .9738}  # Alaska, arctic slope region
-    df = df.append(ak_arctic_df, ignore_index=True)
+    df_petroleum_loc = df_petroleum_loc.append(ak_arctic_df, ignore_index=True)
     ak_cook_df = {'State': 'AK', 'FIPS': '02122', 'oil_pct': .0262}  # Alaska, cook inlet basin (kenai peninsula)
-    df = df.append(ak_cook_df, ignore_index=True)
+    df_petroleum_loc = df_petroleum_loc.append(ak_cook_df, ignore_index=True)
 
     # merge 2015 state-level production data with 2011 county level percent data
     df = pd.merge(df_petroleum_loc, df, how='left', on="State")
@@ -777,9 +777,11 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     # calculate 2015 percent by county
     df['petroleum_production'] = df['petroleum_production']*df['oil_pct']
 
+    # reduce dataframe
     df = df[['FIPS', 'petroleum_production']]
 
-    # merge with county data to distribute value to each county in a state
+    # merge with county data to distribute value to each county in a state and include all FIPS
     df = pd.merge(df_loc, df, how='left', on='FIPS')
     df.fillna(0,inplace=True)
+
     return df
