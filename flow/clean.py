@@ -785,3 +785,62 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     df.fillna(0,inplace=True)
 
     return df
+
+def prep_county_natgas_production_data() -> pd.DataFrame:
+    """uses 2011 crude oil production (barrels per year) by county in the US. These values are used to map the state
+    total petroleum production to individual counties based on percent of total.
+
+    :return:                DataFrame of a number of water values for 2015 at the county level
+
+    """
+
+    # read in water use data for 2015 in million gallons per day by county
+
+    # read in data
+    df = prep_state_fuel_production_data()  # read in 2015 state level petroleum production data
+    df_ng_loc = get_county_oil_gas_production_data()  # read in 2011 county level oil data
+    df_loc = prep_water_use_2015() # read in FIPS codes and states from 2015 water dataset
+
+    # reduce dataframes to required variables
+    df = df[["State", "natgas_production"]]
+    df_ng_loc = df_ng_loc[['FIPS', 'Stabr', 'gas2011']]
+
+    # calculate percent of total 2011 state oil production by county
+    df_ng_loc_sum = df_ng_loc[['Stabr','oil2011']].groupby("Stabr", as_index=False).sum()
+    df_ng_loc_sum = df_ng_loc_sum.rename(columns={"gas2011": "state_total"})
+    df_ng_loc = pd.merge(df_ng_loc, df_ng_loc_sum, how= 'left', on='Stabr')
+    df_ng_loc['gas_pct'] = df_ng_loc['gas2011']/df_ng_loc['state_total']
+
+    # rename columns
+    df_ng_loc = df_ng_loc.rename(columns={"Stabr": "State"})
+    df_ng_loc['FIPS'] = df_ng_loc['FIPS'].apply(lambda x: '{0:0>5}'.format(x))  # add leading zero
+
+    # add missing states (Idaho, and Alaska)
+    idaho_df = {'State': 'ID', 'FIPS': '16075', 'gas_pct': 1}  # Idaho
+    df_ng_loc = df_ng_loc.append(idaho_df, ignore_index=True)
+
+    ak_arctic_df = {'State': 'AK', 'FIPS': '02185', 'gas_pct': .9608}  # Alaska, arctic slope region
+    df_ng_loc = df_ng_loc.append(ak_arctic_df, ignore_index=True)
+    ak_cook_df = {'State': 'AK', 'FIPS': '02122', 'gas_pct': .0392}  # Alaska, cook inlet basin (kenai peninsula)
+    df_ng_loc = df_ng_loc.append(ak_cook_df, ignore_index=True)
+
+    # Maryland
+
+    # Nevada
+
+    # Oregon
+
+    # merge 2015 state-level production data with 2011 county level percent data
+    df = pd.merge(df_ng_loc, df, how='left', on="State")
+
+    # calculate 2015 percent by county
+    df['natgas_production'] = df['natgas_production']*df['gas_pct']
+
+    # reduce dataframe
+    df = df[['FIPS', 'natgas_production']]
+
+    # merge with county data to distribute value to each county in a state and include all FIPS
+    df = pd.merge(df_loc, df, how='left', on='FIPS')
+    df.fillna(0,inplace=True)
+
+    return df
