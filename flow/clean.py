@@ -719,7 +719,16 @@ def prep_state_fuel_production_data() -> pd.DataFrame:
     df = df[df.State != "X5"]  # drop offshore (pacific) values
     df = df[df.State != "US"]  # drop total US values
     df.fillna(0, inplace=True)  # filling blanks with zero
+
     df.rename(columns=msn_prod_dict, inplace=True)  # rename columns to add descriptive language
+
+    # add rows for puerto rico and virgin islands
+    pr_df = {'State': 'PR', 'petroleum_production': 0, 'biomass_production': 0,
+           'natgas_production': 0, 'coal_production': 0}
+    vi_df = {'State': 'VI', 'petroleum_production': 0, 'biomass_production': 0,
+           'natgas_production': 0, 'coal_production': 0}
+    df = df.append(pr_df, ignore_index=True)
+    df = df.append(vi_df, ignore_index=True)
 
     return df
 
@@ -738,7 +747,22 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     df_petroleum_loc = get_county_oil_gas_production_data()
 
     df = df[["State", "petroleum_production"]]
+
+
     df_petroleum_loc = df_petroleum_loc[['FIPS', 'Stabr', 'oil2011']]
-    
+
+    df_petroleum_loc_sum = df_petroleum_loc[['Stabr','oil2011']].groupby("Stabr", as_index=False).sum()
+    df_petroleum_loc_sum = df_petroleum_loc_sum.rename(columns={"oil2011": "state_total"})
+    df_petroleum_loc = pd.merge(df_petroleum_loc,df_petroleum_loc_sum, how= 'left', on='Stabr')
+    df_petroleum_loc['oil_pct'] = df_petroleum_loc['oil2011']/df_petroleum_loc['state_total']
+    df_petroleum_loc = df_petroleum_loc.rename(columns={"Stabr": "State"})
+    df_petroleum_loc['FIPS'] = df_petroleum_loc['FIPS'].apply(lambda x: '{0:0>5}'.format(x))  # add leading zero
+
+
+
+    df = pd.merge(df_petroleum_loc, df, how='left', on="State")
+
+    df['petroleum_production'] = df['petroleum_production']*df['oil_pct']
+
 
     return df
