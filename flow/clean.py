@@ -734,7 +734,8 @@ def prep_state_fuel_production_data() -> pd.DataFrame:
 
 
 def prep_county_petroleum_production_data() -> pd.DataFrame:
-    """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
+    """uses 2011 crude oil production (barrels per year) by county in the US. These values are used to map the state
+    total petroleum production to individual counties based on percent of total.
 
     :return:                DataFrame of a number of water values for 2015 at the county level
 
@@ -742,27 +743,40 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
 
     # read in water use data for 2015 in million gallons per day by county
 
-    # read in energy production data
-    df = prep_state_fuel_production_data()
-    df_petroleum_loc = get_county_oil_gas_production_data()
+    # read in data
+    df = prep_state_fuel_production_data()  # read in 2015 state level petroleum production data
+    df_petroleum_loc = get_county_oil_gas_production_data()  # read in 2011 county level oil data
+    df_loc = prep_water_use_2015() # read in FIPS codes and states from 2015 water dataset
 
+    # reduce dataframes to required variables
     df = df[["State", "petroleum_production"]]
-
-
     df_petroleum_loc = df_petroleum_loc[['FIPS', 'Stabr', 'oil2011']]
 
+    # calculate percent of total 2011 state oil production by county
     df_petroleum_loc_sum = df_petroleum_loc[['Stabr','oil2011']].groupby("Stabr", as_index=False).sum()
     df_petroleum_loc_sum = df_petroleum_loc_sum.rename(columns={"oil2011": "state_total"})
     df_petroleum_loc = pd.merge(df_petroleum_loc,df_petroleum_loc_sum, how= 'left', on='Stabr')
     df_petroleum_loc['oil_pct'] = df_petroleum_loc['oil2011']/df_petroleum_loc['state_total']
+
+    # rename columns
     df_petroleum_loc = df_petroleum_loc.rename(columns={"Stabr": "State"})
     df_petroleum_loc['FIPS'] = df_petroleum_loc['FIPS'].apply(lambda x: '{0:0>5}'.format(x))  # add leading zero
 
+    # add missing states (Idaho, and Alaska)
+    idaho_df = {'State': 'ID', 'FIPS': '16075', 'oil_pct': 1}  # Idaho
+    df = df.append(idaho_df, ignore_index=True)
 
 
+
+    # merge 2015 state-level production data with 2011 county level percent data
     df = pd.merge(df_petroleum_loc, df, how='left', on="State")
 
+    # calculate 2015 percent by county
     df['petroleum_production'] = df['petroleum_production']*df['oil_pct']
 
+    df = df[['FIPS', 'petroleum_production']]
 
+    # merge with county data to distribute value to each county in a state
+    df = pd.merge(df_loc, df, how='left', on='FIPS')
+    df.fillna(0,inplace=True)
     return df
