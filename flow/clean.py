@@ -817,22 +817,16 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
 
     # add missing states (Idaho, and Alaska)
     idaho_df = {'State': 'ID', 'FIPS': '16075', 'gas_pct': 1}  # Idaho
-    df_ng_loc = df_ng_loc.append(idaho_df, ignore_index=True)
-
     ak_arctic_df = {'State': 'AK', 'FIPS': '02185', 'gas_pct': .9608}  # Alaska, arctic slope region
-    df_ng_loc = df_ng_loc.append(ak_arctic_df, ignore_index=True)
     ak_cook_df = {'State': 'AK', 'FIPS': '02122', 'gas_pct': .0392}  # Alaska, cook inlet basin (kenai peninsula)
-    df_ng_loc = df_ng_loc.append(ak_cook_df, ignore_index=True)
-
-    # Maryland
     md_garret_df = {'State': 'MD', 'FIPS': '24023', 'gas_pct': .5}  # Maryland, Garret County
-    df_ng_loc = df_ng_loc.append(md_garret_df, ignore_index=True)
     md_allegany_df = {'State': 'MD', 'FIPS': '24023', 'gas_pct': .5}  # Maryland, Allegany County
-    df_ng_loc = df_ng_loc.append(md_allegany_df, ignore_index=True)
+    nv_nye_df = {'State': 'MD', 'FIPS': '32023', 'gas_pct': 1}  # Nevada, Nye County
+    or_columbia_df = {'State': 'OR', 'FIPS': '41009', 'gas_pct': 1}  # Oregon, Columbia County
+    ng_list = [idaho_df, ak_arctic_df,ak_cook_df, md_garret_df, md_allegany_df, nv_nye_df, or_columbia_df]
 
-    # Nevada
-
-    # Oregon
+    for county in ng_list:
+        df_ng_loc = df_ng_loc.append(county, ignore_index=True)
 
     # merge 2015 state-level production data with 2011 county level percent data
     df = pd.merge(df_ng_loc, df, how='left', on="State")
