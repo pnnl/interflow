@@ -391,7 +391,7 @@ def get_coal_mine_location_data():
     data = pkg_resources.resource_filename('flow', 'data/Coal_Mine_Loc.csv')
 
     # read in read in coal mine data
-    return pd.read_csv(data, dtype={'FIPS_CNTY_CD': str})
+    return pd.read_csv(data, dtype={'FIPS_CNTY_CD': str}, usecols=["MINE_ID", "STATE", "FIPS_CNTY_CD"])
 
 
 def get_state_fips_data():

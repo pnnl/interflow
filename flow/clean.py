@@ -842,3 +842,33 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     df.fillna(0,inplace=True)
 
     return df
+
+def prep_county_coal_production_data() -> pd.DataFrame:
+    """uses 2011 crude oil production (barrels per year) by county in the US. These values are used to map the state
+    total petroleum production to individual counties based on percent of total.
+
+    :return:                DataFrame of a number of water values for 2015 at the county level
+
+    """
+
+    # read in water use data for 2015 in million gallons per day by county
+
+    # read in data
+    df_coal_loc = get_coal_mine_location_data()  # read in 2011 county level oil data
+    df_fips = get_state_fips_data()
+    df_coal = get_coal_production_data()
+
+    # merge coal mining location with state FIPS key to get full FIPS code by mine ID
+    df_coal_loc = pd.merge(df_coal_loc, df_fips, how="left", on="STATE")
+
+    # add leading zeroes to the County FIPS codes
+    df_coal_loc['FIPS_CNTY_CD'] = df_coal_loc['FIPS_CNTY_CD'].apply(lambda x: '{0:0>3}'.format(x))
+
+    # create a single state+county FIPS code
+    df_coal_loc["FIPS"] = df_coal_loc['State_FIPS'] + df_coal_loc['FIPS_CNTY_CD']
+
+    # reduce to needed variables
+    #df_coal_loc = df_coal_loc[["MINE_ID", "FIPS"]]
+
+
+    return df_coal_loc
