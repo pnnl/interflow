@@ -825,6 +825,10 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     df_ng_loc = df_ng_loc.append(ak_cook_df, ignore_index=True)
 
     # Maryland
+    md_garret_df = {'State': 'MD', 'FIPS': '24023', 'gas_pct': .5}  # Maryland, Garret County
+    df_ng_loc = df_ng_loc.append(md_garret_df, ignore_index=True)
+    md_allegany_df = {'State': 'MD', 'FIPS': '24023', 'gas_pct': .5}  # Maryland, Allegany County
+    df_ng_loc = df_ng_loc.append(md_allegany_df, ignore_index=True)
 
     # Nevada
 
