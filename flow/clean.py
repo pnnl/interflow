@@ -764,12 +764,12 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
 
     # add missing states (Idaho, and Alaska)
     idaho_df = {'State': 'ID', 'FIPS': '16075', 'oil_pct': 1}  # Idaho
-    df_petroleum_loc = df_petroleum_loc.append(idaho_df, ignore_index=True)
-
     ak_arctic_df = {'State': 'AK', 'FIPS': '02185', 'oil_pct': .9738}  # Alaska, arctic slope region
-    df_petroleum_loc = df_petroleum_loc.append(ak_arctic_df, ignore_index=True)
     ak_cook_df = {'State': 'AK', 'FIPS': '02122', 'oil_pct': .0262}  # Alaska, cook inlet basin (kenai peninsula)
-    df_petroleum_loc = df_petroleum_loc.append(ak_cook_df, ignore_index=True)
+    oil_list = [idaho_df, ak_arctic_df, ak_cook_df]
+
+    for oil_county in oil_list:
+        df_petroleum_loc = df_petroleum_loc.append(oil_county, ignore_index=True)
 
     # merge 2015 state-level production data with 2011 county level percent data
     df = pd.merge(df_petroleum_loc, df, how='left', on="State")
@@ -806,7 +806,7 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     df_ng_loc = df_ng_loc[['FIPS', 'Stabr', 'gas2011']]
 
     # calculate percent of total 2011 state oil production by county
-    df_ng_loc_sum = df_ng_loc[['Stabr','oil2011']].groupby("Stabr", as_index=False).sum()
+    df_ng_loc_sum = df_ng_loc[['Stabr','gas2011']].groupby("Stabr", as_index=False).sum()
     df_ng_loc_sum = df_ng_loc_sum.rename(columns={"gas2011": "state_total"})
     df_ng_loc = pd.merge(df_ng_loc, df_ng_loc_sum, how= 'left', on='Stabr')
     df_ng_loc['gas_pct'] = df_ng_loc['gas2011']/df_ng_loc['state_total']
@@ -815,15 +815,15 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     df_ng_loc = df_ng_loc.rename(columns={"Stabr": "State"})
     df_ng_loc['FIPS'] = df_ng_loc['FIPS'].apply(lambda x: '{0:0>5}'.format(x))  # add leading zero
 
-    # add missing states (Idaho, and Alaska)
+    # add rows with missing county percentages to cover all states in 2015 production
     idaho_df = {'State': 'ID', 'FIPS': '16075', 'gas_pct': 1}  # Idaho
     ak_arctic_df = {'State': 'AK', 'FIPS': '02185', 'gas_pct': .9608}  # Alaska, arctic slope region
     ak_cook_df = {'State': 'AK', 'FIPS': '02122', 'gas_pct': .0392}  # Alaska, cook inlet basin (kenai peninsula)
     md_garret_df = {'State': 'MD', 'FIPS': '24023', 'gas_pct': .5}  # Maryland, Garret County
-    md_allegany_df = {'State': 'MD', 'FIPS': '24023', 'gas_pct': .5}  # Maryland, Allegany County
-    nv_nye_df = {'State': 'MD', 'FIPS': '32023', 'gas_pct': 1}  # Nevada, Nye County
+    md_allegany_df = {'State': 'MD', 'FIPS': '24001', 'gas_pct': .5}  # Maryland, Allegany County
+    nv_nye_df = {'State': 'NV', 'FIPS': '32023', 'gas_pct': 1}  # Nevada, Nye County
     or_columbia_df = {'State': 'OR', 'FIPS': '41009', 'gas_pct': 1}  # Oregon, Columbia County
-    ng_list = [idaho_df, ak_arctic_df,ak_cook_df, md_garret_df, md_allegany_df, nv_nye_df, or_columbia_df]
+    ng_list = [idaho_df, ak_arctic_df, ak_cook_df, md_garret_df, md_allegany_df, nv_nye_df, or_columbia_df]
 
     for county in ng_list:
         df_ng_loc = df_ng_loc.append(county, ignore_index=True)
