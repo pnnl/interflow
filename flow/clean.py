@@ -766,7 +766,10 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     idaho_df = {'State': 'ID', 'FIPS': '16075', 'oil_pct': 1}  # Idaho
     df = df.append(idaho_df, ignore_index=True)
 
-
+    ak_arctic_df = {'State': 'AK', 'FIPS': '02185', 'oil_pct': .9738}  # Alaska, arctic slope region
+    df = df.append(ak_arctic_df, ignore_index=True)
+    ak_cook_df = {'State': 'AK', 'FIPS': '02122', 'oil_pct': .0262}  # Alaska, cook inlet basin (kenai peninsula)
+    df = df.append(ak_cook_df, ignore_index=True)
 
     # merge 2015 state-level production data with 2011 county level percent data
     df = pd.merge(df_petroleum_loc, df, how='left', on="State")
