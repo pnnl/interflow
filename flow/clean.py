@@ -961,6 +961,9 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
 
     # read in data
     df_corn = get_corn_irrigation_data()  # coal mine location data
+    df_irr_water = prep_water_use_2015(variables=['State', 'IR-WGWFr', 'IR-WSWFr'])
+    df_loc = prep_water_use_2015()
+
 
     # set up variables
     ethanol_fraction = 0.38406  # corn gron for ethanol fraction
@@ -986,9 +989,21 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
     df_corn["water_total"] = df_corn["surface_total"] + df_corn["Ground"]  # sum surface water and groundwater
     df_corn['surface_frac'] = df_corn["surface_total"] / df_corn["water_total"]  # surface water fraction
 
+    # calculate irrigation surface water to groundwater ratio for each state from 2015 USGS water dataset
+    df_irr_water = df_irr_water.groupby("State", as_index=False).sum()
+    df_irr_water['surface_frac'] = df_irr_water['IR-WSWFr']/(df_irr_water['IR-WSWFr'] + df_irr_water['IR-WGWFr'])
+    df_irr_water = df_irr_water[['State', 'surface_frac']]
+
+
+
     # split up ethanol corn irrigation water by surface and groundwater source percentages
-    df_corn['sw_ethanol_corn'] = df_corn['surface_frac']*df_corn["ethanol_corn_mgal"]
-    df_corn['gw_ethanol_corn'] = (1-df_corn['surface_frac'])*df_corn["ethanol_corn_mgal"]
+    df_corn['sw_ethanol_corn'] = (df_corn['surface_frac']*df_corn["ethanol_corn_mgal"]).round(4)
+    df_corn['gw_ethanol_corn'] = ((1-df_corn['surface_frac'])*df_corn["ethanol_corn_mgal"]).round(4)
+    df_corn.fillna(0, inplace=True)  # replaces blank values with 0
+
+    # reduce variables
+    df_corn = df_corn[['State', 'sw_ethanol_corn', 'gw_ethanol_corn']]
 
 
-    return df_corn
+
+    return df_irr_water
