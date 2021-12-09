@@ -404,4 +404,16 @@ def get_state_fips_data():
     data = pkg_resources.resource_filename('flow', 'data/State_FIPS_Code.csv')
 
     # read in read in state fips code to state abbrev. data
-    return pd.read_csv(data, dtype={'STATEFIPS': str})
+    return pd.read_csv(data, dtype={'State_FIPS': str})
+
+def get_ethanol_location_data():
+    """Read in a dataframe of state FIPS code by state abbreviation
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/eia819_ethanolcapacity_2015.csv')
+
+    # read in read in state fips code to state abbrev. data
+    return pd.read_csv(data, dtype={'FIPS': str}, skiprows=1)

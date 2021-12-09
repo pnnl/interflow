@@ -854,21 +854,78 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     # read in water use data for 2015 in million gallons per day by county
 
     # read in data
-    df_coal_loc = get_coal_mine_location_data()  # read in 2011 county level oil data
-    df_fips = get_state_fips_data()
-    df_coal = get_coal_production_data()
+    df_coal_loc = get_coal_mine_location_data()  # coal mine location data
+    df_fips = get_state_fips_data()  # State-level FIPS codes
+    df_coal = get_coal_production_data()  # coal mine production data
+    df_loc = prep_water_use_2015()  # read in FIPS codes and states from 2015 water dataset
 
-    # merge coal mining location with state FIPS key to get full FIPS code by mine ID
-    df_coal_loc = pd.merge(df_coal_loc, df_fips, how="left", on="STATE")
+    # establish variables and unit conversions
+    shortton_bbtu_conversion = 0.02009  # one short ton is equal to 0.02009 bbtu
 
-    # add leading zeroes to the County FIPS codes
-    df_coal_loc['FIPS_CNTY_CD'] = df_coal_loc['FIPS_CNTY_CD'].apply(lambda x: '{0:0>3}'.format(x))
+    # process coal mine location data to get coal mine ID and associated FIPS code
+    df_coal_loc = df_coal_loc.rename(columns={"STATE": "State"}) # rename column
+    df_coal_loc = pd.merge(df_coal_loc, df_fips, how="left", on="State")  # merge coal mine location and state FIPS
+    df_coal_loc['FIPS_CNTY_CD'] = df_coal_loc['FIPS_CNTY_CD'].apply(lambda x: '{0:0>3}'.format(x))  # leading zeroes
+    df_coal_loc["FIPS"] = df_coal_loc['State_FIPS'] + df_coal_loc['FIPS_CNTY_CD']  # create single FIPS code
+    df_coal_loc['FIPS'] = df_coal_loc['FIPS'].apply(lambda x: '{0:0>5}'.format(x))  # add leading zero
+    df_coal_loc = df_coal_loc[["MINE_ID", "FIPS"]]  # reduce to needed variables
 
-    # create a single state+county FIPS code
-    df_coal_loc["FIPS"] = df_coal_loc['State_FIPS'] + df_coal_loc['FIPS_CNTY_CD']
+    # process coal mine production data
+    df_coal = df_coal.rename(columns={"MSHA ID": "MINE_ID"})     # renaming Mine ID column
+    df_coal = df_coal[['MINE_ID', 'Mine Type', 'Production (short tons)']]  # reduce to variables of interest
 
-    # reduce to needed variables
-    #df_coal_loc = df_coal_loc[["MINE_ID", "FIPS"]]
+    # combine coal mine production and location data
+    df_coal = pd.merge(df_coal, df_coal_loc, how="left", on="MINE_ID") # merge dataframes
+
+    # fill in missing FIPS codes for two mines
+    df_coal['FIPS'] = np.where(df_coal['MINE_ID'] == 3609086, "42051", df_coal['FIPS'])
+    df_coal['FIPS'] = np.where(df_coal['MINE_ID'] == 3607079, "42079", df_coal['FIPS'])
+
+    # reorganize dataframe to get mine type as a column and individual row for each FIPS code
+    df_coal = pd.pivot_table(df_coal, values='Production (short tons)',   # pivot dataframe
+                             index=['FIPS'], columns=['Mine Type'], aggfunc=np.sum)
+    df_coal = df_coal.reset_index()  # reset index to remove multi-index from pivot table
+    df_coal = df_coal.rename_axis(None, axis=1)  # drop index name
+    df_coal.fillna(0, inplace=True)
+
+    # calculate total coal production per county in billion btus
+    df_coal['coal_production_bbtu'] = (df_coal['Refuse'] + df_coal['Surface']
+                                       + df_coal['Underground'])*shortton_bbtu_conversion
+
+    # rename short ton production columns to add units
+    coal_prod_dict = {"Refuse": "refuse_coal_shortton",  # refuse coal production in short tons
+                     "Surface": "surface_coal_shortton",  # coal production from surface mines in short tons
+                     "Underground": "underground_coal_shortton",  # coal production from underground mines in short tons
+                     }
+    df_coal.rename(columns=coal_prod_dict, inplace=True)  # rename columns to add descriptive language
+
+    # merge with full county data to distribute value to each county in a state and include all FIPS
+    df_coal = pd.merge(df_loc, df_coal, how='left', on='FIPS')
+    df_coal.fillna(0, inplace=True)
+
+    return df_coal
+
+def prep_county_ethanol_production_data() -> pd.DataFrame:
+    """uses 2011 crude oil production (barrels per year) by county in the US. These values are used to map the state
+    total petroleum production to individual counties based on percent of total.
+
+    :return:                DataFrame of a number of water values for 2015 at the county level
+
+    """
+
+    # read in water use data for 2015 in million gallons per day by county
+
+    # read in data
+    df_ethanol_loc = get_ethanol_location_data()  # coal mine location data
+    df_coal = prep_state_fuel_production_data()  # coal mine production data
+    df_loc = prep_water_use_2015()  # read in FIPS codes and states from 2015 water dataset
+
+    # calculate percentage of state total ethanol production for each county in ethanol plant location data
+    df_ethanol_loc = df_ethanol_loc[["State","FIPS", "Mmgal/yr"]]
+    df_ethanol_loc = df_ethanol_loc.groupby("FIPS", as_index=False).sum()
+    df_ethanol_loc_sum = df_ethanol_loc.groupby("State", as_index=False).sum()
+    df_ethanol_loc_sum = df_ethanol_loc_sum.rename(columns={"Mmgal/yr": "State Total"})
+    df_ethanol_loc = pd.merge(df_ethanol_loc, df_ethanol_loc_sum, how='left',on='State')
 
 
-    return df_coal_loc
+    return df_ethanol_loc
