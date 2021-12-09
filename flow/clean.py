@@ -775,7 +775,7 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     df = pd.merge(df_petroleum_loc, df, how='left', on="State")
 
     # calculate 2015 percent by county
-    df['petroleum_production'] = df['petroleum_production']*df['oil_pct']
+    df['petroleum_production_bbtu'] = df['petroleum_production']*df['oil_pct']
 
     # reduce dataframe
     df = df[['FIPS', 'petroleum_production']]
@@ -832,10 +832,10 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     df = pd.merge(df_ng_loc, df, how='left', on="State")
 
     # calculate 2015 percent by county
-    df['natgas_production'] = df['natgas_production']*df['gas_pct']
+    df['natgas_production_bbtu'] = df['natgas_production']*df['gas_pct']
 
     # reduce dataframe
-    df = df[['FIPS', 'natgas_production']]
+    df = df[['FIPS', 'natgas_production_bbtu']]
 
     # merge with county data to distribute value to each county in a state and include all FIPS
     df = pd.merge(df_loc, df, how='left', on='FIPS')
@@ -917,15 +917,35 @@ def prep_county_ethanol_production_data() -> pd.DataFrame:
 
     # read in data
     df_ethanol_loc = get_ethanol_location_data()  # coal mine location data
-    df_coal = prep_state_fuel_production_data()  # coal mine production data
+    df_ethanol_production = prep_state_fuel_production_data()  # coal mine production data
     df_loc = prep_water_use_2015()  # read in FIPS codes and states from 2015 water dataset
 
     # calculate percentage of state total ethanol production for each county in ethanol plant location data
-    df_ethanol_loc = df_ethanol_loc[["State","FIPS", "Mmgal/yr"]]
-    df_ethanol_loc = df_ethanol_loc.groupby("FIPS", as_index=False).sum()
+    df_ethanol_loc = df_ethanol_loc[["State", "FIPS", "Mmgal/yr"]]
+    df_ethanol_loc = df_ethanol_loc.groupby(["State", "FIPS"], as_index=False).sum()
     df_ethanol_loc_sum = df_ethanol_loc.groupby("State", as_index=False).sum()
     df_ethanol_loc_sum = df_ethanol_loc_sum.rename(columns={"Mmgal/yr": "State Total"})
     df_ethanol_loc = pd.merge(df_ethanol_loc, df_ethanol_loc_sum, how='left',on='State')
 
+    df_ethanol_loc['ethanol_pct'] = df_ethanol_loc['Mmgal/yr']/df_ethanol_loc['State Total']
+    df_ethanol_loc = df_ethanol_loc[['State','FIPS','ethanol_pct']]
 
-    return df_ethanol_loc
+    # add missing row for wyoming county ethanol production
+    wy_df = {'State': 'WY', 'FIPS': '56015', 'ethanol_pct': 1}  # Goshen County, Wyoming
+    df_ethanol_loc = df_ethanol_loc.append(wy_df, ignore_index=True)
+
+    df_ethanol_loc['FIPS'] = df_ethanol_loc['FIPS'].apply(lambda x: '{0:0>5}'.format(x))  # add leading zero
+
+    # merge ethanol location data with ethanol production data
+    df_ethanol_production = df_ethanol_production[['State', 'biomass_production']]
+    df_biomass = pd.merge(df_ethanol_loc, df_ethanol_production, how='left', on='State')
+
+    # split out state level 2015 ethanol production to individual counties by state
+    df_biomass['biomass_production_bbtu'] = df_biomass['biomass_production']*df_biomass['ethanol_pct']
+    df_biomass = df_biomass[['FIPS', 'biomass_production_bbtu']]
+
+    # merge with full county data to distribute value to each county in a state and include all FIPS
+    df_biomass = pd.merge(df_loc, df_biomass, how='left', on='FIPS')
+    df_biomass.fillna(0, inplace=True)
+
+    return df_biomass
