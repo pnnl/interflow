@@ -962,6 +962,33 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
     # read in data
     df_corn = get_corn_irrigation_data()  # coal mine location data
 
+    # set up variables
+    ethanol_fraction = 0.38406  # corn gron for ethanol fraction
+    af_gal_conversion = 325851  # acre ft to gallon conversion
+
+    # clean data
+    df_corn.fillna(0, inplace=True)  # replaces blank values with 0
+
+    # calculate the irrigation intensity for all crops by state (total gallons per year)
+    df_corn["gallons_applied"] = af_gal_conversion*df_corn["Acre-feet-Applied_All"] # gallons applied to all crops
+    df_corn["irr_intensity"] = df_corn["gallons_applied"] / df_corn["Total_Acres_Irrigated_All"]  # gal/acre all crops
+    df_corn["irr_intensity"] = df_corn["irr_intensity"]/10**6  # convert to million gallons/acre
+
+    # calculate the amount of corn grown for ethanol production in each state
+    df_corn["corn_prod"] = ethanol_fraction * df_corn["Acres_Corn_Harvested"]  # acres of corn for ethanol by state
+
+    # calculate the total amount of water (mgal/year) applied the corn grown for ethanol
+    df_corn["ethanol_corn_mgal"] = df_corn["irr_intensity"] * df_corn["corn_prod"]
+    df_corn["ethanol_corn_mgal"] = (df_corn["ethanol_corn_mgal"]/365).round(4)  # convert to million gallons per day
+
+    # calculate surface water vs. groundwater fraction in corn irrigation
+    df_corn["surface_total"] = df_corn["Off"] + df_corn["Surface"]  # adds off-farm and surface together for surface
+    df_corn["water_total"] = df_corn["surface_total"] + df_corn["Ground"]  # sum surface water and groundwater
+    df_corn['surface_frac'] = df_corn["surface_total"] / df_corn["water_total"]  # surface water fraction
+
+    # split up ethanol corn irrigation water by surface and groundwater source percentages
+    df_corn['sw_ethanol_corn'] = df_corn['surface_frac']*df_corn["ethanol_corn_mgal"]
+    df_corn['gw_ethanol_corn'] = (1-df_corn['surface_frac'])*df_corn["ethanol_corn_mgal"]
 
 
     return df_corn
