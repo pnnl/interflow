@@ -906,14 +906,13 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     return df_coal
 
 def prep_county_ethanol_production_data() -> pd.DataFrame:
-    """uses 2011 crude oil production (barrels per year) by county in the US. These values are used to map the state
-    total petroleum production to individual counties based on percent of total.
+    """ Takes 2015 eia data on ethanol plant capacity with locational data and combines with state level biomass
+     (ethanol) production from prep_state_fuel_production_data() to split out state total by county. Returns a
+     dataframe of ethanol production (bbtu) by county FIPS for each county in the US for 2015.
 
     :return:                DataFrame of a number of water values for 2015 at the county level
 
     """
-
-    # read in water use data for 2015 in million gallons per day by county
 
     # read in data
     df_ethanol_loc = get_ethanol_location_data()  # coal mine location data
