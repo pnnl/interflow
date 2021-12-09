@@ -948,3 +948,20 @@ def prep_county_ethanol_production_data() -> pd.DataFrame:
     df_biomass.fillna(0, inplace=True)
 
     return df_biomass
+
+
+def prep_county_water_corn_biomass_data() -> pd.DataFrame:
+    """ Takes 2015 eia data on ethanol plant capacity with locational data and combines with state level biomass
+     (ethanol) production from prep_state_fuel_production_data() to split out state total by county. Returns a
+     dataframe of ethanol production (bbtu) by county FIPS for each county in the US for 2015.
+
+    :return:                DataFrame of a number of water values for 2015 at the county level
+
+    """
+
+    # read in data
+    df_corn = get_corn_irrigation_data()  # coal mine location data
+
+
+
+    return df_corn
