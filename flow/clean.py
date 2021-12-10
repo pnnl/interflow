@@ -6,7 +6,8 @@ from .reader import *
 
 
 def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
-    """prepping USGS 2015 water use data by replacing missing values,
+    """prepping USGS 2015 water use data by replacing non-numeric values, reducing variables in output dataframe
+    to only include those that are necessary, and rename columns appropriately.
 
     :return:                DataFrame of a number of water values for 2015 at the county level
 
@@ -19,17 +20,41 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
     df.replace("--", 0, inplace=True)
 
     # creating a list of required variables from full dataset and reducing dataframe
-    variables_list = ['FIPS', 'STATE', 'COUNTY',
-                      'TP-TotPop', 'PS-WGWFr', 'PS-WSWFr', 'PS-WGWSa', 'PS-WSWSa', 'DO-PSDel',
-                      'PS-Wtotl', 'DO-WGWFr', 'DO-WSWFr', 'PT-WGWFr', 'PT-WGWSa', 'PT-WSWFr',
-                      'PT-WSWSa', 'PT-RecWW', 'PT-PSDel', 'PT-CUTot', 'IN-WGWFr', 'IN-WSWFr',
-                      'IN-WGWSa', 'IN-WSWSa', 'MI-WGWFr', 'MI-WSWFr', 'MI-WGWSa', 'MI-WSWSa',
-                      'IR-WGWFr', 'IR-WSWFr', 'IR-CUsFr'
-                      ]
-    df = df[variables_list]
+    variables_dict = {'FIPS': 'FIPS',
+                      'STATE': 'State',
+                      'COUNTY': 'County',
+                      'TP-TotPop': 'population',
+                      'PS-WGWFr': 'fresh_groundwater_pws_mgd',
+                      'PS-WSWFr': 'fresh_surface_water_pws_mgd',
+                      'PS-WGWSa': 'saline_groundwater_pws_mgd',
+                      'PS-WSWSa': 'saline_surface_water_pws_mgd',
+                      'DO-PSDel': 'pws_residential_mgd',
+                      'PS-Wtotl': 'total_pws_mgd',
+                      'DO-WGWFr': 'fresh_groundwater_residential_mgd',
+                      'DO-WSWFr': 'fresh_surface_water_residential_mgd',
+                      'PT-WGWFr': 'fresh_groundwater_thermoelectric_mgd',
+                      'PT-WGWSa': 'saline_groundwater_thermoelectric_mgd',
+                      'PT-WSWFr': 'fresh_surface_water_thermoelectric_mgd',
+                      'PT-WSWSa': 'saline_surface_water_thermoelectric_mgd',
+                      'PT-RecWW': 'wastewater_thermoelectric_mgd',
+                      'PT-PSDel': 'pws_thermoelectric_mgd',
+                      'PT-CUTot': 'thermoelectric_consumption_mgd',
+                      'IN-WGWFr': 'fresh_groundwater_industrial_mgd',
+                      'IN-WSWFr': 'fresh_surface_water_industrial_mgd',
+                      'IN-WGWSa': 'saline_groundwater_industrial_mgd',
+                      'IN-WSWSa': 'saline_surface_water_industrial_mgd',
+                      'MI-WGWFr': 'fresh_groundwater_mining_mgd',
+                      'MI-WSWFr': 'fresh_surface_water_mining_mgd',
+                      'MI-WGWSa': 'saline_groundwater_mining_mgd',
+                      'MI-WSWSa': 'saline_surface_water_mining_mgd',
+                      'IR-WGWFr': 'fresh_groundwater_irrigation_mgd',
+                      'IR-WSWFr': 'fresh_surface_water_irrigation_mgd',
+                      'IR-CUsFr': 'irrigation_consumption_mgd'
+                      }
+    df = df[variables_dict]
 
     # convert all columns that should be numerical to floats
-    numerical_list = variables_list[3:]  # create a list of columns beyond geographic identifier columns
+    numerical_list = variables_dict[3:]  # create a list of columns beyond geographic identifier columns
     for col in numerical_list:  # convert columns to float
         df[col] = df[col].astype(float)
 
@@ -349,7 +374,6 @@ def prep_electricity_generation() -> pd.DataFrame:
     # read in power plant location data by power plant id
     df_gen_loc = prep_power_plant_location()
     df_loc = prep_water_use_2015()
-
 
     # remove unnecessary variables
     df_gen_loc = df_gen_loc[['FIPS', 'plant_code']]
