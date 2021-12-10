@@ -191,10 +191,10 @@ def prep_county_identifier() -> pd.DataFrame:
     df['FIPS'] = df['FIPS'].apply(lambda x: '{0:0>5}'.format(x))  # add leading zero to FIPS code
 
     # create identifier column with state abbreviation and county name
-    df["identifier"] = df["STATE"] + df["COUNTY_SHORT"]  # create identifier
+    df["county_identifier"] = df["STATE"] + df["COUNTY_SHORT"]  # create identifier
 
     # reduce dataframe
-    df = df[["FIPS", 'identifier']]
+    df = df[["FIPS", 'county_identifier']]
 
     return df
 
@@ -254,8 +254,8 @@ def prep_wastewater_data() -> pd.DataFrame:
     df_ww_loc["PRIMARY_COUNTY"] = df_ww_loc["PRIMARY_COUNTY"].str.replace(' ', '')  # remove spaces between words
     df_ww_loc['CWNS_NUMBER'] = df_ww_loc['CWNS_NUMBER'].apply(lambda x: '{0:0>11}'.format(x))  # add leading zero
 
-    df_ww_loc["identifier"] = df_ww_loc["STATE"] + df_ww_loc["PRIMARY_COUNTY"]  # add identifier column
-    df_ww_loc = pd.merge(df_ww_loc, df_county, how="left", on="identifier")  # merge dataframes
+    df_ww_loc["county_identifier"] = df_ww_loc["STATE"] + df_ww_loc["PRIMARY_COUNTY"]  # add identifier column
+    df_ww_loc = pd.merge(df_ww_loc, df_county, how="left", on="county_identifier")  # merge dataframes
     df_ww_loc = df_ww_loc[["CWNS_NUMBER", "FIPS", "STATE"]]  # reducing to required variables
 
     # wastewater flows (MGD) by plant number
@@ -356,18 +356,18 @@ def prep_power_plant_location() -> pd.DataFrame:
     df_county = prep_county_identifier()
     df_plant = get_power_plant_county_data()
 
-    df_county["identifier"] = df_county['identifier'].str.replace("'", '', regex=True)
-    df_county["identifier"] = df_county["identifier"].str.replace('.', '', regex=True)  # remove periods
-    df_county["identifier"] = df_county["identifier"].str.replace('-', '', regex=True)  # remove dashes
-    df_county["identifier"] = df_county["identifier"].str.replace(r"[^\w ]", '', regex=True)
+    df_county["county_identifier"] = df_county['county_identifier'].str.replace("'", '', regex=True)
+    df_county["county_identifier"] = df_county["county_identifier"].str.replace('.', '', regex=True)  # remove periods
+    df_county["county_identifier"] = df_county["county_identifier"].str.replace('-', '', regex=True)  # remove dashes
+    df_county["county_identifier"] = df_county["county_identifier"].str.replace(r"[^\w ]", '', regex=True)
 
     df_plant = df_plant.drop_duplicates()
     df_plant = df_plant.dropna(subset=["Plant Code"])
 
     df_plant['County'] = df_plant['County'].str.lower()  # change to lowercase
     df_plant["County"] = df_plant["County"].str.replace(' ', '')  # remove spaces between words
-    df_plant["identifier"] = df_plant["State"] + df_plant["County"]  # add identifier column
-    df_plant["identifier"] = df_plant["identifier"].str.replace(r"[^\w ]", '', regex=True)
+    df_plant["county_identifier"] = df_plant["State"] + df_plant["County"]  # add county_identifier column
+    df_plant["county_identifier"] = df_plant["county_identifier"].str.replace(r"[^\w ]", '', regex=True)
 
     city_list = ['VAchesapeakecity', 'VAportsmouthcity', 'VAhopewellcity', 'VAalexandriacity',
                  'VAcovingtoncity', 'VAsuffolkcity', 'VAharrisonburgcity', 'VAsalemcity',
@@ -375,30 +375,30 @@ def prep_power_plant_location() -> pd.DataFrame:
                  'VAvirginiabeachcity', 'VAbristolcity', 'MOstlouiscity']
 
     for i in city_list:
-        df_plant["identifier"] = np.where(df_plant["identifier"] == i,
-                                          df_plant["identifier"].str.replace('city', '', regex=True),
-                                          df_plant["identifier"])
-    df_plant["identifier"] = np.where(df_plant["identifier"] == "MEchainofponds", "MEfranklin", df_plant["identifier"])
-    df_plant["identifier"] = np.where(df_plant["identifier"] == "AKwadehampton", "AKkusilvak", df_plant["identifier"])
-    df_plant["identifier"] = np.where(df_plant["identifier"] == "AKprinceofwalesketchikan",
-                                      "AKprinceofwaleshyder", df_plant["identifier"])
-    df_plant["identifier"] = np.where(df_plant["identifier"] == "AKwrangellpetersburg",
+        df_plant["county_identifier"] = np.where(df_plant["county_identifier"] == i,
+                                          df_plant["county_identifier"].str.replace('city', '', regex=True),
+                                          df_plant["county_identifier"])
+    df_plant["county_identifier"] = np.where(df_plant["county_identifier"] == "MEchainofponds", "MEfranklin", df_plant["county_identifier"])
+    df_plant["county_identifier"] = np.where(df_plant["county_identifier"] == "AKwadehampton", "AKkusilvak", df_plant["county_identifier"])
+    df_plant["county_identifier"] = np.where(df_plant["county_identifier"] == "AKprinceofwalesketchikan",
+                                      "AKprinceofwaleshyder", df_plant["county_identifier"])
+    df_plant["county_identifier"] = np.where(df_plant["county_identifier"] == "AKwrangellpetersburg",
                                       "AKpetersburg", df_plant["identifier"])
-    df_plant["identifier"] = np.where(df_plant["identifier"] == "AKwrangellpetersburg",
-                                      "AKpetersburg", df_plant["identifier"])
+    df_plant["county_identifier"] = np.where(df_plant["county_identifier"] == "AKwrangellpetersburg",
+                                      "AKpetersburg", df_plant["county_identifier"])
 
     skagway_list = [66, 7751, 56542]
     for s in skagway_list:
-        df_plant["identifier"] = np.where(df_plant["Plant Code"] == s,
+        df_plant["county_identifier"] = np.where(df_plant["Plant Code"] == s,
                                           "AKskagway",
-                                          df_plant["identifier"])
+                                          df_plant["county_identifier"])
     hoonah_list = [6702, 7462, 7463]
     for h in hoonah_list:
-        df_plant["identifier"] = np.where(df_plant["Plant Code"] == h,
+        df_plant["county_identifier"] = np.where(df_plant["Plant Code"] == h,
                                           "AKhoonahangoon",
-                                          df_plant["identifier"])
+                                          df_plant["county_identifier"])
 
-    df_plant = pd.merge(df_plant, df_county, how="left", on="identifier")  # merge dataframes
+    df_plant = pd.merge(df_plant, df_county, how="left", on="county_identifier")  # merge dataframes
     df_plant = df_plant.rename(columns={"Plant Code": "plant_code"})
 
     return df_plant
