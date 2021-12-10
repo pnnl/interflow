@@ -54,13 +54,12 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
     df = df[variables_dict]
 
     # convert all columns that should be numerical to floats
-    numerical_list = variables_dict[3:]  # create a list of columns beyond geographic identifier columns
+    numerical_list = list(variables_dict.keys())[3:]  # create a list of columns beyond geographic identifier columns
     for col in numerical_list:  # convert columns to float
         df[col] = df[col].astype(float)
 
-    # change column names to conform to package naming
-    df = df.rename(columns={"COUNTY": "County"})
-    df = df.rename(columns={"STATE": "State"})
+    # rename columns to add descriptive language
+    df.rename(columns=variables_dict, inplace=True)
 
     # return variables specified
     if variables is None and all_variables is False:
