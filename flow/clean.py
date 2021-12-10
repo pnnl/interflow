@@ -19,7 +19,7 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
     # replacing characters for missing USGS data with value of zero
     df.replace("--", 0, inplace=True)
 
-    # creating a list of required variables from full dataset and reducing dataframe
+    # creating a dictionary of required variables from full dataset with descriptive naming
     variables_dict = {'FIPS': 'FIPS',
                       'STATE': 'State',
                       'COUNTY': 'County',
@@ -47,9 +47,21 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'MI-WSWFr': 'fresh_surface_water_mining_mgd',
                       'MI-WGWSa': 'saline_groundwater_mining_mgd',
                       'MI-WSWSa': 'saline_surface_water_mining_mgd',
-                      'IR-WGWFr': 'fresh_groundwater_irrigation_mgd',
-                      'IR-WSWFr': 'fresh_surface_water_irrigation_mgd',
-                      'IR-CUsFr': 'irrigation_consumption_mgd'
+                      'IC-WGWFr': 'fresh_groundwater_crop_irrigation_mgd',
+                      'IC-WSWFr': 'fresh_surface_water_crop_irrigation_mgd',
+                      'IC-RecWW': 'wastewater_crop_irrigation_mgd',
+                      'IC-CUsFr': 'crop_irrigation_freshwater_consumption_mgd',
+                      'IG-WGWFr': 'fresh_groundwater_golf_irrigation_mgd',
+                      'IG-WSWFr': 'fresh_surface_water_golf_irrigation_mgd',
+                      'IG-RecWW': 'wastewater_golf_irrigation_mgd',
+                      'IG-CUsFr': 'golf_irrigation_freshwater_consumption_mgd',
+                      'LI-WGWFr': 'fresh_groundwater_livestock_mgd',
+                      'LI-WSWFr': 'fresh_surface_water_livestock_mgd',
+                      'AQ-WGWFr': 'fresh_groundwater_aquaculture_mgd',
+                      'AQ-WGWSa': 'saline_groundwater_aquaculture_mgd',
+                      'AQ-WSWFr': 'fresh_surface_water_aquaculture_mgd',
+                      'AQ-WSWSa': 'saline_surface_water_aquaculture_mgd'
+
                       }
     df = df[variables_dict]
 
@@ -88,16 +100,6 @@ def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
     # create a complete state + coutny FIPS code from the sum of the state and county level FIPS codes
     df["FIPS"] = df["StateCode"] + df["CountyCode"]
 
-    # creating a list and reducing dataset to required variables
-    variables_list = ['FIPS', 'DO-CUTot', 'DO-WDelv',
-                      'CO-CUTot', 'IN-CUsFr', 'CO-WDelv', 'IN-WFrTo', 'IN-PSDel', 'IN-CUsSa',
-                      'IN-WSaTo', 'MI-CUTot', 'MI-WTotl', 'PT-WSWFr', 'MI-CUsFr', 'MI-WFrTo',
-                      'MI-CUsSa', 'MI-WSaTo', 'LV-CUTot', 'LV-WTotl', 'LA-CUTot', 'LA-WTotl',
-                      'IR-CUTot', 'IR-WTotl', 'HY-InUse', 'HY-InPow', 'IR-CLoss', 'PS-DelCO',
-                      'PS-DelIN', 'PS-UsLos', 'PS-DelTO', 'PS-DelDO', 'PS-DelPT', 'PS-WTotl'
-                      ]
-    df = df[variables_list]
-
     # address FIPS code changes between 1995 and 2015
     df['FIPS'] = np.where(df['FIPS'] == "12025", "12086", df['FIPS'])  # Miami-Dade County, FL
     df['FIPS'] = np.where(df['FIPS'] == "46113", "46102", df['FIPS'])  # Oglala Lakota County, SD
@@ -117,8 +119,35 @@ def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
     boulder_index = df.index[df['FIPS'] == "08013"].tolist()  # Broomfield County, CO from Boulder County, CO
     df = df.append(df.loc[boulder_index * 1].assign(FIPS="08014"), ignore_index=True)
 
-    # change column names
-    df = df.rename(columns={"CountyName": "County"})
+    # calculate water consumption fractions as consumptive use divided by delivered water
+    df["DO_CF_Fr"] = df["DO-CUTot"] / df["DO-WDelv"]  # residential (domestic) sector freshwater consumption fraction
+    df["CO_CF_Fr"] = df["CO-CUTot"] / df["CO-WDelv"]  # commercial sector freshwater consumption fraction
+    df["IN_CF_Fr"] = df["IN-CUsFr"] / (df["IN-WFrTo"] + df["IN-PSDel"])  # ind sector freshwater consumption fraction
+    df["IN_CF_Sa"] = df["IN-CUsSa"] / df["IN-WSaTo"]  # industrial sector saline water consumption fraction
+    df["MI_CF_Fr"] = df["MI-CUsFr"] / df["MI-WFrTo"]  # mining sector freshwater consumption fraction
+    df["MI_CF_Sa"] = df["MI-CUsSa"] / df["MI-WSaTo"]  # mining sector saline water consumption fraction
+    df["LV_CF_Fr"] = df["LV-CUTot"] / df["LV-WTotl"]  # livestock freshwater water consumption fraction
+    df["LA_CF_Fr"] = df["LA-CUTot"] / df["LA-WTotl"]  # aquaculture freshwater water consumption fraction
+
+    # Replacing infinite (from divide by zero) with with 0
+    df.replace([np.inf, -np.inf], 0, inplace=True)
+
+    variables_list_1995 = {"FIPS": 'FIPS',
+                           "DO_CF_Fr": "residential_freshwater_consumption_fraction",
+                           "CO_CF_Fr": "residential_freshwater_consumption_fraction",
+                           "IN_CF_Fr": "industrial_freshwater_consumption_fraction",
+                           "IN_CF_Sa": "industrial_saline_water_consumption_fraction",
+                           "MI_CF_Fr": "mining_freshwater_consumption_fraction",
+                           "MI_CF_Sa": "mining_saline_water_consumption_fraction",
+                           "LV_CF_Fr": "livestock_freshwater_consumption_fraction",
+                           "LA_CF_Fr": "aquaculture_freshwater_consumption_fraction"
+                           }
+
+    # reduce full dataframe to required variable list
+    df = df[variables_list_1995]
+
+    # rename columns to add descriptive language
+    df.rename(columns=variables_list_1995, inplace=True)
 
     # merge with full list of counties from 2015 water data
     df = pd.merge(df_loc, df, how='left', on='FIPS')
