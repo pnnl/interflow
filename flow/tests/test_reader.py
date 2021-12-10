@@ -429,8 +429,6 @@ class TestReader(unittest.TestCase):
         # expect STATE as a column name
         self.assertTrue('State' in df.columns)
 
-        # expect STATEFIPS as a column name
-        self.assertTrue('STATEFIPS' in df.columns)
 
 
 if __name__ == '__main__':
