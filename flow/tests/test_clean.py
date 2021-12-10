@@ -33,9 +33,6 @@ class TestClean(unittest.TestCase):
         # load data
         df = prep_water_use_1995()
 
-        # expected number of columns
-        self.assertEqual(df.columns.shape[0], 36)
-
         # ensure data columns are type float
         self.assertEqual(df["FIPS"].dtypes, 'O')
 

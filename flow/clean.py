@@ -64,7 +64,7 @@ def prep_water_use_1995() -> pd.DataFrame:
     df["FIPS"] = df["StateCode"] + df["CountyCode"]
 
     # creating a list of required variables from full 1995 dataset
-    variables_list = ['FIPS', 'State', 'CountyName', 'StateCode', 'DO-CUTot', 'DO-WDelv',
+    variables_list = ['FIPS', 'DO-CUTot', 'DO-WDelv',
                       'CO-CUTot', 'IN-CUsFr', 'CO-WDelv', 'IN-WFrTo', 'IN-PSDel', 'IN-CUsSa',
                       'IN-WSaTo', 'MI-CUTot', 'MI-WTotl', 'PT-WSWFr', 'MI-CUsFr', 'MI-WFrTo',
                       'MI-CUsSa', 'MI-WSaTo', 'LV-CUTot', 'LV-WTotl', 'LA-CUTot', 'LA-WTotl',
@@ -98,10 +98,6 @@ def prep_water_use_1995() -> pd.DataFrame:
 
     # change column names
     df = df.rename(columns={"CountyName": "County"})
-
-    numerical_list = variables_list[4:]
-    for col in numerical_list:
-        df[col] = df[col].astype(float)
 
     return df
 
@@ -342,10 +338,12 @@ def prep_electricity_generation() -> pd.DataFrame:
     df = get_electricity_generation_data()
 
     # read in power plant location data by power plant id
-    df_loc = prep_power_plant_location()
+    df_gen_loc = prep_power_plant_location()
+    df_loc = prep_water_use_2015()
+
 
     # remove unnecessary variables
-    df_loc = df_loc[['FIPS', 'plant_code']]
+    df_gen_loc = df_gen_loc[['FIPS', 'plant_code']]
     df = df[['Plant Id', "AER\nFuel Type Code", "Total Fuel Consumption\nMMBtu", "Net Generation\n(Megawatthours)"]]
 
     # create a dictionary to bin power plant fuel types
@@ -397,7 +395,7 @@ def prep_electricity_generation() -> pd.DataFrame:
     df = df.groupby(['plant_code', 'fuel_type'], as_index=False).sum()
 
     # merging power plant location data with power plant generation data
-    df = pd.merge(df, df_loc, how='left', on='plant_code')
+    df = pd.merge(df, df_gen_loc, how='left', on='plant_code')
 
     # splitting out fuel data into a separate dataframe and pivoting to get fuel (bbtu) as columns by type
     df_fuel = df[["FIPS", "fuel_amt", "fuel_type"]].copy()
@@ -417,7 +415,9 @@ def prep_electricity_generation() -> pd.DataFrame:
 
     df = pd.merge(df_fuel, df_gen, how='left', on='FIPS')
 
-    # TODO map to county list from water data
+    # merge with county data to distribute value to each county in a state
+    df = pd.merge(df_loc, df, how='left', on='FIPS')
+    df.fillna(0, inplace=True)
 
     return df
 
