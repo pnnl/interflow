@@ -6,19 +6,19 @@ from .reader import *
 
 
 def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
-    """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
+    """prepping USGS 2015 water use data by replacing missing values,
 
     :return:                DataFrame of a number of water values for 2015 at the county level
 
     """
 
-    # read in water use data for 2015 in million gallons per day by county
-    df = get_water_use_2015()
+    # read in data
+    df = get_water_use_2015()  # USGS water use data for 2015 in million gallons per day by county
 
     # replacing characters for missing USGS data with value of zero
     df.replace("--", 0, inplace=True)
 
-    # creating a list of required variables from full dataset
+    # creating a list of required variables from full dataset and reducing dataframe
     variables_list = ['FIPS', 'STATE', 'COUNTY',
                       'TP-TotPop', 'PS-WGWFr', 'PS-WSWFr', 'PS-WGWSa', 'PS-WSWSa', 'DO-PSDel',
                       'PS-Wtotl', 'DO-WGWFr', 'DO-WSWFr', 'PT-WGWFr', 'PT-WGWSa', 'PT-WSWFr',
@@ -26,18 +26,18 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'IN-WGWSa', 'IN-WSWSa', 'MI-WGWFr', 'MI-WSWFr', 'MI-WGWSa', 'MI-WSWSa',
                       'IR-WGWFr', 'IR-WSWFr', 'IR-CUsFr'
                       ]
-
-    # reducing dataframe to variables in variables_list
     df = df[variables_list]
 
-    numerical_list = variables_list[3:]
-    for col in numerical_list:
+    # convert all columns that should be numerical to floats
+    numerical_list = variables_list[3:]  # create a list of columns beyond geographic identifier columns
+    for col in numerical_list:  # convert columns to float
         df[col] = df[col].astype(float)
 
-    # change column names
+    # change column names to conform to package naming
     df = df.rename(columns={"COUNTY": "County"})
     df = df.rename(columns={"STATE": "State"})
 
+    # return variables specified
     if variables is None and all_variables is False:
         variables = ['FIPS', "State", "County"]
         df = df[variables]
@@ -57,13 +57,14 @@ def prep_water_use_1995() -> pd.DataFrame:
 
     """
 
-    # read in water use data for 2015 in million gallons per day by county
-    df = get_water_use_1995()
+    # read in data
+    df = get_water_use_1995()  # 1995 USGS water use estimates
+    df_loc = prep_water_use_2015()  # prepared list of counties with FIPS codes
 
-    # create a complete FIPS code from the sum of the state and county level FIPS codes
+    # create a complete state + coutny FIPS code from the sum of the state and county level FIPS codes
     df["FIPS"] = df["StateCode"] + df["CountyCode"]
 
-    # creating a list of required variables from full 1995 dataset
+    # creating a list and reducing dataset to required variables
     variables_list = ['FIPS', 'DO-CUTot', 'DO-WDelv',
                       'CO-CUTot', 'IN-CUsFr', 'CO-WDelv', 'IN-WFrTo', 'IN-PSDel', 'IN-CUsSa',
                       'IN-WSaTo', 'MI-CUTot', 'MI-WTotl', 'PT-WSWFr', 'MI-CUsFr', 'MI-WFrTo',
@@ -71,11 +72,9 @@ def prep_water_use_1995() -> pd.DataFrame:
                       'IR-CUTot', 'IR-WTotl', 'HY-InUse', 'HY-InPow', 'IR-CLoss', 'PS-DelCO',
                       'PS-DelIN', 'PS-UsLos', 'PS-DelTO', 'PS-DelDO', 'PS-DelPT', 'PS-WTotl'
                       ]
-
-    # reducing dataframe to variables in variables_list
     df = df[variables_list]
 
-    # FIPS code changes between 1995 and 2015
+    # address FIPS code changes between 1995 and 2015
     df['FIPS'] = np.where(df['FIPS'] == "12025", "12086", df['FIPS'])  # Miami-Dade County, FL
     df['FIPS'] = np.where(df['FIPS'] == "46113", "46102", df['FIPS'])  # Oglala Lakota County, SD
     df['FIPS'] = np.where(df['FIPS'] == "02232", "02105", df['FIPS'])  # Hoonah-Angoon Census Area, AK
@@ -86,13 +85,11 @@ def prep_water_use_1995() -> pd.DataFrame:
     df['FIPS'] = np.where(df['FIPS'] == "78003", "78020", df['FIPS'])  # St. John County, VI
     df['FIPS'] = np.where(df['FIPS'] == "78004", "78030", df['FIPS'])  # St. Thomas County, VI
 
-    # Copies data from counties that split into multiple FIPS codes between 1995 and 2015 into new rows
+    # Copy data from counties that split into multiple FIPS codes between 1995 and 2015 into new rows and assigns FIPS
     wrangell_petersburg_index = df.index[df['FIPS'] == "02280"].tolist()  # Wrangell, AK from Wrangell-Petersburg, AK
     df = df.append(df.loc[wrangell_petersburg_index * 1].assign(FIPS="02275"), ignore_index=True)
-
     skagway_index = df.index[df['FIPS'] == "02232"].tolist()  # Hoonah-Angoon, AK from Skagway-Hoonah-Angoon, AK
     df = df.append(df.loc[skagway_index * 1].assign(FIPS="02230"), ignore_index=True)
-
     boulder_index = df.index[df['FIPS'] == "08013"].tolist()  # Broomfield County, CO from Boulder County, CO
     df = df.append(df.loc[boulder_index * 1].assign(FIPS="08014"), ignore_index=True)
 
