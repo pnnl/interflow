@@ -399,10 +399,26 @@ def prep_electricity_generation() -> pd.DataFrame:
     # merging power plant location data with power plant generation data
     df = pd.merge(df, df_loc, how='left', on='plant_code')
 
-    # TODO calculate fuel consumption by county
-    # TODO calculate generation amount by type by county
-    #  above should be in calculate
+    # splitting out fuel data into a separate dataframe and pivoting to get fuel (bbtu) as columns by type
+    df_fuel = df[["FIPS", "fuel_amt", "fuel_type"]].copy()
+    df_fuel["fuel_type"] = df_fuel["fuel_type"] + "_fuel_bbtu"
+    df_fuel = pd.pivot_table(df_fuel, values='fuel_amt', index=['FIPS'], columns=['fuel_type'], aggfunc=np.sum)
+    df_fuel = df_fuel.reset_index()  # reset index to remove multi-index from pivot table
+    df_fuel = df_fuel.rename_axis(None, axis=1)  # drop index name
+    df_fuel.fillna(0, inplace=True)
+
+    # splitting out generation data into a separate dataframe and pivoting to get generation (mwh) as columns by type
+    df_gen = df[["FIPS", "generation_mwh", "fuel_type"]].copy()
+    df_gen["fuel_type"] = df_gen["fuel_type"] + "_gen_mwh"
+    df_gen = pd.pivot_table(df_gen, values='generation_mwh', index=['FIPS'], columns=['fuel_type'], aggfunc=np.sum)
+    df_gen = df_gen.reset_index()  # reset index to remove multi-index from pivot table
+    df_gen = df_gen.rename_axis(None, axis=1)  # drop index name
+    df_gen.fillna(0, inplace=True)
+
+    df = pd.merge(df_fuel, df_gen, how='left', on='FIPS')
+
     # TODO map to county list from water data
+
     return df
 
 
