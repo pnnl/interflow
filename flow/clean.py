@@ -6,15 +6,25 @@ from .reader import *
 
 
 def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
-    """prepping USGS 2015 water use data by replacing non-numeric values, reducing variables in output dataframe
-    to only include those that are necessary, and rename columns appropriately.
+    """prep 2015 water use data by replacing non-numeric values, reducing available variables in output dataframe,
+     renaming variables appropriately, and returning a dataframe of specified variables.
 
-    :return:                DataFrame of a number of water values for 2015 at the county level
+    :param variables:                   None if no specific variables required in addition to FIPS code, state name,
+                                        and county name. Default is None, otherwise a list of additional
+                                        variables to include in returned dataframe.
+    :type variables:                    list
+
+    :param all_variables:               Include all available variables in returned dataframe. Default is False.
+    :type all_variables:                bool
+
+
+    :return:                           DataFrame of a water withdrawal and consumption values for 2015
+                                        at the county level
 
     """
 
     # read in data
-    df = get_water_use_2015()  # USGS water use data for 2015 in million gallons per day by county
+    df = get_water_use_2015()  # USGS water use data for 2015 in million gallons per day (mgd) by county
 
     # replacing characters for missing USGS data with value of zero
     df.replace("--", 0, inplace=True)
@@ -86,7 +96,7 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
 
 
 def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
-    """prepping USGS 1995 water use data by replacing missing values, fixing FIPS codes,
+    """prepping 1995 water use data by replacing missing values, fixing FIPS codes,
      and reducing to needed variables
 
     :return:                DataFrame of a number of water values for 1995 at the county level
@@ -132,6 +142,7 @@ def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
     # Replacing infinite (from divide by zero) with with 0
     df.replace([np.inf, -np.inf], 0, inplace=True)
 
+    # creating a dictionary of required variables from full dataset with descriptive naming
     variables_list_1995 = {"FIPS": 'FIPS',
                            "DO_CF_Fr": "residential_freshwater_consumption_fraction",
                            "CO_CF_Fr": "residential_freshwater_consumption_fraction",
