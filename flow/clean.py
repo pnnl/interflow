@@ -49,7 +49,7 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
     return df
 
 
-def prep_water_use_1995() -> pd.DataFrame:
+def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
     """prepping USGS 1995 water use data by replacing missing values, fixing FIPS codes,
      and reducing to needed variables
 
@@ -95,6 +95,18 @@ def prep_water_use_1995() -> pd.DataFrame:
 
     # change column names
     df = df.rename(columns={"CountyName": "County"})
+
+    # merge with full list of counties from 2015 water data
+    df = pd.merge(df_loc, df, how='left', on='FIPS')
+
+    # return variables specified
+    if variables is None and all_variables is False:
+        variables = ['FIPS', 'State', 'County']
+        df = df[variables]
+    elif variables is None and all_variables is True:
+        df = df
+    else:
+        df = df[variables]
 
     return df
 
