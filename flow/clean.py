@@ -176,18 +176,24 @@ def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
 
 
 def prep_county_identifier() -> pd.DataFrame:
-    """preps each wastewater treatment facility data file, cleans input,
-            and brings them together to produce a single wastewater treatment datafile
-            by FIPS county code.
+    """preps a dataset of FIPS codes and associated county names so that datasets with just county names can be
+    mapped to appropriate FIPS codes.
 
-            :return:                DataFrame county level wastewater treatment data
+            :return:                DataFrame of FIPS code and county name identifier crosswalk
 
             """
-    df = get_county_identifier_data()
-    df["COUNTY_SHORT"] = df["COUNTY_SHORT"].str.replace(' ', '')  # remove spaces between words
-    df['COUNTY_SHORT'] = df['COUNTY_SHORT'].str.lower()  # change to lowercase
-    df["identifier"] = df["STATE"] + df["COUNTY_SHORT"]  # add identifier column
-    df['FIPS'] = df['FIPS'].apply(lambda x: '{0:0>5}'.format(x))  # add leading zero
+    # read data
+    df = get_county_identifier_data()  # dataset of full county names, state name, and FIPS codes
+
+    # clean data
+    df["COUNTY_SHORT"] = df["COUNTY_SHORT"].str.replace(' ', '')  # remove spaces between words in county name
+    df['COUNTY_SHORT'] = df['COUNTY_SHORT'].str.lower()  # change county name to lowercase
+    df['FIPS'] = df['FIPS'].apply(lambda x: '{0:0>5}'.format(x))  # add leading zero to FIPS code
+
+    # create identifier column with state abbreviation and county name
+    df["identifier"] = df["STATE"] + df["COUNTY_SHORT"]  # create identifier
+
+    # reduce dataframe
     df = df[["FIPS", 'identifier']]
 
     return df
