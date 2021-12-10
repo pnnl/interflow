@@ -963,7 +963,8 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
     df_corn = get_corn_irrigation_data()  # coal mine location data
     df_irr_water = prep_water_use_2015(variables=['State', 'IR-WGWFr', 'IR-WSWFr'])
     df_loc = prep_water_use_2015()
-
+    df_corn_prod = get_corn_production_data()
+    df_state_abb = get_state_fips_data()
 
     # set up variables
     ethanol_fraction = 0.38406  # corn gron for ethanol fraction
@@ -991,19 +992,50 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
 
     # calculate irrigation surface water to groundwater ratio for each state from 2015 USGS water dataset
     df_irr_water = df_irr_water.groupby("State", as_index=False).sum()
-    df_irr_water['surface_frac'] = df_irr_water['IR-WSWFr']/(df_irr_water['IR-WSWFr'] + df_irr_water['IR-WGWFr'])
-    df_irr_water = df_irr_water[['State', 'surface_frac']]
+    df_irr_water['surface_frac_fill'] = df_irr_water['IR-WSWFr']/(df_irr_water['IR-WSWFr'] + df_irr_water['IR-WGWFr'])
+    df_irr_water = df_irr_water[['State', 'surface_frac_fill']]
+    df_irr_water.fillna(0, inplace=True)  # replaces blank values with 0
 
-
+    # fill states with corn growth but no surface vs. groundwater fraction available with estimate from water data
+    df_corn = pd.merge(df_corn,df_irr_water, how='left', on="State")
+    df_corn['surface_frac'].fillna(df_corn['surface_frac_fill'], inplace=True)
 
     # split up ethanol corn irrigation water by surface and groundwater source percentages
-    df_corn['sw_ethanol_corn'] = (df_corn['surface_frac']*df_corn["ethanol_corn_mgal"]).round(4)
-    df_corn['gw_ethanol_corn'] = ((1-df_corn['surface_frac'])*df_corn["ethanol_corn_mgal"]).round(4)
+    df_corn['sw_ethanol_corn'] = (df_corn['surface_frac']*df_corn["ethanol_corn_mgal"]).round(4)  # surface water
+    df_corn['gw_ethanol_corn'] = ((1-df_corn['surface_frac'])*df_corn["ethanol_corn_mgal"]).round(4)  # groundwater
     df_corn.fillna(0, inplace=True)  # replaces blank values with 0
 
     # reduce variables
     df_corn = df_corn[['State', 'sw_ethanol_corn', 'gw_ethanol_corn']]
 
+    # determine corn growth by county percent of state total
+    df_corn_prod = df_corn_prod.dropna(subset=["County ANSI"])  # drop unnamed counties
+    df_corn_prod['County ANSI'] = df_corn_prod['County ANSI'].apply(lambda x: '{0:0>3}'.format(x))
+    df_corn_prod['State ANSI'] = df_corn_prod['State ANSI'].apply(lambda x: '{0:0>2}'.format(x))
+    df_corn_prod["FIPS"] = df_corn_prod["State ANSI"] + df_corn_prod["County ANSI"]  # creat FIPS code from ANSI
+    df_corn_prod = df_corn_prod[["State", "FIPS", "Value"]]  # reduce to required variables
+    df_corn_prod_sum = df_corn_prod.groupby("State", as_index=False).sum()  # sum by state
+    df_corn_prod_sum = df_corn_prod_sum[["State", "Value"]]  # reduce to required variables
+    df_corn_prod_sum = df_corn_prod_sum.rename(columns={"Value": "state_total"})  # rename value column
+    df_corn_prod = pd.merge(df_corn_prod, df_corn_prod_sum, how="left", on="State")  # merge state and total
+    df_corn_prod["corn_frac"] = df_corn_prod["Value"] / df_corn_prod['state_total']  # county fraction of state total
+    df_corn_prod = df_corn_prod[["State", "FIPS", "corn_frac"]]  # reduce to required variables
+    df_corn_prod = df_corn_prod.rename(columns={"State": "State_name"})
+    df_corn_prod['State_name'] = df_corn_prod['State_name'].str.lower()
 
+    # change state full name to state abbreviation
+    df_state_abb = df_state_abb[['State_name', 'State']]
+    df_state_abb['State_name'] = df_state_abb['State_name'].str.lower()
+    df_corn_prod = pd.merge(df_corn_prod, df_state_abb, how='left', on='State_name')
 
-    return df_irr_water
+    # calculate corn for ethanol by county based on percent of state total corn growth
+    df_corn_prod = pd.merge(df_corn_prod, df_corn, how = 'left', on='State')
+    df_corn_prod['sw_ethanol_corn'] = df_corn_prod['sw_ethanol_corn'] * df_corn_prod['corn_frac']
+    df_corn_prod['gw_ethanol_corn'] = df_corn_prod['gw_ethanol_corn'] * df_corn_prod['corn_frac']
+
+    # combine with full county list to get complete US water for corn irrigation for ethanol by county
+    df_corn_prod = df_corn_prod[['FIPS', 'sw_ethanol_corn', 'gw_ethanol_corn']]
+    df_corn_prod = pd.merge(df_loc, df_corn_prod, how='left', on='FIPS')
+    df_corn_prod.fillna(0, inplace=True)
+
+    return df_corn_prod
