@@ -700,7 +700,6 @@ def prep_state_fuel_production_data() -> pd.DataFrame:
 
     # read in energy production data
     df = get_energy_production_data()
-    df_oil_ng_loc = get_county_oil_gas_production_data()
 
     # list of fuel demand codes that are relevant from dataset
     msn_prod_dict = {"PAPRB": "petroleum_production",  # crude oil production (including lease condensate) (BBTU)
@@ -724,9 +723,9 @@ def prep_state_fuel_production_data() -> pd.DataFrame:
 
     # add rows for puerto rico and virgin islands
     pr_df = {'State': 'PR', 'petroleum_production': 0, 'biomass_production': 0,
-           'natgas_production': 0, 'coal_production': 0}
+             'natgas_production': 0, 'coal_production': 0}
     vi_df = {'State': 'VI', 'petroleum_production': 0, 'biomass_production': 0,
-           'natgas_production': 0, 'coal_production': 0}
+             'natgas_production': 0, 'coal_production': 0}
     df = df.append(pr_df, ignore_index=True)
     df = df.append(vi_df, ignore_index=True)
 
@@ -746,17 +745,17 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     # read in data
     df = prep_state_fuel_production_data()  # read in 2015 state level petroleum production data
     df_petroleum_loc = get_county_oil_gas_production_data()  # read in 2011 county level oil data
-    df_loc = prep_water_use_2015() # read in FIPS codes and states from 2015 water dataset
+    df_loc = prep_water_use_2015()  # read in FIPS codes and states from 2015 water dataset
 
     # reduce dataframes to required variables
     df = df[["State", "petroleum_production"]]
     df_petroleum_loc = df_petroleum_loc[['FIPS', 'Stabr', 'oil2011']]
 
     # calculate percent of total 2011 state oil production by county
-    df_petroleum_loc_sum = df_petroleum_loc[['Stabr','oil2011']].groupby("Stabr", as_index=False).sum()
+    df_petroleum_loc_sum = df_petroleum_loc[['Stabr', 'oil2011']].groupby("Stabr", as_index=False).sum()
     df_petroleum_loc_sum = df_petroleum_loc_sum.rename(columns={"oil2011": "state_total"})
-    df_petroleum_loc = pd.merge(df_petroleum_loc,df_petroleum_loc_sum, how= 'left', on='Stabr')
-    df_petroleum_loc['oil_pct'] = df_petroleum_loc['oil2011']/df_petroleum_loc['state_total']
+    df_petroleum_loc = pd.merge(df_petroleum_loc, df_petroleum_loc_sum, how='left', on='Stabr')
+    df_petroleum_loc['oil_pct'] = df_petroleum_loc['oil2011'] / df_petroleum_loc['state_total']
 
     # rename columns
     df_petroleum_loc = df_petroleum_loc.rename(columns={"Stabr": "State"})
@@ -775,16 +774,17 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     df = pd.merge(df_petroleum_loc, df, how='left', on="State")
 
     # calculate 2015 percent by county
-    df['petroleum_production_bbtu'] = df['petroleum_production']*df['oil_pct']
+    df['petroleum_production_bbtu'] = df['petroleum_production'] * df['oil_pct']
 
     # reduce dataframe
     df = df[['FIPS', 'petroleum_production']]
 
     # merge with county data to distribute value to each county in a state and include all FIPS
     df = pd.merge(df_loc, df, how='left', on='FIPS')
-    df.fillna(0,inplace=True)
+    df.fillna(0, inplace=True)
 
     return df
+
 
 def prep_county_natgas_production_data() -> pd.DataFrame:
     """uses 2011 crude oil production (barrels per year) by county in the US. These values are used to map the state
@@ -799,17 +799,17 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     # read in data
     df = prep_state_fuel_production_data()  # read in 2015 state level petroleum production data
     df_ng_loc = get_county_oil_gas_production_data()  # read in 2011 county level oil data
-    df_loc = prep_water_use_2015() # read in FIPS codes and states from 2015 water dataset
+    df_loc = prep_water_use_2015()  # read in FIPS codes and states from 2015 water dataset
 
     # reduce dataframes to required variables
     df = df[["State", "natgas_production"]]
     df_ng_loc = df_ng_loc[['FIPS', 'Stabr', 'gas2011']]
 
     # calculate percent of total 2011 state oil production by county
-    df_ng_loc_sum = df_ng_loc[['Stabr','gas2011']].groupby("Stabr", as_index=False).sum()
+    df_ng_loc_sum = df_ng_loc[['Stabr', 'gas2011']].groupby("Stabr", as_index=False).sum()
     df_ng_loc_sum = df_ng_loc_sum.rename(columns={"gas2011": "state_total"})
-    df_ng_loc = pd.merge(df_ng_loc, df_ng_loc_sum, how= 'left', on='Stabr')
-    df_ng_loc['gas_pct'] = df_ng_loc['gas2011']/df_ng_loc['state_total']
+    df_ng_loc = pd.merge(df_ng_loc, df_ng_loc_sum, how='left', on='Stabr')
+    df_ng_loc['gas_pct'] = df_ng_loc['gas2011'] / df_ng_loc['state_total']
 
     # rename columns
     df_ng_loc = df_ng_loc.rename(columns={"Stabr": "State"})
@@ -832,16 +832,17 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     df = pd.merge(df_ng_loc, df, how='left', on="State")
 
     # calculate 2015 percent by county
-    df['natgas_production_bbtu'] = df['natgas_production']*df['gas_pct']
+    df['natgas_production_bbtu'] = df['natgas_production'] * df['gas_pct']
 
     # reduce dataframe
     df = df[['FIPS', 'natgas_production_bbtu']]
 
     # merge with county data to distribute value to each county in a state and include all FIPS
     df = pd.merge(df_loc, df, how='left', on='FIPS')
-    df.fillna(0,inplace=True)
+    df.fillna(0, inplace=True)
 
     return df
+
 
 def prep_county_coal_production_data() -> pd.DataFrame:
     """uses 2011 crude oil production (barrels per year) by county in the US. These values are used to map the state
@@ -863,7 +864,7 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     shortton_bbtu_conversion = 0.02009  # one short ton is equal to 0.02009 bbtu
 
     # process coal mine location data to get coal mine ID and associated FIPS code
-    df_coal_loc = df_coal_loc.rename(columns={"STATE": "State"}) # rename column
+    df_coal_loc = df_coal_loc.rename(columns={"STATE": "State"})  # rename column
     df_coal_loc = pd.merge(df_coal_loc, df_fips, how="left", on="State")  # merge coal mine location and state FIPS
     df_coal_loc['FIPS_CNTY_CD'] = df_coal_loc['FIPS_CNTY_CD'].apply(lambda x: '{0:0>3}'.format(x))  # leading zeroes
     df_coal_loc["FIPS"] = df_coal_loc['State_FIPS'] + df_coal_loc['FIPS_CNTY_CD']  # create single FIPS code
@@ -871,18 +872,18 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     df_coal_loc = df_coal_loc[["MINE_ID", "FIPS"]]  # reduce to needed variables
 
     # process coal mine production data
-    df_coal = df_coal.rename(columns={"MSHA ID": "MINE_ID"})     # renaming Mine ID column
+    df_coal = df_coal.rename(columns={"MSHA ID": "MINE_ID"})  # renaming Mine ID column
     df_coal = df_coal[['MINE_ID', 'Mine Type', 'Production (short tons)']]  # reduce to variables of interest
 
     # combine coal mine production and location data
-    df_coal = pd.merge(df_coal, df_coal_loc, how="left", on="MINE_ID") # merge dataframes
+    df_coal = pd.merge(df_coal, df_coal_loc, how="left", on="MINE_ID")  # merge dataframes
 
     # fill in missing FIPS codes for two mines
     df_coal['FIPS'] = np.where(df_coal['MINE_ID'] == 3609086, "42051", df_coal['FIPS'])
     df_coal['FIPS'] = np.where(df_coal['MINE_ID'] == 3607079, "42079", df_coal['FIPS'])
 
     # reorganize dataframe to get mine type as a column and individual row for each FIPS code
-    df_coal = pd.pivot_table(df_coal, values='Production (short tons)',   # pivot dataframe
+    df_coal = pd.pivot_table(df_coal, values='Production (short tons)',  # pivot dataframe
                              index=['FIPS'], columns=['Mine Type'], aggfunc=np.sum)
     df_coal = df_coal.reset_index()  # reset index to remove multi-index from pivot table
     df_coal = df_coal.rename_axis(None, axis=1)  # drop index name
@@ -890,13 +891,14 @@ def prep_county_coal_production_data() -> pd.DataFrame:
 
     # calculate total coal production per county in billion btus
     df_coal['coal_production_bbtu'] = (df_coal['Refuse'] + df_coal['Surface']
-                                       + df_coal['Underground'])*shortton_bbtu_conversion
+                                       + df_coal['Underground']) * shortton_bbtu_conversion
 
     # rename short ton production columns to add units
     coal_prod_dict = {"Refuse": "refuse_coal_shortton",  # refuse coal production in short tons
-                     "Surface": "surface_coal_shortton",  # coal production from surface mines in short tons
-                     "Underground": "underground_coal_shortton",  # coal production from underground mines in short tons
-                     }
+                      "Surface": "surface_coal_shortton",  # coal production from surface mines in short tons
+                      "Underground": "underground_coal_shortton",
+                      # coal production from underground mines in short tons
+                      }
     df_coal.rename(columns=coal_prod_dict, inplace=True)  # rename columns to add descriptive language
 
     # merge with full county data to distribute value to each county in a state and include all FIPS
@@ -904,6 +906,7 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     df_coal.fillna(0, inplace=True)
 
     return df_coal
+
 
 def prep_county_ethanol_production_data() -> pd.DataFrame:
     """ Takes 2015 eia data on ethanol plant capacity with locational data and combines with state level biomass
@@ -924,10 +927,10 @@ def prep_county_ethanol_production_data() -> pd.DataFrame:
     df_ethanol_loc = df_ethanol_loc.groupby(["State", "FIPS"], as_index=False).sum()
     df_ethanol_loc_sum = df_ethanol_loc.groupby("State", as_index=False).sum()
     df_ethanol_loc_sum = df_ethanol_loc_sum.rename(columns={"Mmgal/yr": "State Total"})
-    df_ethanol_loc = pd.merge(df_ethanol_loc, df_ethanol_loc_sum, how='left',on='State')
+    df_ethanol_loc = pd.merge(df_ethanol_loc, df_ethanol_loc_sum, how='left', on='State')
 
-    df_ethanol_loc['ethanol_pct'] = df_ethanol_loc['Mmgal/yr']/df_ethanol_loc['State Total']
-    df_ethanol_loc = df_ethanol_loc[['State','FIPS','ethanol_pct']]
+    df_ethanol_loc['ethanol_pct'] = df_ethanol_loc['Mmgal/yr'] / df_ethanol_loc['State Total']
+    df_ethanol_loc = df_ethanol_loc[['State', 'FIPS', 'ethanol_pct']]
 
     # add missing row for wyoming county ethanol production
     wy_df = {'State': 'WY', 'FIPS': '56015', 'ethanol_pct': 1}  # Goshen County, Wyoming
@@ -940,7 +943,7 @@ def prep_county_ethanol_production_data() -> pd.DataFrame:
     df_biomass = pd.merge(df_ethanol_loc, df_ethanol_production, how='left', on='State')
 
     # split out state level 2015 ethanol production to individual counties by state
-    df_biomass['biomass_production_bbtu'] = df_biomass['biomass_production']*df_biomass['ethanol_pct']
+    df_biomass['biomass_production_bbtu'] = df_biomass['biomass_production'] * df_biomass['ethanol_pct']
     df_biomass = df_biomass[['FIPS', 'biomass_production_bbtu']]
 
     # merge with full county data to distribute value to each county in a state and include all FIPS
@@ -974,16 +977,16 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
     df_corn.fillna(0, inplace=True)  # replaces blank values with 0
 
     # calculate the irrigation intensity for all crops by state (total gallons per year)
-    df_corn["gallons_applied"] = af_gal_conversion*df_corn["Acre-feet-Applied_All"] # gallons applied to all crops
+    df_corn["gallons_applied"] = af_gal_conversion * df_corn["Acre-feet-Applied_All"]  # gallons applied to all crops
     df_corn["irr_intensity"] = df_corn["gallons_applied"] / df_corn["Total_Acres_Irrigated_All"]  # gal/acre all crops
-    df_corn["irr_intensity"] = df_corn["irr_intensity"]/10**6  # convert to million gallons/acre
+    df_corn["irr_intensity"] = df_corn["irr_intensity"] / 10 ** 6  # convert to million gallons/acre
 
     # calculate the amount of corn grown for ethanol production in each state
     df_corn["corn_prod"] = ethanol_fraction * df_corn["Acres_Corn_Harvested"]  # acres of corn for ethanol by state
 
     # calculate the total amount of water (mgal/year) applied the corn grown for ethanol
     df_corn["ethanol_corn_mgal"] = df_corn["irr_intensity"] * df_corn["corn_prod"]
-    df_corn["ethanol_corn_mgal"] = (df_corn["ethanol_corn_mgal"]/365).round(4)  # convert to million gallons per day
+    df_corn["ethanol_corn_mgal"] = (df_corn["ethanol_corn_mgal"] / 365).round(4)  # convert to million gallons per day
 
     # calculate surface water vs. groundwater fraction in corn irrigation
     df_corn["surface_total"] = df_corn["Off"] + df_corn["Surface"]  # adds off-farm and surface together for surface
@@ -992,17 +995,17 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
 
     # calculate irrigation surface water to groundwater ratio for each state from 2015 USGS water dataset
     df_irr_water = df_irr_water.groupby("State", as_index=False).sum()
-    df_irr_water['surface_frac_fill'] = df_irr_water['IR-WSWFr']/(df_irr_water['IR-WSWFr'] + df_irr_water['IR-WGWFr'])
+    df_irr_water['surface_frac_fill'] = df_irr_water['IR-WSWFr'] / (df_irr_water['IR-WSWFr'] + df_irr_water['IR-WGWFr'])
     df_irr_water = df_irr_water[['State', 'surface_frac_fill']]
     df_irr_water.fillna(0, inplace=True)  # replaces blank values with 0
 
     # fill states with corn growth but no surface vs. groundwater fraction available with estimate from water data
-    df_corn = pd.merge(df_corn,df_irr_water, how='left', on="State")
+    df_corn = pd.merge(df_corn, df_irr_water, how='left', on="State")
     df_corn['surface_frac'].fillna(df_corn['surface_frac_fill'], inplace=True)
 
     # split up ethanol corn irrigation water by surface and groundwater source percentages
-    df_corn['sw_ethanol_corn'] = (df_corn['surface_frac']*df_corn["ethanol_corn_mgal"]).round(4)  # surface water
-    df_corn['gw_ethanol_corn'] = ((1-df_corn['surface_frac'])*df_corn["ethanol_corn_mgal"]).round(4)  # groundwater
+    df_corn['sw_ethanol_corn'] = (df_corn['surface_frac'] * df_corn["ethanol_corn_mgal"]).round(4)  # surface water
+    df_corn['gw_ethanol_corn'] = ((1 - df_corn['surface_frac']) * df_corn["ethanol_corn_mgal"]).round(4)  # groundwater
     df_corn.fillna(0, inplace=True)  # replaces blank values with 0
 
     # reduce variables
@@ -1029,7 +1032,7 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
     df_corn_prod = pd.merge(df_corn_prod, df_state_abb, how='left', on='State_name')
 
     # calculate corn for ethanol by county based on percent of state total corn growth
-    df_corn_prod = pd.merge(df_corn_prod, df_corn, how = 'left', on='State')  # merge dataframes
+    df_corn_prod = pd.merge(df_corn_prod, df_corn, how='left', on='State')  # merge dataframes
     df_corn_prod['sw_ethanol_corn'] = df_corn_prod['sw_ethanol_corn'] * df_corn_prod['corn_frac']  # calc surface water
     df_corn_prod['gw_ethanol_corn'] = df_corn_prod['gw_ethanol_corn'] * df_corn_prod['corn_frac']  # calc groudnwater
 
