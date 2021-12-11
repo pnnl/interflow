@@ -210,7 +210,7 @@ def convert_mwh_bbtu(x:float) -> float:
     return bbtu
 
 def calc_population_county_weight(df:pd.DataFrame) -> pd.DataFrame:
-    # TODO move to calculate
+    # TODO move to weighting.py
 
     """calculates the percentage of state total population by county and merges to provided dataframe
     by 'State'
