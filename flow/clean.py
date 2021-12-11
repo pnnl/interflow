@@ -71,7 +71,6 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'AQ-WGWSa': 'saline_groundwater_aquaculture_mgd',
                       'AQ-WSWFr': 'fresh_surface_water_aquaculture_mgd',
                       'AQ-WSWSa': 'saline_surface_water_aquaculture_mgd'
-
                       }
     df = df[variables_dict]
 
