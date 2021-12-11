@@ -683,8 +683,7 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     # calculate texas interbasin transfer energy
     elevation_meters = df_tx["Elevation Difference (Feet)"] * feet_meter_conversion  # elevation in meters
     mps_cubed = df_tx["Total_Intake__Gallons (Acre-Feet/Year)"] * af_mps_conversion  # meters per second cubed
-    interbasin_mwh = ((elevation_meters * mps_cubed * acc_gravity * water_density) / ag_pump_eff) / (
-            10 ** 6)  # mwh total
+    interbasin_mwh = ((elevation_meters * mps_cubed * acc_gravity * water_density) / ag_pump_eff) / (10 ** 6)
     interbasin_bbtu = interbasin_mwh * mwh_bbtu  # convert mwh to bbtu
     df_tx["interbasin_bbtu"] = interbasin_bbtu / 2  # dividing in half to split across source and target counties
 
