@@ -613,25 +613,25 @@ def prep_irrigation_fuel_data() -> pd.DataFrame:
         df[col] = (df[col] / df['total_Irr'])  # determine percent of total acres irrigated for each fuel type
 
     # calculate the mean percent across all states in dataset
-    elec_avg = df['elec_total_acres_fraction'].mean(axis=0)  # electricity
-    ng_avg = df['ng_total_acres_fraction'].mean(axis=0)  # natural gas
-    prop_avg = df['propane_total_acres_fraction'].mean(axis=0)  # propane
-    diesel_avg = df['diesel_total_acres_fraction'].mean(axis=0)  # diesel
-    other_avg = df['gas_total_acres_fraction'].mean(axis=0)  # other gas
+    elec_avg = df['elec_total_acres'].mean(axis=0)  # electricity
+    ng_avg = df['ng_total_acres'].mean(axis=0)  # natural gas
+    prop_avg = df['propane_total_acres'].mean(axis=0)  # propane
+    diesel_avg = df['diesel_total_acres'].mean(axis=0)  # diesel
+    other_avg = df['gas_total_acres'].mean(axis=0)  # other gas
 
     # reducing dataframe to required variables
-    df = df[['State', 'elec_total_acres_fraction', 'ng_total_acres_fraction', 'propane_total_acres_fraction',
-             'diesel_total_acres_fraction', 'gas_total_acres_fraction']]
+    df = df[['State', 'elec_total_acres', 'ng_total_acres', 'propane_total_acres',
+             'diesel_total_acres', 'gas_total_acres']]
 
     # merge with county data to distribute value to each county in a state
     df = pd.merge(df_loc, df, how='left', on='State')
 
     # filling states that were not in the irrigation dataset with the average for each fuel type
-    df['elec_total_acres_fraction'].fillna(elec_avg, inplace=True)
-    df['ng_total_acres_fraction'].fillna(ng_avg, inplace=True)
-    df['propane_total_acres_fraction'].fillna(prop_avg, inplace=True)
-    df['diesel_total_acres_fraction'].fillna(diesel_avg, inplace=True)
-    df['gas_total_acres_fraction'].fillna(other_avg, inplace=True)
+    df['elec_total_acres'].fillna(elec_avg, inplace=True)
+    df['ng_total_acres'].fillna(ng_avg, inplace=True)
+    df['propane_total_acres'].fillna(prop_avg, inplace=True)
+    df['diesel_total_acres'].fillna(diesel_avg, inplace=True)
+    df['gas_total_acres'].fillna(other_avg, inplace=True)
 
     return df
 
@@ -646,13 +646,13 @@ def prep_irrigation_pumping_data() -> pd.DataFrame:
     methodology as groundwater pumping intensity except the total differential height has a value of zero for well
     depth.
 
-    :return:                DataFrame of a number of water values for 2015 at the county level
+    :return:                DataFrame of irrigation surface and groundwater pumping intensity per county
 
     """
 
-    # read in water use data for 2015 in million gallons per day by county
+    # read in irrigation data
     df = get_irrigation_data()
-    df = df[['State', 'Average Well Depth (ft)', 'Average operating pressure (psi)', 'Average pumping capacity (gpm)']]
+    df = df[['State', 'average_well_depth_ft', 'average_operating_pressure_psi']]
 
     # read in FIPS codes and states from 2015 water dataset
     df_loc = prep_water_use_2015()
@@ -668,8 +668,8 @@ def prep_irrigation_pumping_data() -> pd.DataFrame:
     meter_ft_conversion = 0.3048  # meters in a foot
 
     # determine groundwater pumping intensity by state
-    head_ft = psi_psf_conversion * df["Average operating pressure (psi)"]  # conversion of psi to head (p sqft)
-    diff_height_gw = meter_ft_conversion * (df["Average Well Depth (ft)"] + head_ft)  # calc. differential height (m)
+    head_ft = psi_psf_conversion * df["average_operating_pressure_psi"]  # conversion of psi to head (pounds per sqft)
+    diff_height_gw = meter_ft_conversion * (df["average_well_depth_ft"] + head_ft)  # calc. differential height (m)
     pump_power_gw = (water_density * diff_height_gw * acc_gravity * m3_mg_conversion) / ag_pump_eff  # joules/MG
     df['gw_pump_bbtu_per_mg'] = pump_power_gw * joules_kwh_conversion * kwh_bbtu_conversion  # power intensity (bbtu/mg)
 
