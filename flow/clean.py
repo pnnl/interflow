@@ -475,6 +475,7 @@ def prep_power_plant_location() -> pd.DataFrame:
                                              "AKpetersburg",
                                              df_plant["county_identifier"])
 
+    # replace county identifiers for specific power plants
     skagway_list = [66, 7751, 56542]
     for s in skagway_list:
         df_plant["county_identifier"] = np.where(df_plant["Plant Code"] == s,
@@ -486,8 +487,9 @@ def prep_power_plant_location() -> pd.DataFrame:
                                                  "AKhoonahangoon",
                                                  df_plant["county_identifier"])
 
+    # merge power plant location data with county identifier-FIPS crosswalk
     df_plant = pd.merge(df_plant, df_county, how="left", on="county_identifier")  # merge dataframes
-    df_plant = df_plant.rename(columns={"Plant Code": "plant_code"})
+    df_plant = df_plant.rename(columns={"Plant Code": "plant_code"})  # rename column
 
     return df_plant
 
