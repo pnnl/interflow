@@ -761,10 +761,9 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
 
 
 def prep_electricity_demand_data() -> pd.DataFrame:
-    # TODO add tests, add code comments
-    """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
+    """prepping electricity demand data by sector. Produces a dataframe of demand data by county.
 
-    :return:                DataFrame of a number of water values for 2015 at the county level
+    :return:                DataFrame of electricity demand data
 
     """
 
@@ -772,33 +771,32 @@ def prep_electricity_demand_data() -> pd.DataFrame:
     df_states = get_state_electricity_demand_data()
     df_terr = get_territory_electricity_demand_data()
 
+    # build renaming dictionary
+    rename_dict = {"RESIDENTIAL": "electricity_residential_bbtu",
+                   "COMMERCIAL": "electricity_commercial_bbtu",
+                   "INDUSTRIAL": "electricity_industrial_bbtu",
+                   "TRANSPORTATION": "electricity_transportation_bbtu"}
+
     # concatenate state and territory demand data
     df_list = [df_states, df_terr]
     df = pd.concat(df_list)
 
-    # drop rows where month is nan
-    df = df.dropna(subset=["Month"])
-
-    # rename columns appropriately
-    rename_dict = {"RESIDENTIAL": "elec_demand_res",
-                   "COMMERCIAL": "elec_demand_co",
-                   "INDUSTRIAL": "elec_demand_in",
-                   "TRANSPORTATION": "elec_demand_tr"}
-    df.rename(columns=rename_dict, inplace=True)
-
+    # prep dataframe
+    df = df.dropna(subset=["Month"])  # drop rows where month is blank
     df = df.dropna(subset=["Ownership"])  # Drop state totals and state adjustments
     df = df[df.Ownership != "Behind the Meter"]  # removing behind the meter generation
     df = df.groupby("State", as_index=False).sum()  # get total by state
+    df = df[["State", "RESIDENTIAL", "COMMERCIAL", "INDUSTRIAL", "TRANSPORTATION"]]
 
-    # reduce dataframe
-    df = df[["State", "elec_demand_res", "elec_demand_co", "elec_demand_in", "elec_demand_tr"]]
-
-    # convert values from mwh to bbtu
+    # convert electricity demand values from mwh to bbtu
     column_list = df.columns[1:]
     for col in column_list:
         df[col] = df[col].apply(convert_mwh_bbtu)
 
-    # add a row for the US Virgin Islands at 2.98% of puerto rico values
+    # rename columns to add descriptive language
+    df.rename(columns=rename_dict, inplace=True)
+
+    # add a row for the US Virgin Islands
     virgin_islands_percent = 0.0298  # percent of puerto rico total population
     puertorico_index = df.index[df['State'] == "PR"].tolist()  # copy puerto rico values to list
     df = df.append(df.loc[puertorico_index * 1].assign(State="VI"), ignore_index=True)
@@ -806,14 +804,14 @@ def prep_electricity_demand_data() -> pd.DataFrame:
     for m in multiply_columns:
         df[m] = np.where(df['State'] == "VI", df[m] * virgin_islands_percent, df[m])
 
-    # split out into county values and multiply by population weighting
+    # split out into county values based on percent of state population
     df = calc_population_county_weight(df)
     demand_columns = df.columns[3:7]
     for d in demand_columns:
         df[d] = df[d] * df['pop_weight']
         df[d] = df[d].round(4)
-
     df = df.drop(['pop_weight'], axis=1)
+    
     return df
 
 
