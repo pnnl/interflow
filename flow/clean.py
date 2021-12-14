@@ -816,7 +816,7 @@ def prep_electricity_demand_data() -> pd.DataFrame:
 
 
 def prep_fuel_demand_data() -> pd.DataFrame:
-    """prepping fuel demand data. Returns a dataframe of fuel demand by fuel type and sector.
+    """prepping fuel demand data. Returns a dataframe of fuel demand by fuel type and sector in bbtu for each county.
 
     :return:                DataFrame of a fuel demand values by sector
 
@@ -825,7 +825,7 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     # read in energy consumption data
     df = get_fuel_demand_data()
 
-    # list of fuel demand codes that are relevant from dataset
+    # dictionary of fuel demand codes that are relevant and descriptive names
     msn_dict = {"CLCCB": "coal_commercial_bbtu",  # Coal, commercial sector (bbtu)
                 "CLICB": "coal_industrial_bbtu",  # Coal, industrial sector (bbtu)
                 "EMACB": "biomass_transportation_bbtu",  # Fuel ethanol, transportation sector (bbtu)
@@ -846,15 +846,18 @@ def prep_fuel_demand_data() -> pd.DataFrame:
                 "WWICB": "biomass_industrial_bbtu",  # Wood and waste energy, industrial sector (bbtu)
                 "WYCCB": "wind_commercial_bbtu"  # Wind energy, commercial sector (bbtu)
                 }
-    df = df[df['MSN'].isin(msn_dict)]  # grabbing MSN codes that are relevant
 
-    df = pd.pivot_table(df, values='2015', index=['State'],  # pivoting to get fuel codes as columns
+    # reduce dataframe
+    df = df[df['MSN'].isin(msn_dict)]  # using MSN codes that are relevant
+
+    # pivoting dataframe to get fuel codes as columns
+    df = pd.pivot_table(df, values='2015', index=['State'],  # pivot
                         columns=['MSN'], aggfunc=np.sum)
     df = df.reset_index()  # reset index to remove multi-index
     df = df.rename_axis(None, axis=1)  # drop index name
     df.fillna(0, inplace=True)  # filling blanks with zero
 
-    # split out into county values and multiply by population weighting
+    # split out data into county values and multiply by population weighting
     df = calc_population_county_weight(df)
     energy_columns = df.columns[3:]
     for d in energy_columns:
