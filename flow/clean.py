@@ -415,7 +415,7 @@ def prep_wastewater_data() -> pd.DataFrame:
                                                                .2 * df_ww['total_wastewater_mgd'],
                                                                df_ww['wastewater_secondary_treatment_mgd'])
 
-    # drop unneeded variables
+    # drop public water supply variable
     df_ww = df_ww.drop('total_pws_mgd', axis=1)
 
     return df_ww
@@ -428,42 +428,52 @@ def prep_power_plant_location() -> pd.DataFrame:
     :return:                DataFrame of a number of water values for 1995 at the county level
 
     """
-    # county data
-    df_county = prep_county_identifier()
-    df_plant = get_power_plant_county_data()
+    # read in data
+    df_county = prep_county_identifier()  # county identifier data
+    df_plant = get_power_plant_county_data()  # power plant location data
 
-    df_county["county_identifier"] = df_county['county_identifier'].str.replace("'", '', regex=True)
-    df_county["county_identifier"] = df_county["county_identifier"].str.replace('.', '', regex=True)  # remove periods
-    df_county["county_identifier"] = df_county["county_identifier"].str.replace('-', '', regex=True)  # remove dashes
-    df_county["county_identifier"] = df_county["county_identifier"].str.replace(r"[^\w ]", '', regex=True)
+    # prepare county identifier data
+    df_county["county_identifier"] = df_county['county_identifier'].str.replace("'", '', regex=True)  # apostrophes
+    df_county["county_identifier"] = df_county["county_identifier"].str.replace('.', '', regex=True)  # periods
+    df_county["county_identifier"] = df_county["county_identifier"].str.replace('-', '', regex=True)  # dashes
+    df_county["county_identifier"] = df_county["county_identifier"].str.replace(r"[^\w ]", '', regex=True)  # non alpha
 
-    df_plant = df_plant.drop_duplicates()
-    df_plant = df_plant.dropna(subset=["Plant Code"])
-
+    # prepare power plant location data
+    df_plant = df_plant.drop_duplicates()  # drop duplicate generators to get individual power plants
+    df_plant = df_plant.dropna(subset=["Plant Code"])  # drop rows with missing plant codes
     df_plant['County'] = df_plant['County'].str.lower()  # change to lowercase
     df_plant["County"] = df_plant["County"].str.replace(' ', '')  # remove spaces between words
     df_plant["county_identifier"] = df_plant["State"] + df_plant["County"]  # add county_identifier column
-    df_plant["county_identifier"] = df_plant["county_identifier"].str.replace(r"[^\w ]", '', regex=True)
+    df_plant["county_identifier"] = df_plant["county_identifier"].str.replace(r"[^\w ]", '', regex=True)  # non alpha
 
+    # create a list of counties that need name corrections
     city_list = ['VAchesapeakecity', 'VAportsmouthcity', 'VAhopewellcity', 'VAalexandriacity',
                  'VAcovingtoncity', 'VAsuffolkcity', 'VAharrisonburgcity', 'VAsalemcity',
                  'VAlynchburgcity', 'VAdanvillecity', 'VAmanassascity', 'VAhamptoncity',
                  'VAvirginiabeachcity', 'VAbristolcity', 'MOstlouiscity']
 
+    # remove 'city' from identifiers in city_list
     for i in city_list:
         df_plant["county_identifier"] = np.where(df_plant["county_identifier"] == i,
                                                  df_plant["county_identifier"].str.replace('city', '', regex=True),
                                                  df_plant["county_identifier"])
-    df_plant["county_identifier"] = np.where(df_plant["county_identifier"] == "MEchainofponds", "MEfranklin",
+
+    # rename specific county identifiers
+    df_plant["county_identifier"] = np.where(df_plant["county_identifier"] == "MEchainofponds",  # rename
+                                             "MEfranklin",
                                              df_plant["county_identifier"])
-    df_plant["county_identifier"] = np.where(df_plant["county_identifier"] == "AKwadehampton", "AKkusilvak",
+    df_plant["county_identifier"] = np.where(df_plant["county_identifier"] == "AKwadehampton",  # rename
+                                             "AKkusilvak",
                                              df_plant["county_identifier"])
-    df_plant["county_identifier"] = np.where(df_plant["county_identifier"] == "AKprinceofwalesketchikan",
-                                             "AKprinceofwaleshyder", df_plant["county_identifier"])
-    df_plant["county_identifier"] = np.where(df_plant["county_identifier"] == "AKwrangellpetersburg",
-                                             "AKpetersburg", df_plant["identifier"])
-    df_plant["county_identifier"] = np.where(df_plant["county_identifier"] == "AKwrangellpetersburg",
-                                             "AKpetersburg", df_plant["county_identifier"])
+    df_plant["county_identifier"] = np.where(df_plant["county_identifier"] == "AKprinceofwalesketchikan", # rename
+                                             "AKprinceofwaleshyder",
+                                             df_plant["county_identifier"])
+    df_plant["county_identifier"] = np.where(df_plant["county_identifier"] == "AKwrangellpetersburg",  #rename
+                                             "AKpetersburg",
+                                             df_plant["county_identifier"])
+    df_plant["county_identifier"] = np.where(df_plant["county_identifier"] == "AKwrangellpetersburg",  #rename
+                                             "AKpetersburg",
+                                             df_plant["county_identifier"])
 
     skagway_list = [66, 7751, 56542]
     for s in skagway_list:
