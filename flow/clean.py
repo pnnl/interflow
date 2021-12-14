@@ -874,30 +874,30 @@ def prep_fuel_demand_data() -> pd.DataFrame:
 
 
 def prep_state_fuel_production_data() -> pd.DataFrame:
-    """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
+    """prepping state-level fuel production data for petroleum, biomass, natural gas, and coal. Outputs can be used
+    to determine county-level fuel production for each fuel type.
 
-    :return:                DataFrame of a number of water values for 2015 at the county level
+    :return:                DataFrame of fuel production data by fuel type and state
 
     """
-
-    # read in water use data for 2015 in million gallons per day by county
 
     # read in energy production data
     df = get_energy_production_data()
 
     # list of fuel demand codes that are relevant from dataset
-    msn_prod_dict = {"PAPRB": "petroleum_production",  # crude oil production (including lease condensate) (BBTU)
-                     "EMFDB": "biomass_production",  # biomass inputs to the production of fuel ethanol (BBTU)
-                     "NGMPB": "natgas_production",  # natural gas marketed production (BBTU)
-                     "CLPRB": "coal_production",  # coal production (BBTU)
+    msn_prod_dict = {"PAPRB": "petroleum_production_bbtu",  # crude oil production (including lease condensate) (BBTU)
+                     "EMFDB": "biomass_production_bbtu",  # biomass inputs to the production of fuel ethanol (BBTU)
+                     "NGMPB": "natgas_production_bbtu",  # natural gas marketed production (BBTU)
+                     "CLPRB": "coal_production_bbtu",  # coal production (BBTU)
                      }
     df = df[df['MSN'].isin(msn_prod_dict)]  # grabbing MSN codes that are relevant
 
+    # prepping data
     df = pd.pivot_table(df, values='2015', index=['StateCode'],  # pivoting to get fuel codes as columns
                         columns=['MSN'], aggfunc=np.sum)
     df = df.reset_index()  # reset index to remove multi-index
     df = df.rename_axis(None, axis=1)  # drop index name
-    df = df.rename(columns={"StateCode": "State"})
+    df = df.rename(columns={"StateCode": "State"})  # rename state column
     df = df[df.State != "X3"]  # drop offshore (gulf of mexico) values
     df = df[df.State != "X5"]  # drop offshore (pacific) values
     df = df[df.State != "US"]  # drop total US values
@@ -906,10 +906,10 @@ def prep_state_fuel_production_data() -> pd.DataFrame:
     df.rename(columns=msn_prod_dict, inplace=True)  # rename columns to add descriptive language
 
     # add rows for puerto rico and virgin islands
-    pr_df = {'State': 'PR', 'petroleum_production': 0, 'biomass_production': 0,
-             'natgas_production': 0, 'coal_production': 0}
-    vi_df = {'State': 'VI', 'petroleum_production': 0, 'biomass_production': 0,
-             'natgas_production': 0, 'coal_production': 0}
+    pr_df = {'State': 'PR', 'petroleum_production_bbtu': 0, 'biomass_production_bbtu': 0,
+             'natgas_production_bbtu': 0, 'coal_production_bbtu': 0}
+    vi_df = {'State': 'VI', 'petroleum_production_bbtu': 0, 'biomass_production_bbtu': 0,
+             'natgas_production_bbtu': 0, 'coal_production_bbtu': 0}
     df = df.append(pr_df, ignore_index=True)
     df = df.append(vi_df, ignore_index=True)
 
