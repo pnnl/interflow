@@ -422,10 +422,10 @@ def prep_wastewater_data() -> pd.DataFrame:
 
 
 def prep_power_plant_location() -> pd.DataFrame:
-    """prepping USGS 1995 water use data by replacing missing values, fixing FIPS codes,
-     and reducing to needed variables
+    """prepping power plant location information to provide a dataframe of power plant codes and their associated
+    FIPS code.
 
-    :return:                DataFrame of a number of water values for 1995 at the county level
+    :return:                DataFrame of power plant codes and associated FIPS codes
 
     """
     # read in data
@@ -499,8 +499,8 @@ def prep_electricity_generation() -> pd.DataFrame:
     and by FIPS code. Can be used to estimate fuel use for electricity generation by type for each county
     and total electricity generation by county.
 
-    :return:                DataFrame of ____________________
-
+    :return:                DataFrame of fuel use in electricity generation and total generation by generation type
+                            within each FIPS code
     """
 
     # read in electricity generation data by power plant id
@@ -566,26 +566,27 @@ def prep_electricity_generation() -> pd.DataFrame:
     df = pd.merge(df, df_gen_loc, how='left', on='plant_code')
 
     # splitting out fuel data into a separate dataframe and pivoting to get fuel (bbtu) as columns by type
-    df_fuel = df[["FIPS", "fuel_amt", "fuel_type"]].copy()
-    df_fuel["fuel_type"] = df_fuel["fuel_type"] + "_fuel_bbtu"
-    df_fuel = pd.pivot_table(df_fuel, values='fuel_amt', index=['FIPS'], columns=['fuel_type'], aggfunc=np.sum)
+    df_fuel = df[["FIPS", "fuel_amt", "fuel_type"]].copy()  # create a copy of fuel type data
+    df_fuel["fuel_type"] = df_fuel["fuel_type"] + "_fuel_bbtu"  # add units to fuel type column name
+    df_fuel = pd.pivot_table(df_fuel, values='fuel_amt', index=['FIPS'], columns=['fuel_type'], aggfunc=np.sum) # pivot
     df_fuel = df_fuel.reset_index()  # reset index to remove multi-index from pivot table
     df_fuel = df_fuel.rename_axis(None, axis=1)  # drop index name
-    df_fuel.fillna(0, inplace=True)
+    df_fuel.fillna(0, inplace=True)  # fill nan with zero
 
     # splitting out generation data into a separate dataframe and pivoting to get generation (mwh) as columns by type
-    df_gen = df[["FIPS", "generation_mwh", "fuel_type"]].copy()
-    df_gen["fuel_type"] = df_gen["fuel_type"] + "_gen_mwh"
+    df_gen = df[["FIPS", "generation_mwh", "fuel_type"]].copy()  # create a copy of generation data
+    df_gen["fuel_type"] = df_gen["fuel_type"] + "_gen_mwh"  # add units to generation type column name
     df_gen = pd.pivot_table(df_gen, values='generation_mwh', index=['FIPS'], columns=['fuel_type'], aggfunc=np.sum)
     df_gen = df_gen.reset_index()  # reset index to remove multi-index from pivot table
     df_gen = df_gen.rename_axis(None, axis=1)  # drop index name
-    df_gen.fillna(0, inplace=True)
+    df_gen.fillna(0, inplace=True)  # fill nan with zero
 
+    # merge fuel and generation dataframes into single dataframe
     df = pd.merge(df_fuel, df_gen, how='left', on='FIPS')
 
-    # merge with county data to distribute value to each county in a state
+    # merge dataframe with county data to distribute value to each county in a state
     df = pd.merge(df_loc, df, how='left', on='FIPS')
-    df.fillna(0, inplace=True)
+    df.fillna(0, inplace=True)  # fill nan with zero
 
     return df
 
@@ -595,7 +596,7 @@ def prep_irrigation_fuel_data() -> pd.DataFrame:
     that use each type of fuel for pumping (electricity, natural gas, propane, diesel, and other gas). This dataframe
     is used to calculate the total electricity and fuels to irrigation based on total water flows in irrigation.
 
-    :return:                DataFrame of ____________________
+    :return:                DataFrame of percent of total irrigation using specified fuel type for pumping by county
 
     """
 
@@ -612,25 +613,25 @@ def prep_irrigation_fuel_data() -> pd.DataFrame:
         df[col] = (df[col] / df['total_Irr'])  # determine percent of total acres irrigated for each fuel type
 
     # calculate the mean percent across all states in dataset
-    elec_avg = df['Elec_Total_Acres'].mean(axis=0)  # electricity
-    ng_avg = df['NG_Total_Acres'].mean(axis=0)  # natural gas
-    prop_avg = df['Propane_Total_Acres'].mean(axis=0)  # propane
-    disel_avg = df['Diesel_Total_Acres'].mean(axis=0)  # diesel
-    other_avg = df['Gas_Total_Acres'].mean(axis=0)  # other gas
+    elec_avg = df['elec_total_acres_fraction'].mean(axis=0)  # electricity
+    ng_avg = df['ng_total_acres_fraction'].mean(axis=0)  # natural gas
+    prop_avg = df['propane_total_acres_fraction'].mean(axis=0)  # propane
+    diesel_avg = df['diesel_total_acres_fraction'].mean(axis=0)  # diesel
+    other_avg = df['gas_total_acres_fraction'].mean(axis=0)  # other gas
 
     # reducing dataframe to required variables
-    df = df[['State', 'Elec_Total_Acres', 'NG_Total_Acres', 'Propane_Total_Acres',
-             'Diesel_Total_Acres', 'Gas_Total_Acres']]
+    df = df[['State', 'elec_total_acres_fraction', 'ng_total_acres_fraction', 'propane_total_acres_fraction',
+             'diesel_total_acres_fraction', 'gas_total_acres_fraction']]
 
     # merge with county data to distribute value to each county in a state
     df = pd.merge(df_loc, df, how='left', on='State')
 
     # filling states that were not in the irrigation dataset with the average for each fuel type
-    df['Elec_Total_Acres'].fillna(elec_avg, inplace=True)
-    df['NG_Total_Acres'].fillna(ng_avg, inplace=True)
-    df['Propane_Total_Acres'].fillna(prop_avg, inplace=True)
-    df['Diesel_Total_Acres'].fillna(disel_avg, inplace=True)
-    df['Gas_Total_Acres'].fillna(other_avg, inplace=True)
+    df['elec_total_acres_fraction'].fillna(elec_avg, inplace=True)
+    df['ng_total_acres_fraction'].fillna(ng_avg, inplace=True)
+    df['propane_total_acres_fraction'].fillna(prop_avg, inplace=True)
+    df['diesel_total_acres_fraction'].fillna(diesel_avg, inplace=True)
+    df['gas_total_acres_fraction'].fillna(other_avg, inplace=True)
 
     return df
 
