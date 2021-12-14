@@ -811,15 +811,14 @@ def prep_electricity_demand_data() -> pd.DataFrame:
         df[d] = df[d] * df['pop_weight']
         df[d] = df[d].round(4)
     df = df.drop(['pop_weight'], axis=1)
-    
+
     return df
 
 
 def prep_fuel_demand_data() -> pd.DataFrame:
-    # TODO fill in trailing rows for puerto rico and VI
-    """prepping USGS 2015 water use data by replacing missing values and reducing to needed variables
+    """prepping fuel demand data. Returns a dataframe of fuel demand by fuel type and sector.
 
-    :return:                DataFrame of a number of water values for 2015 at the county level
+    :return:                DataFrame of a fuel demand values by sector
 
     """
 
@@ -827,25 +826,25 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     df = get_fuel_demand_data()
 
     # list of fuel demand codes that are relevant from dataset
-    msn_dict = {"CLCCB": "commercial_coal_consumption",  # Coal, commercial sector (bbtu)
-                "CLICB": "industrial_coal_consumption",  # Coal, industrial sector (bbtu)
-                "EMACB": "transportation_biomass_consumption",  # Fuel ethanol, transportation sector (bbtu)
-                "GECCB": "commercial_geothermal_consumption",  # Geothermal, commercial sector (bbtu)
-                "GERCB": "residential_geothermal_consumption",  # Geothermal, residential sector (bbtu)
-                "NGACB": "transportation_natgas_consumption",  # Natural gas, transportation sector  (bbtu)
-                "NGCCB": "commercial_natgas_consumption",  # Natural gas, commercial sector (bbtu)
-                "NGICB": "industrial_natgas_consumption",  # Natural gas, industrial sector (bbtu)
-                "NGRCB": "residential_natgas_consumption",  # Natural gas, residential sector (bbtu
-                "PAACB": "transportation_petroleum_consumption",  # petroleum products, transportation sector (bbtu)
-                "PACCB": "commercial_petroleum_consumption",  # petroleum products, commercial sector (bbtu)
-                "PAICB": "industrial_petroleum_consumption",  # petroleum products, industrial sector (bbtu)
-                "PARCB": "residential_petroleum_consumption",  # petroleum products, residential sector (bbtu)
-                "SOCCB": "commercial_solar_consumption",  # Solar, commercial sector (bbtu)
-                "SORCB": "residential_solar_consumption",  # Solar, residential sector (bbtu)
-                "WDRCB": "residential_biomass_consumption",  # Wood energy, residential sector (bbtu)
-                "WWCCB": "commercial_biomass_consumption",  # Wood and waste energy, commercial sector (bbtu)
-                "WWICB": "industrial_biomass_consumption",  # Wood and waste energy, industrial sector (bbtu)
-                "WYCCB": "commercial_wind_consumption"  # Wind energy, commercial sector (bbtu)
+    msn_dict = {"CLCCB": "coal_commercial_bbtu",  # Coal, commercial sector (bbtu)
+                "CLICB": "coal_industrial_bbtu",  # Coal, industrial sector (bbtu)
+                "EMACB": "biomass_transportation_bbtu",  # Fuel ethanol, transportation sector (bbtu)
+                "GECCB": "geothermal_commercial_bbtu",  # Geothermal, commercial sector (bbtu)
+                "GERCB": "geothermal_residential_bbtu",  # Geothermal, residential sector (bbtu)
+                "NGACB": "natgas_transportation_bbtu",  # Natural gas, transportation sector  (bbtu)
+                "NGCCB": "natgas_commercial_bbtu",  # Natural gas, commercial sector (bbtu)
+                "NGICB": "natgas_industrial_bbtu",  # Natural gas, industrial sector (bbtu)
+                "NGRCB": "natgas_residential_bbtu",  # Natural gas, residential sector (bbtu
+                "PAACB": "petroleum_transportation_bbtu",  # petroleum products, transportation sector (bbtu)
+                "PACCB": "petroleum_commercial_bbtu",  # petroleum products, commercial sector (bbtu)
+                "PAICB": "petroleum_industrial_bbtu",  # petroleum products, industrial sector (bbtu)
+                "PARCB": "petroleum_residential_bbtu",  # petroleum products, residential sector (bbtu)
+                "SOCCB": "solar_commercial_solar_bbtu",  # Solar, commercial sector (bbtu)
+                "SORCB": "solar_residential_solar_bbtu",  # Solar, residential sector (bbtu)
+                "WDRCB": "biomass_residential_bbtu",  # Wood energy, residential sector (bbtu)
+                "WWCCB": "biomass_commercial_bbtu",  # Wood and waste energy, commercial sector (bbtu)
+                "WWICB": "biomass_industrial_bbtu",  # Wood and waste energy, industrial sector (bbtu)
+                "WYCCB": "wind_commercial_bbtu"  # Wind energy, commercial sector (bbtu)
                 }
     df = df[df['MSN'].isin(msn_dict)]  # grabbing MSN codes that are relevant
 
