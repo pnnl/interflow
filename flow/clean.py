@@ -213,7 +213,8 @@ def prep_wastewater_data() -> pd.DataFrame:
     df_ww_type = get_wastewater_facility_type_data()  # wastewater facility treatment type data
     df_ww_loc = get_wastewater_facility_loc_data()  # wastewater facility location data
     df_ww_dis = get_wastewater_facility_discharge_data()  # wastewater facility discharge data
-    df_county_list = prep_water_use_2015()
+    df_county_list = prep_water_use_2015()  # full county list from 2015 water data
+    df_2015_pws = prep_water_use_2015(variables=['FIPS', 'State', 'total_pws_mgd'])  # public water supply data
 
     # wastewater flow type dictionary
     flow_dict = {'EXIST_INFILTRATION': 'infiltration_wastewater_mgd',
@@ -276,11 +277,11 @@ def prep_wastewater_data() -> pd.DataFrame:
 
     # calculate municipal water flows for each facility in wastewater treatment flow data
     df_ww_flow['EXIST_MUNI'] = df_ww_flow["EXIST_TOTAL"] \
-                              - df_ww_flow["EXIST_INFILTRATION"]  # subtract infiltration flows from total flows
+                               - df_ww_flow["EXIST_INFILTRATION"]  # subtract infiltration flows from total flows
 
     # reformat and rename wastewater treatment facility flow data
     df_ww_flow['CWNS_NUMBER'] = df_ww_flow['CWNS_NUMBER'].apply(lambda x: '{0:0>11}'.format(x))  # add leading zero
-    df_ww_flow.rename(columns=flow_dict, inplace=True) # rename columns to add descriptive language
+    df_ww_flow.rename(columns=flow_dict, inplace=True)  # rename columns to add descriptive language
 
     # combine wastewater treatment facility flow data and wastewater treatment facility discharge data
     df_ww_flow = pd.merge(df_ww_flow, df_ww_loc, how="left", on='CWNS_NUMBER')  # merge dataframes
@@ -323,8 +324,8 @@ def prep_wastewater_data() -> pd.DataFrame:
 
     # for treatment plants with no discharge data, assume 100% of discharge is to surface discharge
     df_ww_dis['wastewater_surface_discharge'] = np.where(df_ww_dis['sum_pct'] == 0,  # fill blanks values
-                                                             1,
-                                                             df_ww_dis['wastewater_surface_discharge'])
+                                                         1,
+                                                         df_ww_dis['wastewater_surface_discharge'])
     df_ww_dis['sum_pct'] = df_ww_dis.iloc[:, 1:-1].sum(axis=1)  # recalculate sum
 
     # combine wastewater treatment facility flow data and wastewater treatment facility discharge data
@@ -355,7 +356,6 @@ def prep_wastewater_data() -> pd.DataFrame:
     for col in df_ww_type.columns[1:]:  # fill nan rows with 0
         df_ww_type[col] = df_ww_type[col].fillna(0)
 
-
     df_ww_type['sum_type'] = df_ww_type.iloc[:, 1:].sum(axis=1)  # calculate sum
     df_ww_type['CWNS_NUMBER'] = df_ww_type['CWNS_NUMBER'].apply(lambda x: '{0:0>11}'.format(x))  # add leading zero
 
@@ -368,8 +368,8 @@ def prep_wastewater_data() -> pd.DataFrame:
 
     # for treatment plants with no treatment type data, assume 100% of treatment type is secondary
     df_ww_flow['wastewater_secondary_treatment'] = np.where(df_ww_flow['sum_type'] < 1,
-                                                                1,
-                                                                df_ww_flow['wastewater_secondary_treatment'])
+                                                            1,
+                                                            df_ww_flow['wastewater_secondary_treatment'])
     df_ww_flow['sum_type'] = df_ww_flow.iloc[:, 15:-1].sum(axis=1)  # recalculate sum
 
     # reducing list of variables
@@ -387,11 +387,36 @@ def prep_wastewater_data() -> pd.DataFrame:
     # group by FIPS code to get wastewater treatment flows, treatment type flows, and discharge flows by county
     df_ww = df_ww.groupby("FIPS", as_index=False).sum()
 
-    # TODO fill in south carolina ww estimates, none in flow data
-
     # combine with full county list to get values for each county and fill counties with no plants with 0
     df_ww = pd.merge(df_county_list, df_ww, how='left', on='FIPS')
     df_ww.fillna(0, inplace=True)
+
+    # create a dictionary of public water supply flows for south carolina by FIPS code
+    df_2015_pws = df_2015_pws[df_2015_pws.State == "SC"]
+    df_2015_pws = df_2015_pws.drop("State", axis=1)
+    # sc_pws_dict = df_2015_pws.set_index('FIPS').to_dict()
+
+    # filling in estimates for south carolina from total public water supply flows given missing data
+    df_ww = pd.merge(df_ww, df_2015_pws, how='left', on='FIPS')
+    for row in df_ww.iterrows():
+        df_ww['total_wastewater_mgd'] = np.where(df_ww['State'] == "SC",  # fill total wastewater from public supply
+                                                 df_ww['total_pws_mgd'],
+                                                 df_ww['total_wastewater_mgd'])
+        df_ww['municipal_wastewater_mgd'] = np.where(df_ww['State'] == "SC",  # fill total wastewater from public supply
+                                                     df_ww['total_wastewater_mgd'],
+                                                     df_ww['municipal_wastewater_mgd'])
+        df_ww['wastewater_surface_discharge_mgd'] = np.where(df_ww['State'] == "SC",  # fill discharge with surface
+                                                             df_ww['total_wastewater_mgd'],
+                                                             df_ww['wastewater_surface_discharge_mgd'])
+        df_ww['wastewater_advanced_treatment_mgd'] = np.where(df_ww['State'] == "SC",  # fill treatment with advanced
+                                                              .8 * df_ww['total_wastewater_mgd'],
+                                                              df_ww['wastewater_advanced_treatment_mgd'])
+        df_ww['wastewater_secondary_treatment_mgd'] = np.where(df_ww['State'] == "SC",  # fill treatment with secondary
+                                                               .2 * df_ww['total_wastewater_mgd'],
+                                                               df_ww['wastewater_secondary_treatment_mgd'])
+
+    # drop unneeded variables
+    df_ww = df_ww.drop('total_pws_mgd', axis=1)
 
     return df_ww
 
