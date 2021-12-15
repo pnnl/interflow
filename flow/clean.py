@@ -120,12 +120,23 @@ def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
     df['FIPS'] = np.where(df['FIPS'] == "78004", "78030", df['FIPS'])  # St. Thomas County, VI
 
     # Copy data from counties that split into multiple FIPS codes between 1995 and 2015 into new rows and assigns FIPS
-    wrangell_petersburg_index = df.index[df['FIPS'] == "02280"].tolist()  # Wrangell, AK from Wrangell-Petersburg, AK
+    wrangell_petersburg_index = df.index[df['FIPS'] == "02195"].tolist()  # Wrangell, AK from Wrangell-Petersburg, AK
     df = df.append(df.loc[wrangell_petersburg_index * 1].assign(FIPS="02275"), ignore_index=True)
-    skagway_index = df.index[df['FIPS'] == "02232"].tolist()  # Hoonah-Angoon, AK from Skagway-Hoonah-Angoon, AK
+    skagway_index = df.index[df['FIPS'] == "02105"].tolist()  # Hoonah-Angoon, AK from Skagway-Hoonah-Angoon, AK
     df = df.append(df.loc[skagway_index * 1].assign(FIPS="02230"), ignore_index=True)
     boulder_index = df.index[df['FIPS'] == "08013"].tolist()  # Broomfield County, CO from Boulder County, CO
     df = df.append(df.loc[boulder_index * 1].assign(FIPS="08014"), ignore_index=True)
+
+    # return variables specified
+    #if variables is None and all_variables is False:
+    #    variables = ['FIPS']
+    #    df = df[variables]
+    #elif variables is None and all_variables is True:
+    #    df = df
+    #else:
+    #    df = df[variables]
+
+    return df
 
 def prep_consumption_fractions() -> pd.DataFrame:
     """prepping water consumption fractions by sector to apply to 2015 water values.
@@ -158,7 +169,7 @@ def prep_consumption_fractions() -> pd.DataFrame:
     # creating a dictionary of required variables from full dataset with descriptive naming
     variables_list_1995 = {"FIPS": 'FIPS',
                            "DO_CF_Fr": "residential_freshwater_consumption_fraction",
-                           "CO_CF_Fr": "residential_freshwater_consumption_fraction",
+                           "CO_CF_Fr": "commercial_freshwater_consumption_fraction",
                            "IN_CF_Fr": "industrial_freshwater_consumption_fraction",
                            "IN_CF_Sa": "industrial_saline_water_consumption_fraction",
                            "MI_CF_Fr": "mining_freshwater_consumption_fraction",
