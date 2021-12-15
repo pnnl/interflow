@@ -197,7 +197,7 @@ def calc_pws_discharge() -> pd.DataFrame:
     return df
 
 
-def convert_mwh_bbtu(x:float) -> float:
+def convert_mwh_bbtu(x: float) -> float:
     # TODO prepare test
 
     """calculating consumption fractions for various sectors from 1995 water use data.
