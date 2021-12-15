@@ -104,7 +104,6 @@ def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
 
     # read in data
     df = get_water_use_1995()  # 1995 USGS water use estimates
-    df_loc = prep_water_use_2015()  # prepared list of counties with FIPS codes
 
     # create a complete state + coutny FIPS code from the sum of the state and county level FIPS codes
     df["FIPS"] = df["StateCode"] + df["CountyCode"]
@@ -128,6 +127,20 @@ def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
     boulder_index = df.index[df['FIPS'] == "08013"].tolist()  # Broomfield County, CO from Boulder County, CO
     df = df.append(df.loc[boulder_index * 1].assign(FIPS="08014"), ignore_index=True)
 
+def prep_consumption_fractions() -> pd.DataFrame:
+    """prepping water consumption fractions by sector to apply to 2015 water values.
+
+    :return:                DataFrame of a number of consumption fractions by sector
+
+    """
+
+    # read in data
+    df = prep_water_use_1995(variables=['FIPS', 'DO-CUTot', 'DO-WDelv', 'CO-CUTot', 'CO-WDelv', 'IN-CUsFr',
+                                        'IN-WFrTo', 'IN-PSDel', 'IN-CUsSa', "IN-WSaTo", "MI-CUsFr",
+                                        "MI-WFrTo","MI-CUsSa" , "MI-WSaTo", "LV-CUTot", "LV-WTotl",
+                                        "LA-CUTot", "LA-WTotl"])
+    df_loc = prep_water_use_2015()  # prepared list of 2015 counties with FIPS codes
+
     # calculate water consumption fractions as consumptive use divided by delivered water
     df["DO_CF_Fr"] = df["DO-CUTot"] / df["DO-WDelv"]  # residential (domestic) sector freshwater consumption fraction
     df["CO_CF_Fr"] = df["CO-CUTot"] / df["CO-WDelv"]  # commercial sector freshwater consumption fraction
@@ -140,6 +153,7 @@ def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
 
     # Replacing infinite (from divide by zero) with with 0
     df.replace([np.inf, -np.inf], 0, inplace=True)
+    df.fillna(0, inplace=True)
 
     # creating a dictionary of required variables from full dataset with descriptive naming
     variables_list_1995 = {"FIPS": 'FIPS',
@@ -162,17 +176,47 @@ def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
     # merge with full list of counties from 2015 water data
     df = pd.merge(df_loc, df, how='left', on='FIPS')
 
-    # return variables specified
-    if variables is None and all_variables is False:
-        variables = ['FIPS', 'State', 'County']
-        df = df[variables]
-    elif variables is None and all_variables is True:
-        df = df
-    else:
-        df = df[variables]
-
     return df
 
+def prep_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165,
+                                       region_avg=True, region="StateCode", all_variables=False,
+                                       output_regions="State") -> pd.DataFrame:
+    """calculating the MGD used per megawatt-hour generated from hydroelectric generation.
+
+    :return:                DataFrame of water intensity of hydroelectric generation by county
+
+    """
+
+    # read in cleaned water use data for 1995
+    df = prep_water_use_1995()
+
+    # calculate water intensity fraction (IF) by dividing total water use (MGD) by total generation (MWh) by county
+    df["HY_IF"] = df["HY-InUse"] / df["HY-InPow"]
+
+    # removing outlier intensities
+    if intensity_cap:
+        df['HY_IF'] = np.where(df['HY_IF'] >= intensity_cap_amt, intensity_cap_amt, df['HY_IF'])
+    else:
+        df = df
+
+    # if region_avg = True, the specified regional average hydroelectric intensity is supplemented at all levels
+    if region_avg:
+        df_region_avg = df[["StateCode", 'HY_IF']].groupby(region, as_index=False).mean()
+        df_region_avg = df_region_avg.rename(columns={"HY_IF": "HY_IF_avg"})
+        df = pd.merge(df, df_region_avg, how="left", on="StateCode")
+        df["HY_IF"] = df["HY_IF_avg"]
+
+    else:
+        df = df
+
+    if all_variables:
+        df = df
+    else:
+        region_list = [output_regions]
+        region_list.append("HY_IF")
+        df = df[region_list]
+
+    return df
 
 def prep_county_identifier() -> pd.DataFrame:
     """preps a dataset of FIPS codes and associated county names so that datasets with just county names can be

@@ -6,17 +6,18 @@ from .reader import *
 import flow.clean as cl
 
 
-def calc_consumption_frac() -> pd.DataFrame:
-    # TODO prepare test for consumption fraction calculations
-
-    """calculating consumption fractions for various sectors from 1995 water use data.
+def calc_consumption_frac(df_path=False) -> pd.DataFrame:
+    """calculating consumption fractions for various sectors
 
     :return:                DataFrame of water consumption fractions for various sectors by county
 
     """
 
-    # read in cleaned water use data for 1995
-    df = cl.prep_water_use_1995()
+    # read in DataFrame
+    if df_path:
+        df = pd.read_csv(df_path)
+    else:
+        df = cl.prep_water_use_1995()
 
     # calculate water consumption fractions as consumptive use divided by delivered water
     df["DO_CF_Fr"] = df["DO-CUTot"] / df["DO-WDelv"]  # residential (domestic) sector freshwater consumption fraction
@@ -112,47 +113,7 @@ def calc_conveyance_loss_frac(df: pd.DataFrame, loss_cap=True, loss_cap_amt=.90)
     return df
 
 
-def calc_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165,
-                                       region_avg=True, region="StateCode", all_variables=False,
-                                       output_regions="State") -> pd.DataFrame:
-    # TODO prepare test for hydro water intensity
-    # TODO fill in parameter information
-    """calculating the MGD used per megawatt-hour generated from hydroelectric generation.
 
-    :return:                DataFrame of water intensity of hydroelectric generation by county
-
-    """
-
-    # read in cleaned water use data for 1995
-    df = cl.prep_water_use_1995()
-
-    # calculate water intensity fraction (IF) by dividing total water use (MGD) by total generation (MWh) by county
-    df["HY_IF"] = df["HY-InUse"] / df["HY-InPow"]
-
-    # removing outlier intensities
-    if intensity_cap:
-        df['HY_IF'] = np.where(df['HY_IF'] >= intensity_cap_amt, intensity_cap_amt, df['HY_IF'])
-    else:
-        df = df
-
-    # if region_avg = True, the specified regional average hydroelectric intensity is supplemented at all levels
-    if region_avg:
-        df_region_avg = df[["StateCode", 'HY_IF']].groupby(region, as_index=False).mean()
-        df_region_avg = df_region_avg.rename(columns={"HY_IF": "HY_IF_avg"})
-        df = pd.merge(df, df_region_avg, how="left", on="StateCode")
-        df["HY_IF"] = df["HY_IF_avg"]
-
-    else:
-        df = df
-
-    if all_variables:
-        df = df
-    else:
-        region_list = [output_regions]
-        region_list.append("HY_IF")
-        df = df[region_list]
-
-    return df
 
 
 
