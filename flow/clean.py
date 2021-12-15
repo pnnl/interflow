@@ -238,8 +238,8 @@ def prep_public_water_supply_fraction() -> pd.DataFrame:
 
     # calculate ratio of commercial pws to sum of domestic and thermoelectric cooling pws
     df['commercial_pws_fraction'] = np.where((df['PS-DelDO'] + df['PS-DelPT'] <= 0),
-                                                 0,
-                                                 (df['PS-DelCO'] / (df['PS-DelDO'] + df['PS-DelPT'])))
+                                             0,
+                                             (df['PS-DelCO'] / (df['PS-DelDO'] + df['PS-DelPT'])))
 
     # calculate ratio of industrial pws to sum of domestic and thermoelectric cooling pws
     df["industrial_pws_fraction"] = np.where(((df['PS-DelDO'] + df['PS-DelPT']) <= 0),
@@ -254,6 +254,7 @@ def prep_public_water_supply_fraction() -> pd.DataFrame:
     df.fillna(0, inplace=True)
 
     return df
+
 
 def prep_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.90) -> pd.DataFrame:
     """
@@ -301,9 +302,6 @@ def prep_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.90) -> pd.DataFra
     df = pd.merge(df_loc, df, how='left', on='FIPS')
 
     return df
-
-
-
 
 
 def prep_county_identifier() -> pd.DataFrame:
@@ -395,8 +393,7 @@ def prep_wastewater_data() -> pd.DataFrame:
 
     # create a state+county identifier column in wastewater facility location data
     df_ww_loc['CWNS_NUMBER'] = df_ww_loc['CWNS_NUMBER'].apply(lambda x: '{0:0>11}'.format(x))  # add leading zero
-    df_ww_loc["county_identifier"] = df_ww_loc["STATE"] \
-                                     + df_ww_loc["PRIMARY_COUNTY"]  # add identifier column of state + county name
+    df_ww_loc["county_identifier"] = df_ww_loc["STATE"] + df_ww_loc["PRIMARY_COUNTY"]  # add identifier
 
     # combine wastewater facility location data and county to FIPS crosswalk data to get a FIPS code for each plant
     df_ww_loc = pd.merge(df_ww_loc, df_county, how="left", on="county_identifier")  # merge dataframes
@@ -408,8 +405,7 @@ def prep_wastewater_data() -> pd.DataFrame:
     df_ww_flow["EXIST_INFILTRATION"] = df_ww_flow["EXIST_INFILTRATION"].fillna(0)  # fill blank infiltration with zero
 
     # calculate municipal water flows for each facility in wastewater treatment flow data
-    df_ww_flow['EXIST_MUNI'] = df_ww_flow["EXIST_TOTAL"] \
-                               - df_ww_flow["EXIST_INFILTRATION"]  # subtract infiltration flows from total flows
+    df_ww_flow['EXIST_MUNI'] = df_ww_flow["EXIST_TOTAL"] - df_ww_flow["EXIST_INFILTRATION"]  # subtract infiltration
 
     # reformat and rename wastewater treatment facility flow data
     df_ww_flow['CWNS_NUMBER'] = df_ww_flow['CWNS_NUMBER'].apply(lambda x: '{0:0>11}'.format(x))  # add leading zero
@@ -1311,7 +1307,7 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
     df_irr_water = df_irr_water.groupby("State", as_index=False).sum()
     df_irr_water['surface_frac_fill'] = df_irr_water['fresh_surface_water_crop_irrigation_mgd'] \
                                         / (df_irr_water['fresh_surface_water_crop_irrigation_mgd']
-                                           + df_irr_water['fresh_groundwater_crop_irrigation_mgd'])
+                                        + df_irr_water['fresh_groundwater_crop_irrigation_mgd'])
     df_irr_water = df_irr_water[['State', 'surface_frac_fill']]
     df_irr_water.fillna(0, inplace=True)  # replaces blank values with 0
 
