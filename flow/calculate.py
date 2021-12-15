@@ -6,39 +6,6 @@ from .reader import *
 import flow.clean as cl
 
 
-def calc_consumption_frac(df_path=False) -> pd.DataFrame:
-    """calculating consumption fractions for various sectors
-
-    :return:                DataFrame of water consumption fractions for various sectors by county
-
-    """
-
-    # read in DataFrame
-    if df_path:
-        df = pd.read_csv(df_path)
-    else:
-        df = cl.prep_water_use_1995()
-
-    # calculate water consumption fractions as consumptive use divided by delivered water
-    df["DO_CF_Fr"] = df["DO-CUTot"] / df["DO-WDelv"]  # residential (domestic) sector freshwater consumption fraction
-    df["CO_CF_Fr"] = df["CO-CUTot"] / df["CO-WDelv"]  # commercial sector freshwater consumption fraction
-    df["IN_CF_Fr"] = df["IN-CUsFr"] / (df["IN-WFrTo"] + df["IN-PSDel"])  # ind sector freshwater consumption fraction
-    df["IN_CF_Sa"] = df["IN-CUsSa"] / df["IN-WSaTo"]  # industrial sector saline water consumption fraction
-    df["MI_CF_Fr"] = df["MI-CUsFr"] / df["MI-WFrTo"]  # mining sector freshwater consumption fraction
-    df["MI_CF_Sa"] = df["MI-CUsSa"] / df["MI-WSaTo"]  # mining sector saline water consumption fraction
-    df["LV_CF_Fr"] = df["LV-CUTot"] / df["LV-WTotl"]  # livestock freshwater water consumption fraction
-    df["LA_CF_Fr"] = df["LA-CUTot"] / df["LA-WTotl"]  # aquaculture freshwater water consumption fraction
-
-    # Replacing infinite (from divide by zero) with nan and filling with 0
-    df.replace([np.inf, -np.inf], np.nan, inplace=True)
-    df.fillna(0, inplace=True)
-
-    df = df[["FIPS", "DO_CF_Fr","CO_CF_Fr", "IN_CF_Fr","IN_CF_Sa",
-            "MI_CF_Fr","MI_CF_Sa","LV_CF_Fr","LA_CF_Fr"]]
-
-    return df
-
-
 def calc_pws_frac() -> pd.DataFrame:
     # TODO prepare test for consumption fraction calculations
 

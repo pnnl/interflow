@@ -211,6 +211,9 @@ def prep_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165
     else:
         df = df
 
+    # simplify dataframe
+    df = df[['FIPS', 'hydropower_intensity_mgd_per_mwh']]
+
     # merge with full list of counties from 2015 water data
     df = pd.merge(df_loc, df, how='left', on='FIPS')
     df.fillna(0, inplace=True)
