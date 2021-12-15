@@ -255,6 +255,56 @@ def prep_public_water_supply_fraction() -> pd.DataFrame:
 
     return df
 
+def prep_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.90) -> pd.DataFrame:
+    """
+    This function calculates the fraction of water lost during conveyance for irrigation for each row in the provided
+    dataframe. The fraction is calculated as water lost in conveyance of irrigation water divided by total water
+    withdrawn for irrigation.
+
+    :param loss_cap:                       If True, a cap is placed on the conveyance loss fraction
+    :type loss_cap:                        bool
+
+    :param loss_cap_amt:                   The amount at which irrigation losses are capped and values beyond are
+                                            replaced by the specified cap amount. The default value is .90.
+    :type loss_cap_amt:                    float
+
+    :return:                               DataFrame of conveyance loss fractions by row
+
+    """
+    # read in data
+    df = prep_water_use_1995(all_variables=True)  # read in 1995 water values
+    df_loc = prep_water_use_2015()  # prepared list of 2015 counties with FIPS codes
+
+    # calculate conveyance loss fraction of total water withdrawn for irrigation if irrigation water > 0
+    df["irrigation_conveyance_loss_fraction"] = df['IR-CLoss'] / df['IR-WTotl']
+
+    # if a cap is placed on irrigation loss fraction, apply the supplied cap
+    if loss_cap_amt < 0 or loss_cap_amt > 1:
+        raise ValueError(f"loss_cap_amt must be a float between 0 and 1")
+
+    if loss_cap:
+        df["irrigation_conveyance_loss_fraction"] = np.where(df['irrigation_conveyance_loss_fraction'] > loss_cap_amt,
+                                                             loss_cap_amt,
+                                                             df["irrigation_conveyance_loss_fraction"])
+
+    else:
+        df["irrigation_conveyance_loss_fraction"] = df["irrigation_conveyance_loss_fraction"]
+
+    # Replacing infinite (from divide by zero) with nan and filling with 0
+    df.replace([np.inf, -np.inf], np.nan, inplace=True)
+    df.fillna(0, inplace=True)
+
+    # reduce dataframe
+    df = df[["FIPS", "irrigation_conveyance_loss_fraction"]]
+
+    # merge with full list of counties from 2015 water data
+    df = pd.merge(df_loc, df, how='left', on='FIPS')
+
+    return df
+
+
+
+
 
 def prep_county_identifier() -> pd.DataFrame:
     """preps a dataset of FIPS codes and associated county names so that datasets with just county names can be
