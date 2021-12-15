@@ -128,13 +128,13 @@ def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
     df = df.append(df.loc[boulder_index * 1].assign(FIPS="08014"), ignore_index=True)
 
     # return variables specified
-    #if variables is None and all_variables is False:
-    #    variables = ['FIPS']
-    #    df = df[variables]
-    #elif variables is None and all_variables is True:
-    #    df = df
-    #else:
-    #    df = df[variables]
+    if variables is None and all_variables is False:
+        variables = ['FIPS']
+        df = df[variables]
+    elif variables is None and all_variables is True:
+        df = df
+    else:
+        df = df[variables]
 
     return df
 
@@ -189,43 +189,31 @@ def prep_consumption_fractions() -> pd.DataFrame:
 
     return df
 
-def prep_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165,
-                                       region_avg=True, region="StateCode", all_variables=False,
-                                       output_regions="State") -> pd.DataFrame:
+def prep_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165) -> pd.DataFrame:
     """calculating the MGD used per megawatt-hour generated from hydroelectric generation.
 
     :return:                DataFrame of water intensity of hydroelectric generation by county
 
     """
 
-    # read in cleaned water use data for 1995
-    df = prep_water_use_1995()
+    # read in data
+    df = prep_water_use_1995(variables=['FIPS', "HY-InUse", "HY-InPow"])  # 1995 hydropower data
+    df_loc = prep_water_use_2015()  # prepared list of 2015 counties with FIPS codes
 
-    # calculate water intensity fraction (IF) by dividing total water use (MGD) by total generation (MWh) by county
-    df["HY_IF"] = df["HY-InUse"] / df["HY-InPow"]
+    # calculate water intensity fraction by dividing total water use (MGD) by total generation (MWh) by county
+    df["hydropower_intensity_mgd_per_mwh"] = df["HY-InUse"] / df["HY-InPow"]
 
     # removing outlier intensities
     if intensity_cap:
-        df['HY_IF'] = np.where(df['HY_IF'] >= intensity_cap_amt, intensity_cap_amt, df['HY_IF'])
+        df['hydropower_intensity_mgd_per_mwh'] = np.where(df['hydropower_intensity_mgd_per_mwh'] >= intensity_cap_amt,
+                                                          intensity_cap_amt,
+                                                          df['hydropower_intensity_mgd_per_mwh'])
     else:
         df = df
 
-    # if region_avg = True, the specified regional average hydroelectric intensity is supplemented at all levels
-    if region_avg:
-        df_region_avg = df[["StateCode", 'HY_IF']].groupby(region, as_index=False).mean()
-        df_region_avg = df_region_avg.rename(columns={"HY_IF": "HY_IF_avg"})
-        df = pd.merge(df, df_region_avg, how="left", on="StateCode")
-        df["HY_IF"] = df["HY_IF_avg"]
-
-    else:
-        df = df
-
-    if all_variables:
-        df = df
-    else:
-        region_list = [output_regions]
-        region_list.append("HY_IF")
-        df = df[region_list]
+    # merge with full list of counties from 2015 water data
+    df = pd.merge(df_loc, df, how='left', on='FIPS')
+    df.fillna(0, inplace=True)
 
     return df
 
