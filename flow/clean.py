@@ -138,7 +138,8 @@ def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
 
     return df
 
-def prep_consumption_fractions() -> pd.DataFrame:
+
+def prep_consumption_fraction() -> pd.DataFrame:
     """prepping water consumption fractions by sector to apply to 2015 water values.
 
     :return:                DataFrame of a number of consumption fractions by sector
@@ -148,7 +149,7 @@ def prep_consumption_fractions() -> pd.DataFrame:
     # read in data
     df = prep_water_use_1995(variables=['FIPS', 'DO-CUTot', 'DO-WDelv', 'CO-CUTot', 'CO-WDelv', 'IN-CUsFr',
                                         'IN-WFrTo', 'IN-PSDel', 'IN-CUsSa', "IN-WSaTo", "MI-CUsFr",
-                                        "MI-WFrTo","MI-CUsSa" , "MI-WSaTo", "LV-CUTot", "LV-WTotl",
+                                        "MI-WFrTo", "MI-CUsSa", "MI-WSaTo", "LV-CUTot", "LV-WTotl",
                                         "LA-CUTot", "LA-WTotl"])
     df_loc = prep_water_use_2015()  # prepared list of 2015 counties with FIPS codes
 
@@ -189,6 +190,7 @@ def prep_consumption_fractions() -> pd.DataFrame:
 
     return df
 
+
 def prep_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165) -> pd.DataFrame:
     """calculating the MGD used per megawatt-hour generated from hydroelectric generation.
 
@@ -219,6 +221,40 @@ def prep_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=165
     df.fillna(0, inplace=True)
 
     return df
+
+
+def prep_public_water_supply_fraction() -> pd.DataFrame:
+    """calculating public water supply deliveries for the commercial and industrial sectors individually
+     as a percent of the sum of public water supply deliveries to residential end users and thermoelectric cooling.
+     Used in calculation of public water supply demand to all sectors.
+
+    :return:                DataFrame of public water supply ratios for commercial and industrial sector.
+
+    """
+
+    # read in data
+    df = prep_water_use_1995(all_variables=True)
+    df_loc = prep_water_use_2015()  # prepared list of 2015 counties with FIPS codes
+
+    # calculate ratio of commercial pws to sum of domestic and thermoelectric cooling pws
+    df['commercial_pws_fraction'] = np.where((df['PS-DelDO'] + df['PS-DelPT'] <= 0),
+                                                 0,
+                                                 (df['PS-DelCO'] / (df['PS-DelDO'] + df['PS-DelPT'])))
+
+    # calculate ratio of industrial pws to sum of domestic and thermoelectric cooling pws
+    df["industrial_pws_fraction"] = np.where(((df['PS-DelDO'] + df['PS-DelPT']) <= 0),
+                                             0,
+                                             df['PS-DelIN'] / (df['PS-DelDO'] + df['PS-DelPT']))
+
+    # reduce dataframe to required output
+    df = df[["FIPS", "commercial_pws_fraction", "industrial_pws_fraction"]]
+
+    # merge with full list of counties from 2015 water data
+    df = pd.merge(df_loc, df, how='left', on='FIPS')
+    df.fillna(0, inplace=True)
+
+    return df
+
 
 def prep_county_identifier() -> pd.DataFrame:
     """preps a dataset of FIPS codes and associated county names so that datasets with just county names can be
