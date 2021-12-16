@@ -20,16 +20,29 @@ def calc_public_water_supply_energy(data_path=None, surface_pumping_intensity=14
     if data_path:
         df = pd.read_csv(data_path)
     else:
-        df = cl.prep_water_use_2015(variables=['fresh_groundwater_pws_mgd', 'fresh_surface_water_pws_mgd',
+        df = cl.prep_water_use_2015(variables=['FIPS', 'fresh_groundwater_pws_mgd', 'fresh_surface_water_pws_mgd',
                                                'saline_groundwater_pws_mgd', 'saline_surface_water_pws_mgd'])
 
-    electricity_pws_surface_pumping = surface_pumping_intensity * df["fresh_surface_water_pws_mgd"]  # surface water pumping intensity
-    electricity_pws_ground_pumping = ground_pumping_intensity * df["fresh_groundwater_pws_mgd"]  # groundwater pumping intensity
-    electricity_pws_surface_treatment = surface_treatment_intensity * df["fresh_surface_water_pws_mgd"]  # surface water treatment intensity
-    electricity_pws_ground_treatment = ground_treatment_intensity * df["fresh_groundwater_pws_mgd"]  # groundwater treatment intensity
-    electricity_pws_distribution = (distribution_intensity *
-                                    (df["fresh_surface_water_pws_mgd"] + df["fresh_groundwater_pws_mgd"]))  # public water supply distribution intensity
+    # electricity in public water supply surface water pumping
+    electricity_pws_surface_pumping = surface_pumping_intensity * df["fresh_surface_water_pws_mgd"]
 
+    # electricity in public water supply groundwater pumping
+    electricity_pws_ground_pumping = ground_pumping_intensity * df["fresh_groundwater_pws_mgd"]
+
+    # electricity in public water supply surface water treatment
+    electricity_pws_surface_treatment = surface_treatment_intensity * df["fresh_surface_water_pws_mgd"]
+
+    # electricity in public water supply groundwater treatment
+    electricity_pws_ground_treatment = ground_treatment_intensity * df["fresh_groundwater_pws_mgd"]
+
+    # electricity in public water supply distribution
+    electricity_pws_distribution = (distribution_intensity *
+                                    (df["fresh_surface_water_pws_mgd"] + df["fresh_groundwater_pws_mgd"]))
+
+    #for column in df.columns[1:]:
+    #    df[column] = convert_kwh_bbtu(df[column])
+
+    
     # if total:
     # add all energy parameters together
 
@@ -78,14 +91,22 @@ def calc_pws_discharge() -> pd.DataFrame:
 
 
 def convert_mwh_bbtu(x: float) -> float:
-    # TODO prepare test
+    """converts MWh to billion btu.
 
-    """calculating consumption fractions for various sectors from 1995 water use data.
-
-    :return:                DataFrame of water consumption fractions for various sectors by county
+    :return:                Value in bbtu
 
     """
     bbtu = x * 0.003412
+
+    return bbtu
+
+def convert_kwh_bbtu(x: float) -> float:
+    """converts kWh to billion btu.
+
+    :return:                Value in bbtu
+
+    """
+    bbtu = x * 0.000003412140
 
     return bbtu
 
