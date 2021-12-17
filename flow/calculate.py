@@ -3,6 +3,7 @@ import pandas as pd
 
 from .reader import *
 import flow.clean as cl
+from .configure_data import *
 
 
 def calc_public_water_supply_energy(pws_data_path=None, pumping_intensity_path=None, total=False):
@@ -15,6 +16,10 @@ def calc_public_water_supply_energy(pws_data_path=None, pumping_intensity_path=N
 
     """
     # load data
+    df = configure_data()
+
+    if 'A' in df.columns:
+
     if pws_data_path & pumping_intensity_path:
         df_pws = pd.read_csv(pws_data_path)
         df_pumping_intensity = pd.read_csv(pumping_intensity_path)
