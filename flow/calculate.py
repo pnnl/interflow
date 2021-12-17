@@ -4,8 +4,23 @@ import pandas as pd
 from .reader import *
 import flow.clean as cl
 
+def calc_municipal_pumping_intensity():
+    """calculate energy usage by the public water supply sector. Takes a dataframe of public water supply withdrawals
+       from surface water and groundwater sources and calculates total energy use for surface water pumping, groundwater
+       pumping, surface water treatment, groundwater treatment, and distribution. Returns a DataFrame of energy use for
+       each category in billion btu per year.
 
-def calc_public_water_supply_energy(data_path=None, surface_pumping_intensity=145, ground_pumping_intensity=920,
+       :return:                DataFrame of energy use in public water supply
+
+       """
+    # this is how LLNL and EPRI do it
+    #Electricity (kWh/day) = ((Flow (gpm) x pumping head (in feet)) / (3960 x pumping efficiency)) x 0.746 x 24
+    # Horsepower =(gallons per minute x Total Head in feet)/3960
+    # HP to Kilowatts (kW) = 0.746 x Motor Horsepower
+
+    #should just use the irrigation pumping information
+
+def calc_public_water_supply_energy(water_data_path=None, surface_pumping_intensity=145, ground_pumping_intensity=920,
                                     surface_treatment_intensity=405, ground_treatment_intensity=205,
                                     distribution_intensity=1040, total=False):
     """calculate energy usage by the public water supply sector. Takes a dataframe of public water supply withdrawals
@@ -17,32 +32,44 @@ def calc_public_water_supply_energy(data_path=None, surface_pumping_intensity=14
 
     """
     # load data
-    if data_path:
-        df = pd.read_csv(data_path)
+    if water_data_path:
+        df = pd.read_csv(water_data_path)
     else:
-        df = cl.prep_water_use_2015(variables=['FIPS', 'fresh_groundwater_pws_mgd', 'fresh_surface_water_pws_mgd',
+        df = cl.prep_water_use_2015(variables=['County', 'State', 'FIPS', 'fresh_groundwater_pws_mgd',
+                                               'fresh_surface_water_pws_mgd',
                                                'saline_groundwater_pws_mgd', 'saline_surface_water_pws_mgd'])
 
+    # TODO link to irrigation pumping intensity based on average well depth
+    # TODO add in saline water for pumping electricity
+
     # electricity in public water supply surface water pumping
-    electricity_pws_surface_pumping = surface_pumping_intensity * df["fresh_surface_water_pws_mgd"]
+    df['electricity_pws_surface_pumping'] = surface_pumping_intensity * df["fresh_surface_water_pws_mgd"]
 
     # electricity in public water supply groundwater pumping
-    electricity_pws_ground_pumping = ground_pumping_intensity * df["fresh_groundwater_pws_mgd"]
+    df['electricity_pws_ground_pumping'] = ground_pumping_intensity * df["fresh_groundwater_pws_mgd"]
 
     # electricity in public water supply surface water treatment
-    electricity_pws_surface_treatment = surface_treatment_intensity * df["fresh_surface_water_pws_mgd"]
+    df['electricity_pws_surface_treatment'] = surface_treatment_intensity * df["fresh_surface_water_pws_mgd"]
 
     # electricity in public water supply groundwater treatment
-    electricity_pws_ground_treatment = ground_treatment_intensity * df["fresh_groundwater_pws_mgd"]
+    df['electricity_pws_ground_treatment'] = ground_treatment_intensity * df["fresh_groundwater_pws_mgd"]
 
     # electricity in public water supply distribution
-    electricity_pws_distribution = (distribution_intensity *
+    df['electricity_pws_distribution'] = (distribution_intensity *
                                     (df["fresh_surface_water_pws_mgd"] + df["fresh_groundwater_pws_mgd"]))
 
-    #for column in df.columns[1:]:
-    #    df[column] = convert_kwh_bbtu(df[column])
+    electricity_list = ['electricity_pws_surface_pumping','electricity_pws_ground_pumping',
+                        'electricity_pws_surface_treatment', 'electricity_pws_ground_treatment',
+                        'electricity_pws_distribution']
 
-    
+    # TODO add in saline water for treatment electricity
+
+    # desalination treatment from EPRI 2013
+    #13, 600    kWh / MG
+
+    for column in electricity_list:
+        df[column] = convert_kwh_bbtu(df[column])
+
     # if total:
     # add all energy parameters together
 

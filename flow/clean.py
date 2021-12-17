@@ -764,7 +764,7 @@ def prep_irrigation_fuel_data() -> pd.DataFrame:
     return df
 
 
-def prep_irrigation_pumping_data() -> pd.DataFrame:
+def prep_pumping_intensity_data() -> pd.DataFrame:
     """Prepares irrigation data so that the outcome is a dataframe of groundwater and surface water pumping energy
     intensities (billion BTU per million gallons) by county. For groundwater pumping intensity, The total differential
     height is calculated as the sum of the average well depth and the pressurization head. The pressure data is provided
@@ -805,7 +805,7 @@ def prep_irrigation_pumping_data() -> pd.DataFrame:
     gw_pump_bbtu_per_mg_avg = df['gw_pump_bbtu_per_mg'].mean()
 
     # determine surface water pumping intensity by state
-    diff_height_sw = meter_ft_conversion * head_ft  # calc. differential height (m)
+    diff_height_sw = meter_ft_conversion * head_ft   # calc. differential height (m)
     pump_power_sw = (water_density * diff_height_sw * acc_gravity * m3_mg_conversion) / ag_pump_eff  # joules/MG
     df['sw_pump_bbtu_per_mg'] = pump_power_sw * joules_kwh_conversion * kwh_bbtu_conversion  # power intensity (bbtu/mg)
 
