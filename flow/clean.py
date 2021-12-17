@@ -788,7 +788,7 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
     # establish variables
     acc_gravity = 9.81  # Acceleration of gravity  (m/s^2)
     water_density = 997  # Water density (kg/m^3)
-    ag_pump_eff = .466  # assumed pump efficiency rate
+    ag_pump_eff = .65  # assumed pump efficiency rate
     psi_psf_conversion = 2.31  # conversion of pounds per square inch (psi) to pounds per square foot (psf)
     m3_mg_conversion = 3785.41178  # conversion factor for m^3 to million gallons
     joules_kwh_conversion = 1 / 3600000  # conversion factor from joules to kWh

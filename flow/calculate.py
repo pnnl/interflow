@@ -4,22 +4,6 @@ import pandas as pd
 from .reader import *
 import flow.clean as cl
 
-def calc_municipal_pumping_intensity():
-    """calculate energy usage by the public water supply sector. Takes a dataframe of public water supply withdrawals
-       from surface water and groundwater sources and calculates total energy use for surface water pumping, groundwater
-       pumping, surface water treatment, groundwater treatment, and distribution. Returns a DataFrame of energy use for
-       each category in billion btu per year.
-
-       :return:                DataFrame of energy use in public water supply
-
-       """
-    # this is how LLNL and EPRI do it
-    #Electricity (kWh/day) = ((Flow (gpm) x pumping head (in feet)) / (3960 x pumping efficiency)) x 0.746 x 24
-    # Horsepower =(gallons per minute x Total Head in feet)/3960
-    # HP to Kilowatts (kW) = 0.746 x Motor Horsepower
-
-    #should just use the irrigation pumping information
-
 def calc_public_water_supply_energy(water_data_path=None, surface_pumping_intensity=145, ground_pumping_intensity=920,
                                     surface_treatment_intensity=405, ground_treatment_intensity=205,
                                     distribution_intensity=1040, total=False):
