@@ -4,9 +4,8 @@ import pandas as pd
 from .reader import *
 import flow.clean as cl
 
-def calc_public_water_supply_energy(water_data_path=None, surface_pumping_intensity=145, ground_pumping_intensity=920,
-                                    surface_treatment_intensity=405, ground_treatment_intensity=205,
-                                    distribution_intensity=1040, total=False):
+
+def calc_public_water_supply_energy(pws_data_path=None, pumping_intensity_path=None, total=False):
     """calculate energy usage by the public water supply sector. Takes a dataframe of public water supply withdrawals
     from surface water and groundwater sources and calculates total energy use for surface water pumping, groundwater
     pumping, surface water treatment, groundwater treatment, and distribution. Returns a DataFrame of energy use for
@@ -16,12 +15,26 @@ def calc_public_water_supply_energy(water_data_path=None, surface_pumping_intens
 
     """
     # load data
-    if water_data_path:
-        df = pd.read_csv(water_data_path)
+    if pws_data_path & pumping_intensity_path:
+        df_pws = pd.read_csv(pws_data_path)
+        df_pumping_intensity = pd.read_csv(pumping_intensity_path)
+    elif (pws_data_path is True) & (pumping_intensity_path is None):
+        df_pws = pd.read_csv(pws_data_path)
+        surface_pumping_intensity = 145
+        ground_pumping_intensity = 920
+    elif (pws_data_path is False) & (pumping_intensity_path is True):
+        df_pws = cl.prep_water_use_2015(variables=['County', 'State', 'FIPS', 'fresh_groundwater_pws_mgd',
+                                                   'fresh_surface_water_pws_mgd',
+                                                   'saline_groundwater_pws_mgd', 'saline_surface_water_pws_mgd'])
     else:
-        df = cl.prep_water_use_2015(variables=['County', 'State', 'FIPS', 'fresh_groundwater_pws_mgd',
-                                               'fresh_surface_water_pws_mgd',
-                                               'saline_groundwater_pws_mgd', 'saline_surface_water_pws_mgd'])
+        df_pws = cl.prep_water_use_2015(variables=['County', 'State', 'FIPS', 'fresh_groundwater_pws_mgd',
+                                                   'fresh_surface_water_pws_mgd',
+                                                   'saline_groundwater_pws_mgd', 'saline_surface_water_pws_mgd'])
+        df_pumping_intensity = cl.prep_pumping_intensity_data()
+
+    # surface_pumping_intensity = 145,
+    # ground_pumping_intensity = 920, surface_treatment_intensity = 405,
+    # ground_treatment_intensity = 205, distribution_intensity = 1040,
 
     # TODO link to irrigation pumping intensity based on average well depth
     # TODO add in saline water for pumping electricity
@@ -40,16 +53,16 @@ def calc_public_water_supply_energy(water_data_path=None, surface_pumping_intens
 
     # electricity in public water supply distribution
     df['electricity_pws_distribution'] = (distribution_intensity *
-                                    (df["fresh_surface_water_pws_mgd"] + df["fresh_groundwater_pws_mgd"]))
+                                          (df["fresh_surface_water_pws_mgd"] + df["fresh_groundwater_pws_mgd"]))
 
-    electricity_list = ['electricity_pws_surface_pumping','electricity_pws_ground_pumping',
+    electricity_list = ['electricity_pws_surface_pumping', 'electricity_pws_ground_pumping',
                         'electricity_pws_surface_treatment', 'electricity_pws_ground_treatment',
                         'electricity_pws_distribution']
 
     # TODO add in saline water for treatment electricity
 
     # desalination treatment from EPRI 2013
-    #13, 600    kWh / MG
+    # 13, 600    kWh / MG
 
     for column in electricity_list:
         df[column] = convert_kwh_bbtu(df[column])
@@ -110,6 +123,7 @@ def convert_mwh_bbtu(x: float) -> float:
     bbtu = x * 0.003412
 
     return bbtu
+
 
 def convert_kwh_bbtu(x: float) -> float:
     """converts kWh to billion btu.
