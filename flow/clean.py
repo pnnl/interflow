@@ -895,7 +895,7 @@ def prep_irrigation_pws_ratio() -> pd.DataFrame:
 
     """
     # read data
-    df_irr_pws = prep_water_use_2015(variables=['FIPS', 'fresh_groundwater_crop_irrigation_mgd',
+    df_irr_pws = prep_water_use_2015(variables=['FIPS','State','County','fresh_groundwater_crop_irrigation_mgd',
                                                 'fresh_surface_water_crop_irrigation_mgd', 'total_pws_mgd'])
 
     #calculate public water supply percent of combined flows
@@ -904,6 +904,7 @@ def prep_irrigation_pws_ratio() -> pd.DataFrame:
                                    +df_irr_pws['fresh_surface_water_crop_irrigation_mgd']
                                    + df_irr_pws['total_pws_mgd'])
 
+    df_irr_pws = df_irr_pws[['FIPS','State','County','pws_ibt_pct']]
     return df_irr_pws
 
 def prep_electricity_demand_data() -> pd.DataFrame:
