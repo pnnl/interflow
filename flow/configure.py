@@ -44,7 +44,7 @@ def configure_data(data_path=None, region_data=None, region=[], use_water_use_da
         if region_data:
             df = pd.read(region_data)
         else:
-            df = prep_water_use_2015(variables=['FIPS', 'State', 'County'])
+            df = cl.prep_water_use_2015(variables=['FIPS', 'State', 'County'])
 
         # water use data
         if (use_water_use_data == True) and (water_use_data_path is None):

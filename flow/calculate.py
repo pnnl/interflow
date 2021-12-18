@@ -3,77 +3,106 @@ import pandas as pd
 
 from .reader import *
 import flow.clean as cl
-from .configure_data import *
+import flow.configure as co
 
 
-def calc_public_water_supply_energy(pws_data_path=None, pumping_intensity_path=None, total=False):
+def calc_electricity_public_water_supply(total=False, gw_pump_kwh_per_mg=920, gw_pws_fraction=.5,
+                                         sw_pump_kwh_per_mg=145, desalination_kWh_mg=13600,
+                                         sw_treatment_kwh_per_mg=405, gw_treatment_kwh_per_mg=205,
+                                         distribution_kwh_per_mg=1040):
     """calculate energy usage by the public water supply sector. Takes a dataframe of public water supply withdrawals
-    from surface water and groundwater sources and calculates total energy use for surface water pumping, groundwater
-    pumping, surface water treatment, groundwater treatment, and distribution. Returns a DataFrame of energy use for
-    each category in billion btu per year.
+    fand calculates total energy use for surface water pumping, groundwater pumping, surface water treatment,
+    groundwater treatment, and distribution. If individual flow values for groundwater and surface water to public
+    water supply are not provided, the total water flows to public water supply are used and multiplied by the
+    assumed percentage of each (default is set to 50%). This function REQUIRES that at minimum, the total water
+     flows to public water supply are available. Returns a DataFrame of energy use for each category in billion
+    btu per year.
 
     :return:                DataFrame of energy use in public water supply
 
     """
     # load data
-    df = configure_data()
+    df = co.configure_data()
+    # electricity in groundwater pumping for public water supply
 
-    if 'A' in df.columns:
-
-    if pws_data_path & pumping_intensity_path:
-        df_pws = pd.read_csv(pws_data_path)
-        df_pumping_intensity = pd.read_csv(pumping_intensity_path)
-    elif (pws_data_path is True) & (pumping_intensity_path is None):
-        df_pws = pd.read_csv(pws_data_path)
-        surface_pumping_intensity = 145
-        ground_pumping_intensity = 920
-    elif (pws_data_path is False) & (pumping_intensity_path is True):
-        df_pws = cl.prep_water_use_2015(variables=['County', 'State', 'FIPS', 'fresh_groundwater_pws_mgd',
-                                                   'fresh_surface_water_pws_mgd',
-                                                   'saline_groundwater_pws_mgd', 'saline_surface_water_pws_mgd'])
+    # calculate total groundwater to public water supply
+    if ('fresh_groundwater_pws_mgd' in df.columns) and ('saline_groundwater_pws_mgd' in df.columns):
+        total_pws_groundwater = df['fresh_groundwater_pws_mgd'] + df['saline_groundwater_pws_mgd']
+    elif ('fresh_groundwater_pws_mgd' in df.columns) and ('saline_groundwater_pws_mgd' not in df.columns):
+        total_pws_groundwater = df['fresh_groundwater_pws_mgd']
+    elif ('fresh_groundwater_pws_mgd' not in df.columns) and ('saline_groundwater_pws_mgd' in df.columns):
+        total_pws_groundwater = df['saline_groundwater_pws_mgd']
     else:
-        df_pws = cl.prep_water_use_2015(variables=['County', 'State', 'FIPS', 'fresh_groundwater_pws_mgd',
-                                                   'fresh_surface_water_pws_mgd',
-                                                   'saline_groundwater_pws_mgd', 'saline_surface_water_pws_mgd'])
-        df_pumping_intensity = cl.prep_pumping_intensity_data()
+        total_pws_groundwater = (gw_pws_fraction * df['total_pws_mgd'])
 
-    # surface_pumping_intensity = 145,
-    # ground_pumping_intensity = 920, surface_treatment_intensity = 405,
-    # ground_treatment_intensity = 205, distribution_intensity = 1040,
+    # calculate total surface water to public water supply
+    if ('fresh_surface_water_pws_mgd' in df.columns) and ('saline_surface_water_pws_mgd' in df.columns):
+        total_pws_surface_water = df['fresh_surface_water_pws_mgd'] + df['saline_surface_water_pws_mgd']
+    elif ('fresh_surface_water_pws_mgd' in df.columns) and ('saline_surface_water_pws_mgd' not in df.columns):
+        total_pws_surface_water = df['fresh_surface_water_pws_mgd']
+    elif ('fresh_surface_water_pws_mgd' not in df.columns) and ('saline_surface_water_pws_mgd' in df.columns):
+        total_pws_surface_water = df['saline_surface_water_pws_mgd']
+    else:
+        total_pws_surface_water = ((1 - gw_pws_fraction) * df['total_pws_mgd'])
 
-    # TODO link to irrigation pumping intensity based on average well depth
-    # TODO add in saline water for pumping electricity
+    # calculate total saline water in public water supply
+    if ('saline_surface_water_pws_mgd' in df.columns) and ('saline_groundwater_pws_mgd' in df.columns):
+        total_pws_saline = df['saline_surface_water_pws_mgd'] + df['saline_groundwater_pws_mgd']
+    elif ('saline_surface_water_pws_mgd' in df.columns) and ('saline_groundwater_pws_mgd' not in df.columns):
+        total_pws_saline = df['saline_surface_water_pws_mgd']
+    elif ('saline_surface_water_pws_mgd' not in df.columns) and ('saline_groundwater_pws_mgd' in df.columns):
+        total_pws_saline = df['saline_groundwater_pws_mgd']
+    else:
+        total_pws_saline = 0
 
-    # electricity in public water supply surface water pumping
-    df['electricity_pws_surface_pumping'] = surface_pumping_intensity * df["fresh_surface_water_pws_mgd"]
+    # calculate total public water supply withdrawals
+    df['total_pws_mgd'] = total_pws_groundwater + total_pws_surface_water
 
-    # electricity in public water supply groundwater pumping
-    df['electricity_pws_ground_pumping'] = ground_pumping_intensity * df["fresh_groundwater_pws_mgd"]
+    # calculate total electricity in groundwater pumping for public water supply
+    if 'gw_pump_bbtu_per_mg' in df.columns:
+        df['electricity_pws_gw_pumping_bbtu'] = total_pws_groundwater*df['gw_pump_bbtu_per_mg']
+    else:
+        df['electricity_pws_gw_pumping_bbtu'] = total_pws_groundwater * convert_kwh_bbtu(gw_pump_kwh_per_mg)
 
-    # electricity in public water supply surface water treatment
-    df['electricity_pws_surface_treatment'] = surface_treatment_intensity * df["fresh_surface_water_pws_mgd"]
+    # calculate total electricity in surface water pumping for public water supply
+    if 'sw_pump_bbtu_per_mg' in df.columns:
+        df['electricity_pws_sw_pumping_bbtu'] = total_pws_surface_water*df['sw_pump_bbtu_per_mg']
+    else:
+        df['electricity_pws_sw_pumping_bbtu'] = total_pws_surface_water * convert_kwh_bbtu(sw_pump_kwh_per_mg)
 
-    # electricity in public water supply groundwater treatment
-    df['electricity_pws_ground_treatment'] = ground_treatment_intensity * df["fresh_groundwater_pws_mgd"]
+    # calculate total electricity in desalination for pws
+    if 'pws_desalination_bbtu_per_mg' in df.columns:
+        df['electricity_pws_desalination_bbtu'] = total_pws_saline * df['pws_desalination_bbtu_per_mg']
+    else:
+        df['electricity_pws_desalination_bbtu'] = total_pws_saline * convert_kwh_bbtu(desalination_kWh_mg)
 
-    # electricity in public water supply distribution
-    df['electricity_pws_distribution'] = (distribution_intensity *
-                                          (df["fresh_surface_water_pws_mgd"] + df["fresh_groundwater_pws_mgd"]))
+    # calculate electricity in surface water treatment for public water supply
+    if 'pws_surface_water_treatment_bbtu_per_mg' in df.columns:
+        df['electricity_pws_surface_treatment_bbtu'] = total_pws_surface_water \
+                                                       * df['pws_surface_water_treatment_bbtu_per_mg']
+    else:
+        df['electricity_pws_surface_treatment_bbtu'] = total_pws_surface_water \
+                                                       * convert_kwh_bbtu(sw_treatment_kwh_per_mg)
 
-    electricity_list = ['electricity_pws_surface_pumping', 'electricity_pws_ground_pumping',
-                        'electricity_pws_surface_treatment', 'electricity_pws_ground_treatment',
-                        'electricity_pws_distribution']
+    # calculate electricity in groundwater treatment for public water supply
+    if 'pws_groundwater_treatment_bbtu_per_mg' in df.columns:
+        df['electricity_pws_surface_treatment_bbtu'] = total_pws_groundwater \
+                                                       * df['pws_groundwater_treatment_bbtu_per_mg']
+    else:
+        df['electricity_pws_surface_treatment_bbtu'] = total_pws_groundwater \
+                                                       * convert_kwh_bbtu(gw_treatment_kwh_per_mg)
 
-    # TODO add in saline water for treatment electricity
+    # calculate electricity in distribution of public water supply
+    if 'pws_distribution_bbtu_per_mg' in df.columns:
+        df['electricity_pws_distribution_bbtu'] = df['total_pws_mgd'] * df['pws_distribution_bbtu_per_mg']
+    else:
+        df['electricity_pws_distribution_bbtu'] = df['total_pws_mgd'] * convert_kwh_bbtu(distribution_kwh_per_mg)
 
-    # desalination treatment from EPRI 2013
-    # 13, 600    kWh / MG
-
-    for column in electricity_list:
-        df[column] = convert_kwh_bbtu(df[column])
-
-    # if total:
-    # add all energy parameters together
+    # calculate ratio of water
+    if ('interbasin_bbtu' in df.columns) \
+            and ('fresh_groundwater_crop_irrigation_mgd' or 'fresh_surface_water_crop_irrigation_mgd')\
+            or ('total_irrigation_mgd') :
+        Ag_SW_ratio = np.where(df['AG-WSWFr'] != 0, df['AG-WSWFr'] / (df['PS-WSWFr'] + df['AG-WSWFr']), 0)
 
     return df
 

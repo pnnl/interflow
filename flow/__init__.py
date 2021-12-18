@@ -3,7 +3,7 @@ from .prep import *
 from .clean import *
 from .calculate import *
 from .visualize import *
-from .configure_data import *
+from .configure import *
 
 from .sample import *
 

@@ -887,6 +887,24 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
 
     return df
 
+def prep_irrigation_pws_ratio() -> pd.DataFrame:
+    """prepping the ratio of water flows to irrigation vs. water flows to public water supply by county. Used to
+    determine the split of electricity in interbasin transfers between the two sectors.
+
+    :return:                DataFrame of electricity demand data
+
+    """
+    # read data
+    df_irr_pws = prep_water_use_2015(variables=['FIPS', 'fresh_groundwater_crop_irrigation_mgd',
+                                                'fresh_surface_water_crop_irrigation_mgd', 'total_pws_mgd'])
+
+    #calculate public water supply percent of combined flows
+    df_irr_pws['pws_ibt_pct'] = df_irr_pws['total_pws_mgd']\
+                                / (df_irr_pws['fresh_groundwater_crop_irrigation_mgd']
+                                   +df_irr_pws['fresh_surface_water_crop_irrigation_mgd']
+                                   + df_irr_pws['total_pws_mgd'])
+
+    return df_irr_pws
 
 def prep_electricity_demand_data() -> pd.DataFrame:
     """prepping electricity demand data by sector. Produces a dataframe of demand data by county.
