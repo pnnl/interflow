@@ -18,6 +18,7 @@ def configure_data(data_path=None, region_data=None, region=[], use_water_use_da
                    use_irrigation_fuel=True, irrigation_fuel_data_path=None,
                    use_pumping_intensity=True, pumping_intensity_data_path=None,
                    use_ibt=True, ibt_data_path=None,
+                   use_ibt_pws_pct_data=True, ibt_pws_pct_data_path=None,
                    use_electricity_demand=True, electricity_demand_data_path=None,
                    use_fuel_demand=True, fuel_demand_data_path=None,
                    use_petroleum_production=True, petroleum_production_data_path=None,
@@ -145,6 +146,16 @@ def configure_data(data_path=None, region_data=None, region=[], use_water_use_da
         else:
             df_ibt = pd.read_csv(ibt_data_path)
             df = pd.merge(df, df_ibt, how='left', on=region)
+
+        # use_ibt_pws_pct_data
+        if (use_ibt_pws_pct_data == True) & (ibt_pws_pct_data_path is None):
+            df_ibt_pws_pct = cl.prep_irrigation_pws_ratio()
+            df = pd.merge(df, df_ibt_pws_pct, how='left', on=['FIPS', 'State', 'County'])
+        elif (use_ibt_pws_pct_data == False) & (ibt_pws_pct_data_path is None):
+            pass
+        else:
+            df_ibt_pws_pct = pd.read_csv(ibt_pws_pct_data_path)
+            df = pd.merge(df, df_ibt_pws_pct, how='left', on=region)
 
         # use_electricity_demand data
         if (use_electricity_demand == True) & (electricity_demand_data_path is None):

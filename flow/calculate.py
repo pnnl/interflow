@@ -6,10 +6,10 @@ import flow.clean as cl
 import flow.configure as co
 
 
-def calc_electricity_public_water_supply(total=False, gw_pump_kwh_per_mg=920, gw_pws_fraction=.5,
-                                         sw_pump_kwh_per_mg=145, desalination_kWh_mg=13600,
+def calc_electricity_public_water_supply(regions=3, total=False, gw_pump_kwh_per_mg=920,
+                                         gw_pws_fraction=.5, sw_pump_kwh_per_mg=145, desalination_kwh_mg=13600,
                                          sw_treatment_kwh_per_mg=405, gw_treatment_kwh_per_mg=205,
-                                         distribution_kwh_per_mg=1040):
+                                         distribution_kwh_per_mg=1040, ibt_fraction=.5):
     """calculate energy usage by the public water supply sector. Takes a dataframe of public water supply withdrawals
     fand calculates total energy use for surface water pumping, groundwater pumping, surface water treatment,
     groundwater treatment, and distribution. If individual flow values for groundwater and surface water to public
@@ -18,12 +18,19 @@ def calc_electricity_public_water_supply(total=False, gw_pump_kwh_per_mg=920, gw
      flows to public water supply are available. Returns a DataFrame of energy use for each category in billion
     btu per year.
 
-    :return:                DataFrame of energy use in public water supply
+    :param regions:                     gives the number of columns in the dataset that should be treated as region
+                                        identifiers (e.g. "Country", "State"). Reads from the first column in the
+                                        dataframe.
+    :type regions:                      int
+
+
+    :return:                            DataFrame of energy use in public water supply
 
     """
+
+
     # load data
     df = co.configure_data()
-    # electricity in groundwater pumping for public water supply
 
     # calculate total groundwater to public water supply
     if ('fresh_groundwater_pws_mgd' in df.columns) and ('saline_groundwater_pws_mgd' in df.columns):
@@ -74,7 +81,7 @@ def calc_electricity_public_water_supply(total=False, gw_pump_kwh_per_mg=920, gw
     if 'pws_desalination_bbtu_per_mg' in df.columns:
         df['electricity_pws_desalination_bbtu'] = total_pws_saline * df['pws_desalination_bbtu_per_mg']
     else:
-        df['electricity_pws_desalination_bbtu'] = total_pws_saline * convert_kwh_bbtu(desalination_kWh_mg)
+        df['electricity_pws_desalination_bbtu'] = total_pws_saline * convert_kwh_bbtu(desalination_kwh_mg)
 
     # calculate electricity in surface water treatment for public water supply
     if 'pws_surface_water_treatment_bbtu_per_mg' in df.columns:
@@ -86,10 +93,10 @@ def calc_electricity_public_water_supply(total=False, gw_pump_kwh_per_mg=920, gw
 
     # calculate electricity in groundwater treatment for public water supply
     if 'pws_groundwater_treatment_bbtu_per_mg' in df.columns:
-        df['electricity_pws_surface_treatment_bbtu'] = total_pws_groundwater \
+        df['electricity_pws_groundwater_treatment_bbtu'] = total_pws_groundwater \
                                                        * df['pws_groundwater_treatment_bbtu_per_mg']
     else:
-        df['electricity_pws_surface_treatment_bbtu'] = total_pws_groundwater \
+        df['electricity_pws_groundwater_treatment_bbtu'] = total_pws_groundwater \
                                                        * convert_kwh_bbtu(gw_treatment_kwh_per_mg)
 
     # calculate electricity in distribution of public water supply
@@ -98,13 +105,43 @@ def calc_electricity_public_water_supply(total=False, gw_pump_kwh_per_mg=920, gw
     else:
         df['electricity_pws_distribution_bbtu'] = df['total_pws_mgd'] * convert_kwh_bbtu(distribution_kwh_per_mg)
 
-    # calculate ratio of water
-    if ('interbasin_bbtu' in df.columns) \
-            and ('fresh_groundwater_crop_irrigation_mgd' or 'fresh_surface_water_crop_irrigation_mgd')\
-            or ('total_irrigation_mgd') :
-        Ag_SW_ratio = np.where(df['AG-WSWFr'] != 0, df['AG-WSWFr'] / (df['PS-WSWFr'] + df['AG-WSWFr']), 0)
+    # calculate interbasin transfer energy to public water supply
+    if 'interbasin_bbtu' in df.columns:
+        if 'pws_ibt_pct' in df.columns:
+            df['electricity_pws_ibt_bbtu'] = df['interbasin_bbtu'] * df['pws_ibt_pct']
+        else:
+            df['electricity_pws_ibt_bbtu'] = df['interbasin_bbtu'] * ibt_fraction
+    else:
+        df['electricity_pws_ibt_bbtu'] = 0
+
+    #reduce dataframe
+
+
+    # calculate total energy in public water supply
+    df['total_electricity_pws_bbtu'] = df['electricity_pws_gw_pumping_bbtu'] \
+                                           + df['electricity_pws_sw_pumping_bbtu'] \
+                                           + df['electricity_pws_desalination_bbtu'] \
+                                           + df['electricity_pws_surface_treatment_bbtu'] \
+                                           + df['electricity_pws_groundwater_treatment_bbtu']\
+                                           + df['electricity_pws_distribution_bbtu'] \
+                                           + df['electricity_pws_ibt_bbtu']
+    if total:
+        column_list = df.columns[:regions].tolist()
+        column_list.append('total_electricity_pws_bbtu')
+        df = df[column_list]
+    else:
+        column_list = df.columns[:regions].tolist()
+        retain_list = ['electricity_pws_gw_pumping_bbtu','electricity_pws_sw_pumping_bbtu',
+                           'electricity_pws_desalination_bbtu', 'electricity_pws_surface_treatment_bbtu',
+                           'electricity_pws_groundwater_treatment_bbtu', 'electricity_pws_distribution_bbtu',
+                           'electricity_pws_ibt_bbtu','total_electricity_pws_bbtu']
+        for item in retain_list:
+            column_list.append(item)
+        df = df[column_list]
 
     return df
+
+
 
 
 def calc_pws_discharge() -> pd.DataFrame:
