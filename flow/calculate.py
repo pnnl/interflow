@@ -22,28 +22,35 @@ def calc_electricity(data: pd.DataFrame, generation_efficiency=.33):
     # load data
     df = data
 
-    # convert generation to bbtu
+    # calculate rejected energy from biomass generation
+    if ('biomass_fuel_bbtu' in df.columns) and ('biomass_gen_bbtu' in df.columns):
+        df['electricity_biomass_rejected_energy_bbtu'] = df['biomass_fuel_bbtu'] - df['biomass_gen_bbtu']
+    elif ('biomass_fuel_bbtu' in df.columns) and ('biomass_gen_bbtu' not in df.columns):
+        df['electricity_biomass_rejected_energy_bbtu'] = df['biomass_fuel_bbtu'] * generation_efficiency
+    elif ('biomass_fuel_bbtu' not in df.columns) and ('biomass_gen_bbtu' in df.columns):
+        df['electricity_biomass_rejected_energy_bbtu'] = df['biomass_fuel_bbtu'] * (1 / generation_efficiency)
+    else:
+        df['electricity_biomass_rejected_energy_bbtu'] = 0
 
-biomass_fuel_bbtu
-coal_fuel_bbtu
-geothermal_fuel_bbtu
-hydro_fuel_bbtu
-natgas_fuel_bbtu
-nuclear_fuel_bbtu
-oil_fuel_bbtu
-other_fuel_bbtu
-solar_fuel_bbtu
-wind_fuel_bbtu
-biomass_gen_mwh
-coal_gen_mwh
-geothermal_gen_mwh
-hydro_gen_mwh
-natgas_gen_mwh
-nuclear_gen_mwh
-oil_gen_mwh
-other_gen_mwh
-solar_gen_mwh
-wind_gen_mwh
+
+
+
+
+
+
+
+    df['electricity_coal_rejected_energy_bbtu'] = df['coal_fuel_bbtu'] - df['coal_gen_bbtu']
+    df['electricity_geothermal_rejected_energy_bbtu'] = df['geothermal_fuel_bbtu'] - df['geothermal_gen_bbtu']
+    df['electricity_hydro_rejected_energy_bbtu'] = df['hydro_fuel_bbtu'] - df['hydro_gen_bbtu']
+    df['electricity_natgas_rejected_energy_bbtu'] = df['natgas_fuel_bbtu'] - df['natgas_gen_bbtu']
+    df['electricity_nuclear_rejected_energy_bbtu'] = df['nuclear_fuel_bbtu'] - df['nuclear_gen_bbtu']
+    df['electricity_oil_rejected_energy_bbtu'] = df['oil_fuel_bbtu'] - df['oil_gen_bbtu']
+    df['electricity_other_rejected_energy_bbtu'] = df['other_fuel_bbtu'] - df['other_gen_bbtu']
+    df['electricity_solar_rejected_energy_bbtu'] = df['solar_fuel_bbtu'] - df['solar_gen_bbtu']
+    df['electricity_wind_rejected_energy_bbtu'] = df['wind_fuel_bbtu'] - df['wind_gen_bbtu']
+
+    df['electricity_total_rejected_energy_bbtu'] =
+
 
 def calc_electricity_public_water_supply(data: pd.DataFrame, regions=3, total=False, gw_pump_kwh_per_mg=920,
                                          gw_pws_fraction=.5, sw_pump_kwh_per_mg=145, desalination_kwh_mg=13600,

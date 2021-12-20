@@ -703,9 +703,8 @@ def prep_electricity_generation() -> pd.DataFrame:
 
     # splitting out generation data into a separate dataframe and pivoting to get generation (mwh) as columns by type
     df_gen = df[["FIPS", "generation_mwh", "fuel_type"]].copy()  # create a copy of generation data
-    for row in df_gen.iterrows():
-        row['generation_mwh'] = convert_mwh_bbtu(row['generation_mwh'])
-    df_gen["fuel_type"] = df_gen["fuel_type"] + "_gen_mwh"  # add units to generation type column name
+    df_gen['generation_mwh'] = df_gen['generation_mwh'].apply(convert_mwh_bbtu)  # convert to bbtu from mwh
+    df_gen["fuel_type"] = df_gen["fuel_type"] + "_gen_bbtu"  # add units to generation type column name
     df_gen = pd.pivot_table(df_gen, values='generation_mwh', index=['FIPS'], columns=['fuel_type'], aggfunc=np.sum)
     df_gen = df_gen.reset_index()  # reset index to remove multi-index from pivot table
     df_gen = df_gen.rename_axis(None, axis=1)  # drop index name
