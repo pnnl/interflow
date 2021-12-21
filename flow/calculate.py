@@ -6,50 +6,86 @@ import flow.clean as cl
 import flow.configure as co
 
 
-def calc_electricity(data: pd.DataFrame, generation_efficiency=.33):
-    """calculates total electricity generation and rejected energy (losses) by region.
+def calc_electricity_rejected_energy(data: pd.DataFrame, generation_types=None, regions=3,
+                                     generation_efficiency=.30, total=False):
+    """calculates rejected energy (losses) by region and generating type in billion btu. Rejected energy is calculated
+    as the difference between total fuel use in electricity generation and total output of electricity generation. If
+    electricity generation is not provided, function applies a specified efficiency (default is set to 0.30). If
+    generation is provided but fuel quantity is not, then the inverse of the specified efficiency is applied.
+    If no generation types are specified, the function uses a default list of generator types which includes 'biomass',
+    'coal', 'geothermal', 'hydro', 'natgas', and 'nuclear'.
+
+        :param data:                        DataFrame of input data containing electricity generation fuel and total
+                                            electricity generation by type
+        :type data:                         DataFrame
+
+        :param generation_types:            a list of generation types to include (e.g. ['biomass','coal'])
+        :type generation_types:             list
 
         :param regions:                     gives the number of columns in the dataset that should be treated as region
                                             identifiers (e.g. "Country", "State"). Reads from the first column in the
-                                            dataframe.
+                                            dataframe onwards.
         :type regions:                      int
 
+        :param generation_efficiency:       assumed efficiency rate of electricity generation
+        :type generation_efficiency:        float
 
-        :return:                            DataFrame of energy use in public water supply
+        :param total:                       If true, returns dataframe of identifier columns and total rejected energy
+        :type total:                        bool
+
+        :return:                            DataFrame of rejected energy in billion btu from electricity generation
 
         """
 
     # load data
     df = data
 
-    # calculate rejected energy from biomass generation
-    if ('biomass_fuel_bbtu' in df.columns) and ('biomass_gen_bbtu' in df.columns):
-        df['electricity_biomass_rejected_energy_bbtu'] = df['biomass_fuel_bbtu'] - df['biomass_gen_bbtu']
-    elif ('biomass_fuel_bbtu' in df.columns) and ('biomass_gen_bbtu' not in df.columns):
-        df['electricity_biomass_rejected_energy_bbtu'] = df['biomass_fuel_bbtu'] * generation_efficiency
-    elif ('biomass_fuel_bbtu' not in df.columns) and ('biomass_gen_bbtu' in df.columns):
-        df['electricity_biomass_rejected_energy_bbtu'] = df['biomass_fuel_bbtu'] * (1 / generation_efficiency)
+    # establish list of generation types
+    if generation_types is None:
+        generation_type_list = ['biomass', 'coal', 'geothermal', 'hydro', 'natgas', 'nuclear',
+                                'oil', 'other', 'solar', 'wind']
     else:
-        df['electricity_biomass_rejected_energy_bbtu'] = 0
+        generation_type_list = generation_types
 
+    df['electricity_total_rejected_energy_bbtu'] = 0
+    retain_list = []
+    for type in generation_type_list:
+        fuel_type = type + "_fuel_bbtu"
+        gen_type = type + "_gen_bbtu"
 
+        if (fuel_type in df.columns) and (gen_type in df.columns):
+            df[f'electricity_{type}_rejected_energy_bbtu'] = df[fuel_type] - df[gen_type]
+            df['electricity_total_rejected_energy_bbtu'] = df['electricity_total_rejected_energy_bbtu'] \
+                                                           + df[f'electricity_{type}_rejected_energy_bbtu']
+            retain_list.append(f'electricity_{type}_rejected_energy_bbtu')
+        elif (fuel_type in df.columns) and (gen_type not in df.columns):
+            df[f'electricity_{type}_rejected_energy_bbtu'] = df[fuel_type] * generation_efficiency
+            df['electricity_total_rejected_energy_bbtu'] = df['electricity_total_rejected_energy_bbtu'] \
+                                                           + df[f'electricity_{type}_rejected_energy_bbtu']
+            retain_list.append(f'electricity_{type}_rejected_energy_bbtu')
+        elif (fuel_type not in df.columns) and (gen_type in df.columns):
+            df[f'electricity_{type}_rejected_energy_bbtu'] = df[fuel_type] * (1 / generation_efficiency)
+            df['electricity_total_rejected_energy_bbtu'] = df['electricity_total_rejected_energy_bbtu'] \
+                                                           + df[f'electricity_{type}_rejected_energy_bbtu']
+            retain_list.append(f'electricity_{type}_rejected_energy_bbtu')
 
+        else:
+            df[f'electricity_{type}_rejected_energy_bbtu'] = 0
+            df['electricity_total_rejected_energy_bbtu'] = df['electricity_total_rejected_energy_bbtu'] \
+                                                           + df[f'electricity_{type}_rejected_energy_bbtu']
 
+    if total:
+        column_list = df.columns[:regions].tolist()
+        column_list.append('electricity_total_rejected_energy_bbtu')
+        df = df[column_list]
+    else:
+        column_list = df.columns[:regions].tolist()
+        for item in retain_list:
+            column_list.append(item)
+        column_list.append('electricity_total_rejected_energy_bbtu')
+        df = df[column_list]
 
-
-
-
-    df['electricity_coal_rejected_energy_bbtu'] = df['coal_fuel_bbtu'] - df['coal_gen_bbtu']
-    df['electricity_geothermal_rejected_energy_bbtu'] = df['geothermal_fuel_bbtu'] - df['geothermal_gen_bbtu']
-    df['electricity_hydro_rejected_energy_bbtu'] = df['hydro_fuel_bbtu'] - df['hydro_gen_bbtu']
-    df['electricity_natgas_rejected_energy_bbtu'] = df['natgas_fuel_bbtu'] - df['natgas_gen_bbtu']
-    df['electricity_nuclear_rejected_energy_bbtu'] = df['nuclear_fuel_bbtu'] - df['nuclear_gen_bbtu']
-    df['electricity_oil_rejected_energy_bbtu'] = df['oil_fuel_bbtu'] - df['oil_gen_bbtu']
-    df['electricity_other_rejected_energy_bbtu'] = df['other_fuel_bbtu'] - df['other_gen_bbtu']
-    df['electricity_solar_rejected_energy_bbtu'] = df['solar_fuel_bbtu'] - df['solar_gen_bbtu']
-    df['electricity_wind_rejected_energy_bbtu'] = df['wind_fuel_bbtu'] - df['wind_gen_bbtu']
-
-    df['electricity_total_rejected_energy_bbtu'] =
+    return df
 
 
 def calc_electricity_public_water_supply(data: pd.DataFrame, regions=3, total=False, gw_pump_kwh_per_mg=920,
@@ -175,7 +211,7 @@ def calc_electricity_public_water_supply(data: pd.DataFrame, regions=3, total=Fa
     # calculate rejected energy in public water supply
     df['pws_gw_pumping_rejected_energy_bbtu'] = gw_pump_efficiency \
                                                 * df['electricity_pws_gw_pumping_bbtu']
-    df['pws_sw_pumping_rejected_energy_bbtu'] = sw_treatment_efficiency \
+    df['pws_sw_pumping_rejected_energy_bbtu'] = sw_pump_efficiency \
                                                 * df['electricity_pws_sw_pumping_bbtu']
     df['pws_desalination_rejected_energy_bbtu'] = desalination_efficiency \
                                                   * df['electricity_pws_desalination_bbtu']
@@ -190,12 +226,12 @@ def calc_electricity_public_water_supply(data: pd.DataFrame, regions=3, total=Fa
 
     # total rejected energy
     df['total_pws_rejected_energy_bbtu'] = df['pws_gw_pumping_rejected_energy_bbtu'] \
-                                       + df['pws_sw_pumping_rejected_energy_bbtu'] \
-                                       + df['pws_desalination_rejected_energy_bbtu'] \
-                                       + df['pws_surface_treatment_rejected_energy_bbtu'] \
-                                       + df['pws_groundwater_treatment_rejected_energy_bbtu'] \
-                                       + df['pws_distribution_rejected_energy_bbtu'] \
-                                       + df['pws_ibt_rejected_energy_bbtu']
+                                           + df['pws_sw_pumping_rejected_energy_bbtu'] \
+                                           + df['pws_desalination_rejected_energy_bbtu'] \
+                                           + df['pws_surface_treatment_rejected_energy_bbtu'] \
+                                           + df['pws_groundwater_treatment_rejected_energy_bbtu'] \
+                                           + df['pws_distribution_rejected_energy_bbtu'] \
+                                           + df['pws_ibt_rejected_energy_bbtu']
 
     # calculate rejected energy in public water supply
     df['pws_gw_pumping_energy_services_bbtu'] = (1 - gw_pump_efficiency) \
@@ -215,12 +251,12 @@ def calc_electricity_public_water_supply(data: pd.DataFrame, regions=3, total=Fa
 
     # total energy services
     df['total_pws_energy_services_bbtu'] = df['pws_gw_pumping_energy_services_bbtu'] \
-                                       + df['pws_sw_pumping_energy_services_bbtu'] \
-                                       + df['pws_desalination_energy_services_bbtu'] \
-                                       + df['pws_surface_treatment_energy_services_bbtu'] \
-                                       + df['pws_groundwater_treatment_energy_services_bbtu'] \
-                                       + df['pws_distribution_energy_services_bbtu'] \
-                                       + df['pws_ibt_energy_services_bbtu']
+                                           + df['pws_sw_pumping_energy_services_bbtu'] \
+                                           + df['pws_desalination_energy_services_bbtu'] \
+                                           + df['pws_surface_treatment_energy_services_bbtu'] \
+                                           + df['pws_groundwater_treatment_energy_services_bbtu'] \
+                                           + df['pws_distribution_energy_services_bbtu'] \
+                                           + df['pws_ibt_energy_services_bbtu']
 
     # if total is set to true, return total amounts for electricity use, energy services, and rejected energy
     if total:
