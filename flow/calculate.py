@@ -87,6 +87,76 @@ def calc_electricity_rejected_energy(data: pd.DataFrame, generation_types=None, 
 
     return df
 
+def calc_sectoral_use_rejected_energy(data: pd.DataFrame, sector_types=None, regions=3, total=False):
+    #TODO finish this
+    """calculates rejected energy (losses) by region and sector type in billion btu. Rejected energy is calculated
+    as the difference between electricity delivered and energy services.
+
+        :param data:                        DataFrame of input data containing electricity generation fuel and total
+                                            electricity generation by type
+        :type data:                         DataFrame
+
+        :param sector_types:                a dictionary of sector types to include and their associated efficiency
+                                            (e.g. {'residential':0.65, 'commercial':0.60}
+        :type sector_types:                 dictionary
+
+        :param regions:                     gives the number of columns in the dataset that should be treated as region
+                                            identifiers (e.g. "Country", "State"). Reads from the first column in the
+                                            dataframe onwards.
+        :type regions:                      int
+
+        :param total:                       If true, returns dataframe of identifier columns and total rejected energy
+        :type total:                        bool
+
+        :return:                            DataFrame of rejected energy in billion btu from electricity generation
+
+        """
+
+    # load data
+    df = data
+
+    # establish list of generation types
+    if sector_types is None:
+        sector_type_list = {'residential': 0.65, 'commercial': 0.65, 'industrial': 0.49,
+                            'mining': 0.65, 'transportation': 0.21}
+    else:
+        sector_type_list = sector_types
+
+    retain_list = []
+    for type in sector_type_list:
+        fuel_type = type + "_fuel_bbtu"
+        gen_type = type + "_gen_bbtu"
+
+        if (fuel_type in df.columns) and (gen_type in df.columns):
+            df[f'electricity_{type}_rejected_energy_bbtu'] = df[fuel_type] - df[gen_type]
+            retain_list.append(f'electricity_{type}_rejected_energy_bbtu')
+
+        elif (fuel_type in df.columns) and (gen_type not in df.columns):
+            df[f'electricity_{type}_rejected_energy_bbtu'] = df[fuel_type] * generation_efficiency
+            retain_list.append(f'electricity_{type}_rejected_energy_bbtu')
+
+        elif (fuel_type not in df.columns) and (gen_type in df.columns):
+            df[f'electricity_{type}_rejected_energy_bbtu'] = df[fuel_type] * (1 / generation_efficiency)
+            retain_list.append(f'electricity_{type}_rejected_energy_bbtu')
+
+        else:
+            df[f'electricity_{type}_rejected_energy_bbtu'] = 0
+            df['electricity_total_rejected_energy_bbtu'] = df['electricity_total_rejected_energy_bbtu'] \
+                                                           + df[f'electricity_{type}_rejected_energy_bbtu']
+
+    if total:
+        column_list = df.columns[:regions].tolist()
+        column_list.append('electricity_total_rejected_energy_bbtu')
+        df = df[column_list]
+    else:
+        column_list = df.columns[:regions].tolist()
+        for item in retain_list:
+            column_list.append(item)
+        column_list.append('electricity_total_rejected_energy_bbtu')
+        df = df[column_list]
+
+    return df
+
 
 def calc_electricity_public_water_supply(data: pd.DataFrame, regions=3, total=False, gw_pump_kwh_per_mg=920,
                                          gw_pws_fraction=.5, sw_pump_kwh_per_mg=145, desalination_kwh_mg=13600,
