@@ -59,12 +59,12 @@ def calc_electricity_rejected_energy(data: pd.DataFrame, generation_types=None, 
                                                            + df[f'electricity_{type}_rejected_energy_bbtu']
             retain_list.append(f'electricity_{type}_rejected_energy_bbtu')
         elif (fuel_type in df.columns) and (gen_type not in df.columns):
-            df[f'electricity_{type}_rejected_energy_bbtu'] = df[fuel_type] * generation_efficiency
+            df[f'electricity_{type}_rejected_energy_bbtu'] = df[fuel_type] * (1 - generation_efficiency)
             df['electricity_total_rejected_energy_bbtu'] = df['electricity_total_rejected_energy_bbtu'] \
                                                            + df[f'electricity_{type}_rejected_energy_bbtu']
             retain_list.append(f'electricity_{type}_rejected_energy_bbtu')
         elif (fuel_type not in df.columns) and (gen_type in df.columns):
-            df[f'electricity_{type}_rejected_energy_bbtu'] = df[fuel_type] * (1 / generation_efficiency)
+            df[f'electricity_{type}_rejected_energy_bbtu'] = df[fuel_type] * (1 / (1 - generation_efficiency))
             df['electricity_total_rejected_energy_bbtu'] = df['electricity_total_rejected_energy_bbtu'] \
                                                            + df[f'electricity_{type}_rejected_energy_bbtu']
             retain_list.append(f'electricity_{type}_rejected_energy_bbtu')
@@ -143,10 +143,10 @@ def calc_sectoral_use_energy_discharge(data: pd.DataFrame, sector_types=None, fu
             fuel_demand_type = fuel_type + "_" + sector_type + "_bbtu"
             if fuel_demand_type in df.columns:
                 df[f'{sector_type}_{fuel_type}_rejected_energy_bbtu'] = df[fuel_demand_type] \
-                                                                        * sector_type_dict[sector_type]
+                                                                        * (1 - sector_type_dict[sector_type])
 
                 df[f'{sector_type}_{fuel_type}_energy_services_bbtu'] = df[fuel_demand_type] \
-                                                                        * (1 - sector_type_dict[sector_type])
+                                                                        * (sector_type_dict[sector_type])
 
                 retain_list.append(f'{sector_type}_{fuel_type}_rejected_energy_bbtu')
                 retain_list.append(f'{sector_type}_{fuel_type}_energy_services_bbtu')
@@ -155,6 +155,7 @@ def calc_sectoral_use_energy_discharge(data: pd.DataFrame, sector_types=None, fu
                                                              + df[f'{sector_type}_{fuel_type}_rejected_energy_bbtu']
             else:
                 pass
+
         retain_list.append(f'{sector_type}_total_rejected_energy_bbtu')
         total_list.append(f'{sector_type}_total_rejected_energy_bbtu')
 
