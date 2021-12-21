@@ -87,18 +87,21 @@ def calc_electricity_rejected_energy(data: pd.DataFrame, generation_types=None, 
 
     return df
 
-def calc_sectoral_use_rejected_energy(data: pd.DataFrame, sector_types=None, regions=3, total=False):
-    #TODO finish this
-    """calculates rejected energy (losses) by region and sector type in billion btu. Rejected energy is calculated
-    as the difference between electricity delivered and energy services.
 
-        :param data:                        DataFrame of input data containing electricity generation fuel and total
-                                            electricity generation by type
+def calc_sectoral_use_energy_discharge(data: pd.DataFrame, sector_types=None, fuel_types=None, regions=3, total=False):
+    """calculates rejected energy (losses) and energy services for each region for each sector type in billion btu.
+    Rejected energy is calculated as energy delivered multiplied by the efficiency rating for a given sector.
+
+        :param data:                        DataFrame of input data containing fuel demand data for each sector
         :type data:                         DataFrame
 
         :param sector_types:                a dictionary of sector types to include and their associated efficiency
-                                            (e.g. {'residential':0.65, 'commercial':0.60}
+                                            (e.g. {'residential':0.65, 'commercial':0.60}. If none provided, defaults
+                                            are used.
         :type sector_types:                 dictionary
+
+        :param fuel_types:                  a list of fuel types to include (e.g., electricity, coal, petroleum)
+        :type fuel_types:                   list
 
         :param regions:                     gives the number of columns in the dataset that should be treated as region
                                             identifiers (e.g. "Country", "State"). Reads from the first column in the
@@ -106,53 +109,66 @@ def calc_sectoral_use_rejected_energy(data: pd.DataFrame, sector_types=None, reg
         :type regions:                      int
 
         :param total:                       If true, returns dataframe of identifier columns and total rejected energy
+                                            and total energy services by sector instead of by fuel type
         :type total:                        bool
 
-        :return:                            DataFrame of rejected energy in billion btu from electricity generation
+        :return:                            DataFrame of rejected energy in billion btu from sectors
 
         """
 
     # load data
     df = data
 
-    # establish list of generation types
-    if sector_types is None:
-        sector_type_list = {'residential': 0.65, 'commercial': 0.65, 'industrial': 0.49,
+    # establish dictionary of sector types as keys and efficiency as value.
+    if sector_types is None:  # default key value pairs
+        sector_type_dict = {'residential': 0.65, 'commercial': 0.65, 'industrial': 0.49,
                             'mining': 0.65, 'transportation': 0.21}
     else:
-        sector_type_list = sector_types
+        sector_type_dict = sector_types
 
+    #  establish list of fuel types to include
+    if fuel_types is None:  # default fuel types
+        fuel_type_list = ['electricity', 'coal', 'biomass', 'geothermal', 'natgas', 'petroleum', 'solar', 'wind']
+    else:
+        fuel_type_list = fuel_types
+
+    # loop through each sector + fuel pair and calculate rejected energy and energy services if in dataset
     retain_list = []
-    for type in sector_type_list:
-        fuel_type = type + "_fuel_bbtu"
-        gen_type = type + "_gen_bbtu"
+    total_list = []
+    for sector_type in sector_type_dict:
+        df[f'{sector_type}_total_rejected_energy'] = 0
+        df[f'{sector_type}_total_energy_services'] = 0
 
-        if (fuel_type in df.columns) and (gen_type in df.columns):
-            df[f'electricity_{type}_rejected_energy_bbtu'] = df[fuel_type] - df[gen_type]
-            retain_list.append(f'electricity_{type}_rejected_energy_bbtu')
+        for fuel_type in fuel_type_list:
+            fuel_demand_type = fuel_type + "_" + sector_type + "_bbtu"
+            if fuel_demand_type in df.columns:
+                df[f'{sector_type}_{fuel_type}_rejected_energy_bbtu'] = df[fuel_demand_type] \
+                                                                        * sector_type_dict[sector_type]
 
-        elif (fuel_type in df.columns) and (gen_type not in df.columns):
-            df[f'electricity_{type}_rejected_energy_bbtu'] = df[fuel_type] * generation_efficiency
-            retain_list.append(f'electricity_{type}_rejected_energy_bbtu')
+                df[f'{sector_type}_{fuel_type}_energy_services_bbtu'] = df[fuel_demand_type] \
+                                                                        * (1 - sector_type_dict[sector_type])
 
-        elif (fuel_type not in df.columns) and (gen_type in df.columns):
-            df[f'electricity_{type}_rejected_energy_bbtu'] = df[fuel_type] * (1 / generation_efficiency)
-            retain_list.append(f'electricity_{type}_rejected_energy_bbtu')
+                retain_list.append(f'{sector_type}_{fuel_type}_rejected_energy_bbtu')
+                retain_list.append(f'{sector_type}_{fuel_type}_energy_services_bbtu')
 
-        else:
-            df[f'electricity_{type}_rejected_energy_bbtu'] = 0
-            df['electricity_total_rejected_energy_bbtu'] = df['electricity_total_rejected_energy_bbtu'] \
-                                                           + df[f'electricity_{type}_rejected_energy_bbtu']
+                df[f'{sector_type}_total_rejected_energy'] = df[f'{sector_type}_total_rejected_energy'] \
+                                                             + df[f'{sector_type}_{fuel_type}_rejected_energy_bbtu']
+            else:
+                pass
+        retain_list.append(f'{sector_type}_total_rejected_energy')
+        total_list.append(f'{sector_type}_total_rejected_energy')
 
+    # establish list of region columns to include in output
+    column_list = df.columns[:regions].tolist()
+
+    # if total is True, only return total rejected energy and energy services by sector
     if total:
-        column_list = df.columns[:regions].tolist()
-        column_list.append('electricity_total_rejected_energy_bbtu')
+        for item in total_list:
+            column_list.append(item)
         df = df[column_list]
     else:
-        column_list = df.columns[:regions].tolist()
         for item in retain_list:
             column_list.append(item)
-        column_list.append('electricity_total_rejected_energy_bbtu')
         df = df[column_list]
 
     return df
