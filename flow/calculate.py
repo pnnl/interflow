@@ -89,6 +89,7 @@ def calc_electricity_rejected_energy(data: pd.DataFrame, generation_types=None, 
 
 
 def calc_sectoral_use_energy_discharge(data: pd.DataFrame, sector_types=None, fuel_types=None, regions=3, total=False):
+    # TODO potentially add optional region-level efficiency multiplier
     """calculates rejected energy (losses) and energy services for each region for each sector type in billion btu.
     Rejected energy is calculated as energy delivered multiplied by the efficiency rating for a given sector.
 
@@ -152,7 +153,8 @@ def calc_sectoral_use_energy_discharge(data: pd.DataFrame, sector_types=None, fu
                 retain_list.append(f'{sector_type}_{fuel_type}_energy_services_bbtu')
 
                 df[f'{sector_type}_total_rejected_energy_bbtu'] = df[f'{sector_type}_total_rejected_energy_bbtu'] \
-                                                             + df[f'{sector_type}_{fuel_type}_rejected_energy_bbtu']
+                                                                  + df[
+                                                                      f'{sector_type}_{fuel_type}_rejected_energy_bbtu']
             else:
                 pass
 
@@ -175,20 +177,22 @@ def calc_sectoral_use_energy_discharge(data: pd.DataFrame, sector_types=None, fu
     return df
 
 
-def calc_electricity_wastewater(data: pd.DataFrame, treatment_types=None, efficiency=.65, regions=3, total=False):
+def calc_electricity_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=None, regions=3, total=False):
+    # TODO add option for fuels other than electricity
     """calculates rejected energy (losses) and energy services for each region for each sector type in billion btu.
     Rejected energy is calculated as energy delivered multiplied by the efficiency rating for a given sector.
 
-        :param data:                        DataFrame of input data containing fuel demand data for each sector
+        :param data:                        DataFrame of input data containing wastewater flow data in mgd
         :type data:                         DataFrame
 
-        :param sector_types:                a dictionary of sector types to include and their associated efficiency
-                                            (e.g. {'residential':0.65, 'commercial':0.60}. If none provided, defaults
-                                            are used.
-        :type sector_types:                 dictionary
+        :param treatment_types:             a dictionary of wastewater treatment types to include and their associated
+                                            energy intensity in kWh/mg (e.g. {'advanced':2690}. If none provided,
+                                            defaults are used.
+        :type treatment_types:              dictionary
 
-        :param fuel_types:                  a list of fuel types to include (e.g., electricity, coal, petroleum)
-        :type fuel_types:                   list
+        :param fuel_types:                  a dictionary of fuel types to include (e.g., electricity, coal, petroleum)
+                                            and their associated efficiency
+        :type fuel_types:                   dictionary
 
         :param regions:                     gives the number of columns in the dataset that should be treated as region
                                             identifiers (e.g. "Country", "State"). Reads from the first column in the
@@ -206,44 +210,57 @@ def calc_electricity_wastewater(data: pd.DataFrame, treatment_types=None, effici
     # load data
     df = data
 
-    # establish dictionary of sector types as keys and efficiency as value.
+    # establish dictionary of treatment types as keys and energy intensities as values (kWh/MG).
     if treatment_types is None:  # default key value pairs
-        treatment_type_dict = {'advanced': 2690, 'secondary': 2080, 'primary': 750,
-                               'no_treatment': 2980}
+        treatment_type_dict = {'advanced': 2690, 'secondary': 2080, 'primary': 750}
     else:
         treatment_type_dict = treatment_types
 
-    # loop through each treatment type and calculate total electricity use, rejected energy, and energy services
+    # if no fuel type dictionary is provided, default is electricity at 65% efficiency
+    if fuel_types is None:  # default key value pairs
+        fuel_type_dict = {'electricity': .65}
+    else:
+        fuel_type_dict = fuel_types
+
     retain_list = []
     total_list = []
     df['electricity_wastewater_total_bbtu'] = 0
     df['wastewater_rejected_energy_total_bbtu'] = 0
     df['wastewater_energy_services_total_bbtu'] = 0
 
+    # loops through each wastewater treatment type and fuel source to calculate electricity, rejected energy, and services
     for treatment_type in treatment_type_dict:
         treatment_flow_type = "wastewater_" + treatment_type + "_" + "treatment_mgd"
-        if treatment_flow_type in df.columns:
-            df[f'electricity_wastewater_{treatment_type}_bbtu'] = df[treatment_flow_type] \
-                                                                    * treatment_type_dict[treatment_type]
-            df[f'wastewater_{treatment_type}_rejected_energy_bbtu'] = df[f'electricity_wastewater_{treatment_type}_bbtu'] \
-                                                                            * (1 - efficiency)
+        for fuel_type in fuel_type_dict:
+            fuel_pct = f"wastewater_{fuel_type}" + "_" + "fuel_pct"
+            fuel_efficiency = f"wastewater_{fuel_type}" + "_" + "efficiency_fraction"
+            if treatment_flow_type in df.columns:
+                df[f'{fuel_type}_wastewater_{treatment_type}_bbtu'] = df[treatment_flow_type] \
+                                                                      * convert_kwh_bbtu(treatment_type_dict[treatment_type]) \
+                                                                      * df[fuel_pct]
 
-            df[f'wastewater_{treatment_type}_energy_services_bbtu'] = df[f'electricity_wastewater_{treatment_type}_bbtu'] \
-                                                                      * (efficiency)
+                df[f'wastewater_{treatment_type}_rejected_energy_bbtu'] = df[f'electricity_wastewater_{treatment_type}_bbtu'] \
+                                                                          * (1 - fuel_type_dict[treatment_type])
 
-            retain_list.append(f'electricity_wastewater_{treatment_type}_bbtu')
-            retain_list.append(f'wastewater_{treatment_type}_rejected_energy_bbtu')
-            retain_list.append(f'wastewater_{treatment_type}_energy_services_bbtu')
+                df[f'wastewater_{treatment_type}_energy_services_bbtu'] = df[f'electricity_wastewater_{treatment_type}_bbtu'] \
+                                                                          * (fuel_type_dict[treatment_type])
 
-            df['electricity_wastewater_total_bbtu'] = df['electricity_wastewater_total_bbtu'] \
-                                                         + df[f'electricity_wastewater_{treatment_type}_bbtu']
-            df['wastewater_rejected_energy_total_bbtu'] = df['wastewater_rejected_energy_total_bbtu'] \
-                                                         + df[f'wastewater_{treatment_type}_rejected_energy_bbtu']
-            df['wastewater_energy_services_total_bbtu'] = df['wastewater_energy_services_total_bbtu'] \
-                                                          + df[f'wastewater_{treatment_type}_energy_services_bbtu']
-        else:
-            pass
+                # add to list of retained variables
+                retain_list.append(f'electricity_wastewater_{treatment_type}_bbtu')
+                retain_list.append(f'wastewater_{treatment_type}_rejected_energy_bbtu')
+                retain_list.append(f'wastewater_{treatment_type}_energy_services_bbtu')
 
+                # add on to totals
+                df['electricity_wastewater_total_bbtu'] = df['electricity_wastewater_total_bbtu'] \
+                                                          + df[f'electricity_wastewater_{treatment_type}_bbtu']
+                df['wastewater_rejected_energy_total_bbtu'] = df['wastewater_rejected_energy_total_bbtu'] \
+                                                              + df[f'wastewater_{treatment_type}_rejected_energy_bbtu']
+                df['wastewater_energy_services_total_bbtu'] = df['wastewater_energy_services_total_bbtu'] \
+                                                              + df[f'wastewater_{treatment_type}_energy_services_bbtu']
+            else:
+                pass
+
+    # add totals to retained lists of variables
     retain_list.append('electricity_wastewater_total_bbtu')
     retain_list.append('wastewater_rejected_energy_total_bbtu')
     retain_list.append('wastewater_energy_services_total_bbtu')
@@ -254,7 +271,7 @@ def calc_electricity_wastewater(data: pd.DataFrame, treatment_types=None, effici
     # establish list of region columns to include in output
     column_list = df.columns[:regions].tolist()
 
-    # if total is True, only return total rejected energy and energy services by sector
+    # if total is True, only return total energy to wastewater, rejected energy and energy services
     if total:
         for item in total_list:
             column_list.append(item)

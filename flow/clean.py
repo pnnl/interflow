@@ -543,6 +543,9 @@ def prep_wastewater_data() -> pd.DataFrame:
                                                                .2 * df_ww['total_wastewater_mgd'],
                                                                df_ww['wastewater_secondary_treatment_mgd'])
 
+    # add column indicating percentage of energy from electricity, assumed 100%
+    df_ww['wastewater_electricity_fuel_pct'] = 1
+
     # drop public water supply variable
     df_ww = df_ww.drop('total_pws_mgd', axis=1)
 
