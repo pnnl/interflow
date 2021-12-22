@@ -89,7 +89,6 @@ def calc_electricity_rejected_energy(data: pd.DataFrame, generation_types=None, 
 
 
 def calc_sectoral_use_energy_discharge(data: pd.DataFrame, sector_types=None, fuel_types=None, regions=3, total=False):
-    # TODO potentially add optional region-level efficiency multiplier
     """calculates rejected energy (losses) and energy services for each region for each sector type in billion btu.
     Rejected energy is calculated as energy delivered multiplied by the efficiency rating for a given sector.
 
@@ -177,8 +176,9 @@ def calc_sectoral_use_energy_discharge(data: pd.DataFrame, sector_types=None, fu
     return df
 
 
-def calc_electricity_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=None, regions=3, total=False):
-    # TODO add option for fuels other than electricity
+def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=None, regions=3, total=False):
+    #TODO expects a column with fuel percent, does not currently allow for getting rejected energy if total energy is
+    # TODO already provided by region
     """calculates rejected energy (losses) and energy services for each region for each sector type in billion btu.
     Rejected energy is calculated as energy delivered multiplied by the efficiency rating for a given sector.
 
@@ -228,7 +228,7 @@ def calc_electricity_wastewater(data: pd.DataFrame, treatment_types=None, fuel_t
     df['wastewater_rejected_energy_total_bbtu'] = 0
     df['wastewater_energy_services_total_bbtu'] = 0
 
-    # loops through each wastewater treatment type and fuel source to calculate electricity, rejected energy, and services
+    # loops through each treatment type and fuel source to calculate electricity, rejected energy, and energy services
     for treatment_type in treatment_type_dict:
         treatment_flow_type = "wastewater_" + treatment_type + "_" + "treatment_mgd"
         for fuel_type in fuel_type_dict:
@@ -240,10 +240,10 @@ def calc_electricity_wastewater(data: pd.DataFrame, treatment_types=None, fuel_t
                                                                       * df[fuel_pct]
 
                 df[f'wastewater_{treatment_type}_rejected_energy_bbtu'] = df[f'electricity_wastewater_{treatment_type}_bbtu'] \
-                                                                          * (1 - fuel_type_dict[treatment_type])
+                                                                          * (1 - fuel_type_dict[fuel_type])
 
                 df[f'wastewater_{treatment_type}_energy_services_bbtu'] = df[f'electricity_wastewater_{treatment_type}_bbtu'] \
-                                                                          * (fuel_type_dict[treatment_type])
+                                                                          * (fuel_type_dict[fuel_type])
 
                 # add to list of retained variables
                 retain_list.append(f'electricity_wastewater_{treatment_type}_bbtu')
@@ -292,6 +292,7 @@ def calc_electricity_public_water_supply(data: pd.DataFrame, regions=3, total=Fa
                                          sw_treatment_efficiency=.65,
                                          gw_treatment_efficiency=.65, distribution_efficiency=.65,
                                          ibt_efficiency=.65):
+    # TODO redo this as a loop through energy use types
     """calculate energy usage by the public water supply sector. Takes a dataframe of public water supply withdrawals
     fand calculates total energy use for surface water pumping, groundwater pumping, surface water treatment,
     groundwater treatment, and distribution. If individual flow values for groundwater and surface water to public
@@ -470,6 +471,7 @@ def calc_electricity_public_water_supply(data: pd.DataFrame, regions=3, total=Fa
 
     return df
 
+# TODO calculate energy in agriculture
 
 def calc_pws_discharge() -> pd.DataFrame:
     # TODO prepare test
