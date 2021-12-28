@@ -224,9 +224,12 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
 
     retain_list = []
     total_list = []
-    df['electricity_wastewater_total_bbtu'] = 0
+    for fuel_type in fuel_type_dict:
+        df[f'{fuel_type}_total_bbtu'] = 0
     df['wastewater_rejected_energy_total_bbtu'] = 0
     df['wastewater_energy_services_total_bbtu'] = 0
+
+    # TODO add in option for fuel efficiency column like in agriculture
 
     # loops through each treatment type and fuel source to calculate electricity, rejected energy, and energy services
     for treatment_type in treatment_type_dict:
@@ -241,21 +244,21 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
                                                                       * df[fuel_pct]
 
                 df[f'wastewater_{treatment_type}_rejected_energy_bbtu'] = df[
-                                                                              f'electricity_wastewater_{treatment_type}_bbtu'] \
+                                                                              f'{fuel_type}_wastewater_{treatment_type}_bbtu'] \
                                                                           * (1 - fuel_type_dict[fuel_type])
 
                 df[f'wastewater_{treatment_type}_energy_services_bbtu'] = df[
-                                                                              f'electricity_wastewater_{treatment_type}_bbtu'] \
+                                                                              f'{fuel_type}_wastewater_{treatment_type}_bbtu'] \
                                                                           * (fuel_type_dict[fuel_type])
 
                 # add to list of retained variables
-                retain_list.append(f'electricity_wastewater_{treatment_type}_bbtu')
+                retain_list.append(f'{fuel_type}_wastewater_{treatment_type}_bbtu')
                 retain_list.append(f'wastewater_{treatment_type}_rejected_energy_bbtu')
                 retain_list.append(f'wastewater_{treatment_type}_energy_services_bbtu')
 
                 # add on to totals
-                df['electricity_wastewater_total_bbtu'] = df['electricity_wastewater_total_bbtu'] \
-                                                          + df[f'electricity_wastewater_{treatment_type}_bbtu']
+                df[f'{fuel_type}_total_bbtu'] = df[f'{fuel_type}_total_bbtu'] \
+                                                + df[f'electricity_wastewater_{treatment_type}_bbtu']
                 df['wastewater_rejected_energy_total_bbtu'] = df['wastewater_rejected_energy_total_bbtu'] \
                                                               + df[f'wastewater_{treatment_type}_rejected_energy_bbtu']
                 df['wastewater_energy_services_total_bbtu'] = df['wastewater_energy_services_total_bbtu'] \
@@ -264,12 +267,12 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
                 pass
 
     # add totals to retained lists of variables
-    retain_list.append('electricity_wastewater_total_bbtu')
-    retain_list.append('wastewater_rejected_energy_total_bbtu')
-    retain_list.append('wastewater_energy_services_total_bbtu')
-    total_list.append('electricity_wastewater_total_bbtu')
-    total_list.append('wastewater_rejected_energy_total_bbtu')
-    total_list.append('wastewater_energy_services_total_bbtu')
+        retain_list.append(f'{fuel_type}_wastewater_total_bbtu')
+        retain_list.append('wastewater_rejected_energy_total_bbtu')
+        retain_list.append('wastewater_energy_services_total_bbtu')
+        total_list.append(f'{fuel_type}_wastewater_total_bbtu')
+        total_list.append('wastewater_rejected_energy_total_bbtu')
+        total_list.append('wastewater_energy_services_total_bbtu')
 
     # establish list of region columns to include in output
     column_list = df.columns[:regions].tolist()
@@ -288,7 +291,7 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
 
 
 def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_types=None, water_types=None,
-                            fuel_types=None,fuel_percents=None, regions=3, total=False):
+                            fuel_types=None, fuel_percents=None, regions=3, total=False):
     """calculates rejected energy (losses) and energy services for each region for each sector type in billion btu.
     Rejected energy is calculated as energy delivered multiplied by the efficiency rating for a given sector.
 
@@ -354,6 +357,7 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
         fuel_percent_dict = fuel_percents
 
     retain_list = []
+    total_list = []
 
     for water_type in water_types_list:
         for pumping_type in pumping_type_dict:
@@ -362,48 +366,79 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
                 pumping_intensity_type = pumping_type + "_pumping_bbtu_per_mg"
                 for fuel_type in fuel_type_dict:
                     fuel_type_pct = fuel_type + "_pumping_pct"
-                    fuel_type_efficiency = fuel_type + "_pumping_efficiency_pct"
-
                     # if the pumping type is in the dataframe
                     if pumping_flow_type in df.columns:
 
-                        # if pumping intensity (kwh_mg) is provided by region, use it
+                        # if pumping intensity (bbtu_mg) is provided by region, use it
                         if pumping_intensity_type in df.columns:
 
                             # if there is a fuel percent column, use it
                             if fuel_type_pct in df.columns:
 
-                                df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu'] = df[fuel_type_pct] \
-                                                                                                    * df[pumping_flow_type] \
-                                                                                                    * convert_kwh_bbtu(df[pumping_intensity_type])
+                                df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu'] = df[
+                                                                                                             fuel_type_pct] \
+                                                                                                         * df[
+                                                                                                             pumping_flow_type] \
+                                                                                                         * df[
+                                                                                                             pumping_intensity_type]
+
                             # if there isn't a fuel percent column, use set percentages
                             else:
-                                df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu'] = fuel_percent_dict[
-                                                                                                        fuel_type] \
-                                                                                                    * df[pumping_flow_type] \
-                                                                                                    * convert_kwh_bbtu(df[pumping_intensity_type])
-                        # if no pumping intensity provided by region
+                                df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu'] = \
+                                    fuel_percent_dict[
+                                        fuel_type] \
+                                    * df[pumping_flow_type] \
+                                    * df[pumping_intensity_type]
+                        # if no pumping intensity provided by region, use dict amount
                         else:
                             # if there is a fuel percent column, use it
                             if fuel_type_pct in df.columns:
-                                df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu'] = df[fuel_type_pct] \
-                                                                                                    * df[pumping_flow_type] \
-                                                                                                    * convert_kwh_bbtu(pumping_type_dict[pumping_type])
+                                df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu'] = df[
+                                                                                                             fuel_type_pct] \
+                                                                                                         * df[
+                                                                                                             pumping_flow_type] \
+                                                                                                         * convert_kwh_bbtu(
+                                    pumping_type_dict[pumping_type])
                             else:  # if there isn't a fuel percent column, use set percentages
-                                df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu'] = fuel_percent_dict[
-                                                                                                        fuel_type] \
-                                                                                                    * df[pumping_flow_type] \
-                                                                                                    * convert_kwh_bbtu(pumping_type_dict[pumping_type])
-
-                        retain_list.append(f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu')
+                                df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu'] = \
+                                    fuel_percent_dict[
+                                        fuel_type] \
+                                    * df[pumping_flow_type] \
+                                    * convert_kwh_bbtu(pumping_type_dict[pumping_type])
                     else:
                         pass
 
+    # rejected energy and energy services
+    for water_type in water_types_list:
+        for pumping_type in pumping_type_dict:
+            for agriculture_type in agriculture_type_list:
+                for fuel_type in fuel_type_dict:
+                    fuel_type_efficiency = fuel_type + "_pumping_efficiency_pct"
+                    # if there's a fuel efficiency column
+                    if fuel_type_efficiency in df.columns:
+                        df[f'{agriculture_type}_{water_type}_{pumping_type}_rejected_energy_bbtu'] = (1 - df[
+                            fuel_type_efficiency]) * df[
+                                                                                                         f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
+                        df[f'{agriculture_type}_{water_type}_{pumping_type}_energy_services_bbtu'] = (df[
+                            fuel_type_efficiency]) * df[
+                                                                                                         f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
+                    # if there's no fuel efficiency column, use defaults
+                    else:
+                        df[f'{agriculture_type}_{water_type}_{pumping_type}_rejected_energy_bbtu'] = (1 -
+                                                                                                      fuel_type_dict[
+                                                                                                          fuel_type]) \
+                                                                                                     * df[
+                                                                                                         f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
+                        df[f'{agriculture_type}_{water_type}_{pumping_type}_energy_services_bbtu'] = (fuel_type_dict[
+                            fuel_type]) \
+                                                                                                     * df[
+                                                                                                         f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
+
+        retain_list.append(f'{agriculture_type}_{water_type}_{pumping_type}_rejected_energy_bbtu')
+        retain_list.append(f'{agriculture_type}_{water_type}_{pumping_type}_energy_services_bbtu')
 
     # establish list of region columns to include in output
     column_list = df.columns[:regions].tolist()
-
-
     for item in retain_list:
         column_list.append(item)
     df = df[column_list]
