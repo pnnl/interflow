@@ -283,6 +283,117 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
 
     return df
 
+def calc_energy_agriculture(data: pd.DataFrame, treatment_types=None, fuel_types=None, regions=3, total=False):
+    """calculates rejected energy (losses) and energy services for each region for each sector type in billion btu.
+    Rejected energy is calculated as energy delivered multiplied by the efficiency rating for a given sector.
+
+        :param data:                        DataFrame of input data containing wastewater flow data in mgd
+        :type data:                         DataFrame
+
+        :param treatment_types:             a dictionary of wastewater treatment types to include and their associated
+                                            energy intensity in kWh/mg (e.g. {'advanced':2690}. If none provided,
+                                            defaults are used.
+        :type treatment_types:              dictionary
+
+        :param fuel_types:                  a dictionary of fuel types to include (e.g., electricity, coal, petroleum)
+                                            and their associated efficiency
+        :type fuel_types:                   dictionary
+
+        :param regions:                     gives the number of columns in the dataset that should be treated as region
+                                            identifiers (e.g. "Country", "State"). Reads from the first column in the
+                                            dataframe onwards.
+        :type regions:                      int
+
+        :param total:                       If true, returns dataframe of identifier columns and total rejected energy
+                                            and total energy services by sector instead of by fuel type
+        :type total:                        bool
+
+        :return:                            DataFrame of rejected energy in billion btu from sectors
+
+        """
+
+    # load data
+    df = data
+
+    #groundwater pumping
+    # surface water pumping
+    # electricity, nat gas, etc. ratio
+
+
+    # establish dictionary of treatment types as keys and energy intensities as values (kWh/MG).
+    if treatment_types is None:  # default key value pairs
+        treatment_type_dict = {'advanced': 2690, 'secondary': 2080, 'primary': 750}
+    else:
+        treatment_type_dict = treatment_types
+
+    # if no fuel type dictionary is provided, default is electricity at 65% efficiency
+    if fuel_types is None:  # default key value pairs
+        fuel_type_dict = {'electricity': .65}
+    else:
+        fuel_type_dict = fuel_types
+
+    retain_list = []
+    total_list = []
+    df['electricity_wastewater_total_bbtu'] = 0
+    df['wastewater_rejected_energy_total_bbtu'] = 0
+    df['wastewater_energy_services_total_bbtu'] = 0
+
+    # loops through each treatment type and fuel source to calculate electricity, rejected energy, and energy services
+    for treatment_type in treatment_type_dict:
+        treatment_flow_type = "wastewater_" + treatment_type + "_" + "treatment_mgd"
+        for fuel_type in fuel_type_dict:
+            fuel_pct = f"wastewater_{fuel_type}" + "_" + "fuel_pct"
+            fuel_efficiency = f"wastewater_{fuel_type}" + "_" + "efficiency_fraction"
+            if treatment_flow_type in df.columns:
+                df[f'{fuel_type}_wastewater_{treatment_type}_bbtu'] = df[treatment_flow_type] \
+                                                                      * convert_kwh_bbtu(treatment_type_dict[treatment_type]) \
+                                                                      * df[fuel_pct]
+
+                df[f'wastewater_{treatment_type}_rejected_energy_bbtu'] = df[f'electricity_wastewater_{treatment_type}_bbtu'] \
+                                                                          * (1 - fuel_type_dict[fuel_type])
+
+                df[f'wastewater_{treatment_type}_energy_services_bbtu'] = df[f'electricity_wastewater_{treatment_type}_bbtu'] \
+                                                                          * (fuel_type_dict[fuel_type])
+
+                # add to list of retained variables
+                retain_list.append(f'electricity_wastewater_{treatment_type}_bbtu')
+                retain_list.append(f'wastewater_{treatment_type}_rejected_energy_bbtu')
+                retain_list.append(f'wastewater_{treatment_type}_energy_services_bbtu')
+
+                # add on to totals
+                df['electricity_wastewater_total_bbtu'] = df['electricity_wastewater_total_bbtu'] \
+                                                          + df[f'electricity_wastewater_{treatment_type}_bbtu']
+                df['wastewater_rejected_energy_total_bbtu'] = df['wastewater_rejected_energy_total_bbtu'] \
+                                                              + df[f'wastewater_{treatment_type}_rejected_energy_bbtu']
+                df['wastewater_energy_services_total_bbtu'] = df['wastewater_energy_services_total_bbtu'] \
+                                                              + df[f'wastewater_{treatment_type}_energy_services_bbtu']
+            else:
+                pass
+
+    # add totals to retained lists of variables
+    retain_list.append('electricity_wastewater_total_bbtu')
+    retain_list.append('wastewater_rejected_energy_total_bbtu')
+    retain_list.append('wastewater_energy_services_total_bbtu')
+    total_list.append('electricity_wastewater_total_bbtu')
+    total_list.append('wastewater_rejected_energy_total_bbtu')
+    total_list.append('wastewater_energy_services_total_bbtu')
+
+    # establish list of region columns to include in output
+    column_list = df.columns[:regions].tolist()
+
+    # if total is True, only return total energy to wastewater, rejected energy and energy services
+    if total:
+        for item in total_list:
+            column_list.append(item)
+        df = df[column_list]
+    else:
+        for item in retain_list:
+            column_list.append(item)
+        df = df[column_list]
+
+    return df
+
+
 
 def calc_electricity_public_water_supply(data: pd.DataFrame, regions=3, total=False, gw_pump_kwh_per_mg=920,
                                          gw_pws_fraction=.5, sw_pump_kwh_per_mg=145, desalination_kwh_mg=13600,
@@ -472,6 +583,13 @@ def calc_electricity_public_water_supply(data: pd.DataFrame, regions=3, total=Fa
     return df
 
 # TODO calculate energy in agriculture
+
+
+
+
+
+
+
 
 def calc_pws_discharge() -> pd.DataFrame:
     # TODO prepare test

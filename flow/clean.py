@@ -765,6 +765,11 @@ def prep_irrigation_fuel_data() -> pd.DataFrame:
     df['diesel_total_acres'].fillna(diesel_avg, inplace=True)
     df['gas_total_acres'].fillna(other_avg, inplace=True)
 
+    # add units to columns
+    column_list = df.columns[3:]
+    for column in column_list:
+        df = df.rename(columns={column: f"{column}_pct"})
+
     return df
 
 
