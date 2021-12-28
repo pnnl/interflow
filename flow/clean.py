@@ -831,12 +831,16 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
     # reducing dataframe to required variables
     df = df[['State', 'groundwater_pumping_bbtu_per_mg', 'surface_water_pumping_bbtu_per_mg']]
 
+
     # merge with county data to distribute value to each county in a state
     df = pd.merge(df_loc, df, how='left', on='State')
 
     # filling states that were not in the irrigation dataset with the average for each fuel type
     df['groundwater_pumping_bbtu_per_mg'].fillna(groundwater_pumping_bbtu_per_mg_avg, inplace=True)  # groundwater intensity
     df['surface_water_pumping_bbtu_per_mg'].fillna(surface_water_pumping_bbtu_per_mg_avg, inplace=True)
+
+    # add column for wastewater pumping
+    df['wastewater_pumping_bbtu_per_mg'] = df['surface_water_pumping_bbtu_per_mg']
 
     return df
 
