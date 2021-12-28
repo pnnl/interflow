@@ -327,6 +327,12 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, delivery_typ
     else:
         pumping_type_list = pumping_types
 
+    # establish list of pumping types for irrigation
+    if water_types is None:  # default list
+        water_type_list = ['fresh', 'saline']
+    else:
+        water_type_list = water_types
+
     # establish list of agriculture water delivery types
     if delivery_types is None:  # default list
         agriculture_type_list = ['crop_irrigation', 'golf_irrigation', 'livestock', 'aquaculture']
