@@ -759,11 +759,11 @@ def prep_irrigation_fuel_data() -> pd.DataFrame:
     df = pd.merge(df_loc, df, how='left', on='State')
 
     # filling states that were not in the irrigation dataset with the average for each fuel type
-    df['electricity_total_acres'].fillna(elec_avg, inplace=True)
-    df['ng_total_acres'].fillna(ng_avg, inplace=True)
-    df['propane_total_acres'].fillna(prop_avg, inplace=True)
-    df['diesel_total_acres'].fillna(diesel_avg, inplace=True)
-    df['gas_total_acres'].fillna(other_avg, inplace=True)
+    df['electricity_pumping'].fillna(elec_avg, inplace=True)
+    df['ng_pumping'].fillna(ng_avg, inplace=True)
+    df['propane_pumping'].fillna(prop_avg, inplace=True)
+    df['diesel_pumping'].fillna(diesel_avg, inplace=True)
+    df['gas_pumping'].fillna(other_avg, inplace=True)
 
     # bin similar fuel types
     df['oil_pumping'] = df['propane_pumping'] + df['diesel_pumping']
