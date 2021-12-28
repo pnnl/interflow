@@ -283,17 +283,18 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
 
     return df
 
-def calc_energy_agriculture(data: pd.DataFrame, treatment_types=None, fuel_types=None, regions=3, total=False):
+def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, delivery_types=None, fuel_types=None,
+                            regions=3, total=False):
     """calculates rejected energy (losses) and energy services for each region for each sector type in billion btu.
     Rejected energy is calculated as energy delivered multiplied by the efficiency rating for a given sector.
 
         :param data:                        DataFrame of input data containing wastewater flow data in mgd
         :type data:                         DataFrame
 
-        :param treatment_types:             a dictionary of wastewater treatment types to include and their associated
+        :param pumping_types:            a list of water pumping types to include and their associated
                                             energy intensity in kWh/mg (e.g. {'advanced':2690}. If none provided,
                                             defaults are used.
-        :type treatment_types:              dictionary
+        :type pumping_types:            list
 
         :param fuel_types:                  a dictionary of fuel types to include (e.g., electricity, coal, petroleum)
                                             and their associated efficiency
@@ -315,22 +316,40 @@ def calc_energy_agriculture(data: pd.DataFrame, treatment_types=None, fuel_types
     # load data
     df = data
 
-    #groundwater pumping
+    # groundwater pumping
     # surface water pumping
     # electricity, nat gas, etc. ratio
 
 
-    # establish dictionary of treatment types as keys and energy intensities as values (kWh/MG).
-    if treatment_types is None:  # default key value pairs
-        treatment_type_dict = {'advanced': 2690, 'secondary': 2080, 'primary': 750}
+    # establish list of pumping types for irrigation
+    if pumping_types is None:  # default list
+        pumping_type_list = ['groundwater', 'surface_water']
     else:
-        treatment_type_dict = treatment_types
+        pumping_type_list = pumping_types
+
+    # establish list of agriculture water delivery types
+    if delivery_types is None:  # default list
+        agriculture_type_list = ['crop_irrigation', 'golf_irrigation', 'livestock', 'aquaculture']
+    else:
+        agriculture_type_list = delivery_types
+
+    # establish list of fuel types for agriculture applications
+    if fuel_types is None:  # default key value pairs
+        fuel_type_dict = ""
+    else:
+        fuel_type_dict = fuel_types
+
+
 
     # if no fuel type dictionary is provided, default is electricity at 65% efficiency
     if fuel_types is None:  # default key value pairs
         fuel_type_dict = {'electricity': .65}
     else:
         fuel_type_dict = fuel_types
+
+
+
+
 
     retain_list = []
     total_list = []

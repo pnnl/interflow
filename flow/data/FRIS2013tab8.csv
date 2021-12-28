@@ -1,7 +1,7 @@
 "2013 Farm and Ranch Irrigation Survey (FRIS): Released November 13, 2014, by the National Agricultural Statistics Service (NASS), Agricultural Statistics Board, U.S. Department of Agriculture.",,,,,,,,
 Table 12.  On0Farm Energy Expense for Pumping Irrigation Water by Water Source and Type of Energy:  2013,,,,,,,,
 Table 8. Characteristics of Irrigation Wells Used on Farms: 2013,,,,,,,,
-State,average_well_depth_ft,average_operating_pressure_psi,average_pumping_capacity_gpm,elec_total_acres,ng_total_acres,propane_total_acres,diesel_total_acres,gas_total_acres
+State,average_well_depth_ft,average_operating_pressure_psi,average_pumping_capacity_gpm,electricity_total_acres,ng_total_acres,propane_total_acres,diesel_total_acres,gas_total_acres
 AL,177,49,302,49864,180,0,55664,373
 AK,80,46,92,0,0,0,0,10
 AZ,392,35,732,484696,22620,0,61001,3774
