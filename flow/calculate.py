@@ -350,11 +350,14 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, delivery_typ
             for agriculture_type in agriculture_type_list:
                 pumping_flow_type = water_type + "_" + pumping_type + "_" + agriculture_type + "_mgd"
                 for fuel_type in fuel_type_dict:
-                    fuel_type_pct = fuel_type + "_"
+                    fuel_type_pct = fuel_type + "_pumping_pct"
                     if pumping_flow_type in df.columns:
-                        df[f'{fuel_type}_{water_type}_{pumping_type}']
+                        if fuel_type_pct in df.columns:
+                            df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}'] = df[fuel_type_pct]\
+                                                                                                * pumping_flow_type *
 
-
+                            # fuel type pct * (pumping intensity * flow amount)
+                            # sw_pump_bbtu_per_mg
 
 
 
