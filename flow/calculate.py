@@ -225,7 +225,7 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
     retain_list = []
     total_list = []
     for fuel_type in fuel_type_dict:
-        df[f'{fuel_type}_total_bbtu'] = 0
+        df[f'{fuel_type}_wastewater_total_bbtu'] = 0
     df['wastewater_rejected_energy_total_bbtu'] = 0
     df['wastewater_energy_services_total_bbtu'] = 0
 
@@ -257,7 +257,7 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
                 retain_list.append(f'wastewater_{treatment_type}_energy_services_bbtu')
 
                 # add on to totals
-                df[f'{fuel_type}_total_bbtu'] = df[f'{fuel_type}_total_bbtu'] \
+                df[f'{fuel_type}_wastewater_total_bbtu'] = df[f'{fuel_type}_wastewater_total_bbtu'] \
                                                 + df[f'electricity_wastewater_{treatment_type}_bbtu']
                 df['wastewater_rejected_energy_total_bbtu'] = df['wastewater_rejected_energy_total_bbtu'] \
                                                               + df[f'wastewater_{treatment_type}_rejected_energy_bbtu']
@@ -267,12 +267,13 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
                 pass
 
     # add totals to retained lists of variables
+    for fuel_type in fuel_type_dict:
         retain_list.append(f'{fuel_type}_wastewater_total_bbtu')
-        retain_list.append('wastewater_rejected_energy_total_bbtu')
-        retain_list.append('wastewater_energy_services_total_bbtu')
         total_list.append(f'{fuel_type}_wastewater_total_bbtu')
-        total_list.append('wastewater_rejected_energy_total_bbtu')
-        total_list.append('wastewater_energy_services_total_bbtu')
+    retain_list.append('wastewater_rejected_energy_total_bbtu')
+    retain_list.append('wastewater_energy_services_total_bbtu')
+    total_list.append('wastewater_rejected_energy_total_bbtu')
+    total_list.append('wastewater_energy_services_total_bbtu')
 
     # establish list of region columns to include in output
     column_list = df.columns[:regions].tolist()
