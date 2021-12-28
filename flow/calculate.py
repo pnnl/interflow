@@ -316,11 +316,6 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, delivery_typ
     # load data
     df = data
 
-    # groundwater pumping
-    # surface water pumping
-    # electricity, nat gas, etc. ratio
-
-
     # establish list of pumping types for irrigation
     if pumping_types is None:  # default list
         pumping_type_list = ['groundwater', 'surface_water', 'wastewater']
@@ -334,7 +329,7 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, delivery_typ
         water_type_list = water_types
 
     # establish list of agriculture water delivery types
-    if delivery_types is None:  # default list
+    if agriculture_types is None:  # default list
         agriculture_type_list = ['crop_irrigation', 'golf_irrigation', 'livestock', 'aquaculture']
     else:
         agriculture_type_list = delivery_types
@@ -350,8 +345,14 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, delivery_typ
     else:
         fuel_percent_dict = fuel_percents
 
-    for pumping_type in pumping_type_list:
-        pumping_flow_type = "wastewater_" + pumping_type + "_" + "treatment_mgd"
+    for water_type in water_types_list:
+        for pumping_type in pumping_type_list:
+            for agriculture_type in agriculture_type_list:
+                pumping_flow_type = water_type + "_" + pumping_type + "_" + agriculture_type + "_mgd"
+                for fuel_type in fuel_type_dict:
+                    fuel_type_pct = fuel_type + "_"
+                    if pumping_flow_type in df.columns:
+                        df[f'{fuel_type}_{water_type}_{pumping_type}']
 
 
 

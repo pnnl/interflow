@@ -745,15 +745,15 @@ def prep_irrigation_fuel_data() -> pd.DataFrame:
         df[col] = (df[col] / df['total_Irr'])  # determine percent of total acres irrigated for each fuel type
 
     # calculate the mean percent across all states in dataset
-    elec_avg = df['electricity_total_acres'].mean(axis=0)  # electricity
-    ng_avg = df['ng_total_acres'].mean(axis=0)  # natural gas
-    prop_avg = df['propane_total_acres'].mean(axis=0)  # propane
-    diesel_avg = df['diesel_total_acres'].mean(axis=0)  # diesel
-    other_avg = df['gas_total_acres'].mean(axis=0)  # other gas
+    elec_avg = df['electricity_pumping'].mean(axis=0)  # electricity
+    ng_avg = df['ng_pumping'].mean(axis=0)  # natural gas
+    prop_avg = df['propane_pumping'].mean(axis=0)  # propane
+    diesel_avg = df['diesel_pumping'].mean(axis=0)  # diesel
+    other_avg = df['gas_pumping'].mean(axis=0)  # other gas
 
     # reducing dataframe to required variables
-    df = df[['State', 'electricity_total_acres', 'ng_total_acres', 'propane_total_acres',
-             'diesel_total_acres', 'gas_total_acres']]
+    df = df[['State', 'electricity_pumping', 'ng_pumping', 'propane_pumping',
+             'diesel_pumping', 'gas_pumping']]
 
     # merge with county data to distribute value to each county in a state
     df = pd.merge(df_loc, df, how='left', on='State')
@@ -766,11 +766,11 @@ def prep_irrigation_fuel_data() -> pd.DataFrame:
     df['gas_total_acres'].fillna(other_avg, inplace=True)
 
     # bin similar fuel types
-    df['oil_total_acres'] = df['propane_total_acres'] + df['diesel_total_acres']
-    df['natural_gas_total_acres'] = df['ng_total_acres'] + df['gas_total_acres']
+    df['oil_pumping'] = df['propane_pumping'] + df['diesel_pumping']
+    df['natural_gas_pumping'] = df['ng_pumping'] + df['gas_pumping']
 
     # keep only required columns
-    df = df.drop(["gas_total_acres", "propane_total_acres", "diesel_total_acres", 'ng_total_acres'], axis=1)
+    df = df.drop(["gas_pumping", "propane_pumping", "diesel_pumping", 'ng_pumping'], axis=1)
 
     # add units to columns
     column_list = df.columns[3:]
