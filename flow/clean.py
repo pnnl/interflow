@@ -767,10 +767,10 @@ def prep_irrigation_fuel_data() -> pd.DataFrame:
 
     # bin similar fuel types
     df['oil_total_acres'] = df['propane_total_acres'] + df['diesel_total_acres']
-    df['ng_total_acres'] = df['ng_total_acres'] + df['gas_total_acres']
+    df['natural_gas_total_acres'] = df['ng_total_acres'] + df['gas_total_acres']
 
     # keep only required columns
-    df = df.drop(["gas_total_acres", "propane_total_acres", "diesel_total_acres"], axis=1)
+    df = df.drop(["gas_total_acres", "propane_total_acres", "diesel_total_acres", 'ng_total_acres'], axis=1)
 
     # add units to columns
     column_list = df.columns[3:]

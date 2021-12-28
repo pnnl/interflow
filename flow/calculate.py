@@ -323,7 +323,7 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, delivery_typ
 
     # establish list of pumping types for irrigation
     if pumping_types is None:  # default list
-        pumping_type_list = ['groundwater', 'surface_water']
+        pumping_type_list = ['groundwater', 'surface_water', 'wastewater']
     else:
         pumping_type_list = pumping_types
 
@@ -333,19 +333,19 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, delivery_typ
     else:
         agriculture_type_list = delivery_types
 
-    # establish list of fuel types for agriculture applications
+    # establish dictionary of fuel types for agriculture applications and efficiency ratings
     if fuel_types is None:  # default key value pairs
-        fuel_type_dict = ""
+        fuel_type_dict = {"electricity": 65, "natural_gas": .65, "oil": .65}
     else:
         fuel_type_dict = fuel_types
 
-
-
-    # if no fuel type dictionary is provided, default is electricity at 65% efficiency
-    if fuel_types is None:  # default key value pairs
-        fuel_type_dict = {'electricity': .65}
+    if fuel_percents is None:
+        fuel_percent_dict = {"electricity": .6, "natural_gas": .01, "oil": .39}
     else:
-        fuel_type_dict = fuel_types
+        fuel_percent_dict = fuel_percents
+
+    for pumping_type in pumping_type_list:
+        pumping_flow_type = "wastewater_" + pumping_type + "_" + "treatment_mgd"
 
 
 
@@ -353,9 +353,9 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, delivery_typ
 
     retain_list = []
     total_list = []
-    df['electricity_wastewater_total_bbtu'] = 0
-    df['wastewater_rejected_energy_total_bbtu'] = 0
-    df['wastewater_energy_services_total_bbtu'] = 0
+    df['electricity_agriculture_total_bbtu'] = 0
+    df['agriculture_rejected_energy_total_bbtu'] = 0
+    df['agriculture_energy_services_total_bbtu'] = 0
 
     # loops through each treatment type and fuel source to calculate electricity, rejected energy, and energy services
     for treatment_type in treatment_type_dict:
