@@ -258,7 +258,7 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
 
                 # add on to totals
                 df[f'{fuel_type}_wastewater_total_bbtu'] = df[f'{fuel_type}_wastewater_total_bbtu'] \
-                                                + df[f'electricity_wastewater_{treatment_type}_bbtu']
+                                                           + df[f'electricity_wastewater_{treatment_type}_bbtu']
                 df['wastewater_rejected_energy_total_bbtu'] = df['wastewater_rejected_energy_total_bbtu'] \
                                                               + df[f'wastewater_{treatment_type}_rejected_energy_bbtu']
                 df['wastewater_energy_services_total_bbtu'] = df['wastewater_energy_services_total_bbtu'] \
@@ -292,25 +292,39 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
 
 
 def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_types=None, water_types=None,
-                            fuel_types=None, fuel_percents=None, regions=3, total=False):
-    """calculates rejected energy (losses) and energy services for each region for each sector type in billion btu.
-    Rejected energy is calculated as energy delivered multiplied by the efficiency rating for a given sector.
+                            fuel_types=None, fuel_percents=None, irrigation_ibt_pct=.5, regions=3, total=False):
+    """calculates energy use, rejected energy, and energy services by fuel type for each agriculture subsector and
+    water type and source (as applicable) in billion btu per year. An example output would be electricity use in
+    fresh surface water pumping for crop irrigation by region. This function will use default fuel types, pumping
+    efficiencies, fuel percentage shares, water types, agriculture types, pumping types, and irrigation interbasin
+    transfer share unless other values are provided.
 
-    NTS: Allows for a column of fuel efficiency at regional level. Does not currently allow for different fuel efficiencies
+    #TODO NTS: Allows for a column of fuel efficiency at regional level. Does not currently allow for different fuel efficiencies
     by pumping type, water type, etc. Assumes one efficiency for all type of pumping (groundwater, surface, fresh, saline).
-    Case study does not have this data at a county level.
+    Case study does not have this data at a county level. Assumes ibt pumping efficiency same as other pumping efficiency
 
         :param data:                        DataFrame of input data containing wastewater flow data in mgd
         :type data:                         DataFrame
 
-        :param pumping_types:            a list of water pumping types to include and their associated
-                                            energy intensity in kWh/mg (e.g. {'advanced':2690}. If none provided,
-                                            defaults are used.
-        :type pumping_types:            list
+        :param pumping_types:               a dictionary of pumping source types (e.g. groundwater) and their associated
+                                            energy intensity in kWh per million gallons
+        :type pumping_types:                dict
+
+        :param agriculture_types:           a list of agriculture subsector types (e.g., crop_irrigation). Agriculture
+                                            types must have an underscore between words.
+        :type agriculture_types:            list
 
         :param fuel_types:                  a dictionary of fuel types to include (e.g., electricity, coal, petroleum)
-                                            and their associated efficiency
-        :type fuel_types:                   dictionary
+                                            and their associated efficiency rating
+        :type fuel_types:                   dict
+
+        :param fuel_percents:               a dictionary of fuel types and their associated percentage share of total
+                                            fuel for pumping
+        :type fuel_percents:                dict
+
+        :param irrigation_ibt_pct:          gives the percent share of total interbasin transfer energy used by
+                                            crop irrigation
+        :type irrigation_ibt_pct:           float
 
         :param regions:                     gives the number of columns in the dataset that should be treated as region
                                             identifiers (e.g. "Country", "State"). Reads from the first column in the
@@ -346,20 +360,28 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
     else:
         agriculture_type_list = agriculture_types
 
-    # establish dictionary of fuel types for agriculture applications and efficiency ratings
+    # establish dictionary of fuel types for agriculture applications and efficiencies
     if fuel_types is None:
         fuel_type_dict = {"electricity": .65, "natural_gas": .65, "oil": .65}
     else:
         fuel_type_dict = fuel_types
 
+    # establish dictionary of fuel types for agriculture applications and associated fraction of pumping energy
     if fuel_percents is None:
         fuel_percent_dict = {"electricity": .6, "natural_gas": .01, "oil": .39}
     else:
         fuel_percent_dict = fuel_percents
 
+    # initialize lists and values
     retain_list = []
+    ibt_list = []
     total_list = []
+    for agriculture_type in agriculture_type_list:
+        df[f'{agriculture_type}_total_energy_bbtu'] = 0
+        df[f'{agriculture_type}_total_energy_services_bbtu'] = 0
+        df[f'{agriculture_type}_total_rejected_energy_bbtu'] = 0
 
+    # calculate pumping energy for each fuel, agriculture, water, and pumping type
     for water_type in water_types_list:
         for pumping_type in pumping_type_dict:
             for agriculture_type in agriculture_type_list:
@@ -375,21 +397,16 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
 
                             # if there is a fuel percent column, use it
                             if fuel_type_pct in df.columns:
-
                                 df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu'] = df[
                                                                                                              fuel_type_pct] \
                                                                                                          * df[
                                                                                                              pumping_flow_type] \
                                                                                                          * df[
                                                                                                              pumping_intensity_type]
-
                             # if there isn't a fuel percent column, use set percentages
                             else:
                                 df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu'] = \
-                                    fuel_percent_dict[
-                                        fuel_type] \
-                                    * df[pumping_flow_type] \
-                                    * df[pumping_intensity_type]
+                                    fuel_percent_dict[fuel_type] * df[pumping_flow_type] * df[pumping_intensity_type]
                         # if no pumping intensity provided by region, use dict amount
                         else:
                             # if there is a fuel percent column, use it
@@ -406,43 +423,120 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
                                         fuel_type] \
                                     * df[pumping_flow_type] \
                                     * convert_kwh_bbtu(pumping_type_dict[pumping_type])
+                        df[f'{agriculture_type}_total_energy_bbtu'] = df[f'{agriculture_type}_total_energy_bbtu'] \
+                                                                      + df[
+                                                                          f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
+
+                        retain_list.append(f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu')
+
                     else:
                         pass
 
-    # rejected energy and energy services
+    # convert to bbtu per year from bbtu per day
+    for item in retain_list:
+        df[item] = df[item]*365
+
+    # calculate interbasin transfers for irrigation
+    for fuel_type in fuel_type_dict:
+        fuel_type_efficiency = fuel_type + "_pumping_efficiency_pct"
+        interbasin_fuel_type = f"{fuel_type}_interbasin_bbtu"
+        if interbasin_fuel_type in df.columns:
+            if 'crop_irrigation' in agriculture_type_list:
+                if 'irrigation_ibt_pct' in df.columns:
+                    df[f'{fuel_type}_irrigation_ibt_bbtu'] = df[f"{fuel_type}_interbasin_bbtu"]*df['irrigation_ibt_pct']
+                else:
+                    df[f'{fuel_type}_irrigation_ibt_bbtu'] = df[f"{fuel_type}_interbasin_bbtu"] * irrigation_ibt_pct
+
+                df['crop_irrigation_total_energy_bbtu'] = df['crop_irrigation_total_energy_bbtu'] \
+                                                          + df[f'{fuel_type}_irrigation_ibt_bbtu']
+
+                if fuel_type_efficiency in df.columns:
+                   df[f'{fuel_type}_irrigation_ibt_rejected_energy_bbtu'] = df[f'{fuel_type}_irrigation_ibt_bbtu'] \
+                                                                            * (1 - df[fuel_type_efficiency])
+                   df[f'{fuel_type}_irrigation_ibt_energy_services_bbtu']= df[f'{fuel_type}_irrigation_ibt_bbtu'] \
+                                                                            * (df[fuel_type_efficiency])
+                else:
+                   df[f'{fuel_type}_irrigation_ibt_rejected_energy_bbtu'] = df[f'{fuel_type}_irrigation_ibt_bbtu'] \
+                                                                            * (1 - fuel_type_dict[fuel_type])
+                   df[f'{fuel_type}_irrigation_ibt_energy_services_bbtu'] = df[f'{fuel_type}_irrigation_ibt_bbtu'] \
+                                                                            * (fuel_type_dict[fuel_type])
+
+                retain_list.append(f'{fuel_type}_irrigation_ibt_rejected_energy_bbtu')
+                retain_list.append(f'{fuel_type}_irrigation_ibt_energy_services_bbtu')
+                retain_list.append(f'{fuel_type}_irrigation_ibt_bbtu')
+
+            else:
+                pass
+        else:
+            pass
+
+    # calculate rejected energy and energy services for each fuel, agriculture, water, and pumping type
     for water_type in water_types_list:
         for pumping_type in pumping_type_dict:
             for agriculture_type in agriculture_type_list:
                 for fuel_type in fuel_type_dict:
                     fuel_type_efficiency = fuel_type + "_pumping_efficiency_pct"
-                    # if there's a fuel efficiency column
-                    if fuel_type_efficiency in df.columns:
-                        df[f'{agriculture_type}_{water_type}_{pumping_type}_rejected_energy_bbtu'] = (1 - df[
-                            fuel_type_efficiency]) * df[
-                                                                                                         f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
-                        df[f'{agriculture_type}_{water_type}_{pumping_type}_energy_services_bbtu'] = (df[
-                            fuel_type_efficiency]) * df[
-                                                                                                         f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
-                    # if there's no fuel efficiency column, use defaults
-                    else:
-                        df[f'{agriculture_type}_{water_type}_{pumping_type}_rejected_energy_bbtu'] = (1 -
-                                                                                                      fuel_type_dict[
-                                                                                                          fuel_type]) \
-                                                                                                     * df[
-                                                                                                         f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
-                        df[f'{agriculture_type}_{water_type}_{pumping_type}_energy_services_bbtu'] = (fuel_type_dict[
-                            fuel_type]) \
-                                                                                                     * df[
-                                                                                                         f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
+                    if f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu' in retain_list:
+                        # if there's a fuel efficiency column
+                        if fuel_type_efficiency in df.columns:
+                            df[f'{agriculture_type}_{water_type}_{pumping_type}_rejected_energy_bbtu'] = (1 - df[
+                                fuel_type_efficiency]) * df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
+                            df[f'{agriculture_type}_{water_type}_{pumping_type}_energy_services_bbtu'] = (df[
+                                fuel_type_efficiency]) * df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
+                        # if there's no fuel efficiency column, use defaults
+                        else:
+                            df[f'{agriculture_type}_{water_type}_{pumping_type}_rejected_energy_bbtu'] = (1 -
+                                                                                                          fuel_type_dict[
+                                                                                                              fuel_type]) \
+                                                                                                         * df[
+                                                                                                             f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
+                            df[f'{agriculture_type}_{water_type}_{pumping_type}_energy_services_bbtu'] = (fuel_type_dict[
+                                fuel_type]) \
+                                                                                                         * df[
+                                                                                                             f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
+                        df[f'{agriculture_type}_total_rejected_energy_bbtu'] = df[
+                                                                                   f'{agriculture_type}_total_rejected_energy_bbtu'] \
+                                                                               + df[
+                                                                                   f'{agriculture_type}_{water_type}_{pumping_type}_rejected_energy_bbtu']
+                        df[f'{agriculture_type}_total_energy_services_bbtu'] = df[
+                                                                                   f'{agriculture_type}_total_energy_services_bbtu'] \
+                                                                               + df[
+                                                                                   f'{agriculture_type}_{water_type}_{pumping_type}_energy_services_bbtu']
+                        retain_list.append(f'{agriculture_type}_{water_type}_{pumping_type}_rejected_energy_bbtu')
+                        retain_list.append(f'{agriculture_type}_{water_type}_{pumping_type}_energy_services_bbtu')
 
-        retain_list.append(f'{agriculture_type}_{water_type}_{pumping_type}_rejected_energy_bbtu')
-        retain_list.append(f'{agriculture_type}_{water_type}_{pumping_type}_energy_services_bbtu')
+                    else:
+                        pass
+
+    # add ibt to crop irrigation total energy, rejected energy, and energy services
+    for fuel_type in fuel_type_dict:
+        if ('crop_irrigation_total_energy_bbtu' in df.columns) and (f'{fuel_type}_irrigation_ibt_bbtu' in df.columns):
+            df['crop_irrigation_total_energy_bbtu'] = df['crop_irrigation_total_energy_bbtu'] \
+                                                      + df[f'{fuel_type}_irrigation_ibt_bbtu']
+            df['crop_irrigation_total_rejected_energy_bbtu'] = df['crop_irrigation_total_rejected_energy_bbtu'] \
+                                                               + df[f'{fuel_type}_irrigation_ibt_rejected_energy_bbtu']
+            df['crop_irrigation_total_energy_services_bbtu'] = df['crop_irrigation_total_energy_services_bbtu'] \
+                                                               + df[f'{fuel_type}_irrigation_ibt_energy_services_bbtu']
+        else:
+            pass
+
+    for agriculture_type in agriculture_type_list:
+        total_list.append(f'{agriculture_type}_total_energy_bbtu')
+        total_list.append(f'{agriculture_type}_total_rejected_energy_bbtu')
+        total_list.append(f'{agriculture_type}_total_energy_services_bbtu')
 
     # establish list of region columns to include in output
     column_list = df.columns[:regions].tolist()
-    for item in retain_list:
-        column_list.append(item)
-    df = df[column_list]
+
+    # if total is True, only return total energy to wastewater, rejected energy and energy services
+    if total:
+        for item in total_list:
+            column_list.append(item)
+        df = df[column_list]
+    else:
+        for item in retain_list:
+            column_list.append(item)
+        df = df[column_list]
 
     return df
 

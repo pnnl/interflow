@@ -870,14 +870,14 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     mps_cubed = df_tx["Total_Intake__Gallons (Acre-Feet/Year)"] * af_mps_conversion  # meters per second cubed
     interbasin_mwh = ((elevation_meters * mps_cubed * acc_gravity * water_density) / ag_pump_eff) / (10 ** 6)
     interbasin_bbtu = interbasin_mwh * mwh_bbtu  # convert mwh to bbtu
-    df_tx["interbasin_bbtu"] = interbasin_bbtu / 2  # dividing in half to split across source and target counties
+    df_tx["electricity_interbasin_bbtu"] = interbasin_bbtu / 2  # dividing in half to split across source and target counties
 
     # split out target county data
-    df_tx_target = df_tx[["State", "Used_FIPS", "interbasin_bbtu"]].copy()
+    df_tx_target = df_tx[["State", "Used_FIPS", "electricity_interbasin_bbtu"]].copy()
     df_tx_target = df_tx_target.rename(columns={"Used_FIPS": "FIPS"})
 
     # split out source county data
-    df_tx_source = df_tx[["State", "Source_FIPS", "interbasin_bbtu"]].copy()
+    df_tx_source = df_tx[["State", "Source_FIPS", "electricity_interbasin_bbtu"]].copy()
     df_tx_source = df_tx_source.rename(columns={"Source_FIPS": "FIPS"})
 
     # stack source and target county interbasin transfer data
@@ -891,19 +891,19 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     df_west = df_west[['FIPS', 'Mwh/yr (Low)', 'Mwh/yr (High)']]
     df_west['FIPS'] = df_west['FIPS'].apply(lambda x: '{0:0>5}'.format(x))  # add leading zero to fips
 
-    df_west["interbasin_bbtu"] = (df_west["Mwh/yr (Low)"] + df_west["Mwh/yr (High)"]) / 2  # average energy use by row
+    df_west["electricity_interbasin_bbtu"] = (df_west["Mwh/yr (Low)"] + df_west["Mwh/yr (High)"]) / 2  # average energy use by row
     df_west = df_west.groupby(["FIPS"], as_index=False).sum()  # group by county fips code
-    df_west["interbasin_bbtu"] = df_west["interbasin_bbtu"] * mwh_bbtu  # convert mwh values to bbtu
+    df_west["electricity_interbasin_bbtu"] = df_west["electricity_interbasin_bbtu"] * mwh_bbtu  # convert mwh values to bbtu
 
     ibt_dataframe_list = [df_tx, df_west]  # bring west IBT data together with TX data
     df = pd.concat(ibt_dataframe_list)
-    df = df[["FIPS", "interbasin_bbtu"]]
+    df = df[["FIPS", "electricity_interbasin_bbtu"]]
 
     # merge with county data to distribute value to each county in a state
     df = pd.merge(df_loc, df, how='left', on='FIPS')
 
     # filling counties that were not in the interbasin transfer datasets with 0
-    df['interbasin_bbtu'].fillna(0, inplace=True)
+    df['electricity_interbasin_bbtu'].fillna(0, inplace=True)
 
     return df
 
@@ -924,11 +924,14 @@ def prep_irrigation_pws_ratio() -> pd.DataFrame:
                                    +df_irr_pws['fresh_surface_water_crop_irrigation_mgd']
                                    + df_irr_pws['total_pws_mgd'])
 
+    # add in column for agriculture fraction (1-pws)
+    df_irr_pws['irrigation_ibt_pct'] = 1 - df_irr_pws['pws_ibt_pct']
+
     # fill counties that have no public water supply or irrigation flows with zero
     df_irr_pws.fillna(0, inplace=True)
 
     # reduce dataframe variables
-    df_irr_pws = df_irr_pws[['FIPS','State','County','pws_ibt_pct']]
+    df_irr_pws = df_irr_pws[['FIPS','State','County','pws_ibt_pct','pws_ibt_pct']]
 
     return df_irr_pws
 
