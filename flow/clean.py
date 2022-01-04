@@ -931,7 +931,7 @@ def prep_irrigation_pws_ratio() -> pd.DataFrame:
     df_irr_pws.fillna(0, inplace=True)
 
     # reduce dataframe variables
-    df_irr_pws = df_irr_pws[['FIPS','State','County','pws_ibt_pct','pws_ibt_pct']]
+    df_irr_pws = df_irr_pws[['FIPS','State','County','pws_ibt_pct','irrigation_ibt_pct']]
 
     return df_irr_pws
 
