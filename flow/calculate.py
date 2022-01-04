@@ -600,15 +600,11 @@ def calc_energy_pws_v2(data: pd.DataFrame, water_energy_types=None, fuel_types=N
 
     if water_energy_types is None:
         types_dict = {'fresh':
-                          {'groundwater':
-                               {'pumping': 920, 'treatment': 205, 'distribution': 1040},
-                           'surface_water':
-                               {'pumping': 145, 'treatment': 405, 'distribution': 1040},
-                           'saline':
-                               {'groundwater':
-                                    {'pumping': 920, 'treatment': 13805, 'distribution': 1040},
-                                'surface_water':
-                                    {'pumping': 145, 'treatment': 14005, 'distribution': 1040}}}}
+                          {'groundwater': {'pumping': 920, 'treatment': 205, 'distribution': 1040},
+                           'surface_water': {'pumping': 145, 'treatment': 405, 'distribution': 1040}},
+                      'saline':
+                          {'groundwater':{'pumping': 920, 'treatment': 13805, 'distribution': 1040},
+                           'surface_water':{'pumping': 145, 'treatment': 14005, 'distribution': 1040}}}
     else:
         types_dict = water_energy_types
 
@@ -619,7 +615,7 @@ def calc_energy_pws_v2(data: pd.DataFrame, water_energy_types=None, fuel_types=N
     df[f'pws_total_energy_services_bbtu'] = 0
     df[f'pws_total_rejected_energy_bbtu'] = 0
     for water_type in types_dict:
-        for source_type in types_dict[water_type]
+        for source_type in types_dict[water_type]:
             for energy_type in types_dict[water_type]:
                 df[f'pws_{energy_type}_total_energy_bbtu'] = 0
                 df[f'pws_{energy_type}_total_energy_services_bbtu'] = 0
@@ -636,9 +632,7 @@ def calc_energy_pws_v2(data: pd.DataFrame, water_energy_types=None, fuel_types=N
                         fuel_type_pct = 'pws_' + fuel_type + "_fuel_pct"
                         #TODO add if statement for fuel efficiency and percent columns
                         #calculate values
-                        df[f'{fuel_type}_pws_{water_type}_{source_type}_{energy_type}_bbtu'] = df[flow_type] \
-                                                                                               * convert_kwh_bbtu(types_dict[water_type][source_type][energy_type]) \
-                                                                                               * fuel_type_dict[fuel_type]['fuel_pct'] * 365
+                        df[f'{fuel_type}_pws_{water_type}_{source_type}_{energy_type}_bbtu'] = (df[flow_type] * fuel_type_dict[fuel_type]['fuel_pct']) * 365
                         df[f'pws_{water_type}_{source_type}_{energy_type}_rejected_energy_bbtu'] = df[f'{fuel_type}_pws_{water_type}_{source_type}_{energy_type}_bbtu'] \
                                                                                                  * (1 - fuel_type_dict[fuel_type]['efficiency'])
                         df[f'pws_{water_type}_{source_type}_{energy_type}_energy_services_bbtu'] = df[f'{fuel_type}_pws_{water_type}_{source_type}_{energy_type}_bbtu'] \
@@ -699,9 +693,9 @@ def calc_energy_pws_v2(data: pd.DataFrame, water_energy_types=None, fuel_types=N
             retain_list.append(f'{fuel_type}_pws_ibt_energy_services_bbtu')
             retain_list.append(f'pws_ibt_bbtu')
 
-            total_list.append('pws_ibt_rejected_energy_bbtu')
-            total_list.append('pws_ibt_energy_services_bbtu')
-            total_list.append('pws_ibt_bbtu')
+            total_list.append('pws_total_ibt_energy_bbtu')
+            total_list.append('pws_total_ibt_rejected_energy_bbtu')
+            total_list.append('pws_total_ibt_energy_services_bbtu')
         else:
             pass
 
