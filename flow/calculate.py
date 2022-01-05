@@ -546,7 +546,7 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
     return df
 
 
-def calc_energy_pws_v2(data: pd.DataFrame, water_energy_types=None, fuel_types=None, pws_ibt_pct=.5, regions=3, total=False):
+def calc_energy_pws(data: pd.DataFrame, water_energy_types=None, fuel_types=None, pws_ibt_pct=.5, regions=3, total=False):
     """calculates energy use, rejected energy, and energy services by fuel type for each agriculture subsector and
     water type and source (as applicable) in billion btu per year. An example output would be electricity use in
     fresh surface water pumping for crop irrigation by region. This function will use default fuel types, pumping
@@ -555,28 +555,27 @@ def calc_energy_pws_v2(data: pd.DataFrame, water_energy_types=None, fuel_types=N
 
     ONLY CALCULATES TOTAL FOR TOTAL PWS, not by subcategory
 
+
         :param data:                        DataFrame of input data containing wastewater flow data in mgd
         :type data:                         DataFrame
 
-        :param pumping_types:               a dictionary of pumping source types (e.g. groundwater) and their associated
-                                            energy intensity in kWh per million gallons
-        :type pumping_types:                dict
+        :param water_energy_types:          A nested dictionary containing energy intensity (kWh per mg) by water type
+                                            (fresh, saline, etc.), water source (groundwater, surface, etc.), and energy
+                                            demand type (pumping, treatment, distribution, etc.). If no dictionary is
+                                            provided, default values are used. The function uses the water type, source,
+                                            and energy application values to look for associated columns in the
+                                            data.
+        :type water_energy_types:           dict
 
-        :param energy_types:           a list of agriculture subsector types (e.g., crop_irrigation). Agriculture
-                                            types must have an underscore between words.
-        :type energy_types:            list
-
-        :param fuel_types:                  a dictionary of fuel types to include (e.g., electricity, coal, petroleum)
-                                            and their associated efficiency rating
+        :param fuel_types:                  a nested dictionary of efficiency values (fraction) and fuel percentages
+                                            (fraction) for a given fuel type (e.g., electricity, natural gas, petroleum).
+                                            If columns with regional data are not provided on fuel efficiency and fuel
+                                            percentages, values from this dictionary are applied to all regions.
         :type fuel_types:                   dict
 
-        :param fuel_percents:               a dictionary of fuel types and their associated percentage share of total
-                                            fuel for pumping
-        :type fuel_percents:                dict
-
-        :param irrigation_ibt_pct:          gives the percent share of total interbasin transfer energy used by
-                                            crop irrigation
-        :type irrigation_ibt_pct:           float
+        :param pws_ibt_pct:                 gives the percent share of total interbasin transfer energy used by
+                                            public water supply to apply to all regions in DataFrame.
+        :type pws_ibt_pct:                  float
 
         :param regions:                     gives the number of columns in the dataset that should be treated as region
                                             identifiers (e.g. "Country", "State"). Reads from the first column in the
@@ -587,18 +586,15 @@ def calc_energy_pws_v2(data: pd.DataFrame, water_energy_types=None, fuel_types=N
                                             and total energy services by sector instead of by fuel type
         :type total:                        bool
 
-        :return:                            DataFrame of rejected energy in billion btu from sectors
+        :return:                            DataFrame of energy use, rejected energy, and energy services for the public
+                                            water sector by energy application (e.g., pumping, treatment) in billion btu
 
         """
 
     # load data
     df = data
 
-    # establish dictionary of fuel types for applications and efficiencies
-    if fuel_types is None:
-        fuel_type_dict = {"electricity":{'efficiency': .65, 'fuel_pct': 1}}
-    else:
-        fuel_type_dict = fuel_types
+
 
     if water_energy_types is None:
         types_dict = {'fresh':
@@ -609,6 +605,12 @@ def calc_energy_pws_v2(data: pd.DataFrame, water_energy_types=None, fuel_types=N
                            'surface_water':{'pumping': 145, 'treatment': 14005, 'distribution': 1040}}}
     else:
         types_dict = water_energy_types
+
+    # establish dictionary of fuel types along with their associated efficiencies and percent of energy demand
+    if fuel_types is None:
+        fuel_type_dict = {"electricity": {'efficiency': .65, 'fuel_pct': 1}}
+    else:
+        fuel_type_dict = fuel_types
 
     # initialize lists and values
     retain_list = []
@@ -622,10 +624,8 @@ def calc_energy_pws_v2(data: pd.DataFrame, water_energy_types=None, fuel_types=N
                 df[f'pws_{energy_type}_total_energy_bbtu'] = 0
                 df[f'pws_{energy_type}_total_energy_services_bbtu'] = 0
                 df[f'pws_{energy_type}_total_rejected_energy_bbtu'] = 0
-                total_list.append(f'pws_{energy_type}_total_energy_bbtu')
-                total_list.append(f'pws_{energy_type}_total_energy_services_bbtu')
-                total_list.append(f'pws_{energy_type}_total_rejected_energy_bbtu')
 
+    # build loop for calculations
     for water_type in types_dict:
         df[f'{water_type}_total_energy_bbtu'] = 0
         for source_type in types_dict[water_type]:
@@ -635,8 +635,7 @@ def calc_energy_pws_v2(data: pd.DataFrame, water_energy_types=None, fuel_types=N
                     for fuel_type in fuel_type_dict:
                         fuel_type_efficiency = 'pws_' + fuel_type + "_efficiency_pct"
                         fuel_type_pct = 'pws_' + fuel_type + "_fuel_pct"
-                        #TODO add subsector sums by energy type
-                        #calculate values
+                        #calculate energy use
                         df[f'{fuel_type}_pws_{water_type}_{source_type}_{energy_type}_bbtu'] = (df[flow_type] *
                                                                                                 fuel_type_dict[
                                                                                                     fuel_type][
@@ -678,19 +677,31 @@ def calc_energy_pws_v2(data: pd.DataFrame, water_energy_types=None, fuel_types=N
                         retain_list.append(f'pws_{water_type}_{source_type}_{energy_type}_rejected_energy_bbtu')
                         retain_list.append(f'pws_{water_type}_{source_type}_{energy_type}_energy_services_bbtu')
 
-                        df[f'pws_{energy_type}_total_energy_bbtu'] = df[f'pws_{energy_type}_total_energy_bbtu'] + df[
-                                                                         f'{fuel_type}_pws_{water_type}_{source_type}_{energy_type}_bbtu']
-                        df[f'pws_{energy_type}_total_energy_services_bbtu'] = df[f'pws_{energy_type}_total_energy_services_bbtu'] \
-                                                                              + df[f'pws_{water_type}_{source_type}_{energy_type}_energy_services_bbtu']
-                        df[f'pws_{energy_type}_total_rejected_energy_bbtu'] = df[f'pws_{energy_type}_total_rejected_energy_bbtu'] \
-                                                                              + df[f'pws_{water_type}_{source_type}_{energy_type}_rejected_energy_bbtu']
             else:
                 pass
 
+    # add columns to total list
     total_list.append('pws_total_energy_bbtu')
     total_list.append('pws_total_rejected_energy_bbtu')
     total_list.append('pws_total_energy_services_bbtu')
 
+    for water_type in types_dict:
+        for source_type in types_dict[water_type]:
+            for energy_type in types_dict[water_type][source_type]:
+                if f'pws_{energy_type}_total_energy_bbtu' in total_list:
+                    pass
+                else:
+                    total_list.append(f'pws_{energy_type}_total_energy_bbtu')
+                if f'pws_{energy_type}_total_energy_services_bbtu' in total_list:
+                    pass
+                else:
+                    total_list.append(f'pws_{energy_type}_total_energy_services_bbtu')
+                if f'pws_{energy_type}_total_rejected_energy_bbtu' in total_list:
+                    pass
+                else:
+                    total_list.append(f'pws_{energy_type}_total_rejected_energy_bbtu')
+
+    # set initial total interbasin transfer values
     df['pws_total_ibt_energy_bbtu'] = 0
     df['pws_total_ibt_energy_services_bbtu'] = 0
     df['pws_total_ibt_rejected_energy_bbtu'] = 0
@@ -704,6 +715,7 @@ def calc_energy_pws_v2(data: pd.DataFrame, water_energy_types=None, fuel_types=N
                 df[f'{fuel_type}_pws_ibt_bbtu'] = df[f"{fuel_type}_interbasin_bbtu"] * df['pws_ibt_pct']
             else:
                 df[f'{fuel_type}_pws_ibt_bbtu'] = df[f"{fuel_type}_interbasin_bbtu"] * pws_ibt_pct
+
             if fuel_type_efficiency in df.columns:
                 df[f'{fuel_type}_pws_ibt_rejected_energy_bbtu'] = df[f'{fuel_type}_pws_ibt_bbtu'] \
                                                                          * (1 - df[fuel_type_efficiency])
@@ -715,14 +727,22 @@ def calc_energy_pws_v2(data: pd.DataFrame, water_energy_types=None, fuel_types=N
                 df[f'{fuel_type}_pws_ibt_energy_services_bbtu'] = df[f'{fuel_type}_pws_ibt_bbtu'] \
                                                                          * (fuel_type_dict[fuel_type]['efficiency'])
 
+            # add to total IBT energy
             df['pws_total_ibt_energy_bbtu'] = df['pws_total_ibt_energy_bbtu'] + df[f'{fuel_type}_pws_ibt_bbtu']
             df['pws_total_ibt_rejected_energy_bbtu'] = df['pws_total_ibt_rejected_energy_bbtu'] + df[f'{fuel_type}_pws_ibt_rejected_energy_bbtu']
             df['pws_total_ibt_energy_services_bbtu'] = df['pws_total_ibt_energy_services_bbtu'] + df[f'{fuel_type}_pws_ibt_energy_services_bbtu']
 
+            # add columns to retained data list
+            retain_list.append(f'{fuel_type}_pws_ibt_bbtu')
             retain_list.append(f'{fuel_type}_pws_ibt_rejected_energy_bbtu')
             retain_list.append(f'{fuel_type}_pws_ibt_energy_services_bbtu')
-            retain_list.append(f'{fuel_type}_pws_ibt_bbtu')
 
+            # add columns to total list
+            total_list.append(f'{fuel_type}_pws_ibt_bbtu')
+            total_list.append(f'{fuel_type}_pws_ibt_rejected_energy_bbtu')
+            total_list.append(f'{fuel_type}_pws_ibt_energy_services_bbtu')
+
+            # add on to total energy
             df[f'pws_total_energy_bbtu'] = df[f'pws_total_energy_bbtu'] + df['pws_total_ibt_energy_bbtu']
             df[f'pws_total_energy_services_bbtu'] = df[f'pws_total_energy_services_bbtu'] + df['pws_total_ibt_energy_services_bbtu']
             df[f'pws_total_rejected_energy_bbtu'] = df[f'pws_total_rejected_energy_bbtu'] + df['pws_total_ibt_rejected_energy_bbtu']
@@ -730,10 +750,10 @@ def calc_energy_pws_v2(data: pd.DataFrame, water_energy_types=None, fuel_types=N
         else:
             pass
 
-
     # establish list of region columns to include in output
     column_list = df.columns[:regions].tolist()
 
+    # determine which subset of columns to produce in output
     if total:
         for item in total_list:
             column_list.append(item)
@@ -745,194 +765,6 @@ def calc_energy_pws_v2(data: pd.DataFrame, water_energy_types=None, fuel_types=N
 
     return df
 
-
-# TODO to be deleted
-def calc_electricity_public_water_supply(data: pd.DataFrame, regions=3, total=False, gw_pump_kwh_per_mg=920,
-                                         gw_pws_fraction=.5, sw_pump_kwh_per_mg=145, desalination_kwh_mg=13600,
-                                         sw_treatment_kwh_per_mg=405, gw_treatment_kwh_per_mg=205,
-                                         distribution_kwh_per_mg=1040, ibt_fraction=.5, gw_pump_efficiency=.65,
-                                         sw_pump_efficiency=.65, desalination_efficiency=.65,
-                                         sw_treatment_efficiency=.65,
-                                         gw_treatment_efficiency=.65, distribution_efficiency=.65,
-                                         ibt_efficiency=.65):
-    # TODO redo this as a loop through energy use types
-    """calculate energy usage by the public water supply sector. Takes a dataframe of public water supply withdrawals
-    fand calculates total energy use for surface water pumping, groundwater pumping, surface water treatment,
-    groundwater treatment, and distribution. If individual flow values for groundwater and surface water to public
-    water supply are not provided, the total water flows to public water supply are used and multiplied by the
-    assumed percentage of each (default is set to 50%). This function REQUIRES that at minimum, the total water
-     flows to public water supply are available. Returns a DataFrame of energy use for each category in billion
-    btu per year.
-
-    :param regions:                     gives the number of columns in the dataset that should be treated as region
-                                        identifiers (e.g. "Country", "State"). Reads from the first column in the
-                                        dataframe.
-    :type regions:                      int
-
-
-    :return:                            DataFrame of energy use in public water supply
-
-    """
-
-    # load data
-    df = data
-
-    # calculate total groundwater to public water supply
-    if ('fresh_groundwater_pws_mgd' in df.columns) and ('saline_groundwater_pws_mgd' in df.columns):
-        total_pws_groundwater = df['fresh_groundwater_pws_mgd'] + df['saline_groundwater_pws_mgd']
-    elif ('fresh_groundwater_pws_mgd' in df.columns) and ('saline_groundwater_pws_mgd' not in df.columns):
-        total_pws_groundwater = df['fresh_groundwater_pws_mgd']
-    elif ('fresh_groundwater_pws_mgd' not in df.columns) and ('saline_groundwater_pws_mgd' in df.columns):
-        total_pws_groundwater = df['saline_groundwater_pws_mgd']
-    else:
-        total_pws_groundwater = (gw_pws_fraction * df['total_pws_mgd'])
-
-    # calculate total surface water to public water supply
-    if ('fresh_surface_water_pws_mgd' in df.columns) and ('saline_surface_water_pws_mgd' in df.columns):
-        total_pws_surface_water = df['fresh_surface_water_pws_mgd'] + df['saline_surface_water_pws_mgd']
-    elif ('fresh_surface_water_pws_mgd' in df.columns) and ('saline_surface_water_pws_mgd' not in df.columns):
-        total_pws_surface_water = df['fresh_surface_water_pws_mgd']
-    elif ('fresh_surface_water_pws_mgd' not in df.columns) and ('saline_surface_water_pws_mgd' in df.columns):
-        total_pws_surface_water = df['saline_surface_water_pws_mgd']
-    else:
-        total_pws_surface_water = ((1 - gw_pws_fraction) * df['total_pws_mgd'])
-
-    # calculate total saline water in public water supply
-    if ('saline_surface_water_pws_mgd' in df.columns) and ('saline_groundwater_pws_mgd' in df.columns):
-        total_pws_saline = df['saline_surface_water_pws_mgd'] + df['saline_groundwater_pws_mgd']
-    elif ('saline_surface_water_pws_mgd' in df.columns) and ('saline_groundwater_pws_mgd' not in df.columns):
-        total_pws_saline = df['saline_surface_water_pws_mgd']
-    elif ('saline_surface_water_pws_mgd' not in df.columns) and ('saline_groundwater_pws_mgd' in df.columns):
-        total_pws_saline = df['saline_groundwater_pws_mgd']
-    else:
-        total_pws_saline = 0
-
-    # calculate total public water supply withdrawals
-    df['total_pws_mgd'] = total_pws_groundwater + total_pws_surface_water
-
-    # calculate total electricity in groundwater pumping for public water supply
-    if 'gw_pump_bbtu_per_mg' in df.columns:
-        df['electricity_pws_gw_pumping_bbtu'] = total_pws_groundwater * df['gw_pump_bbtu_per_mg']
-    else:
-        df['electricity_pws_gw_pumping_bbtu'] = total_pws_groundwater * convert_kwh_bbtu(gw_pump_kwh_per_mg)
-
-    # calculate total electricity in surface water pumping for public water supply
-    if 'sw_pump_bbtu_per_mg' in df.columns:
-        df['electricity_pws_sw_pumping_bbtu'] = total_pws_surface_water * df['sw_pump_bbtu_per_mg']
-    else:
-        df['electricity_pws_sw_pumping_bbtu'] = total_pws_surface_water * convert_kwh_bbtu(sw_pump_kwh_per_mg)
-
-    # calculate total electricity in desalination for pws
-    if 'pws_desalination_bbtu_per_mg' in df.columns:
-        df['electricity_pws_desalination_bbtu'] = total_pws_saline * df['pws_desalination_bbtu_per_mg']
-    else:
-        df['electricity_pws_desalination_bbtu'] = total_pws_saline * convert_kwh_bbtu(desalination_kwh_mg)
-
-    # calculate electricity in surface water treatment for public water supply
-    if 'pws_surface_water_treatment_bbtu_per_mg' in df.columns:
-        df['electricity_pws_surface_treatment_bbtu'] = total_pws_surface_water \
-                                                       * df['pws_surface_water_treatment_bbtu_per_mg']
-    else:
-        df['electricity_pws_surface_treatment_bbtu'] = total_pws_surface_water \
-                                                       * convert_kwh_bbtu(sw_treatment_kwh_per_mg)
-
-    # calculate electricity in groundwater treatment for public water supply
-    if 'pws_groundwater_treatment_bbtu_per_mg' in df.columns:
-        df['electricity_pws_groundwater_treatment_bbtu'] = total_pws_groundwater \
-                                                           * df['pws_groundwater_treatment_bbtu_per_mg']
-    else:
-        df['electricity_pws_groundwater_treatment_bbtu'] = total_pws_groundwater \
-                                                           * convert_kwh_bbtu(gw_treatment_kwh_per_mg)
-
-    # calculate electricity in distribution of public water supply
-    if 'pws_distribution_bbtu_per_mg' in df.columns:
-        df['electricity_pws_distribution_bbtu'] = df['total_pws_mgd'] * df['pws_distribution_bbtu_per_mg']
-    else:
-        df['electricity_pws_distribution_bbtu'] = df['total_pws_mgd'] * convert_kwh_bbtu(distribution_kwh_per_mg)
-
-    # calculate interbasin transfer energy to public water supply
-    if 'interbasin_bbtu' in df.columns:
-        if 'pws_ibt_pct' in df.columns:
-            df['electricity_pws_ibt_bbtu'] = df['interbasin_bbtu'] * df['pws_ibt_pct']
-        else:
-            df['electricity_pws_ibt_bbtu'] = df['interbasin_bbtu'] * ibt_fraction
-    else:
-        df['electricity_pws_ibt_bbtu'] = 0
-
-    # calculate total energy in public water supply
-    df['total_electricity_pws_bbtu'] = df['electricity_pws_gw_pumping_bbtu'] \
-                                       + df['electricity_pws_sw_pumping_bbtu'] \
-                                       + df['electricity_pws_desalination_bbtu'] \
-                                       + df['electricity_pws_surface_treatment_bbtu'] \
-                                       + df['electricity_pws_groundwater_treatment_bbtu'] \
-                                       + df['electricity_pws_distribution_bbtu'] \
-                                       + df['electricity_pws_ibt_bbtu']
-
-    # calculate rejected energy in public water supply
-    df['pws_gw_pumping_rejected_energy_bbtu'] = gw_pump_efficiency \
-                                                * df['electricity_pws_gw_pumping_bbtu']
-    df['pws_sw_pumping_rejected_energy_bbtu'] = sw_pump_efficiency \
-                                                * df['electricity_pws_sw_pumping_bbtu']
-    df['pws_desalination_rejected_energy_bbtu'] = desalination_efficiency \
-                                                  * df['electricity_pws_desalination_bbtu']
-    df['pws_surface_treatment_rejected_energy_bbtu'] = sw_treatment_efficiency \
-                                                       * df['electricity_pws_surface_treatment_bbtu']
-    df['pws_groundwater_treatment_rejected_energy_bbtu'] = gw_treatment_efficiency \
-                                                           * df['electricity_pws_groundwater_treatment_bbtu']
-    df['pws_distribution_rejected_energy_bbtu'] = distribution_efficiency \
-                                                  * df['electricity_pws_distribution_bbtu']
-    df['pws_ibt_rejected_energy_bbtu'] = ibt_efficiency \
-                                         * df['electricity_pws_ibt_bbtu']
-
-    # total rejected energy
-    df['total_pws_rejected_energy_bbtu'] = df['pws_gw_pumping_rejected_energy_bbtu'] \
-                                           + df['pws_sw_pumping_rejected_energy_bbtu'] \
-                                           + df['pws_desalination_rejected_energy_bbtu'] \
-                                           + df['pws_surface_treatment_rejected_energy_bbtu'] \
-                                           + df['pws_groundwater_treatment_rejected_energy_bbtu'] \
-                                           + df['pws_distribution_rejected_energy_bbtu'] \
-                                           + df['pws_ibt_rejected_energy_bbtu']
-
-    # calculate rejected energy in public water supply
-    df['pws_gw_pumping_energy_services_bbtu'] = (1 - gw_pump_efficiency) \
-                                                * df['electricity_pws_gw_pumping_bbtu']
-    df['pws_sw_pumping_energy_services_bbtu'] = (1 - sw_treatment_efficiency) \
-                                                * df['electricity_pws_sw_pumping_bbtu']
-    df['pws_desalination_energy_services_bbtu'] = (1 - desalination_efficiency) \
-                                                  * df['electricity_pws_desalination_bbtu']
-    df['pws_surface_treatment_energy_services_bbtu'] = (1 - sw_treatment_efficiency) \
-                                                       * df['electricity_pws_surface_treatment_bbtu']
-    df['pws_groundwater_treatment_energy_services_bbtu'] = (1 - gw_treatment_efficiency) \
-                                                           * df['electricity_pws_groundwater_treatment_bbtu']
-    df['pws_distribution_energy_services_bbtu'] = (1 - distribution_efficiency) \
-                                                  * df['electricity_pws_distribution_bbtu']
-    df['pws_ibt_energy_services_bbtu'] = (1 - ibt_efficiency) \
-                                         * df['electricity_pws_ibt_bbtu']
-
-    # total energy services
-    df['total_pws_energy_services_bbtu'] = df['pws_gw_pumping_energy_services_bbtu'] \
-                                           + df['pws_sw_pumping_energy_services_bbtu'] \
-                                           + df['pws_desalination_energy_services_bbtu'] \
-                                           + df['pws_surface_treatment_energy_services_bbtu'] \
-                                           + df['pws_groundwater_treatment_energy_services_bbtu'] \
-                                           + df['pws_distribution_energy_services_bbtu'] \
-                                           + df['pws_ibt_energy_services_bbtu']
-
-    # if total is set to true, return total amounts for electricity use, energy services, and rejected energy
-    if total:
-        column_list = df.columns[:regions].tolist()
-        column_list.append('total_electricity_pws_bbtu')
-        column_list.append('total_pws_rejected_energy_bbtu')
-        column_list.append('total_pws_energy_services_bbtu')
-        df = df[column_list]
-    else:
-        column_list = df.columns[:regions].tolist()
-        retain_list = df.columns[-24:].tolist()
-        for item in retain_list:
-            column_list.append(item)
-        df = df[column_list]
-
-    return df
 
 
 # move to clean, add to configure
