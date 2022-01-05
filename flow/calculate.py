@@ -546,15 +546,22 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
     return df
 
 
-def calc_energy_pws(data: pd.DataFrame, water_energy_types=None, fuel_types=None, pws_ibt_pct=.5, regions=3, total=False):
-    """calculates energy use, rejected energy, and energy services by fuel type for each agriculture subsector and
-    water type and source (as applicable) in billion btu per year. An example output would be electricity use in
-    fresh surface water pumping for crop irrigation by region. This function will use default fuel types, pumping
-    efficiencies, fuel percentage shares, water types, agriculture types, pumping types, and irrigation interbasin
-    transfer share unless other values are provided
-
-    ONLY CALCULATES TOTAL FOR TOTAL PWS, not by subcategory
-
+def calc_energy_pws(data: pd.DataFrame, water_energy_types=None, fuel_types=None, pws_ibt_pct=.5, regions=3,
+                    total=False):
+    """calculates energy use, rejected energy, and energy services by fuel type for each public water supply energy
+     application (e.g., pumping, distribution, treatment) by water type (e.g., fresh, saline), water source (e.g.,
+     surface, groundwater), and fuel type (e.g., electricity, natural gas) in billion btu per year. Water type, water
+     source, energy application, energy application intensity, fuel type, fuel efficiency by type, and percent of energy
+     supplied by each fuel type are all customizable inputs. The function reads values provided for the described
+     parameters and looks for the associated data column in the input dataframe in order to calculate energy demand,
+     rejected energy, and energy services for each energy application. An example output would be electricity use in
+    the treatment of saline surface water for public water supply by region. This function will use default values for
+     water types, water source, energy applications, energy application intensities, fuel types, fuel efficiencies, and
+     fuel type percentages unless other values are provided. The function returns all values calculated by default,
+     for total values by energy application (e.g., total energy in distribution for public water supply by region),
+     the parameter total must be set to True. Note that energy use in interbasin transfers for public water supply is
+     not calculated from total public water supply input data but is assumed to be provided in bbtu per year by
+     region.
 
         :param data:                        DataFrame of input data containing wastewater flow data in mgd
         :type data:                         DataFrame
@@ -593,8 +600,6 @@ def calc_energy_pws(data: pd.DataFrame, water_energy_types=None, fuel_types=None
 
     # load data
     df = data
-
-
 
     if water_energy_types is None:
         types_dict = {'fresh':
