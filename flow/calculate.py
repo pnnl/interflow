@@ -770,7 +770,53 @@ def calc_energy_pws(data: pd.DataFrame, water_energy_types=None, fuel_types=None
 
     return df
 
+def calc_energy_supply_exports(data: pd.DataFrame, water_energy_types=None, fuel_types=None, pws_ibt_pct=.5, regions=3,
+                    total=False):
+    """calculates energy use, rejected energy, and energy services by fuel type for each public water supply energy
+     application (e.g., pumping, distribution, treatment) by water type (e.g., fresh, saline), water source (e.g.,
+     surface, ground
+        :param data:                        DataFrame of input data containing wastewater flow data in mgd
+        :type data:                         DataFrame
 
+        :param water_energy_types:          A nested dictionary containing energy intensity (kWh per mg) by water type
+                                            (fresh, saline, etc.), water source (groundwater, surface, etc.), and energy
+                                            demand type (pumping, treatment, distribution, etc.). If no dictionary is
+                                            provided, default values are used. The function uses the water type, source,
+                                            and energy application values to look for associated columns in the
+                                            data.
+        :type water_energy_types:           dict
+
+
+        :param regions:                     gives the number of columns in the dataset that should be treated as region
+                                            identifiers (e.g. "Country", "State"). Reads from the first column in the
+                                            dataframe onwards.
+        :type regions:                      int
+
+        :param total:                       If true, returns dataframe of identifier columns and total rejected energy
+                                            and total energy services by sector instead of by fuel type
+        :type total:                        bool
+
+        :return:                            DataFrame of energy use, rejected energy, and energy services for the public
+                                            water sector by energy application (e.g., pumping, treatment) in billion btu
+
+        """
+
+    # load data
+    df = data
+
+    fuel_type_list = ['petroleum', 'natural gas', 'biomass', 'coal']
+    sector_type_list = ['electricity', 'residential', 'commercial', 'industrial', 'mining', 'agriculture']
+
+    # calculate total energy consumption of each fuel by region
+
+    # determine if < or > production of fuel
+
+    # calculate imports/exports
+
+    # calculate net import/exports (to be used for results at granularity>import/export locations)
+
+
+    return df
 
 # move to clean, add to configure
 def calc_pws_discharge() -> pd.DataFrame:

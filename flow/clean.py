@@ -57,14 +57,18 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'MI-WSWFr': 'fresh_surface_water_mining_mgd',
                       'MI-WGWSa': 'saline_groundwater_mining_mgd',
                       'MI-WSWSa': 'saline_surface_water_mining_mgd',
+                      'IR-WGWFr': 'fresh_groundwater_total_irrigation_mgd',
+                      'IR-WSWFr': 'fresh_surface_water_total_irrigation_mgd',
+                      'IR-RecWW': 'fresh_wastewater_total_irrigation_mgd',
+                      'IR-CUsFr': 'total_irrigation_fresh_water_consumption',
                       'IC-WGWFr': 'fresh_groundwater_crop_irrigation_mgd',
                       'IC-WSWFr': 'fresh_surface_water_crop_irrigation_mgd',
                       'IC-RecWW': 'fresh_wastewater_crop_irrigation_mgd',
-                      'IC-CUsFr': 'crop_irrigation_freshwater_consumption_mgd',
+                      'IC-CUsFr': 'crop_irrigation_fresh_water_consumption_mgd',
                       'IG-WGWFr': 'fresh_groundwater_golf_irrigation_mgd',
                       'IG-WSWFr': 'fresh_surface_water_golf_irrigation_mgd',
                       'IG-RecWW': 'fresh_wastewater_golf_irrigation_mgd',
-                      'IG-CUsFr': 'golf_irrigation_freshwater_consumption_mgd',
+                      'IG-CUsFr': 'golf_irrigation_fresh_water_consumption_mgd',
                       'LI-WGWFr': 'fresh_groundwater_livestock_mgd',
                       'LI-WSWFr': 'fresh_surface_water_livestock_mgd',
                       'AQ-WGWFr': 'fresh_groundwater_aquaculture_mgd',
@@ -73,6 +77,18 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'AQ-WSWSa': 'saline_surface_water_aquaculture_mgd'
                       }
     df = df[variables_dict]
+
+    state_irrigation_adj_list = ['AR','HI','LA','MS','MO','MT','NE','NJ','ND','OK','SD','TX','WI','WY','PR','VI']
+    for state in state_irrigation_adj_list:
+        df['fresh_groundwater_crop_irrigation_mgd'] = np.where(df['State'] == state,
+                                                               df['fresh_groundwater_total_irrigation_mgd'],
+                                                               df['fresh_groundwater_crop_irrigation_mgd'])
+        df['fresh_surface_water_crop_irrigation_mgd'] = np.where(df['State'] == state,
+                                                                 df['fresh_surface_water_total_irrigation_mgd'],
+                                                                 df['fresh_surface_water_crop_irrigation_mgd'])
+        df['fresh_wastewater_crop_irrigation_mgd'] = np.where(df['State'] == state,
+                                                              df['fresh_wastewater_total_irrigation_mgd'],
+                                                              df['fresh_wastewater_crop_irrigation_mgd'])
 
     # convert all columns that should be numerical to floats
     numerical_list = list(variables_dict.keys())[3:]  # create a list of columns beyond geographic identifier columns
