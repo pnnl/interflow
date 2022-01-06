@@ -473,6 +473,8 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
                 for fuel_type in fuel_type_dict:
                     fuel_type_efficiency = 'agriculture_' + fuel_type + "_efficiency_pct"
                     if f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu' in energy_value_dict:
+                        rejected_energy_name = f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_rejected_energy_bbtu'
+                        energy_services_name = f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_energy_services_bbtu'
                         if fuel_type_efficiency in df.columns:
                             #df[f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_rejected_energy_bbtu'] = (1 - df[fuel_type_efficiency]) \
                             #                                                                                         * df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
@@ -480,10 +482,7 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
                             #                                                                                         * df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
 
                             rejected_energy_value = (1 - df[fuel_type_efficiency]) * df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
-                            rejected_energy_name = f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_rejected_energy_bbtu'
-
                             energy_services_value = (df[fuel_type_efficiency]) * df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
-                            energy_services_name = f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_energy_services_bbtu'
 
                             rejected_energy_dict.update({rejected_energy_name: rejected_energy_value})
                             energy_services_dict.update({energy_services_name: energy_services_value})
@@ -496,10 +495,7 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
                             #                                                                             * df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
 
                             rejected_energy_value = (1 -fuel_type_dict[fuel_type]) * df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
-                            rejected_energy_name = f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_rejected_energy_bbtu'
-
                             energy_services_value = (fuel_type_dict[fuel_type]) * df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
-                            energy_services_name = f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_energy_services_bbtu'
 
                             rejected_energy_dict.update({rejected_energy_name: rejected_energy_value})
                             energy_services_dict.update({energy_services_name: energy_services_value})
@@ -508,9 +504,11 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
                         #df[f'{agriculture_type}_total_energy_services_bbtu'] = df[f'{agriculture_type}_total_energy_services_bbtu'] + df[ f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_energy_services_bbtu']
                     else:
                         pass
-    # calculate total rejected energy
+
+    # calculate totals rejected energy
     rejected_energy_total = pd.DataFrame.from_dict(rejected_energy_dict, orient='index').transpose().sum(axis=1)
     energy_services_total = pd.DataFrame.from_dict(energy_services_dict, orient='index').transpose().sum(axis=1)
+    energy_demand_total = pd.DataFrame.from_dict(energy_value_dict, orient='index').transpose().sum(axis=1)
 
     for agriculture_type in agriculture_type_list:
         retain_list.append(f'{agriculture_type}_total_rejected_energy_bbtu')
@@ -773,6 +771,7 @@ def calc_energy_pws(data: pd.DataFrame, water_energy_types=None, fuel_types=None
 
     return df
 
+#TODO finish this
 def calc_energy_supply_exports(data: pd.DataFrame, water_energy_types=None, fuel_types=None, pws_ibt_pct=.5, regions=3,
                     total=False):
     """calculates energy use, rejected energy, and energy services by fuel type for each public water supply energy
@@ -807,8 +806,10 @@ def calc_energy_supply_exports(data: pd.DataFrame, water_energy_types=None, fuel
     # load data
     df = data
 
-    fuel_type_list = ['petroleum', 'natural gas', 'biomass', 'coal']
+    fuel_type_list = ['petroleum', 'natural_gas', 'biomass', 'coal']
     sector_type_list = ['electricity', 'residential', 'commercial', 'industrial', 'mining', 'agriculture']
+
+    #grab data from agriculture and pws calculator
 
     # calculate total energy consumption of each fuel by region
 
