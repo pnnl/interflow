@@ -374,55 +374,71 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
         fuel_percent_dict = fuel_percents
 
     # initialize lists and values
-    retain_list = []
-    #ibt_list = []
-    #total_list = []
     energy_value_dict = {}
-    agriculture_energy_value_dict = {}
+    rejected_energy_dict = {}
+    energy_services_dict = {}
+
+    column_list = df.columns[:regions].tolist()
+    total_df = df[column_list].copy()
+
     for agriculture_type in agriculture_type_list:
-        df[f'{agriculture_type}_total_energy_bbtu'] = 0
-        df[f'{agriculture_type}_total_energy_services_bbtu'] = 0
-        df[f'{agriculture_type}_total_rejected_energy_bbtu'] = 0
+        total_df[f'{agriculture_type}_total_energy_services_bbtu'] = 0
+        total_df[f'{agriculture_type}_total_rejected_energy_bbtu'] = 0
+        for fuel_type in fuel_type_dict:
+            total_df[f'total_{fuel_type}_{agriculture_type}_bbtu'] = 0
 
     # calculate pumping energy for each fuel, agriculture, water, and pumping type
     for water_type in water_types_list:
         for pumping_type in pumping_type_dict:
             for agriculture_type in agriculture_type_list:
+
                 pumping_flow_type = water_type + "_" + pumping_type + "_" + agriculture_type + "_mgd"
                 pumping_intensity_type = pumping_type + "_pumping_bbtu_per_mg"
+
                 for fuel_type in fuel_type_dict:
+
                     fuel_type_pct = fuel_type + "_pumping_pct"
-                    # if the pumping type is in the dataframe
+                    fuel_type_efficiency = 'agriculture_' + fuel_type + "_efficiency_pct"
+
                     if pumping_flow_type in df.columns:
-
                         energy_name = f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu'
-
                         if pumping_intensity_type in df.columns:
-                            # if there is a fuel percent column, use it
                             if fuel_type_pct in df.columns:
                                 energy_value = df[fuel_type_pct] * df[pumping_flow_type] * df[pumping_intensity_type] * 365
-                                #df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu'] = df[ fuel_type_pct] * df[pumping_flow_type] * df[ pumping_intensity_type]
                             else:
                                 energy_value = fuel_percent_dict[fuel_type] * df[pumping_flow_type] * df[pumping_intensity_type] * 365
-                                #df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu'] = fuel_percent_dict[fuel_type] * df[pumping_flow_type] * df[pumping_intensity_type]
                         else:
                             if fuel_type_pct in df.columns:
                                 energy_value = df[fuel_type_pct] * df[pumping_flow_type] * convert_kwh_bbtu(pumping_type_dict[pumping_type]) * 365
-                                #df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu'] = df[fuel_type_pct] * df[pumping_flow_type] * convert_kwh_bbtu(pumping_type_dict[pumping_type])
                             else:
                                 energy_value =  fuel_percent_dict[fuel_type] * df[pumping_flow_type] * convert_kwh_bbtu(pumping_type_dict[pumping_type]) * 365
-                                #df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu'] = fuel_percent_dict[fuel_type] * df[pumping_flow_type] * convert_kwh_bbtu(pumping_type_dict[pumping_type])
 
                         energy_value_dict.update({energy_name: energy_value})
-                        df[f'{agriculture_type}_total_energy_bbtu'] = df[f'{agriculture_type}_total_energy_bbtu'] \
-                                                                      + df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
-                        retain_list.append(f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu')
+                        total_df[f'total_{fuel_type}_{agriculture_type}_bbtu'] = total_df[f'total_{fuel_type}_{agriculture_type}_bbtu'] + energy_value
+
+                        rejected_energy_name = f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_rejected_energy_bbtu'
+                        energy_services_name = f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_energy_services_bbtu'
+
+                        if fuel_type_efficiency in df.columns:
+                            rejected_energy_value = (1 - df[fuel_type_efficiency]) * energy_value
+                            energy_services_value = (df[fuel_type_efficiency]) * energy_value
+                        else:
+                            rejected_energy_value = (1 - fuel_type_dict[fuel_type]) * energy_value
+                            energy_services_value = (fuel_type_dict[fuel_type]) * energy_value
+
+                        rejected_energy_dict.update({rejected_energy_name: rejected_energy_value})
+                        energy_services_dict.update({energy_services_name: energy_services_value})
+
+                        total_df[f'{agriculture_type}_total_rejected_energy_bbtu'] = total_df[f'{agriculture_type}_total_rejected_energy_bbtu'] + rejected_energy_value
+                        total_df[f'{agriculture_type}_total_energy_services_bbtu'] = total_df[f'{agriculture_type}_total_energy_services_bbtu'] + energy_services_value
+
                     else:
                         pass
 
-    # establish an empty dictionary to append values to
-    rejected_energy_dict = {}
-    energy_services_dict = {}
+    # change dictionaries to dataframes
+    energy_value_df = pd.DataFrame.from_dict(energy_value_dict, orient='index').transpose()
+    rejected_energy_df = pd.DataFrame.from_dict(rejected_energy_dict, orient='index').transpose()
+    energy_services_df = pd.DataFrame.from_dict(energy_services_dict, orient='index').transpose()
 
     # calculate interbasin transfers for irrigation
     for fuel_type in fuel_type_dict:
@@ -431,119 +447,38 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
         if interbasin_fuel_type in df.columns:
             if 'crop_irrigation' in agriculture_type_list:
                 energy_name = f'{fuel_type}_irrigation_ibt_bbtu'
-                if 'irrigation_ibt_pct' in df.columns:
-                    energy_value = df[f"{fuel_type}_interbasin_bbtu"] * df['irrigation_ibt_pct']
-                    #df[f'{fuel_type}_irrigation_ibt_bbtu'] = df[f"{fuel_type}_interbasin_bbtu"] * df['irrigation_ibt_pct']
-                else:
-                    energy_value = df[f"{fuel_type}_interbasin_bbtu"] * irrigation_ibt_pct
-                    #df[f'{fuel_type}_irrigation_ibt_bbtu'] = df[f"{fuel_type}_interbasin_bbtu"] * irrigation_ibt_pct
 
-                #df['crop_irrigation_total_energy_bbtu'] = df['crop_irrigation_total_energy_bbtu'] + df[f'{fuel_type}_irrigation_ibt_bbtu']
+                if 'irrigation_ibt_pct' in df.columns:
+                    energy_value_df[energy_name] = df[f"{fuel_type}_interbasin_bbtu"] * df['irrigation_ibt_pct']
+                else:
+                    energy_value_df[energy_name] = df[f"{fuel_type}_interbasin_bbtu"] * irrigation_ibt_pct
 
                 rejected_energy_name = f'{fuel_type}_irrigation_ibt_rejected_energy_bbtu'
                 energy_services_name = f'{fuel_type}_irrigation_ibt_energy_services_bbtu'
-                if fuel_type_efficiency in df.columns:
-                    rejected_energy_value = df[f'{fuel_type}_irrigation_ibt_bbtu'] * (1 - df[fuel_type_efficiency])
-                    #df[f'{fuel_type}_irrigation_ibt_rejected_energy_bbtu'] = df[f'{fuel_type}_irrigation_ibt_bbtu'] * (1 - df[fuel_type_efficiency])
-                    energy_services_value = df[f'{fuel_type}_irrigation_ibt_bbtu'] * (df[fuel_type_efficiency])
-                    #df[f'{fuel_type}_irrigation_ibt_energy_services_bbtu'] = df[f'{fuel_type}_irrigation_ibt_bbtu'] * (df[fuel_type_efficiency])
-                else:
-                    rejected_energy_value =df[f'{fuel_type}_irrigation_ibt_bbtu'] * (1 - fuel_type_dict[fuel_type])
-                    #df[f'{fuel_type}_irrigation_ibt_rejected_energy_bbtu'] = df[f'{fuel_type}_irrigation_ibt_bbtu'] * (1 - fuel_type_dict[fuel_type])
-                    energy_services_value = df[f'{fuel_type}_irrigation_ibt_bbtu'] * (fuel_type_dict[fuel_type])
-                    #df[f'{fuel_type}_irrigation_ibt_energy_services_bbtu'] = df[f'{fuel_type}_irrigation_ibt_bbtu'] * (fuel_type_dict[fuel_type])
 
-                #retain_list.append(f'{fuel_type}_irrigation_ibt_bbtu')
-                #retain_list.append(f'{fuel_type}_irrigation_ibt_rejected_energy_bbtu')
-                #retain_list.append(f'{fuel_type}_irrigation_ibt_energy_services_bbtu')
-                energy_value_dict.update({energy_name: energy_value})
-                rejected_energy_dict.update({rejected_energy_name: rejected_energy_value})
-                energy_services_dict.update({energy_services_name: energy_services_value})
+                if fuel_type_efficiency in df.columns:
+                    rejected_energy_df[rejected_energy_name] = energy_value_df[energy_name] * (1 - df[fuel_type_efficiency])
+                    energy_services_df[energy_services_name] = energy_value_df[energy_name] * (df[fuel_type_efficiency])
+                else:
+                    rejected_energy_df[rejected_energy_name] = energy_value_df[energy_name] * (1 - fuel_type_dict[fuel_type])
+                    energy_services_df[energy_services_name] = energy_value_df[energy_name] * (fuel_type_dict[fuel_type])
             else:
                 pass
         else:
             pass
 
-# Move this to top
+    # calculate totals for rejected energy and energy services
+    rejected_energy_total_df = pd.DataFrame.from_dict(rejected_energy_dict, orient='index').transpose().sum(axis=1)
+    energy_services_total_df = pd.DataFrame.from_dict(energy_services_dict, orient='index').transpose().sum(axis=1)
 
-    # calculate rejected energy and energy services for each fuel, agriculture, water, and pumping type
-    for water_type in water_types_list:
-        for pumping_type in pumping_type_dict:
-            for agriculture_type in agriculture_type_list:
-                for fuel_type in fuel_type_dict:
-                    fuel_type_efficiency = 'agriculture_' + fuel_type + "_efficiency_pct"
-                    if f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu' in energy_value_dict:
-                        rejected_energy_name = f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_rejected_energy_bbtu'
-                        energy_services_name = f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_energy_services_bbtu'
-                        if fuel_type_efficiency in df.columns:
-                            #df[f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_rejected_energy_bbtu'] = (1 - df[fuel_type_efficiency]) \
-                            #                                                                                         * df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
-                            #df[f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_energy_services_bbtu'] = (df[fuel_type_efficiency]) \
-                            #                                                                                         * df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
-
-                            rejected_energy_value = (1 - df[fuel_type_efficiency]) * df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
-                            energy_services_value = (df[fuel_type_efficiency]) * df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
-
-                            rejected_energy_dict.update({rejected_energy_name: rejected_energy_value})
-                            energy_services_dict.update({energy_services_name: energy_services_value})
-
-                        # if there's no fuel efficiency column, use defaults
-                        else:
-                            #df[f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_rejected_energy_bbtu'] = (1 -fuel_type_dict[fuel_type]) \
-                            #                                                                             * df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
-                            #df[f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_energy_services_bbtu'] = (fuel_type_dict[fuel_type]) \
-                            #                                                                             * df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
-
-                            rejected_energy_value = (1 -fuel_type_dict[fuel_type]) * df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
-                            energy_services_value = (fuel_type_dict[fuel_type]) * df[f'{fuel_type}_{agriculture_type}_{water_type}_{pumping_type}_bbtu']
-
-                            rejected_energy_dict.update({rejected_energy_name: rejected_energy_value})
-                            energy_services_dict.update({energy_services_name: energy_services_value})
-
-                        #df[f'{agriculture_type}_total_rejected_energy_bbtu'] = df[f'{agriculture_type}_total_rejected_energy_bbtu'] + df[f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_rejected_energy_bbtu']
-                        #df[f'{agriculture_type}_total_energy_services_bbtu'] = df[f'{agriculture_type}_total_energy_services_bbtu'] + df[ f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_energy_services_bbtu']
-                    else:
-                        pass
-
-    # calculate totals rejected energy
-    rejected_energy_total = pd.DataFrame.from_dict(rejected_energy_dict, orient='index').transpose().sum(axis=1)
-    energy_services_total = pd.DataFrame.from_dict(energy_services_dict, orient='index').transpose().sum(axis=1)
-    energy_demand_total = pd.DataFrame.from_dict(energy_value_dict, orient='index').transpose().sum(axis=1)
-
-    for agriculture_type in agriculture_type_list:
-        retain_list.append(f'{agriculture_type}_total_rejected_energy_bbtu')
-        retain_list.append(f'{agriculture_type}_total_energy_services_bbtu')
-
-    # add ibt to crop irrigation total energy, rejected energy, and energy services
-    #for fuel_type in fuel_type_dict:
-    #    if ('crop_irrigation_total_energy_bbtu' in df.columns) and (f'{fuel_type}_irrigation_ibt_bbtu' in df.columns):
-    #        df['crop_irrigation_total_energy_bbtu'] = df['crop_irrigation_total_energy_bbtu'] \
-    #                                                  + df[f'{fuel_type}_irrigation_ibt_bbtu']
-    #        df['crop_irrigation_total_rejected_energy_bbtu'] = df['crop_irrigation_total_rejected_energy_bbtu'] \
-    #                                                           + df[f'{fuel_type}_irrigation_ibt_rejected_energy_bbtu']
-    #        df['crop_irrigation_total_energy_services_bbtu'] = df['crop_irrigation_total_energy_services_bbtu'] \
-    #                                                           + df[f'{fuel_type}_irrigation_ibt_energy_services_bbtu']
-    #    else:
-    #        pass
-#
-    #for agriculture_type in agriculture_type_list:
-    #    total_list.append(f'{agriculture_type}_total_energy_bbtu')
-    #    total_list.append(f'{agriculture_type}_total_rejected_energy_bbtu')
-    #    total_list.append(f'{agriculture_type}_total_energy_services_bbtu')
-
-    # establish list of region columns to include in output
-    column_list = df.columns[:regions].tolist()
-
-    # if total is True, only return total energy to wastewater, rejected energy and energy services
+    # if total is True, only return total energy, rejected energy and energy services
     if total:
-        for item in total_list:
-            column_list.append(item)
-        df = df[column_list]
+        df = total_df.copy()
     else:
-        for item in retain_list:
-            column_list.append(item)
-        df = df[column_list]
-
+        output_df = df[column_list]
+        df = output_df.join(energy_value_df, how='outer')
+        df = df.join(rejected_energy_df, how='outer')
+        df = df.join(energy_services_df, how='outer')
     return df
 
 
