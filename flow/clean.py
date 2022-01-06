@@ -78,17 +78,12 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       }
     df = df[variables_dict]
 
-    state_irrigation_adj_list = ['AR','HI','LA','MS','MO','MT','NE','NJ','ND','OK','SD','TX','WI','WY','PR','VI']
+    state_irrigation_adj_list = ['AR', 'HI', 'LA', 'MS', 'MO', 'MT', 'NE', 'NJ', 'ND',
+                                 'OK', 'SD', 'TX', 'WI', 'WY', 'PR', 'VI']
     for state in state_irrigation_adj_list:
-        df['fresh_groundwater_crop_irrigation_mgd'] = np.where(df['State'] == state,
-                                                               df['fresh_groundwater_total_irrigation_mgd'],
-                                                               df['fresh_groundwater_crop_irrigation_mgd'])
-        df['fresh_surface_water_crop_irrigation_mgd'] = np.where(df['State'] == state,
-                                                                 df['fresh_surface_water_total_irrigation_mgd'],
-                                                                 df['fresh_surface_water_crop_irrigation_mgd'])
-        df['fresh_wastewater_crop_irrigation_mgd'] = np.where(df['State'] == state,
-                                                              df['fresh_wastewater_total_irrigation_mgd'],
-                                                              df['fresh_wastewater_crop_irrigation_mgd'])
+        df['IC-WGWFr'] = np.where(df['STATE'] == state, df['IR-WGWFr'], df['IC-WGWFr'])
+        df['IC-WSWFr'] = np.where(df['STATE'] == state, df['IR-WSWFr'], df['IC-WSWFr'])
+        df['IC-RecWW'] = np.where(df['STATE'] == state, df['IR-RecWW'], df['IC-RecWW'])
 
     # convert all columns that should be numerical to floats
     numerical_list = list(variables_dict.keys())[3:]  # create a list of columns beyond geographic identifier columns
