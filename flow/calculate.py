@@ -566,7 +566,7 @@ def calc_energy_pws(data: pd.DataFrame, water_energy_types=None, fuel_types=None
                     df[f'{fuel_type}_pws_{energy_type}_bbtu'] = 0
                     df[f'{fuel_type}_pws_{energy_type}_energy_services_bbtu'] = 0
                     df[f'{fuel_type}_pws_{energy_type}_rejected_energy_bbtu'] = 0
-
+                    df[f'{fuel_type}_pws_bbtu'] = 0
 
     # build loop for calculations
     for water_type in types_dict:
@@ -616,6 +616,10 @@ def calc_energy_pws(data: pd.DataFrame, water_energy_types=None, fuel_types=None
                         df[f'pws_total_rejected_energy_bbtu'] = df[f'pws_total_rejected_energy_bbtu'] \
                                                                               + df[
                                                                                   f'pws_{water_type}_{source_type}_{energy_type}_rejected_energy_bbtu']
+
+                        df[f'{fuel_type}_pws_bbtu'] = df[f'{fuel_type}_pws_bbtu'] +df[
+                                                                         f'{fuel_type}_pws_{water_type}_{source_type}_{energy_type}_bbtu']
+
                         # add to retain list
                         retain_list.append(f'{fuel_type}_pws_{water_type}_{source_type}_{energy_type}_bbtu')
                         retain_list.append(f'pws_{water_type}_{source_type}_{energy_type}_rejected_energy_bbtu')
@@ -628,10 +632,15 @@ def calc_energy_pws(data: pd.DataFrame, water_energy_types=None, fuel_types=None
         for source_type in types_dict[water_type]:
             for energy_type in types_dict[water_type][source_type]:
                 for fuel_type in fuel_type_dict:
+                    if f'{fuel_type}_pws_bbtu' in total_list:
+                        pass
+                    else:
+                        total_list.append(f'{fuel_type}_pws_bbtu')
                     if f'{fuel_type}_pws_{energy_type}_bbtu' in total_list:
                         pass
                     else:
                         total_list.append(f'{fuel_type}_pws_{energy_type}_bbtu')
+
                     if f'{fuel_type}_pws_{energy_type}_energy_services_bbtu' in total_list:
                         pass
                     else:
@@ -672,6 +681,9 @@ def calc_energy_pws(data: pd.DataFrame, water_energy_types=None, fuel_types=None
             df['pws_total_ibt_rejected_energy_bbtu'] = df['pws_total_ibt_rejected_energy_bbtu'] + df[f'{fuel_type}_pws_ibt_rejected_energy_bbtu']
             df['pws_total_ibt_energy_services_bbtu'] = df['pws_total_ibt_energy_services_bbtu'] + df[f'{fuel_type}_pws_ibt_energy_services_bbtu']
 
+            # add to total by fuel type
+            df[f'{fuel_type}_pws_bbtu'] = df[f'{fuel_type}_pws_bbtu'] + df[f'{fuel_type}_pws_ibt_bbtu']
+
             # add columns to retained data list
             retain_list.append(f'{fuel_type}_pws_ibt_bbtu')
             retain_list.append(f'{fuel_type}_pws_ibt_rejected_energy_bbtu')
@@ -690,10 +702,11 @@ def calc_energy_pws(data: pd.DataFrame, water_energy_types=None, fuel_types=None
         else:
             pass
 
+    # add grand totals to output
     total_list.append('pws_total_energy_bbtu')
     total_list.append('pws_total_energy_services_bbtu')
     total_list.append('pws_total_rejected_energy_bbtu')
-    
+
     # establish list of region columns to include in output
     column_list = df.columns[:regions].tolist()
 
