@@ -181,14 +181,14 @@ def prep_consumption_fraction() -> pd.DataFrame:
 
     # creating a dictionary of required variables from full dataset with descriptive naming
     variables_list_1995 = {"FIPS": 'FIPS',
-                           "DO_CF_Fr": "residential_fresh_consumption_fraction",
-                           "CO_CF_Fr": "commercial_fresh_consumption_fraction",
-                           "IN_CF_Fr": "industrial_fresh_consumption_fraction",
-                           "IN_CF_Sa": "industrial_saline_consumption_fraction",
-                           "MI_CF_Fr": "mining_fresh_consumption_fraction",
-                           "MI_CF_Sa": "mining_saline_water_consumption_fraction",
-                           "LV_CF_Fr": "livestock_fresh_consumption_fraction",
-                           "LA_CF_Fr": "aquaculture_fresh_consumption_fraction"
+                           "DO_CF_Fr": "residential_fresh_surface_consumption_fraction",
+                           "CO_CF_Fr": "commercial_fresh_surface_consumption_fraction",
+                           "IN_CF_Fr": "industrial_fresh_surface_consumption_fraction",
+                           "IN_CF_Sa": "industrial_saline_surface_consumption_fraction",
+                           "MI_CF_Fr": "mining_fresh_surface_consumption_fraction",
+                           "MI_CF_Sa": "mining_saline_surface_consumption_fraction",
+                           "LV_CF_Fr": "livestock_fresh_surface_consumption_fraction",
+                           "LA_CF_Fr": "aquaculture_fresh_surface_consumption_fraction"
                            }
 
     # reduce full dataframe to required variable list
@@ -196,6 +196,15 @@ def prep_consumption_fraction() -> pd.DataFrame:
 
     # rename columns to add descriptive language
     df.rename(columns=variables_list_1995, inplace=True)
+
+    df["residential_fresh_groundwater_consumption_fraction"] = df["residential_fresh_surface_consumption_fraction"]
+    df["commercial_fresh_groundwater_consumption_fraction"] = df["commercial_fresh_surface_consumption_fraction"]
+    df["industrial_fresh_groundwater_consumption_fraction"] = df["industrial_fresh_surface_consumption_fraction"]
+    df["industrial_saline_groundwater_consumption_fraction"] = df["industrial_saline_surface_consumption_fraction"]
+    df["mining_fresh_groundwater_consumption_fraction"] = df["mining_fresh_surface_consumption_fraction"]
+    df["mining_saline_groundwater_consumption_fraction"] = df["mining_saline_surface_consumption_fraction"]
+    df["livestock_fresh_groundwater_consumption_fraction"] = df["livestock_fresh_surface_consumption_fraction"]
+    df["aquaculture_fresh_groundwater_consumption_fraction"] = df["aquaculture_fresh_surface_consumption_fraction"]
 
     # merge with full list of counties from 2015 water data
     df = pd.merge(df_loc, df, how='left', on='FIPS')
