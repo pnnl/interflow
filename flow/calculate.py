@@ -385,7 +385,7 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
         total_df[f'{agriculture_type}_total_energy_services_bbtu'] = 0
         total_df[f'{agriculture_type}_total_rejected_energy_bbtu'] = 0
         for fuel_type in fuel_type_dict:
-            total_df[f'total_{fuel_type}_{agriculture_type}_bbtu'] = 0
+            total_df[f'{fuel_type}_{agriculture_type}_bbtu'] = 0
 
     # calculate pumping energy for each fuel, agriculture, water, and pumping type
     for water_type in water_types_list:
@@ -414,7 +414,7 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
                                 energy_value =  fuel_percent_dict[fuel_type] * df[pumping_flow_type] * convert_kwh_bbtu(pumping_type_dict[pumping_type]) * 365
 
                         energy_value_dict.update({energy_name: energy_value})
-                        total_df[f'total_{fuel_type}_{agriculture_type}_bbtu'] = total_df[f'total_{fuel_type}_{agriculture_type}_bbtu'] + energy_value
+                        total_df[f'{fuel_type}_{agriculture_type}_bbtu'] = total_df[f'{fuel_type}_{agriculture_type}_bbtu'] + energy_value
 
                         rejected_energy_name = f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_rejected_energy_bbtu'
                         energy_services_name = f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_energy_services_bbtu'
@@ -762,8 +762,10 @@ def calc_energy_supply_exports(data: pd.DataFrame, water_energy_types=None, fuel
     sector_type_list = ['electricity', 'residential', 'commercial', 'industrial', 'mining', 'agriculture']
 
     #grab data from agriculture and pws calculator
+    pws_df = calc_energy_pws(data=df, total=True)
+    ag_df = calc_energy_agriculture(data=data, total=True)
 
-
+    
 
     # calculate total energy consumption of each fuel by region
 

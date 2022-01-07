@@ -664,7 +664,7 @@ def prep_electricity_generation() -> pd.DataFrame:
                  'HPS': 'hydro',  # hydro pumped storage
                  'HYC': 'hydro',  # hydro conventional
                  'MLG': 'biomass',  # biogenic municipal solid waste and landfill gas
-                 'NG': 'natgas',  # natural gas
+                 'NG': 'natural_gas',  # natural gas
                  'NUC': 'nuclear',  # nuclear
                  'OOG': 'other',  # other gases
                  'ORW': 'other',  # other renewables
@@ -1017,10 +1017,10 @@ def prep_fuel_demand_data() -> pd.DataFrame:
                 "EMACB": "biomass_transportation_bbtu",  # Fuel ethanol, transportation sector (bbtu)
                 "GECCB": "geothermal_commercial_bbtu",  # Geothermal, commercial sector (bbtu)
                 "GERCB": "geothermal_residential_bbtu",  # Geothermal, residential sector (bbtu)
-                "NGACB": "natgas_transportation_bbtu",  # Natural gas, transportation sector  (bbtu)
-                "NGCCB": "natgas_commercial_bbtu",  # Natural gas, commercial sector (bbtu)
-                "NGICB": "natgas_industrial_bbtu",  # Natural gas, industrial sector (bbtu)
-                "NGRCB": "natgas_residential_bbtu",  # Natural gas, residential sector (bbtu
+                "NGACB": "natural_gas_transportation_bbtu",  # Natural gas, transportation sector  (bbtu)
+                "NGCCB": "natural_gas_commercial_bbtu",  # Natural gas, commercial sector (bbtu)
+                "NGICB": "natural_gas_industrial_bbtu",  # Natural gas, industrial sector (bbtu)
+                "NGRCB": "natural_gas_residential_bbtu",  # Natural gas, residential sector (bbtu
                 "PAACB": "petroleum_transportation_bbtu",  # petroleum products, transportation sector (bbtu)
                 "PACCB": "petroleum_commercial_bbtu",  # petroleum products, commercial sector (bbtu)
                 "PAICB": "petroleum_industrial_bbtu",  # petroleum products, industrial sector (bbtu)
@@ -1073,7 +1073,7 @@ def prep_state_fuel_production_data() -> pd.DataFrame:
     # list of fuel demand codes that are relevant from dataset
     msn_prod_dict = {"PAPRB": "petroleum_production_bbtu",  # crude oil production (including lease condensate) (BBTU)
                      "EMFDB": "biomass_production_bbtu",  # biomass inputs to the production of fuel ethanol (BBTU)
-                     "NGMPB": "natgas_production_bbtu",  # natural gas marketed production (BBTU)
+                     "NGMPB": "natural_gas_production_bbtu",  # natural gas marketed production (BBTU)
                      "CLPRB": "coal_production_bbtu",  # coal production (BBTU)
                      }
     df = df[df['MSN'].isin(msn_prod_dict)]  # grabbing MSN codes that are relevant
@@ -1093,9 +1093,9 @@ def prep_state_fuel_production_data() -> pd.DataFrame:
 
     # add rows for puerto rico and virgin islands
     pr_df = {'State': 'PR', 'petroleum_production_bbtu': 0, 'biomass_production_bbtu': 0,
-             'natgas_production_bbtu': 0, 'coal_production_bbtu': 0}
+             'natural_gas_production_bbtu': 0, 'coal_production_bbtu': 0}
     vi_df = {'State': 'VI', 'petroleum_production_bbtu': 0, 'biomass_production_bbtu': 0,
-             'natgas_production_bbtu': 0, 'coal_production_bbtu': 0}
+             'natural_gas_production_bbtu': 0, 'coal_production_bbtu': 0}
     df = df.append(pr_df, ignore_index=True)
     df = df.append(vi_df, ignore_index=True)
 
@@ -1171,7 +1171,7 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     df_loc = prep_water_use_2015()  # read in FIPS codes and states from 2015 water dataset
 
     # reduce dataframes to required variables
-    df = df[["State", "natgas_production_bbtu"]]
+    df = df[["State", "natural_gas_production_bbtu"]]
     df_ng_loc = df_ng_loc[['FIPS', 'Stabr', 'gas2011']]
 
     # calculate percent of total 2011 state oil production by county
@@ -1201,10 +1201,10 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     df = pd.merge(df_ng_loc, df, how='left', on="State")
 
     # calculate 2015 percent by county
-    df['natgas_production_bbtu'] = df['natgas_production_bbtu'] * df['gas_pct']
+    df['natural_gas_production_bbtu'] = df['natural_gas_production_bbtu'] * df['gas_pct']
 
     # reduce dataframe
-    df = df[['FIPS', 'natgas_production_bbtu']]
+    df = df[['FIPS', 'natural_gas_production_bbtu']]
 
     # merge with county data to distribute value to each county in a state and include all FIPS
     df = pd.merge(df_loc, df, how='left', on='FIPS')
