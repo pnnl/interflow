@@ -1056,6 +1056,8 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     # remove unneeded columns
     df = df.drop(['pop_weight'], axis=1)
 
+    df.fillna(0, inplace=True)
+
     return df
 
 
