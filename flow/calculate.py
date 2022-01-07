@@ -815,9 +815,10 @@ def calc_energy_production_exports(data: pd.DataFrame, sector_types=None, fuel_t
     ag_df = calc_energy_agriculture(data=df, total=True)
 
     # establish list of region columns to include in output
-    demand_df = df[df.columns[:regions].tolist()].copy()
+    region_list = df.columns[:regions].tolist()
+    demand_df = df[region_list].copy()
 
-    total_list = df[df.columns[:regions].tolist()].copy()
+    total_list = region_list.copy()
 
     # initialize values
     for fuel_type in fuel_type_list:
@@ -852,16 +853,16 @@ def calc_energy_production_exports(data: pd.DataFrame, sector_types=None, fuel_t
     for fuel_type in fuel_type_list:
         column_name = f'{fuel_type}_production_bbtu'
         demand_df[column_name] = df[column_name].copy()
-        consumption_value = f'total_{fuel_type}_consumption_bbtu'
-        production_value = f'{fuel_type}_production_bbtu'
+        consumption_name = f'total_{fuel_type}_consumption_bbtu'
+        production_name = f'{fuel_type}_production_bbtu'
 
         # exports
-        demand_df[f'total_{fuel_type}_export'] = np.where(demand_df[production_value] > demand_df[consumption_value],
-                                                          demand_df[production_value] - demand_df[consumption_value],
+        demand_df[f'total_{fuel_type}_export'] = np.where(demand_df[production_name] > demand_df[consumption_name],
+                                                          demand_df[production_name] - demand_df[consumption_name],
                                                           0)
         # imports
-        demand_df[f'total_{fuel_type}_import'] = np.where(demand_df[production_value] < demand_df[consumption_value],
-                                                          demand_df[consumption_value] - demand_df[production_value],
+        demand_df[f'total_{fuel_type}_import'] = np.where(demand_df[production_name] < demand_df[consumption_name],
+                                                          demand_df[consumption_name] - demand_df[production_name],
                                                           0)
         # net exports
         demand_df[f'total_{fuel_type}_net_export'] = demand_df[f'total_{fuel_type}_export'] \
