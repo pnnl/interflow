@@ -38,7 +38,7 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'PS-WSWFr': 'fresh_surface_water_pws_mgd',
                       'PS-WGWSa': 'saline_groundwater_pws_mgd',
                       'PS-WSWSa': 'saline_surface_water_pws_mgd',
-                      'DO-PSDel': 'pws_residential_mgd',
+                      'DO-PSDel': 'fresh_pws_residential_mgd',
                       'PS-Wtotl': 'total_pws_mgd',
                       'DO-WGWFr': 'fresh_groundwater_residential_mgd',
                       'DO-WSWFr': 'fresh_surface_water_residential_mgd',
@@ -47,8 +47,8 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'PT-WSWFr': 'fresh_surface_water_thermoelectric_mgd',
                       'PT-WSWSa': 'saline_surface_water_thermoelectric_mgd',
                       'PT-RecWW': 'wastewater_thermoelectric_mgd',
-                      'PT-PSDel': 'pws_thermoelectric_mgd',
-                      'PT-CUTot': 'thermoelectric_consumption_mgd',
+                      'PT-PSDel': 'fresh_pws_thermoelectric_mgd',
+                      'PT-CUTot': 'thermoelectric_fresh_consumption_mgd',
                       'IN-WGWFr': 'fresh_groundwater_industrial_mgd',
                       'IN-WSWFr': 'fresh_surface_water_industrial_mgd',
                       'IN-WGWSa': 'saline_groundwater_industrial_mgd',
@@ -60,15 +60,15 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'IR-WGWFr': 'fresh_groundwater_total_irrigation_mgd',
                       'IR-WSWFr': 'fresh_surface_water_total_irrigation_mgd',
                       'IR-RecWW': 'fresh_wastewater_total_irrigation_mgd',
-                      'IR-CUsFr': 'total_irrigation_fresh_water_consumption',
+                      'IR-CUsFr': 'total_irrigation_fresh_consumption',
                       'IC-WGWFr': 'fresh_groundwater_crop_irrigation_mgd',
                       'IC-WSWFr': 'fresh_surface_water_crop_irrigation_mgd',
                       'IC-RecWW': 'fresh_wastewater_crop_irrigation_mgd',
-                      'IC-CUsFr': 'crop_irrigation_fresh_water_consumption_mgd',
+                      'IC-CUsFr': 'crop_irrigation_fresh_consumption_mgd',
                       'IG-WGWFr': 'fresh_groundwater_golf_irrigation_mgd',
                       'IG-WSWFr': 'fresh_surface_water_golf_irrigation_mgd',
                       'IG-RecWW': 'fresh_wastewater_golf_irrigation_mgd',
-                      'IG-CUsFr': 'golf_irrigation_fresh_water_consumption_mgd',
+                      'IG-CUsFr': 'golf_irrigation_fresh_consumption_mgd',
                       'LI-WGWFr': 'fresh_groundwater_livestock_mgd',
                       'LI-WSWFr': 'fresh_surface_water_livestock_mgd',
                       'AQ-WGWFr': 'fresh_groundwater_aquaculture_mgd',
@@ -84,6 +84,7 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
         df['IC-WGWFr'] = np.where(df['STATE'] == state, df['IR-WGWFr'], df['IC-WGWFr'])
         df['IC-WSWFr'] = np.where(df['STATE'] == state, df['IR-WSWFr'], df['IC-WSWFr'])
         df['IC-RecWW'] = np.where(df['STATE'] == state, df['IR-RecWW'], df['IC-RecWW'])
+        df['IC-CUsFr'] = np.where(df['STATE'] == state, df['IR-CUsFr'], df['IC-CUsFr'])
 
     # convert all columns that should be numerical to floats
     numerical_list = list(variables_dict.keys())[3:]  # create a list of columns beyond geographic identifier columns
