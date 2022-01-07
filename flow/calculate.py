@@ -225,9 +225,9 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
     retain_list = []
     total_list = []
     for fuel_type in fuel_type_dict:
-        df[f'{fuel_type}_wastewater_total_bbtu'] = 0
-    df['wastewater_rejected_energy_total_bbtu'] = 0
-    df['wastewater_energy_services_total_bbtu'] = 0
+        df[f'{fuel_type}_wastewater_bbtu'] = 0
+    df['wastewater_rejected_energy_bbtu'] = 0
+    df['wastewater_energy_services_bbtu'] = 0
 
     # TODO add in option for fuel efficiency column like in agriculture
 
@@ -257,23 +257,23 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
                 retain_list.append(f'wastewater_{treatment_type}_energy_services_bbtu')
 
                 # add on to totals
-                df[f'{fuel_type}_wastewater_total_bbtu'] = df[f'{fuel_type}_wastewater_total_bbtu'] \
+                df[f'{fuel_type}_wastewater_bbtu'] = df[f'{fuel_type}_wastewater_bbtu'] \
                                                            + df[f'electricity_wastewater_{treatment_type}_bbtu']
-                df['wastewater_rejected_energy_total_bbtu'] = df['wastewater_rejected_energy_total_bbtu'] \
+                df['wastewater_rejected_energy_bbtu'] = df['wastewater_rejected_energy_bbtu'] \
                                                               + df[f'wastewater_{treatment_type}_rejected_energy_bbtu']
-                df['wastewater_energy_services_total_bbtu'] = df['wastewater_energy_services_total_bbtu'] \
+                df['wastewater_energy_services_bbtu'] = df['wastewater_energy_services_bbtu'] \
                                                               + df[f'wastewater_{treatment_type}_energy_services_bbtu']
             else:
                 pass
 
     # add totals to retained lists of variables
     for fuel_type in fuel_type_dict:
-        retain_list.append(f'{fuel_type}_wastewater_total_bbtu')
-        total_list.append(f'{fuel_type}_wastewater_total_bbtu')
-    retain_list.append('wastewater_rejected_energy_total_bbtu')
-    retain_list.append('wastewater_energy_services_total_bbtu')
-    total_list.append('wastewater_rejected_energy_total_bbtu')
-    total_list.append('wastewater_energy_services_total_bbtu')
+        retain_list.append(f'{fuel_type}_wastewater_bbtu')
+        total_list.append(f'{fuel_type}_wastewater_bbtu')
+    retain_list.append('wastewater_rejected_energy_bbtu')
+    retain_list.append('wastewater_energy_services_bbtu')
+    total_list.append('wastewater_rejected_energy_bbtu')
+    total_list.append('wastewater_energy_services_bbtu')
 
     # establish list of region columns to include in output
     column_list = df.columns[:regions].tolist()
@@ -298,10 +298,6 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
     fresh surface water pumping for crop irrigation by region. This function will use default fuel types, pumping
     efficiencies, fuel percentage shares, water types, agriculture types, pumping types, and irrigation interbasin
     transfer share unless other values are provided.
-
-    #TODO NTS: Allows for a column of fuel efficiency at regional level. Does not currently allow for different fuel efficiencies
-    by pumping type, water type, etc. Assumes one efficiency for all type of pumping (groundwater, surface, fresh, saline).
-    Case study does not have this data at a county level. Assumes ibt pumping efficiency same as other pumping efficiency
 
         :param data:                        DataFrame of input data containing wastewater flow data in mgd
         :type data:                         DataFrame
@@ -771,7 +767,7 @@ def calc_energy_production_exports(data: pd.DataFrame, sector_types=None, fuel_t
     """calculates total energy exports by region for each fuel type specified if production is greater than consumption.
     If production is less than consumption in a region, imports are calculated. Net exports are also calculated. Total
     consumption of each fuel type is used from the input data for specified sectors and additionally generated from the
-    energy in public water supply and agriculture calculators.
+    energy in public water supply, agriculture, and wastewater calculators.
         :param data:                        DataFrame of input data
         :type data:                         DataFrame
 
@@ -806,7 +802,8 @@ def calc_energy_production_exports(data: pd.DataFrame, sector_types=None, fuel_t
         fuel_type_list = fuel_types
 
     if sector_types is None:
-        sector_type_list = ['residential', 'commercial', 'industrial', 'transportation']
+        sector_type_list = ['residential', 'commercial', 'industrial', 'transportation',
+                            'pws', 'agriculture', 'wastewater']
     else:
         sector_type_list = sector_types
 
@@ -823,16 +820,16 @@ def calc_energy_production_exports(data: pd.DataFrame, sector_types=None, fuel_t
 
     # initialize values
     for fuel_type in fuel_type_list:
-        demand_df[f'total_{fuel_type}_consumption_bbtu'] = 0
+        demand_df[f'{fuel_type}_consumption_bbtu'] = 0
 
     # calculate total energy consumption of each fuel by region
     for fuel_type in fuel_type_list:
         if f'{fuel_type}_fuel_bbtu' in df.columns:
-            demand_df[f'total_{fuel_type}_consumption_bbtu'] = demand_df[f'total_{fuel_type}_consumption_bbtu'] \
+            demand_df[f'{fuel_type}_consumption_bbtu'] = demand_df[f'{fuel_type}_consumption_bbtu'] \
                                                                + df[f'{fuel_type}_fuel_bbtu']
             for sector_type in sector_type_list:
                 if f'{fuel_type}_{sector_type}_bbtu' in df.columns:
-                    demand_df[f'total_{fuel_type}_consumption_bbtu'] = demand_df[f'total_{fuel_type}_consumption_bbtu'] \
+                    demand_df[f'{fuel_type}_consumption_bbtu'] = demand_df[f'{fuel_type}_consumption_bbtu'] \
                                                                        + df[f'{fuel_type}_{sector_type}_bbtu']
                 else:
                     pass
@@ -841,44 +838,55 @@ def calc_energy_production_exports(data: pd.DataFrame, sector_types=None, fuel_t
 
     # calculate energy consumption from pws, agriculture, and wastewater sectors
     for fuel_type in fuel_type_list:
-        if f'{fuel_type}_pws_bbtu' in pws_df.columns:
-            demand_df[f'total_{fuel_type}_consumption_bbtu'] = demand_df[f'total_{fuel_type}_consumption_bbtu'] \
-                                                               + pws_df[f'{fuel_type}_pws_bbtu']
-        else:
+        if f'{fuel_type}_pws_bbtu' in df.columns:
             pass
-        if f'{fuel_type}_agriculture_bbtu' in ag_df.columns:
-            demand_df[f'total_{fuel_type}_consumption_bbtu'] = demand_df[f'total_{fuel_type}_consumption_bbtu'] \
-                                                               + ag_df[f'{fuel_type}_agriculture_bbtu']
         else:
+            if f'{fuel_type}_pws_bbtu' in pws_df.columns:
+                demand_df[f'{fuel_type}_consumption_bbtu'] = demand_df[f'_{fuel_type}_consumption_bbtu'] \
+                                                                   + pws_df[f'{fuel_type}_pws_bbtu']
+            else:
+                pass
+
+        if f'{fuel_type}_agriculture_bbtu' in df.columns:
             pass
-        if f'{fuel_type}_wastewater_total_bbtu' in wastewater_df.columns:
-            demand_df[f'total_{fuel_type}_consumption_bbtu'] = demand_df[f'total_{fuel_type}_consumption_bbtu'] \
-                                                               + wastewater_df[f'{fuel_type}_wastewater_total_bbtu']
         else:
+            if f'{fuel_type}_agriculture_bbtu' in ag_df.columns:
+                demand_df[f'{fuel_type}_consumption_bbtu'] = demand_df[f'{fuel_type}_consumption_bbtu'] \
+                                                                   + ag_df[f'{fuel_type}_agriculture_bbtu']
+            else:
+                pass
+
+        if f'{fuel_type}_wastewater_bbtu' in df.columns:
             pass
+        else:
+            if f'{fuel_type}_wastewater_bbtu' in wastewater_df.columns:
+                demand_df[f'{fuel_type}_consumption_bbtu'] = demand_df[f'{fuel_type}_consumption_bbtu'] \
+                                                                   + wastewater_df[f'{fuel_type}_wastewater_bbtu']
+            else:
+                pass
 
 # calculate exports, imports, and net exports
     for fuel_type in fuel_type_list:
         column_name = f'{fuel_type}_production_bbtu'
         demand_df[column_name] = df[column_name].copy()
-        consumption_name = f'total_{fuel_type}_consumption_bbtu'
+        consumption_name = f'{fuel_type}_consumption_bbtu'
         production_name = f'{fuel_type}_production_bbtu'
 
         # exports
-        demand_df[f'total_{fuel_type}_export_bbtu'] = np.where(demand_df[production_name] > demand_df[consumption_name],
+        demand_df[f'{fuel_type}_export_bbtu'] = np.where(demand_df[production_name] > demand_df[consumption_name],
                                                           demand_df[production_name] - demand_df[consumption_name],
                                                           0)
         # imports
-        demand_df[f'total_{fuel_type}_import_bbtu'] = np.where(demand_df[production_name] < demand_df[consumption_name],
+        demand_df[f'{fuel_type}_import_bbtu'] = np.where(demand_df[production_name] < demand_df[consumption_name],
                                                           demand_df[consumption_name] - demand_df[production_name],
                                                           0)
         # net exports
-        demand_df[f'total_{fuel_type}_net_export_bbtu'] = demand_df[f'total_{fuel_type}_export_bbtu'] \
-                                                     - demand_df[f'total_{fuel_type}_import_bbtu']
+        demand_df[f'{fuel_type}_net_export_bbtu'] = demand_df[f'{fuel_type}_export_bbtu'] \
+                                                     - demand_df[f'{fuel_type}_import_bbtu']
 
-        total_list.append(f'total_{fuel_type}_export_bbtu')
-        total_list.append(f'total_{fuel_type}_import_bbtu')
-        total_list.append(f'total_{fuel_type}_net_export_bbtu')
+        total_list.append(f'{fuel_type}_export_bbtu')
+        total_list.append(f'{fuel_type}_import_bbtu')
+        total_list.append(f'{fuel_type}_net_export_bbtu')
 
     if total:
         df = demand_df[total_list]
@@ -886,6 +894,93 @@ def calc_energy_production_exports(data: pd.DataFrame, sector_types=None, fuel_t
         df = demand_df
 
     return df
+
+def calc_sectoral_use_water_discharge(data: pd.DataFrame, sector_types=None, discharge_types=None, regions=3, total=False):
+    """calculates rejected energy (losses) and energy services for each region for each sector type in billion btu.
+    Rejected energy is calculated as energy delivered multiplied by the efficiency rating for a given sector.
+
+        :param data:                        DataFrame of input data containing fuel demand data for each sector
+        :type data:                         DataFrame
+
+        :param sector_types:                a dictionary of sector types to include and their associated efficiency
+                                            (e.g. {'residential':0.65, 'commercial':0.60}. If none provided, defaults
+                                            are used.
+        :type sector_types:                 dictionary
+
+        :param fuel_types:                  a list of fuel types to include (e.g., electricity, coal, petroleum)
+        :type fuel_types:                   list
+
+        :param regions:                     gives the number of columns in the dataset that should be treated as region
+                                            identifiers (e.g. "Country", "State"). Reads from the first column in the
+                                            dataframe onwards.
+        :type regions:                      int
+
+        :param total:                       If true, returns dataframe of identifier columns and total rejected energy
+                                            and total energy services by sector instead of by fuel type
+        :type total:                        bool
+
+        :return:                            DataFrame of rejected energy in billion btu from sectors
+
+        """
+
+    # load data
+    df = data
+
+    # establish dictionary of sector types as keys and efficiency as value.
+    if sector_types is None:
+        sector_type_list = ['residential', 'commercial', 'industrial', 'mining', 'transportation']
+    else:
+        sector_type_list = sector_types
+
+    #  establish list of fuel types to include
+    if discharge_types is None:  # default fuel types
+        discharge_type_list = ['consumption', 'wastewater', 'ocean', 'surface']
+    else:
+        discharge_type_list = discharge_types
+
+    # loop through each sector + fuel pair and calculate rejected energy and energy services if in dataset
+    retain_list = []
+    total_list = []
+    for sector_type in sector_type_dict:
+        df[f'{sector_type}_total_rejected_energy_bbtu'] = 0
+        df[f'{sector_type}_total_energy_services_bbtu'] = 0
+
+        for fuel_type in fuel_type_list:
+            fuel_demand_type = fuel_type + "_" + sector_type + "_bbtu"
+            if fuel_demand_type in df.columns:
+                df[f'{sector_type}_{fuel_type}_rejected_energy_bbtu'] = df[fuel_demand_type] \
+                                                                        * (1 - sector_type_dict[sector_type])
+
+                df[f'{sector_type}_{fuel_type}_energy_services_bbtu'] = df[fuel_demand_type] \
+                                                                        * (sector_type_dict[sector_type])
+
+                retain_list.append(f'{sector_type}_{fuel_type}_rejected_energy_bbtu')
+                retain_list.append(f'{sector_type}_{fuel_type}_energy_services_bbtu')
+
+                df[f'{sector_type}_total_rejected_energy_bbtu'] = df[f'{sector_type}_total_rejected_energy_bbtu'] \
+                                                                  + df[
+                                                                      f'{sector_type}_{fuel_type}_rejected_energy_bbtu']
+            else:
+                pass
+
+        retain_list.append(f'{sector_type}_total_rejected_energy_bbtu')
+        total_list.append(f'{sector_type}_total_rejected_energy_bbtu')
+
+    # establish list of region columns to include in output
+    column_list = df.columns[:regions].tolist()
+
+    # if total is True, only return total rejected energy and energy services by sector
+    if total:
+        for item in total_list:
+            column_list.append(item)
+        df = df[column_list]
+    else:
+        for item in retain_list:
+            column_list.append(item)
+        df = df[column_list]
+
+    return df
+
 
 
 # move to clean, add to configure

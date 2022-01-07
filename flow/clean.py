@@ -180,14 +180,14 @@ def prep_consumption_fraction() -> pd.DataFrame:
 
     # creating a dictionary of required variables from full dataset with descriptive naming
     variables_list_1995 = {"FIPS": 'FIPS',
-                           "DO_CF_Fr": "residential_freshwater_consumption_fraction",
-                           "CO_CF_Fr": "commercial_freshwater_consumption_fraction",
-                           "IN_CF_Fr": "industrial_freshwater_consumption_fraction",
-                           "IN_CF_Sa": "industrial_saline_water_consumption_fraction",
-                           "MI_CF_Fr": "mining_freshwater_consumption_fraction",
+                           "DO_CF_Fr": "residential_fresh_consumption_fraction",
+                           "CO_CF_Fr": "commercial_fresh_consumption_fraction",
+                           "IN_CF_Fr": "industrial_fresh_consumption_fraction",
+                           "IN_CF_Sa": "industrial_saline_consumption_fraction",
+                           "MI_CF_Fr": "mining_fresh_consumption_fraction",
                            "MI_CF_Sa": "mining_saline_water_consumption_fraction",
-                           "LV_CF_Fr": "livestock_freshwater_consumption_fraction",
-                           "LA_CF_Fr": "aquaculture_freshwater_consumption_fraction"
+                           "LV_CF_Fr": "livestock_fresh_consumption_fraction",
+                           "LA_CF_Fr": "aquaculture_fresh_consumption_fraction"
                            }
 
     # reduce full dataframe to required variable list
