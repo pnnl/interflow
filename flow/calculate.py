@@ -492,7 +492,6 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
         df = df.join(rejected_energy_df, how='outer')
         df = df.join(energy_services_df, how='outer')
 
-
     return df
 
 
@@ -779,16 +778,26 @@ def calc_energy_supply_exports(data: pd.DataFrame, water_energy_types=None, fuel
     pws_df = calc_energy_pws(data=df, total=True)
     ag_df = calc_energy_agriculture(data=data, total=True)
 
-    demand_df = pd.DataFrame()
+     # establish list of region columns to include in output
+    column_list = df.columns[:regions].tolist()
+    demand_df = df[column_list].copy()
+
     energy_demand_list = []
     for fuel_type in fuel_type_list:
-        demand_df[f'total_{fuel_type}_demand_bbtu'] = 0
+        demand_df[f'total_{fuel_type}_consumption_bbtu'] = 0
 
     # calculate fuel demand in sectors already included in dataset
     for fuel_type in fuel_type_list:
-        demand_df[f'total_{fuel_type}_demand_bbtu'] = demand_df[f'total_{fuel_type}_demand_bbtu'] + df[f'{fuel_type}_fuel_bbtu']
-        for sector_type in sector_type_list:
-            demand_df[f'total_{fuel_type}_demand_bbtu'] = demand_df[f'total_{fuel_type}_demand_bbtu'] + df[f'{fuel_type}_{sector_type}_bbtu']
+        if f'{fuel_type}_fuel_bbtu' in df.columns:
+            demand_df[f'total_{fuel_type}_consumption_bbtu'] = demand_df[f'total_{fuel_type}_consumption_bbtu'] + df[f'{fuel_type}_fuel_bbtu']
+            for sector_type in sector_type_list:
+                if f'{fuel_type}_{sector_type}_bbtu' in df.columns:
+                    demand_df[f'total_{fuel_type}_demand_bbtu'] = demand_df[f'total_{fuel_type}_consumption_bbtu'] \
+                                                                  + df[f'{fuel_type}_{sector_type}_bbtu']
+                else:
+                    pass
+        else:
+            pass
 
     pws_retain_list = []
     ag_retain_list = []
@@ -812,7 +821,7 @@ def calc_energy_supply_exports(data: pd.DataFrame, water_energy_types=None, fuel
     # calculate net import/exports (to be used for results at granularity>import/export locations)
 
 
-    return df
+    return demand_df
 
 # move to clean, add to configure
 def calc_pws_discharge() -> pd.DataFrame:
