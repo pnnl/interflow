@@ -813,6 +813,7 @@ def calc_energy_production_exports(data: pd.DataFrame, sector_types=None, fuel_t
     # grab fuel consumption data from energy in agriculture and pws calculators
     pws_df = calc_energy_pws(data=df, total=True)
     ag_df = calc_energy_agriculture(data=df, total=True)
+    wastewater_df = calc_energy_wastewater(data=df, total=True)
 
     # establish list of region columns to include in output
     region_list = df.columns[:regions].tolist()
@@ -838,6 +839,7 @@ def calc_energy_production_exports(data: pd.DataFrame, sector_types=None, fuel_t
         else:
             pass
 
+    # calculate energy consumption from pws, agriculture, and wastewater sectors
     for fuel_type in fuel_type_list:
         if f'{fuel_type}_pws_bbtu' in pws_df.columns:
             demand_df[f'total_{fuel_type}_consumption_bbtu'] = demand_df[f'total_{fuel_type}_consumption_bbtu'] \
@@ -849,7 +851,13 @@ def calc_energy_production_exports(data: pd.DataFrame, sector_types=None, fuel_t
                                                                + ag_df[f'{fuel_type}_agriculture_bbtu']
         else:
             pass
+        if f'{fuel_type}_wastewater_total_bbtu' in wastewater_df.columns:
+            demand_df[f'total_{fuel_type}_consumption_bbtu'] = demand_df[f'total_{fuel_type}_consumption_bbtu'] \
+                                                               + wastewater_df[f'{fuel_type}_wastewater_total_bbtu']
+        else:
+            pass
 
+# calculate exports, imports, and net exports
     for fuel_type in fuel_type_list:
         column_name = f'{fuel_type}_production_bbtu'
         demand_df[column_name] = df[column_name].copy()
@@ -857,20 +865,20 @@ def calc_energy_production_exports(data: pd.DataFrame, sector_types=None, fuel_t
         production_name = f'{fuel_type}_production_bbtu'
 
         # exports
-        demand_df[f'total_{fuel_type}_export'] = np.where(demand_df[production_name] > demand_df[consumption_name],
+        demand_df[f'total_{fuel_type}_export_bbtu'] = np.where(demand_df[production_name] > demand_df[consumption_name],
                                                           demand_df[production_name] - demand_df[consumption_name],
                                                           0)
         # imports
-        demand_df[f'total_{fuel_type}_import'] = np.where(demand_df[production_name] < demand_df[consumption_name],
+        demand_df[f'total_{fuel_type}_import_bbtu'] = np.where(demand_df[production_name] < demand_df[consumption_name],
                                                           demand_df[consumption_name] - demand_df[production_name],
                                                           0)
         # net exports
-        demand_df[f'total_{fuel_type}_net_export'] = demand_df[f'total_{fuel_type}_export'] \
-                                                     - demand_df[f'total_{fuel_type}_import']
+        demand_df[f'total_{fuel_type}_net_export_bbtu'] = demand_df[f'total_{fuel_type}_export_bbtu'] \
+                                                     - demand_df[f'total_{fuel_type}_import_bbtu']
 
-        total_list.append(f'total_{fuel_type}_export')
-        total_list.append(f'total_{fuel_type}_import')
-        total_list.append(f'total_{fuel_type}_net_export')
+        total_list.append(f'total_{fuel_type}_export_bbtu')
+        total_list.append(f'total_{fuel_type}_import_bbtu')
+        total_list.append(f'total_{fuel_type}_net_export_bbtu')
 
     if total:
         df = demand_df[total_list]
