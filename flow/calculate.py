@@ -562,9 +562,11 @@ def calc_energy_pws(data: pd.DataFrame, water_energy_types=None, fuel_types=None
     for water_type in types_dict:
         for source_type in types_dict[water_type]:
             for energy_type in types_dict[water_type][source_type]:
-                df[f'pws_{energy_type}_total_energy_bbtu'] = 0
-                df[f'pws_{energy_type}_total_energy_services_bbtu'] = 0
-                df[f'pws_{energy_type}_total_rejected_energy_bbtu'] = 0
+                for fuel_type in fuel_type_dict:
+                    df[f'{fuel_type}_pws_{energy_type}_bbtu'] = 0
+                    df[f'{fuel_type}_pws_{energy_type}_energy_services_bbtu'] = 0
+                    df[f'{fuel_type}_pws_{energy_type}_rejected_energy_bbtu'] = 0
+
 
     # build loop for calculations
     for water_type in types_dict:
@@ -599,10 +601,11 @@ def calc_energy_pws(data: pd.DataFrame, water_energy_types=None, fuel_types=None
                                                                                                      * (fuel_type_dict[fuel_type]['efficiency'])
 
                         #add to totals
-                        df[f'pws_{energy_type}_total_energy_bbtu'] = df[f'pws_{energy_type}_total_energy_bbtu'] + df[f'{fuel_type}_pws_{water_type}_{source_type}_{energy_type}_bbtu']
-                        df[f'pws_{energy_type}_total_energy_services_bbtu'] = df[f'pws_{energy_type}_total_energy_services_bbtu'] \
+                        df[f'{fuel_type}_pws_{energy_type}_bbtu'] = df[f'{fuel_type}_pws_{energy_type}_bbtu'] + df[f'{fuel_type}_pws_{water_type}_{source_type}_{energy_type}_bbtu']
+
+                        df[f'{fuel_type}_pws_{energy_type}_energy_services_bbtu'] = df[f'{fuel_type}_pws_{energy_type}_energy_services_bbtu'] \
                                                                      + df[f'pws_{water_type}_{source_type}_{energy_type}_energy_services_bbtu']
-                        df[f'pws_{energy_type}_total_rejected_energy_bbtu'] = df[f'pws_{energy_type}_total_rejected_energy_bbtu'] \
+                        df[f'{fuel_type}_pws_{energy_type}_rejected_energy_bbtu'] = df[f'{fuel_type}_pws_{energy_type}_rejected_energy_bbtu'] \
                                                                           + df[f'pws_{water_type}_{source_type}_{energy_type}_rejected_energy_bbtu']
 
                         df[f'pws_total_energy_bbtu'] = df[f'pws_total_energy_bbtu'] + df[
@@ -621,26 +624,22 @@ def calc_energy_pws(data: pd.DataFrame, water_energy_types=None, fuel_types=None
             else:
                 pass
 
-    # add columns to total list
-    total_list.append('pws_total_energy_bbtu')
-    total_list.append('pws_total_rejected_energy_bbtu')
-    total_list.append('pws_total_energy_services_bbtu')
-
     for water_type in types_dict:
         for source_type in types_dict[water_type]:
             for energy_type in types_dict[water_type][source_type]:
-                if f'pws_{energy_type}_total_energy_bbtu' in total_list:
-                    pass
-                else:
-                    total_list.append(f'pws_{energy_type}_total_energy_bbtu')
-                if f'pws_{energy_type}_total_energy_services_bbtu' in total_list:
-                    pass
-                else:
-                    total_list.append(f'pws_{energy_type}_total_energy_services_bbtu')
-                if f'pws_{energy_type}_total_rejected_energy_bbtu' in total_list:
-                    pass
-                else:
-                    total_list.append(f'pws_{energy_type}_total_rejected_energy_bbtu')
+                for fuel_type in fuel_type_dict:
+                    if f'{fuel_type}_pws_{energy_type}_bbtu' in total_list:
+                        pass
+                    else:
+                        total_list.append(f'{fuel_type}_pws_{energy_type}_bbtu')
+                    if f'{fuel_type}_pws_{energy_type}_energy_services_bbtu' in total_list:
+                        pass
+                    else:
+                        total_list.append(f'{fuel_type}_pws_{energy_type}_energy_services_bbtu')
+                    if f'{fuel_type}_pws_{energy_type}_rejected_energy_bbtu' in total_list:
+                        pass
+                    else:
+                        total_list.append(f'{fuel_type}_pws_{energy_type}_rejected_energy_bbtu')
 
     # set initial total interbasin transfer values
     df['pws_total_ibt_energy_bbtu'] = 0
@@ -684,13 +683,17 @@ def calc_energy_pws(data: pd.DataFrame, water_energy_types=None, fuel_types=None
             total_list.append(f'{fuel_type}_pws_ibt_energy_services_bbtu')
 
             # add on to total energy
-            df[f'pws_total_energy_bbtu'] = df[f'pws_total_energy_bbtu'] + df['pws_total_ibt_energy_bbtu']
-            df[f'pws_total_energy_services_bbtu'] = df[f'pws_total_energy_services_bbtu'] + df['pws_total_ibt_energy_services_bbtu']
-            df[f'pws_total_rejected_energy_bbtu'] = df[f'pws_total_rejected_energy_bbtu'] + df['pws_total_ibt_rejected_energy_bbtu']
+            df['pws_total_energy_bbtu'] = df['pws_total_energy_bbtu'] + df['pws_total_ibt_energy_bbtu']
+            df['pws_total_energy_services_bbtu'] = df['pws_total_energy_services_bbtu'] + df['pws_total_ibt_energy_services_bbtu']
+            df['pws_total_rejected_energy_bbtu'] = df['pws_total_rejected_energy_bbtu'] + df['pws_total_ibt_rejected_energy_bbtu']
 
         else:
             pass
 
+    total_list.append('pws_total_energy_bbtu')
+    total_list.append('pws_total_energy_services_bbtu')
+    total_list.append('pws_total_rejected_energy_bbtu')
+    
     # establish list of region columns to include in output
     column_list = df.columns[:regions].tolist()
 
@@ -741,10 +744,13 @@ def calc_energy_supply_exports(data: pd.DataFrame, water_energy_types=None, fuel
     # load data
     df = data
 
+
     fuel_type_list = ['petroleum', 'natural_gas', 'biomass', 'coal']
     sector_type_list = ['electricity', 'residential', 'commercial', 'industrial', 'mining', 'agriculture']
 
     #grab data from agriculture and pws calculator
+
+
 
     # calculate total energy consumption of each fuel by region
 
