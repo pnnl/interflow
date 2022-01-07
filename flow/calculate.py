@@ -786,31 +786,33 @@ def calc_energy_supply_exports(data: pd.DataFrame, water_energy_types=None, fuel
     for fuel_type in fuel_type_list:
         demand_df[f'total_{fuel_type}_consumption_bbtu'] = 0
 
+    #TODO figure out what's causing the NAN rows
     # calculate fuel demand in sectors already included in dataset
     for fuel_type in fuel_type_list:
         if f'{fuel_type}_fuel_bbtu' in df.columns:
             demand_df[f'total_{fuel_type}_consumption_bbtu'] = demand_df[f'total_{fuel_type}_consumption_bbtu'] + df[f'{fuel_type}_fuel_bbtu']
             for sector_type in sector_type_list:
                 if f'{fuel_type}_{sector_type}_bbtu' in df.columns:
-                    demand_df[f'total_{fuel_type}_demand_bbtu'] = demand_df[f'total_{fuel_type}_consumption_bbtu'] \
+                    demand_df[f'total_{fuel_type}_consumption_bbtu'] = demand_df[f'total_{fuel_type}_consumption_bbtu'] \
                                                                   + df[f'{fuel_type}_{sector_type}_bbtu']
                 else:
                     pass
+
         else:
             pass
 
-    pws_retain_list = []
-    ag_retain_list = []
+
     for fuel_type in fuel_type_list:
         if f'{fuel_type}_pws_bbtu' in pws_df.columns:
-            pws_retain_list.append(f'{fuel_type}_pws_bbtu')
+            demand_df[f'total_{fuel_type}_consumption_bbtu'] = demand_df[f'total_{fuel_type}_consumption_bbtu'] \
+                                                               + pws_df[f'{fuel_type}_pws_bbtu']
+        else:
+            pass
         if f'{fuel_type}_agriculture_bbtu' in ag_df.columns:
-            ag_retain_list.append(f'{fuel_type}_agriculture_bbtu')
-
-    demand_df = demand_df.join(pws_df[pws_retain_list], how='outer')
-    demand_df = demand_df.join(ag_df[ag_retain_list], how='outer')
-
-
+            demand_df[f'total_{fuel_type}_consumption_bbtu'] = demand_df[f'total_{fuel_type}_consumption_bbtu'] \
+                                                               + ag_df[f'{fuel_type}_agriculture_bbtu']
+        else:
+            pass
 
     # calculate total energy consumption of each fuel by region
 

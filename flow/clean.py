@@ -726,6 +726,7 @@ def prep_electricity_generation() -> pd.DataFrame:
 
     # merge fuel and generation dataframes into single dataframe
     df = pd.merge(df_fuel, df_gen, how='left', on='FIPS')
+    df = pd.merge(df_loc, df, how='left')
 
     # merge dataframe with county data to distribute value to each county in a state
     df.fillna(0, inplace=True)  # fill nan with zero
