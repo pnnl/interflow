@@ -759,13 +759,25 @@ def calc_energy_supply_exports(data: pd.DataFrame, water_energy_types=None, fuel
 
 
     fuel_type_list = ['petroleum', 'natural_gas', 'biomass', 'coal']
-    sector_type_list = ['electricity', 'residential', 'commercial', 'industrial', 'mining', 'agriculture']
+    sector_type_list = ['electricity', 'residential', 'commercial', 'industrial', 'mining', 'transportation']
 
     #grab data from agriculture and pws calculator
     pws_df = calc_energy_pws(data=df, total=True)
     ag_df = calc_energy_agriculture(data=data, total=True)
 
-    
+    demand_df = pd.DataFrame()
+    energy_demand_list = []
+    for fuel_type in fuel_type_list:
+        demand_df[f'total_{fuel_type}_demand_bbtu'] = 0
+
+    # calculate fuel demand in sectors already included in dataset
+    for fuel_type in fuel_type_list:
+        demand_df[f'total_{fuel_type}_demand_bbtu'] = demand_df[f'total_{fuel_type}_demand_bbtu'] + df[f'{fuel_type}_fuel_bbtu']
+        for sector_type in sector_type_list:
+            demand_df[f'total_{fuel_type}_demand_bbtu'] = demand_df[f'total_{fuel_type}_demand_bbtu'] + df[f'{fuel_type}_{sector_type}_bbtu']
+
+
+
 
     # calculate total energy consumption of each fuel by region
 

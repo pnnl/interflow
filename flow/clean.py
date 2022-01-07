@@ -659,7 +659,7 @@ def prep_electricity_generation() -> pd.DataFrame:
     # create a dictionary to bin power plant fuel types
     fuel_dict = {'SUN': 'solar',  # solar
                  'COL': 'coal',  # coal
-                 'DFO': 'oil',  # distillate petroleum
+                 'DFO': 'petroleum',  # distillate petroleum
                  "GEO": 'geothermal',  # geothermal
                  'HPS': 'hydro',  # hydro pumped storage
                  'HYC': 'hydro',  # hydro conventional
@@ -669,11 +669,11 @@ def prep_electricity_generation() -> pd.DataFrame:
                  'OOG': 'other',  # other gases
                  'ORW': 'other',  # other renewables
                  'OTH': 'other',  # other
-                 'PC': 'oil',  # petroleum coke
-                 'RFO': 'oil',  # residual petroleum
+                 'PC': 'petroleum',  # petroleum coke
+                 'RFO': 'petroleum',  # residual petroleum
                  'WND': 'wind',  # wind
                  'WOC': 'coal',  # waste coal
-                 'WOO': 'oil',  # waste oil
+                 'WOO': 'petroleum',  # waste oil
                  'WWW': 'biomass'}  # wood and wood waste
 
     # rename columns in power plant generation data file
@@ -1025,8 +1025,8 @@ def prep_fuel_demand_data() -> pd.DataFrame:
                 "PACCB": "petroleum_commercial_bbtu",  # petroleum products, commercial sector (bbtu)
                 "PAICB": "petroleum_industrial_bbtu",  # petroleum products, industrial sector (bbtu)
                 "PARCB": "petroleum_residential_bbtu",  # petroleum products, residential sector (bbtu)
-                "SOCCB": "solar_commercial_solar_bbtu",  # Solar, commercial sector (bbtu)
-                "SORCB": "solar_residential_solar_bbtu",  # Solar, residential sector (bbtu)
+                "SOCCB": "solar_commercial_bbtu",  # Solar, commercial sector (bbtu)
+                "SORCB": "solar_residential_bbtu",  # Solar, residential sector (bbtu)
                 "WDRCB": "biomass_residential_bbtu",  # Wood energy, residential sector (bbtu)
                 "WWCCB": "biomass_commercial_bbtu",  # Wood and waste energy, commercial sector (bbtu)
                 "WWICB": "biomass_industrial_bbtu",  # Wood and waste energy, industrial sector (bbtu)
