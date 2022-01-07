@@ -777,7 +777,7 @@ def prep_irrigation_fuel_data() -> pd.DataFrame:
     df['gas_pumping'].fillna(other_avg, inplace=True)
 
     # bin similar fuel types
-    df['oil_pumping'] = df['propane_pumping'] + df['diesel_pumping']
+    df['petroleum_pumping'] = df['propane_pumping'] + df['diesel_pumping']
     df['natural_gas_pumping'] = df['ng_pumping'] + df['gas_pumping']
 
     # keep only required columns
@@ -1048,7 +1048,6 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     energy_columns = df.columns[3:]
     for d in energy_columns:
         df[d] = df[d] * df['pop_weight']
-        df[d] = df[d].round(2)
 
     # rename columns to add descriptive language
     df.rename(columns=msn_dict, inplace=True)
