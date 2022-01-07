@@ -381,6 +381,10 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
     column_list = df.columns[:regions].tolist()
     total_df = df[column_list].copy()
 
+    for fuel_type in fuel_type_dict:
+        total_df[f'{fuel_type}_agriculture_bbtu'] = 0
+        total_df[f'{fuel_type}_ibt_bbtu'] = 0
+
     for agriculture_type in agriculture_type_list:
         total_df[f'{agriculture_type}_total_energy_services_bbtu'] = 0
         total_df[f'{agriculture_type}_total_rejected_energy_bbtu'] = 0
@@ -411,10 +415,11 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
                             if fuel_type_pct in df.columns:
                                 energy_value = df[fuel_type_pct] * df[pumping_flow_type] * convert_kwh_bbtu(pumping_type_dict[pumping_type]) * 365
                             else:
-                                energy_value =  fuel_percent_dict[fuel_type] * df[pumping_flow_type] * convert_kwh_bbtu(pumping_type_dict[pumping_type]) * 365
+                                energy_value = fuel_percent_dict[fuel_type] * df[pumping_flow_type] * convert_kwh_bbtu(pumping_type_dict[pumping_type]) * 365
 
                         energy_value_dict.update({energy_name: energy_value})
                         total_df[f'{fuel_type}_{agriculture_type}_bbtu'] = total_df[f'{fuel_type}_{agriculture_type}_bbtu'] + energy_value
+                        total_df[f'{fuel_type}_agriculture_bbtu'] = total_df[f'{fuel_type}_agriculture_bbtu'] + energy_value
 
                         rejected_energy_name = f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_rejected_energy_bbtu'
                         energy_services_name = f'{agriculture_type}_{water_type}_{pumping_type}_{fuel_type}_energy_services_bbtu'
@@ -453,6 +458,11 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
                 else:
                     energy_value_df[energy_name] = df[f"{fuel_type}_interbasin_bbtu"] * irrigation_ibt_pct
 
+                # Add to total
+                total_df[f'{fuel_type}_agriculture_bbtu'] = total_df[f'{fuel_type}_agriculture_bbtu'] + \
+                                                            energy_value_df[energy_name]
+                total_df[f'{fuel_type}_ibt_bbtu'] = total_df[f'{fuel_type}_ibt_bbtu'] + energy_value_df[energy_name]
+
                 rejected_energy_name = f'{fuel_type}_irrigation_ibt_rejected_energy_bbtu'
                 energy_services_name = f'{fuel_type}_irrigation_ibt_energy_services_bbtu'
 
@@ -462,8 +472,10 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
                 else:
                     rejected_energy_df[rejected_energy_name] = energy_value_df[energy_name] * (1 - fuel_type_dict[fuel_type])
                     energy_services_df[energy_services_name] = energy_value_df[energy_name] * (fuel_type_dict[fuel_type])
+
             else:
                 pass
+
         else:
             pass
 
@@ -479,6 +491,8 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
         df = output_df.join(energy_value_df, how='outer')
         df = df.join(rejected_energy_df, how='outer')
         df = df.join(energy_services_df, how='outer')
+
+
     return df
 
 
@@ -759,7 +773,7 @@ def calc_energy_supply_exports(data: pd.DataFrame, water_energy_types=None, fuel
 
 
     fuel_type_list = ['petroleum', 'natural_gas', 'biomass', 'coal']
-    sector_type_list = ['electricity', 'residential', 'commercial', 'industrial', 'mining', 'transportation']
+    sector_type_list = ['residential', 'commercial', 'industrial', 'transportation']
 
     #grab data from agriculture and pws calculator
     pws_df = calc_energy_pws(data=df, total=True)
@@ -776,6 +790,16 @@ def calc_energy_supply_exports(data: pd.DataFrame, water_energy_types=None, fuel
         for sector_type in sector_type_list:
             demand_df[f'total_{fuel_type}_demand_bbtu'] = demand_df[f'total_{fuel_type}_demand_bbtu'] + df[f'{fuel_type}_{sector_type}_bbtu']
 
+    pws_retain_list = []
+    ag_retain_list = []
+    for fuel_type in fuel_type_list:
+        if f'{fuel_type}_pws_bbtu' in pws_df.columns:
+            pws_retain_list.append(f'{fuel_type}_pws_bbtu')
+        if f'{fuel_type}_agriculture_bbtu' in ag_df.columns:
+            ag_retain_list.append(f'{fuel_type}_agriculture_bbtu')
+
+    demand_df = demand_df.join(pws_df[pws_retain_list], how='outer')
+    demand_df = demand_df.join(ag_df[ag_retain_list], how='outer')
 
 
 
