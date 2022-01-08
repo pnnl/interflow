@@ -35,46 +35,46 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'COUNTY': 'County',
                       'TP-TotPop': 'population',
                       'PS-WGWFr': 'fresh_groundwater_pws_mgd',
-                      'PS-WSWFr': 'fresh_surface_water_pws_mgd',
+                      'PS-WSWFr': 'fresh_surfacewater_pws_mgd',
                       'PS-WGWSa': 'saline_groundwater_pws_mgd',
-                      'PS-WSWSa': 'saline_surface_water_pws_mgd',
+                      'PS-WSWSa': 'saline_surfacewater_pws_mgd',
                       'DO-PSDel': 'fresh_pws_residential_mgd',
                       'PS-Wtotl': 'total_pws_mgd',
                       'DO-WGWFr': 'fresh_groundwater_residential_mgd',
-                      'DO-WSWFr': 'fresh_surface_water_residential_mgd',
+                      'DO-WSWFr': 'fresh_surfacewater_residential_mgd',
                       'PT-WGWFr': 'fresh_groundwater_thermoelectric_mgd',
                       'PT-WGWSa': 'saline_groundwater_thermoelectric_mgd',
-                      'PT-WSWFr': 'fresh_surface_water_thermoelectric_mgd',
-                      'PT-WSWSa': 'saline_surface_water_thermoelectric_mgd',
+                      'PT-WSWFr': 'fresh_surfacewater_thermoelectric_mgd',
+                      'PT-WSWSa': 'saline_surfacewater_thermoelectric_mgd',
                       'PT-RecWW': 'wastewater_thermoelectric_mgd',
                       'PT-PSDel': 'fresh_pws_thermoelectric_mgd',
                       'PT-CUTot': 'thermoelectric_fresh_consumption_mgd',
                       'IN-WGWFr': 'fresh_groundwater_industrial_mgd',
-                      'IN-WSWFr': 'fresh_surface_water_industrial_mgd',
+                      'IN-WSWFr': 'fresh_surfacewater_industrial_mgd',
                       'IN-WGWSa': 'saline_groundwater_industrial_mgd',
-                      'IN-WSWSa': 'saline_surface_water_industrial_mgd',
+                      'IN-WSWSa': 'saline_surfacewater_industrial_mgd',
                       'MI-WGWFr': 'fresh_groundwater_mining_mgd',
-                      'MI-WSWFr': 'fresh_surface_water_mining_mgd',
+                      'MI-WSWFr': 'fresh_surfacewater_mining_mgd',
                       'MI-WGWSa': 'saline_groundwater_mining_mgd',
-                      'MI-WSWSa': 'saline_surface_water_mining_mgd',
+                      'MI-WSWSa': 'saline_surfacewater_mining_mgd',
                       'IR-WGWFr': 'fresh_groundwater_total_irrigation_mgd',
-                      'IR-WSWFr': 'fresh_surface_water_total_irrigation_mgd',
+                      'IR-WSWFr': 'fresh_surfacewater_total_irrigation_mgd',
                       'IR-RecWW': 'fresh_wastewater_total_irrigation_mgd',
                       'IR-CUsFr': 'total_irrigation_fresh_consumption',
                       'IC-WGWFr': 'fresh_groundwater_crop_irrigation_mgd',
-                      'IC-WSWFr': 'fresh_surface_water_crop_irrigation_mgd',
+                      'IC-WSWFr': 'fresh_surfacewater_crop_irrigation_mgd',
                       'IC-RecWW': 'fresh_wastewater_crop_irrigation_mgd',
                       'IC-CUsFr': 'crop_irrigation_fresh_consumption_mgd',
                       'IG-WGWFr': 'fresh_groundwater_golf_irrigation_mgd',
-                      'IG-WSWFr': 'fresh_surface_water_golf_irrigation_mgd',
+                      'IG-WSWFr': 'fresh_surfacewater_golf_irrigation_mgd',
                       'IG-RecWW': 'fresh_wastewater_golf_irrigation_mgd',
                       'IG-CUsFr': 'golf_irrigation_fresh_consumption_mgd',
                       'LI-WGWFr': 'fresh_groundwater_livestock_mgd',
-                      'LI-WSWFr': 'fresh_surface_water_livestock_mgd',
+                      'LI-WSWFr': 'fresh_surfacewater_livestock_mgd',
                       'AQ-WGWFr': 'fresh_groundwater_aquaculture_mgd',
                       'AQ-WGWSa': 'saline_groundwater_aquaculture_mgd',
-                      'AQ-WSWFr': 'fresh_surface_water_aquaculture_mgd',
-                      'AQ-WSWSa': 'saline_surface_water_aquaculture_mgd'
+                      'AQ-WSWFr': 'fresh_surfacewater_aquaculture_mgd',
+                      'AQ-WSWSa': 'saline_surfacewater_aquaculture_mgd'
                       }
     df = df[variables_dict]
 
@@ -181,14 +181,14 @@ def prep_consumption_fraction() -> pd.DataFrame:
 
     # creating a dictionary of required variables from full dataset with descriptive naming
     variables_list_1995 = {"FIPS": 'FIPS',
-                           "DO_CF_Fr": "residential_fresh_surface_consumption_fraction",
-                           "CO_CF_Fr": "commercial_fresh_surface_consumption_fraction",
-                           "IN_CF_Fr": "industrial_fresh_surface_consumption_fraction",
-                           "IN_CF_Sa": "industrial_saline_surface_consumption_fraction",
-                           "MI_CF_Fr": "mining_fresh_surface_consumption_fraction",
-                           "MI_CF_Sa": "mining_saline_surface_consumption_fraction",
-                           "LV_CF_Fr": "livestock_fresh_surface_consumption_fraction",
-                           "LA_CF_Fr": "aquaculture_fresh_surface_consumption_fraction"
+                           "DO_CF_Fr": "residential_fresh_surfacewater_consumption_fraction",
+                           "CO_CF_Fr": "commercial_fresh_surfacewater_consumption_fraction",
+                           "IN_CF_Fr": "industrial_fresh_surfacewater_consumption_fraction",
+                           "IN_CF_Sa": "industrial_saline_surfacewater_consumption_fraction",
+                           "MI_CF_Fr": "mining_fresh_surfacewater_consumption_fraction",
+                           "MI_CF_Sa": "mining_saline_surfacewater_consumption_fraction",
+                           "LV_CF_Fr": "livestock_fresh_surfacewater_consumption_fraction",
+                           "LA_CF_Fr": "aquaculture_fresh_surfacewater_consumption_fraction"
                            }
 
     # reduce full dataframe to required variable list
@@ -197,14 +197,16 @@ def prep_consumption_fraction() -> pd.DataFrame:
     # rename columns to add descriptive language
     df.rename(columns=variables_list_1995, inplace=True)
 
-    df["residential_fresh_groundwater_consumption_fraction"] = df["residential_fresh_surface_consumption_fraction"]
-    df["commercial_fresh_groundwater_consumption_fraction"] = df["commercial_fresh_surface_consumption_fraction"]
-    df["industrial_fresh_groundwater_consumption_fraction"] = df["industrial_fresh_surface_consumption_fraction"]
-    df["industrial_saline_groundwater_consumption_fraction"] = df["industrial_saline_surface_consumption_fraction"]
-    df["mining_fresh_groundwater_consumption_fraction"] = df["mining_fresh_surface_consumption_fraction"]
-    df["mining_saline_groundwater_consumption_fraction"] = df["mining_saline_surface_consumption_fraction"]
-    df["livestock_fresh_groundwater_consumption_fraction"] = df["livestock_fresh_surface_consumption_fraction"]
-    df["aquaculture_fresh_groundwater_consumption_fraction"] = df["aquaculture_fresh_surface_consumption_fraction"]
+    sector_list = ['residential', 'commercial', 'industrial']
+    water_type_list = ['fresh', 'saline']
+    water_source_list = ['groundwater', 'pws']
+
+    for sector in sector_list:
+        for water_type in water_type_list:
+            for water_source in water_source_list:
+                water_consumption_name = f'{sector}_{water_type}_surfacewater_consumption_fraction'
+                if water_consumption_name in df.columns:
+                    df[f'{sector}_{water_type}_{water_source}_consumption_fraction'] = df[water_consumption_name]
 
     # merge with full list of counties from 2015 water data
     df = pd.merge(df_loc, df, how='left', on='FIPS')
@@ -937,12 +939,12 @@ def prep_irrigation_pws_ratio() -> pd.DataFrame:
     """
     # read data
     df_irr_pws = prep_water_use_2015(variables=['FIPS','State','County','fresh_groundwater_crop_irrigation_mgd',
-                                                'fresh_surface_water_crop_irrigation_mgd', 'total_pws_mgd'])
+                                                'fresh_surfacewater_crop_irrigation_mgd', 'total_pws_mgd'])
 
     #calculate public water supply percent of combined flows
     df_irr_pws['pws_ibt_pct'] = df_irr_pws['total_pws_mgd']\
                                 / (df_irr_pws['fresh_groundwater_crop_irrigation_mgd']
-                                   +df_irr_pws['fresh_surface_water_crop_irrigation_mgd']
+                                   +df_irr_pws['fresh_surfacewater_crop_irrigation_mgd']
                                    + df_irr_pws['total_pws_mgd'])
 
     # add in column for agriculture fraction (1-pws)
@@ -1343,7 +1345,7 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
     # read in data
     df_corn = get_corn_irrigation_data()  # coal mine location data
     df_irr_water = prep_water_use_2015(variables=['State', 'fresh_groundwater_crop_irrigation_mgd',
-                                                  'fresh_surface_water_crop_irrigation_mgd'])
+                                                  'fresh_surfacewater_crop_irrigation_mgd'])
     df_loc = prep_water_use_2015()
     df_corn_prod = get_corn_production_data()
     df_state_abb = get_state_fips_data()
@@ -1374,8 +1376,8 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
 
     # calculate irrigation surface water to groundwater ratio for each state from 2015 USGS water dataset
     df_irr_water = df_irr_water.groupby("State", as_index=False).sum()
-    df_irr_water['surface_frac_fill'] = df_irr_water['fresh_surface_water_crop_irrigation_mgd'] \
-                                        / (df_irr_water['fresh_surface_water_crop_irrigation_mgd']
+    df_irr_water['surface_frac_fill'] = df_irr_water['fresh_surfacewater_crop_irrigation_mgd'] \
+                                        / (df_irr_water['fresh_surfacewater_crop_irrigation_mgd']
                                            + df_irr_water['fresh_groundwater_crop_irrigation_mgd'])
     df_irr_water = df_irr_water[['State', 'surface_frac_fill']]
     df_irr_water.fillna(0, inplace=True)  # replaces blank values with 0
