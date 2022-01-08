@@ -48,6 +48,7 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'PT-WSWSa': 'saline_surfacewater_thermoelectric_mgd',
                       'PT-RecWW': 'wastewater_thermoelectric_mgd',
                       'PT-PSDel': 'fresh_pws_thermoelectric_mgd',
+                      #TODO see if consumptive use for thermoelectric is split out by fresh/surface
                       'PT-CUTot': 'thermoelectric_fresh_consumption_mgd',
                       'IN-WGWFr': 'fresh_groundwater_industrial_mgd',
                       'IN-WSWFr': 'fresh_surfacewater_industrial_mgd',
