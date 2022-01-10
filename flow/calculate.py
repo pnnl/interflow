@@ -1129,13 +1129,38 @@ def calc_population_county_weight(df: pd.DataFrame) -> pd.DataFrame:
 
     return df_state
 
-def aggregate(df_list=None):
 
+def aggregate(df_list=None):
+    print('loading baseline data...')
+    data = co.configure_data()
     if df_list is None:
-        df = co.configure_data()
+        df = data
+        print('baseline dataset loaded...')
+        print('----------')
+        print('----------')
+        print('starting calculations...')
+        print('----------')
+        df1 = calc_electricity_rejected_energy(data=data)
+        df2 = calc_sectoral_use_energy_discharge(data=data)
+        df3 = calc_energy_wastewater(data=data)
+        df4 = calc_energy_agriculture(data=data)
+        df5 = calc_energy_pws(data=data)
+        df6 = calc_energy_production_exports(data=data)
+        df7 = calc_sectoral_use_water_discharge(data=data)
+        df_list = [df1, df2, df3, df4, df5, df6, df7]
+        i = 0
+        for item in df_list:
+            for col in item.columns[3:]:
+                pd.merge(df, item, how='left', on=['FIPS', 'State', 'County'])
+                print(col)
+
     else:
-        df = co.configure_data()
+        df = data
+        print('baseline dataset prepared')
         for item in df_list:
             df = pd.merge(df, item, how='left', on=['FIPS','State','County'])
+            print(f'{item} calculation complete')
+    print('----------')
+    print('Calculations complete')
 
     return df
