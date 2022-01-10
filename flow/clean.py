@@ -40,8 +40,10 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'PS-WSWSa': 'saline_surfacewater_pws_mgd',
                       'DO-PSDel': 'fresh_pws_residential_mgd',
                       'PS-Wtotl': 'total_pws_withdrawals_mgd',
+
                       'DO-WGWFr': 'fresh_groundwater_residential_mgd',
                       'DO-WSWFr': 'fresh_surfacewater_residential_mgd',
+
                       'PT-WGWFr': 'fresh_groundwater_thermoelectric_mgd',
                       'PT-WGWSa': 'saline_groundwater_thermoelectric_mgd',
                       'PT-WSWFr': 'fresh_surfacewater_thermoelectric_mgd',
@@ -50,14 +52,17 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'PT-PSDel': 'fresh_pws_thermoelectric_mgd',
                       #TODO see if consumptive use for thermoelectric is split out by fresh/surface
                       'PT-CUTot': 'thermoelectric_fresh_consumption_mgd',
+
                       'IN-WGWFr': 'fresh_groundwater_industrial_mgd',
                       'IN-WSWFr': 'fresh_surfacewater_industrial_mgd',
                       'IN-WGWSa': 'saline_groundwater_industrial_mgd',
                       'IN-WSWSa': 'saline_surfacewater_industrial_mgd',
+
                       'MI-WGWFr': 'fresh_groundwater_mining_mgd',
                       'MI-WSWFr': 'fresh_surfacewater_mining_mgd',
                       'MI-WGWSa': 'saline_groundwater_mining_mgd',
                       'MI-WSWSa': 'saline_surfacewater_mining_mgd',
+
                       'IR-WGWFr': 'fresh_groundwater_total_irrigation_mgd',
                       'IR-WSWFr': 'fresh_surfacewater_total_irrigation_mgd',
                       'IR-RecWW': 'fresh_wastewater_total_irrigation_mgd',
@@ -66,6 +71,7 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'IC-WSWFr': 'fresh_surfacewater_crop_irrigation_mgd',
                       'IC-RecWW': 'fresh_wastewater_crop_irrigation_mgd',
                       'IC-CUsFr': 'crop_irrigation_fresh_consumption_mgd',
+
                       'IG-WGWFr': 'fresh_groundwater_golf_irrigation_mgd',
                       'IG-WSWFr': 'fresh_surfacewater_golf_irrigation_mgd',
                       'IG-RecWW': 'fresh_wastewater_golf_irrigation_mgd',
