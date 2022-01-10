@@ -39,7 +39,7 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'PS-WGWSa': 'saline_groundwater_pws_mgd',
                       'PS-WSWSa': 'saline_surfacewater_pws_mgd',
                       'DO-PSDel': 'fresh_pws_residential_mgd',
-                      'PS-Wtotl': 'total_pws_mgd',
+                      'PS-Wtotl': 'total_pws_withdrawals_mgd',
                       'DO-WGWFr': 'fresh_groundwater_residential_mgd',
                       'DO-WSWFr': 'fresh_surfacewater_residential_mgd',
                       'PT-WGWFr': 'fresh_groundwater_thermoelectric_mgd',
@@ -368,7 +368,7 @@ def prep_wastewater_data() -> pd.DataFrame:
     df_ww_loc = get_wastewater_facility_loc_data()  # wastewater facility location data
     df_ww_dis = get_wastewater_facility_discharge_data()  # wastewater facility discharge data
     df_county_list = prep_water_use_2015()  # full county list from 2015 water data
-    df_2015_pws = prep_water_use_2015(variables=['FIPS', 'State', 'total_pws_mgd'])  # public water supply data
+    df_2015_pws = prep_water_use_2015(variables=['FIPS', 'State', 'total_pws_withdrawals_mgd'])  # public water supply data
 
     # wastewater flow type dictionary
     flow_dict = {'EXIST_INFILTRATION': 'infiltration_wastewater_mgd',
@@ -552,7 +552,7 @@ def prep_wastewater_data() -> pd.DataFrame:
     df_ww = pd.merge(df_ww, df_2015_pws, how='left', on='FIPS')
     for row in df_ww.iterrows():
         df_ww['total_wastewater_mgd'] = np.where(df_ww['State'] == "SC",  # fill total wastewater from public supply
-                                                 df_ww['total_pws_mgd'],
+                                                 df_ww['total_pws_withdrawals_mgd'],
                                                  df_ww['total_wastewater_mgd'])
         df_ww['municipal_wastewater_mgd'] = np.where(df_ww['State'] == "SC",  # fill total wastewater from public supply
                                                      df_ww['total_wastewater_mgd'],
@@ -571,7 +571,7 @@ def prep_wastewater_data() -> pd.DataFrame:
     df_ww['wastewater_electricity_fuel_pct'] = 1
 
     # drop public water supply variable
-    df_ww = df_ww.drop('total_pws_mgd', axis=1)
+    df_ww = df_ww.drop('total_pws_withdrawals_mgd', axis=1)
 
     return df_ww
 
@@ -940,13 +940,13 @@ def prep_irrigation_pws_ratio() -> pd.DataFrame:
     """
     # read data
     df_irr_pws = prep_water_use_2015(variables=['FIPS','State','County','fresh_groundwater_crop_irrigation_mgd',
-                                                'fresh_surfacewater_crop_irrigation_mgd', 'total_pws_mgd'])
+                                                'fresh_surfacewater_crop_irrigation_mgd', 'total_pws_withdrawals_mgd'])
 
     #calculate public water supply percent of combined flows
-    df_irr_pws['pws_ibt_pct'] = df_irr_pws['total_pws_mgd']\
+    df_irr_pws['pws_ibt_pct'] = df_irr_pws['total_pws_withdrawals_mgd']\
                                 / (df_irr_pws['fresh_groundwater_crop_irrigation_mgd']
                                    +df_irr_pws['fresh_surfacewater_crop_irrigation_mgd']
-                                   + df_irr_pws['total_pws_mgd'])
+                                   + df_irr_pws['total_pws_withdrawals_mgd'])
 
     # add in column for agriculture fraction (1-pws)
     df_irr_pws['irrigation_ibt_pct'] = 1 - df_irr_pws['pws_ibt_pct']
@@ -1433,4 +1433,50 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
 
     return df_corn_prod
 
+
+def calc_pws_discharge() -> pd.DataFrame:
+    """calculating public water supply demand for the commercial and industrial sectors along with total
+        public water supply exports or imports for each row of dataset.
+
+    :return:                DataFrame of public water supply demand by sector, pws imports, and pws exports
+
+    """
+
+    # read in cleaned water use data variables for 2015
+    df = prep_water_use_2015(variables=["FIPS", 'State', 'County', 'total_pws_withdrawals_mgd', 'fresh_pws_residential_mgd',
+                                        'fresh_pws_thermoelectric_mgd'])
+
+    # read in dataframe of commercial and industrial pws ratios
+    df_pws = prep_public_water_supply_fraction()
+
+    # merge dataframes
+    df = pd.merge(df, df_pws, how="left", on=["FIPS", "State", "County"])
+
+    # calculate public water supply deliveries to commercial and industrial sectors
+    df['fresh_pws_commercial_mgd'] = df["commercial_pws_fraction"] \
+                                     * (df['fresh_pws_residential_mgd'] + df['fresh_pws_thermoelectric_mgd'])
+    df['fresh_pws_industrial_mgd'] = df["industrial_pws_fraction"] \
+                                     * (df['fresh_pws_residential_mgd'] + df['fresh_pws_thermoelectric_mgd'])
+
+    # calculate new total deliveries from public water supply to all sectors
+    df['pws_deliveries_total_mgd'] = df['fresh_pws_residential_mgd'] + df['fresh_pws_thermoelectric_mgd'] \
+                          + df['fresh_pws_commercial_mgd'] + df['fresh_pws_industrial_mgd']
+
+    # calculate public water supply imports and exports
+    df['pws_imports_mgd'] = np.where(df['pws_deliveries_total_mgd'] - df['total_pws_withdrawals_mgd'] < 0,  # if withdrawals < deliveries
+                           df['total_pws_withdrawals_mgd'] - df['pws_deliveries_total_mgd'],  # import quantity
+                           0)
+
+    df['pws_exports_mgd'] = np.where(df['pws_deliveries_total_mgd'] - df['total_pws_withdrawals_mgd'] > 0,  # if withdrawals > deliveries
+                           df['total_pws_withdrawals_mgd'] - df['pws_deliveries_total_mgd'],  # export quantity
+                           0)
+
+    # calculate net exports
+    df['pws_net_exports_mgd'] = df['pws_exports_mgd'] - df['pws_imports_mgd']
+
+    df = df[["FIPS", 'State', 'County', 'total_pws_withdrawals_mgd', 'pws_deliveries_total_mgd',
+             "fresh_pws_commercial_mgd", "fresh_pws_industrial_mgd", "pws_imports_mgd",
+             'pws_exports_mgd', 'pws_net_exports_mgd']]
+
+    return df
 

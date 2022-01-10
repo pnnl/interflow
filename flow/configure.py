@@ -12,6 +12,7 @@ def configure_data(data_path=None, region_data=None, region=[], use_water_use_da
                    use_water_consumption_data=True, water_consumption_data_path=None,
                    use_hydro_water_intensity=True, hydro_water_intensity_path=None,
                    use_pws_fraction_data=True, pws_fraction_data_path=None,
+                   use_pws_export_data=True, pws_export_data_path=None,
                    use_conveyance_loss_fraction=True, conveyance_loss_fraction_data_path=None,
                    use_wastewater=True, wastewater_data_path=None,
                    use_electricity=True, electricity_data_path=None,
@@ -74,7 +75,7 @@ def configure_data(data_path=None, region_data=None, region=[], use_water_use_da
         elif (use_hydro_water_intensity == False) & (hydro_water_intensity_path is None):
             pass
         else:
-            df_hydro_intensity = pd.read_csv(water_consumption_data_path)
+            df_hydro_intensity = pd.read_csv(hydro_water_intensity_path)
             df = pd.merge(df, df_hydro_intensity, how='left', on=region)
 
         # use_pws_fraction_data data
@@ -84,8 +85,18 @@ def configure_data(data_path=None, region_data=None, region=[], use_water_use_da
         elif (use_pws_fraction_data == False) & (pws_fraction_data_path is None):
             pass
         else:
-            df_pws = pd.read_csv(water_consumption_data_path)
+            df_pws = pd.read_csv(pws_fraction_data_path)
             df = pd.merge(df, df_pws, how='left', on=region)
+
+        # use_pws_export_data data
+        if (use_pws_export_data == True) & (pws_export_data_path is None):
+            df_pws_export = cl.calc_pws_discharge()
+            df = pd.merge(df, df_pws_export, how='left', on=['FIPS', 'State', 'County'])
+        elif (use_pws_export_data == False) & (pws_export_data_path is None):
+            pass
+        else:
+            df_pws_export = pd.read_csv(pws_export_data_path)
+            df = pd.merge(df, df_pws_export, how='left', on=region)
 
         # use_conveyance_loss_fraction data
         if (use_conveyance_loss_fraction == True) & (conveyance_loss_fraction_data_path is None):
@@ -94,7 +105,7 @@ def configure_data(data_path=None, region_data=None, region=[], use_water_use_da
         elif (use_conveyance_loss_fraction == False) & (conveyance_loss_fraction_data_path is None):
             pass
         else:
-            df_conveyance_loss = pd.read_csv(water_consumption_data_path)
+            df_conveyance_loss = pd.read_csv(conveyance_loss_fraction_data_path)
             df = pd.merge(df, df_conveyance_loss, how='left', on=region)
 
         # use_wastewater data
@@ -224,7 +235,7 @@ def configure_data(data_path=None, region_data=None, region=[], use_water_use_da
         elif (use_biomass_water == False) & (biomass_water_data_path is None):
             pass
         else:
-            df_biomass_water = pd.read_csv(ethanol_production_data_path)
+            df_biomass_water = pd.read_csv(biomass_water_data_path)
             df = pd.merge(df, df_biomass_water, how='left', on=region)
 
     return df
