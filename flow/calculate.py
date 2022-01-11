@@ -269,18 +269,18 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
                 df['wastewater_energy_services_bbtu'] = df['wastewater_energy_services_bbtu'] \
                                                               + df[f'wastewater_{treatment_type}_energy_services_bbtu']
             else:
-
+                pass
                 # TODO
                 # if the dataframe has the total at least
-                if 'municipal_wastewater_mgd' in df.columns:
+                #if 'municipal_wastewater_mgd' in df.columns:
 
                 # TODO
                 # if the dataframe doesn't have a value, use estimate from calc_wastewater_export
-                else:
-                    for percent in treatment_type_dict[treatment_type]:
-                        df[f'{fuel_type}_wastewater_{treatment_type}_bbtu'] = df_ww['municipal_wastewater_mgd'] \
-                                                                          * convert_kwh_bbtu(treatment_type_dict[treatment_type]) \
-                                                                          * df[fuel_pct]
+                #else:
+                    #for percent in treatment_type_dict[treatment_type]:
+                    #    df[f'{fuel_type}_wastewater_{treatment_type}_bbtu'] = df_ww['municipal_wastewater_mgd'] \
+                    #                                                      * convert_kwh_bbtu(treatment_type_dict[treatment_type]) \
+                     #                                                     * df[fuel_pct]
 
                 # previously pass
                 # TODO: add in a default calculation here that pulls estimated total municipal ww from function
@@ -1115,7 +1115,10 @@ def calc_wastewater_exports(data: pd.DataFrame, sector_types=None, discharge_typ
     df = data
 
     # sector discharge data
-    df_sector_discharge = calc_sectoral_use_water_discharge()
+    df_sector_discharge = calc_sectoral_use_water_discharge(data=data, total=True)
+
+    column_list = df.columns[:regions].tolist()
+    output_df = df[column_list].copy()
 
     sector_list = ['residential', 'commercial', 'industrial']
 
@@ -1124,29 +1127,30 @@ def calc_wastewater_exports(data: pd.DataFrame, sector_types=None, discharge_typ
 
     # calculate total wastewater discharge from sectors and discharge ratios
     for sector in sector_list:
-        df['total_wastewater_discharge'] = df['total_wastewater_discharge'] \
+        output_df['total_wastewater_discharge'] = df['total_wastewater_discharge'] \
                                            + df_sector_discharge[f'{sector}_wastewater_discharge_mgd']
+    #TODO this isn't working
     for sector in sector_list:
-        df[f'{sector}_wastewater_discharge_ratio'] = df_sector_discharge[f'{sector}_wastewater_discharge_mgd'] / \
-                                                     df['total_wastewater_discharge']
+        output_df[f'{sector}_wastewater_discharge_ratio'] = df_sector_discharge[f'{sector}_wastewater_discharge_mgd'] / \
+                                                     output_df['total_wastewater_discharge']
 
 
     # if separate municipal wastewater flow data exists in the dataset, use it to calculate exports from sectors
     if 'municipal_wastewater_mgd' in df.columns:
         # calculate exports/imports as the different between total discharges from sectors and collections by wastewater
-        df['wastewater_export_mgd'] = np.where((df['municipal_wastewater_mgd'] - df['total_wastewater_discharge']) < 0,
+        output_df['wastewater_export_mgd'] = np.where((df['municipal_wastewater_mgd'] - df['total_wastewater_discharge']) < 0,
                                                (df['municipal_wastewater_mgd'] - df['total_wastewater_discharge']),
                                                0)
-        df['wastewater_import_mgd'] = np.where((df['municipal_wastewater_mgd'] - df['total_wastewater_discharge']) > 0,
+        output_df['wastewater_import_mgd'] = np.where((df['municipal_wastewater_mgd'] - df['total_wastewater_discharge']) > 0,
                                                (df['total_wastewater_discharge'] - df['municipal_wastewater_mgd']),
                                                0)
     # otherwise, wastewater total flows is equal to total discharge from sectors and imports/exports are assumed zero
     else:
-        df['municipal_wastewater_mgd'] = df['total_wastewater_discharge']
-        df['wastewater_export_mgd'] = 0
-        df['wastewater_import_mgd'] = 0
+        output_df['municipal_wastewater_mgd'] = df['total_wastewater_discharge']
+        output_df['wastewater_export_mgd'] = 0
+        output_df['wastewater_import_mgd'] = 0
 
-    return df
+    return output_df
 
 
 
