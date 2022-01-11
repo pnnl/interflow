@@ -210,12 +210,16 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
     # load data
     df = data
 
+    df_ww = calc_wastewater_exports()
+
+    # todo change to nested dictionary with percent of energy added in
     # establish dictionary of treatment types as keys and energy intensities as values (kWh/MG).
     if treatment_types is None:  # default key value pairs
         treatment_type_dict = {'advanced': 2690, 'secondary': 2080, 'primary': 750}
     else:
         treatment_type_dict = treatment_types
 
+    # todo, change to nested dictionary with percent of fuel
     # if no fuel type dictionary is provided, default is electricity at 65% efficiency
     if fuel_types is None:  # default key value pairs
         fuel_type_dict = {'electricity': .65}
@@ -235,6 +239,7 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
     for treatment_type in treatment_type_dict:
         treatment_flow_type = "wastewater_" + treatment_type + "_" + "treatment_mgd"
         for fuel_type in fuel_type_dict:
+            # TODO: add in if statement for fuel_pct in df.columns
             fuel_pct = f"wastewater_{fuel_type}" + "_" + "fuel_pct"
             fuel_efficiency = f"wastewater_{fuel_type}" + "_" + "efficiency_fraction"
             if treatment_flow_type in df.columns:
@@ -264,7 +269,23 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
                 df['wastewater_energy_services_bbtu'] = df['wastewater_energy_services_bbtu'] \
                                                               + df[f'wastewater_{treatment_type}_energy_services_bbtu']
             else:
-                pass
+
+                # TODO
+                # if the dataframe has the total at least
+                if 'municipal_wastewater_mgd' in df.columns:
+
+                # TODO
+                # if the dataframe doesn't have a value, use estimate from calc_wastewater_export
+                else:
+                    for percent in treatment_type_dict[treatment_type]:
+                        df[f'{fuel_type}_wastewater_{treatment_type}_bbtu'] = df_ww['municipal_wastewater_mgd'] \
+                                                                          * convert_kwh_bbtu(treatment_type_dict[treatment_type]) \
+                                                                          * df[fuel_pct]
+
+                # previously pass
+                # TODO: add in a default calculation here that pulls estimated total municipal ww from function
+                # will probably have to move wastewater exports function earlier
+                # change treatment_type_dict to nested dictionary with percent of treatment and use on total municipal
 
     # add totals to retained lists of variables
     for fuel_type in fuel_type_dict:
@@ -1056,6 +1077,77 @@ def calc_sectoral_use_water_discharge(data: pd.DataFrame, sector_types=None, dis
     else:
         df = output_df
     return df
+
+
+def calc_wastewater_exports(data: pd.DataFrame, sector_types=None, discharge_types=None,
+                                      regions=3, total=False):
+    """calculates water consumption and discharge in mgd for various sectors. Consumption is calculated first based on
+    assumed consumption fractions provided either in the dataset on a regional level or using the values in the
+    sector_types dictionary. Additional discharge locations (e.g., surface discharge, ocean discharge) are determined
+    by the remaining water delivered to each sector that is not consumed. Discharge fractions can be used from the data
+    if available, otherwise values in the discharge_types dictionary are used.
+
+        :param data:                        DataFrame of input data containing fuel demand data for each sector
+        :type data:                         DataFrame
+
+        :param sector_types:                a nested dictionary of water consumption fractions by sector types, water
+                                            source, and water type.
+        :type sector_types:                 dictionary
+
+        :param water_types:                 a nested dictionary of discharge fractions for each discharge type, listed
+                                            by water source and water type.
+        :type water_types:                  dictionary
+
+        :param regions:                     gives the number of columns in the dataset that should be treated as region
+                                            identifiers (e.g. "Country", "State"). Reads from the first column in the
+                                            dataframe onwards.
+        :type regions:                      int
+
+        :param total:                       If true, returns dataframe of identifier columns and total rejected energy
+                                            and total energy services by sector instead of by fuel type
+        :type total:                        bool
+
+        :return:                            DataFrame of water discharge estimates from various sectors
+
+        """
+
+    # load data
+    df = data
+
+    # sector discharge data
+    df_sector_discharge = calc_sectoral_use_water_discharge()
+
+    sector_list = ['residential', 'commercial', 'industrial']
+
+    df['total_wastewater_mgd'] = 0
+    df['total_wastewater_discharge'] = 0
+
+    # calculate total wastewater discharge from sectors and discharge ratios
+    for sector in sector_list:
+        df['total_wastewater_discharge'] = df['total_wastewater_discharge'] \
+                                           + df_sector_discharge[f'{sector}_wastewater_discharge_mgd']
+    for sector in sector_list:
+        df[f'{sector}_wastewater_discharge_ratio'] = df_sector_discharge[f'{sector}_wastewater_discharge_mgd'] / \
+                                                     df['total_wastewater_discharge']
+
+
+    # if separate municipal wastewater flow data exists in the dataset, use it to calculate exports from sectors
+    if 'municipal_wastewater_mgd' in df.columns:
+        # calculate exports/imports as the different between total discharges from sectors and collections by wastewater
+        df['wastewater_export_mgd'] = np.where((df['municipal_wastewater_mgd'] - df['total_wastewater_discharge']) < 0,
+                                               (df['municipal_wastewater_mgd'] - df['total_wastewater_discharge']),
+                                               0)
+        df['wastewater_import_mgd'] = np.where((df['municipal_wastewater_mgd'] - df['total_wastewater_discharge']) > 0,
+                                               (df['total_wastewater_discharge'] - df['municipal_wastewater_mgd']),
+                                               0)
+    # otherwise, wastewater total flows is equal to total discharge from sectors and imports/exports are assumed zero
+    else:
+        df['municipal_wastewater_mgd'] = df['total_wastewater_discharge']
+        df['wastewater_export_mgd'] = 0
+        df['wastewater_import_mgd'] = 0
+
+    return df
+
 
 
 def convert_mwh_bbtu(x: float) -> float:
