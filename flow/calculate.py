@@ -1328,7 +1328,38 @@ def calc_energy_production_exports(data: pd.DataFrame, sector_types=None, fuel_t
     return df
 
 
+def calc_hydro_water_use(data: pd.DataFrame, water_intensity = 2040, regions=3, total=False):
+    """calculates total energy exports by region for each fuel type specified if production is greater than consumption.
+    If production is less than consumption in a region, imports are calculated. Net exports are also calculated. Total
+    consumption of each fuel type is used from the input data for specified sectors and additionally generated from the
+    energy in public water supply, agriculture, and wastewater calculators.
+        :param data:                        DataFrame of input data
+        :type data:                         DataFrame
 
+        :param sector_types:                A list of sectors that consume direct fuels that can be found in the input
+                                            dataframe. Name must match variable naming in input dataset.
+        :type sector_types:                 list
+
+        :param fuel_types:                  A list of direct use fuel types that are produced and consumed. Name must
+                                            match variable naming in input dataset.
+        :type fuel_types:                   list
+
+        :param regions:                     gives the number of columns in the dataset that should be treated as region
+                                            identifiers (e.g. "Country", "State"). Reads from the first column in the
+                                            dataframe onwards.
+        :type regions:                      int
+
+        :param total:                       If true, returns dataframe of identifier columns and total rejected energy
+                                            and total energy services by sector instead of by fuel type
+        :type total:                        bool
+
+        :return:                            DataFrame of energy use, rejected energy, and energy services for the public
+                                            water sector by energy application (e.g., pumping, treatment) in billion btu
+
+        """
+
+    # load data
+    df = data
 
 
 
