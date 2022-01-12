@@ -440,8 +440,9 @@ def calc_sector_water_exports(data: pd.DataFrame, sector_types=None, regions=3, 
 
 
 def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=None, regions=3, total=False):
-    """calculates energy, rejected energy, and energy services, in wastewater treatment in billion btu by region. If
-    individual flow values by wastewater treatment type (e.g., advanced) are provided in the baseline data, energy
+    """Calculates energy, rejected energy, and energy services, in wastewater treatment in billion btu by region.
+
+    If individual flow values by wastewater treatment type (e.g., advanced) are provided in the baseline data, energy
     estimates will be calculated directly, otherwise, total wastewater treatment flows will be split into specified
     treatment types based on assumed percentages of total and energy calculated based on the result. If total
     wastewater flows are not provided in the baseline data, estimated total wastewater flows are used from sector
