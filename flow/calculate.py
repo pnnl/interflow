@@ -588,7 +588,7 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
     return df
 
 
-def calc_conveyance_losses(data: pd.DataFrame, sector_types=None, water_types=None, regions=3, total=False):
+def calc_water_conveyance_losses(data: pd.DataFrame, sector_types=None, water_types=None, regions=3, total=False):
     """calculates water lost during conveyance for any sector with water flow data available.
 
         Individual sectors are specified for calculating conveyance losses in million gallons per day. Losses are
@@ -1392,9 +1392,10 @@ def aggregate(df_list=None, total=False, regions=3):
             df3 = calc_sectoral_use_water_discharge(data=data, total=True)
             df4 = calc_sector_water_exports(data=data, total=True)
             df5 = calc_energy_wastewater(data=data, total=True)
-            df6 = calc_energy_agriculture(data=data, total=True)
-            df7 = calc_energy_pws(data=data, total=True)
-            df8 = calc_energy_production_exports(data=data, total=True)
+            df6 = calc_water_conveyance_losses(data=data, total=True)
+            df7 = calc_energy_agriculture(data=data, total=True)
+            df8 = calc_energy_pws(data=data, total=True)
+            df9 = calc_energy_production_exports(data=data, total=True)
 
         else:
             df1 = calc_electricity_rejected_energy(data=data)
@@ -1402,11 +1403,12 @@ def aggregate(df_list=None, total=False, regions=3):
             df3 = calc_sectoral_use_water_discharge(data=data)
             df4 = calc_sector_water_exports(data=data)
             df5 = calc_energy_wastewater(data=data)
-            df6 = calc_energy_agriculture(data=data)
-            df7 = calc_energy_pws(data=data)
-            df8 = calc_energy_production_exports(data=data)
+            df6 = calc_water_conveyance_losses(data=data)
+            df7 = calc_energy_agriculture(data=data)
+            df8 = calc_energy_pws(data=data)
+            df9 = calc_energy_production_exports(data=data)
 
-        df_list = [df1, df2, df3, df4, df5, df6, df7, df8]
+        df_list = [df1, df2, df3, df4, df5, df6, df7, df8, df9]
         i = 0
         region_list = df.columns[:regions].tolist()
         for item in df_list:
