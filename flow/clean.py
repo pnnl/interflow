@@ -307,31 +307,40 @@ def prep_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.90) -> pd.DataFra
     df_loc = prep_water_use_2015()  # prepared list of 2015 counties with FIPS codes
 
     # calculate conveyance loss fraction of total water withdrawn for irrigation if irrigation water > 0
-    df["irrigation_conveyance_loss_fraction"] = df['IR-CLoss'] / df['IR-WTotl']
+    df["crop_irrigation_conveyance_loss_fraction"] = df['IR-CLoss'] / df['IR-WTotl']
+    df["golf_irrigation_conveyance_loss_fraction"] = df['IR-CLoss'] / df['IR-WTotl']
 
     # if a cap is placed on irrigation loss fraction, apply the supplied cap
     if loss_cap_amt < 0 or loss_cap_amt > 1:
         raise ValueError(f"loss_cap_amt must be a float between 0 and 1")
 
     if loss_cap:
-        df["irrigation_conveyance_loss_fraction"] = np.where(df['irrigation_conveyance_loss_fraction'] > loss_cap_amt,
+        df["crop_irrigation_conveyance_loss_fraction"] = np.where(
+            df['crop_irrigation_conveyance_loss_fraction'] > loss_cap_amt,
                                                              loss_cap_amt,
-                                                             df["irrigation_conveyance_loss_fraction"])
+                                                             df["crop_irrigation_conveyance_loss_fraction"])
+        df["golf_irrigation_conveyance_loss_fraction"] = np.where(
+            df['golf_irrigation_conveyance_loss_fraction'] > loss_cap_amt,
+            loss_cap_amt,
+            df["golf_irrigation_conveyance_loss_fraction"])
 
     else:
-        df["irrigation_conveyance_loss_fraction"] = df["irrigation_conveyance_loss_fraction"]
+        df["crop_irrigation_conveyance_loss_fraction"] = df["crop_irrigation_conveyance_loss_fraction"]
+        df["golf_irrigation_conveyance_loss_fraction"] = df["golf_irrigation_conveyance_loss_fraction"]
 
     # Replacing infinite (from divide by zero) with nan and filling with 0
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
     df.fillna(0, inplace=True)
 
     # reduce dataframe
-    df = df[["FIPS", "irrigation_conveyance_loss_fraction"]]
+    df = df[["FIPS", "crop_irrigation_conveyance_loss_fraction", "golf_irrigation_conveyance_loss_fraction"]]
 
     # merge with full list of counties from 2015 water data
     df = pd.merge(df_loc, df, how='left', on='FIPS')
 
     return df
+
+
 
 
 def prep_county_identifier() -> pd.DataFrame:

@@ -587,6 +587,44 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
 
     return df
 
+def calc_agriculture_conveyance_losses(data: pd.DataFrame, agriculture_types=None, regions=3, total=False):
+    """calculates energy use, rejected energy, and energy services by fuel type for each agriculture subsector and
+        water type and source (as applicable) in billion btu per year. An example output would be electricity use in
+        fresh surface water pumping for crop irrigation by region. This function will use default fuel types, pumping
+        efficiencies, fuel percentage shares, water types, agriculture types, pumping types, and irrigation interbasin
+        transfer share unless other values are provided.
+
+            :param data:                        DataFrame of input data containing wastewater flow data in mgd
+            :type data:                         DataFrame
+
+            :param agriculture_types:           a list of agriculture subsector types (e.g., crop_irrigation). Agriculture
+                                                types must have an underscore between words.
+            :type agriculture_types:            list
+
+            :param regions:                     gives the number of columns in the dataset that should be treated as region
+                                                identifiers (e.g. "Country", "State"). Reads from the first column in the
+                                                dataframe onwards.
+            :type regions:                      int
+
+            :param total:                       If true, returns dataframe of identifier columns and total rejected energy
+                                                and total energy services by sector instead of by fuel type
+            :type total:                        bool
+
+            :return:                            DataFrame of rejected energy in billion btu from sectors
+
+            """
+
+    # load data
+    df = data
+
+    # establish agriculture types
+    if agriculture_types is None:
+        agriculture_type_dict = {'crop_irrigation': .15, 'golf_irrigation': .15}
+    else:
+        agriculture_type_dict = agriculture_types
+
+
+
 
 def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_types=None, water_types=None,
                             fuel_types=None, fuel_percents=None, irrigation_ibt_pct=.5, regions=3, total=False):
