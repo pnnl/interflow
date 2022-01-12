@@ -22,5 +22,6 @@ setup(
         'pandas>=1.3.4',
         'openpyxl>=3.0.9',
         'matplotlib>=3.3.3'
+        'plotly-geo>=1.0'
     ]
 )

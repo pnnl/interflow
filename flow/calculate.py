@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-
 from .reader import *
 import flow.clean as cl
 import flow.configure as co
@@ -1328,40 +1327,58 @@ def calc_energy_production_exports(data: pd.DataFrame, sector_types=None, fuel_t
     return df
 
 
-def calc_hydro_water_use(data: pd.DataFrame, water_intensity = 2040, regions=3, total=False):
-    """calculates total energy exports by region for each fuel type specified if production is greater than consumption.
-    If production is less than consumption in a region, imports are calculated. Net exports are also calculated. Total
-    consumption of each fuel type is used from the input data for specified sectors and additionally generated from the
-    energy in public water supply, agriculture, and wastewater calculators.
+def calc_hydro_water_use(data: pd.DataFrame, hydro_water_intensity = 2040, regions=3, total=False):
+    """calculates total water use in hydroelectric generation by region.
+
+        Water use is determined by applying hydropower water intensity rates (mg/bbtu) to daily hydropower generation
+        (bbtu) to get mgd in each region. Water use can be interpreted as the amount of water that passes through
+        the hydropower facility on a daily basis, based on average power generation per day. If region-level hydropower
+        water intensity rates are not available, an intensity assumption is applied to all hydropower generation.
+        Surface discharge from hydropower is also calculated. This is assumed to be equal to water use in hydropower.
+        No water is assumed to be consumed or evaporated given that the water included in this calculation only
+        includes water that instantaneously passes through the hydropower facility and is immediately discharged back
+        to the surface water source.
+
         :param data:                        DataFrame of input data
         :type data:                         DataFrame
 
-        :param sector_types:                A list of sectors that consume direct fuels that can be found in the input
-                                            dataframe. Name must match variable naming in input dataset.
-        :type sector_types:                 list
-
-        :param fuel_types:                  A list of direct use fuel types that are produced and consumed. Name must
-                                            match variable naming in input dataset.
-        :type fuel_types:                   list
+        :param hydro_water_intensity:       The assumed million gallons required to get a billion btu from hydropower
+        :type hydro_water_intensity:        flt
 
         :param regions:                     gives the number of columns in the dataset that should be treated as region
                                             identifiers (e.g. "Country", "State"). Reads from the first column in the
                                             dataframe onwards.
         :type regions:                      int
 
-        :param total:                       If true, returns dataframe of identifier columns and total rejected energy
-                                            and total energy services by sector instead of by fuel type
-        :type total:                        bool
-
-        :return:                            DataFrame of energy use, rejected energy, and energy services for the public
-                                            water sector by energy application (e.g., pumping, treatment) in billion btu
+        :return:                            DataFrame of total water use by hydropower generation (mgd) and hydropower
+                                            discharge to surface waters (mgd) by region.
 
         """
 
     # load data
     df = data
 
+    region_list = df.columns[:regions].tolist()
+    output_df = df[region_list].copy()
 
+    # establish names
+    hydro_generation_name = 'hydro_gen_bbtu'
+    hydro_water_intensity_name = 'hydro_intensity_mgd_per_bbtu'
+
+    # calculate daily water use for daily hydroelectric generation by region
+    if hydro_generation_name in df.columns:
+        if hydro_water_intensity_name in df.columns:
+            # if hydropower water intensity is provided by region, multiply by daily hydropower generation
+            output_df['fresh_surfacewater_hydro_mgd'] = df[hydro_water_intensity_name] * (df[hydro_generation_name]/365)
+            output_df['hydro_surface_discharge_mgd'] = output_df['fresh_surfacewater_hydro_mgd']
+        else:
+            # if no region-level intensity is provided, use assumption for all region hydro generation
+            output_df['fresh_surfacewater_hydro_mgd'] = hydro_water_intensity * (df[hydro_generation_name]/365)
+            output_df['hydro_surface_discharge_mgd'] = output_df['fresh_surfacewater_hydro_mgd']
+    else:
+        pass
+
+    return output_df
 
 
 def convert_mwh_bbtu(x: float) -> float:
@@ -1427,6 +1444,7 @@ def aggregate(df_list=None, total=False, regions=3):
             df7 = calc_energy_agriculture(data=data, total=True)
             df8 = calc_energy_pws(data=data, total=True)
             df9 = calc_energy_production_exports(data=data, total=True)
+            df10 = calc_hydro_water_use(data=data)
 
         else:
             df1 = calc_electricity_rejected_energy(data=data)
@@ -1438,8 +1456,9 @@ def aggregate(df_list=None, total=False, regions=3):
             df7 = calc_energy_agriculture(data=data)
             df8 = calc_energy_pws(data=data)
             df9 = calc_energy_production_exports(data=data)
+            df10 = calc_hydro_water_use(data=data)
 
-        df_list = [df1, df2, df3, df4, df5, df6, df7, df8, df9]
+        df_list = [df1, df2, df3, df4, df5, df6, df7, df8, df9, df10]
         i = 0
         region_list = df.columns[:regions].tolist()
         for item in df_list:

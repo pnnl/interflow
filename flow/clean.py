@@ -221,8 +221,9 @@ def prep_consumption_fraction() -> pd.DataFrame:
     return df
 
 
-def prep_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=48000) -> pd.DataFrame:
-    """calculating the MGD used per megawatt-hour generated from hydroelectric generation.
+def prep_hydroelectric_water_intensity(intensity_cap=False, intensity_cap_amt=48000) -> pd.DataFrame:
+    """calculating the water use required for a megawatt-hour of hydroelectric generation. Daily water use (mgd) is
+    combined with annual generation from hydropower for each region.
 
     :return:                DataFrame of water intensity of hydroelectric generation by county
 
@@ -235,34 +236,35 @@ def prep_hydroelectric_water_intensity(intensity_cap=True, intensity_cap_amt=480
     # convert from mwh of generation to bbtu
     df["HY-InPow"] = df["HY-InPow"].apply(convert_mwh_bbtu)
 
-    # calculate water intensity fraction by dividing total water use (MGD) by total generation (MWh) by county
-    df["hydropower_intensity_mgd_per_bbtu"] = np.where(df["HY-InPow"] > 0, (df["HY-InUse"] / df["HY-InPow"]), 0)
+    # get daily power generation from annual generation (annual bbtu generated)
+    df["HY-InPow"] = df["HY-InPow"]/365
 
-
+    # calculate water intensity fraction million gallons per bbtu
+    df["hydro_intensity_mg_per_bbtu"] = np.where(df["HY-InPow"] > 0, (df["HY-InUse"] / df["HY-InPow"]), 0)
 
     # removing outlier intensities
     if intensity_cap:
-        df['hydropower_intensity_mgd_per_bbtu'] = np.where(df['hydropower_intensity_mgd_per_bbtu'] >= intensity_cap_amt,
+        df['hydro_intensity_mg_per_bbtu'] = np.where(df['hydro_intensity_mg_per_bbtu'] >= intensity_cap_amt,
                                                           intensity_cap_amt,
-                                                          df['hydropower_intensity_mgd_per_bbtu'])
+                                                          df['hydro_intensity_mg_per_bbtu'])
     else:
         df = df
 
     # calculate state average
     state_avg = df.groupby("State", as_index=False).mean().drop(['HY-InUse', 'HY-InPow'], axis=1)
-    state_avg = state_avg.rename(columns={'hydropower_intensity_mgd_per_bbtu': 'state_avg'})
+    state_avg = state_avg.rename(columns={'hydro_intensity_mg_per_bbtu': 'state_avg'})
 
     # calculate country average for states with no hydro in 1995
-    country_avg = df['hydropower_intensity_mgd_per_bbtu'].mean()
+    country_avg = df['hydro_intensity_mg_per_bbtu'].mean()
     state_avg['state_avg'] = np.where(state_avg['state_avg'] == 0, country_avg, state_avg['state_avg'])
 
     # merge with main dataframe and replace 0 values
     df = pd.merge(df, state_avg, how='left', on='State')
-    df['hydropower_intensity_mgd_per_bbtu'] = np.where(df['hydropower_intensity_mgd_per_bbtu'] == 0, df['state_avg'],
-                                                       df['hydropower_intensity_mgd_per_bbtu'])
+    df['hydro_intensity_mg_per_bbtu'] = np.where(df['hydro_intensity_mg_per_bbtu'] == 0, df['state_avg'],
+                                                       df['hydro_intensity_mg_per_bbtu'])
 
     # simplify dataframe
-    df = df[['FIPS', 'hydropower_intensity_mgd_per_bbtu']]
+    df = df[['FIPS', 'hydro_intensity_mg_per_bbtu']]
 
     # merge with full list of counties from 2015 water data
     df = pd.merge(df_loc, df, how='left', on='FIPS')
