@@ -588,28 +588,40 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
     return df
 
 
-def calc_agriculture_conveyance_losses(data: pd.DataFrame, agriculture_types=None, water_types=None,
-                                       regions=3, total=False):
-    """calculates energy use, rejected energy, and energy services by fuel type for each agriculture subsector and
-        water type and source (as applicable) in billion btu per year. An example output would be electricity use in
-        fresh surface water pumping for crop irrigation by region. This function will use default fuel types, pumping
-        efficiencies, fuel percentage shares, water types, agriculture types, pumping types, and irrigation interbasin
-        transfer share unless other values are provided.
+def calc_conveyance_losses(data: pd.DataFrame, sector_types=None, water_types=None, regions=3, total=False):
+    """calculates water lost during conveyance for any sector with water flow data available.
+
+        Individual sectors are specified for calculating conveyance losses in million gallons per day. Losses are
+        calculated as the product of conveyance loss percent and water flows for the specified sector. Water flow types
+        (e.g., fresh or saline) and water sources (e.g., groundwater, freshwater) are available as parameters. The
+        function looks for data for the specified water type and water source to each of the specified sectors and
+        calculates the conveyances losses based on the mgd that is located. Additionally, if region-level conveyance
+        loss fractions for each sector are available in the dataset, those are located and applied. If no region-level
+        water loss fractions are available, an assumed percent is applied to all region water flow values in a sector.
+        Note that this involves a simplifying assumption each sector will have a single water loss fraction that does
+        not vary by water type (fresh or saline) or water source (groundwater vs. surface water). It is assumed that the
+        percent of water lost during conveyance within each sector is not dependent on these factors.
 
             :param data:                        DataFrame of input data containing wastewater flow data in mgd
             :type data:                         DataFrame
 
-            :param agriculture_types:           a list of agriculture subsector types (e.g., crop_irrigation). Agriculture
-                                                types must have an underscore between words.
-            :type agriculture_types:            list
+            :param sector_types:                a nested dictionary of sectors that experience water loss during water
+                                                conveyance and the assumes percent lost if regional data is not
+                                                available. Examples: crop_irrigation, golf_irrigation, public water
+                                                supply
+            :type sector_types:                 dict
+
+            :param water_types:                 a nested dictionary of water types (e.g., fresh) and water sources
+                                                (e.g., groundwater) that flow into the specified sectors.
+            :type water_types:                  dict
 
             :param regions:                     gives the number of columns in the dataset that should be treated as region
                                                 identifiers (e.g. "Country", "State"). Reads from the first column in the
                                                 dataframe onwards.
             :type regions:                      int
 
-            :param total:                       If true, returns dataframe of identifier columns and total rejected energy
-                                                and total energy services by sector instead of by fuel type
+            :param total:                       If true, returns dataframe of water lost during conveyance to
+                                                specified sectors in mgd.
             :type total:                        bool
 
             :return:                            DataFrame of rejected energy in billion btu from sectors
@@ -620,14 +632,14 @@ def calc_agriculture_conveyance_losses(data: pd.DataFrame, agriculture_types=Non
     df = data
 
     # establish agriculture types and conveyance loss assumptions
-    if agriculture_types is None:
-        agriculture_type_dict = {'crop_irrigation': .15, 'golf_irrigation': .15}
+    if sector_types is None:
+        sector_type_dict = {'crop_irrigation': .15, 'golf_irrigation': .10}
     else:
-        agriculture_type_dict = agriculture_types
+        sector_type_dict = sector_types
 
     # establish water types
     if water_types is None:
-        water_type_dict = {'fresh' : {'groundwater', 'surfacewater'},
+        water_type_dict = {'fresh': {'groundwater', 'surfacewater'},
                            'saline': {'groundwater', 'surfacewater'}}
     else:
         water_type_dict = water_types
@@ -637,71 +649,66 @@ def calc_agriculture_conveyance_losses(data: pd.DataFrame, agriculture_types=Non
     output_df = df[column_list].copy()
     total_df = df[column_list].copy()
 
+    # create grand total water loss name
+
+
     # initialize values in output and total dataframes
     for water_type in water_type_dict:
         for water_source in water_type_dict[water_type]:
-            for agriculture_type in agriculture_type_dict:
-                agriculture_flow_name = water_type + "_" + water_source + "_" + agriculture_type + "_mgd"
-                if agriculture_flow_name in df.columns:
-                    water_loss_ag_type_name = f'{agriculture_type}_conveyance_loss_mgd'
-                    output_df[water_loss_ag_type_name] = 0
-                    total_df[water_loss_ag_type_name] = 0
+            for sector in sector_type_dict:
+                water_flow_data_name = water_type + "_" + water_source + "_" + sector + "_mgd"
+                if water_flow_data_name in df.columns:
+                    water_loss_sector_mgd_name = f'{sector}_conveyance_loss_mgd'
 
-                    agriculture_water_loss_name = 'agriculture_conveyance_loss_mgd'
-                    output_df[agriculture_water_loss_name] = 0
-                    total_df[agriculture_water_loss_name] = 0
+                    total_df[water_loss_sector_mgd_name] = 0
+                    output_df[water_loss_sector_mgd_name] = 0
 
-    # create grand total water loss name
-    agriculture_water_loss_name = 'agriculture_conveyance_loss_mgd'
+                else:
+                    pass
 
     # calculate water losses by water type and water source to each agriculture sector
     for water_type in water_type_dict:
         for water_source in water_type_dict[water_type]:
-            for agriculture_type in agriculture_type_dict:
-                water_loss_mgd_name = f'{water_type}_{water_source}_{agriculture_type}_conveyance_loss_mgd'
-                water_loss_ag_type_name = f'{agriculture_type}_conveyance_loss_mgd'
+            for sector in sector_type_dict:
+                water_loss_mgd_name = f'{water_type}_{water_source}_{sector}_conveyance_loss_mgd'
+                water_loss_sector_mgd_name = f'{sector}_conveyance_loss_mgd'
 
-                # if water loss values in mgd are already in dataset, use them
+                # if water loss values to sector in mgd are already in dataset, use them
                 if water_loss_mgd_name in df.columns:
                     output_df[water_loss_mgd_name] = df[water_loss_mgd_name]
-                    total_df[water_loss_ag_type_name] = total_df[water_loss_ag_type_name] + output_df[water_loss_mgd_name]
-                    total_df[agriculture_water_loss_name] = total_df[agriculture_water_loss_name] + output_df[
-                        water_loss_mgd_name]
+
+                    # add to totals
+                    output_df[water_loss_sector_mgd_name] = output_df[water_loss_sector_mgd_name] \
+                                                           + output_df[water_loss_mgd_name]
+                    total_df[water_loss_sector_mgd_name] = total_df[water_loss_sector_mgd_name] \
+                                                           + output_df[water_loss_mgd_name]
 
                 # otherwise calculate water loss values from water flows
                 else:
-                    agriculture_flow_name = water_type + "_" + water_source + "_" + agriculture_type + "_mgd"
+                    water_flow_data_name = water_type + "_" + water_source + "_" + sector + "_mgd"
 
                     # if the water flow to the agriculture type is available in the data, use it
-                    if agriculture_flow_name in df.columns:
-                        agriculture_loss_fraction_name = f'{agriculture_type}_conveyance_loss_fraction'
+                    if water_flow_data_name in df.columns:
+                        sector_loss_fraction_name = f'{sector}_conveyance_loss_fraction'
 
                         # if regional water loss fractions are available, apply them
-                        if agriculture_loss_fraction_name in df.columns:
+                        if sector_loss_fraction_name in df.columns:
 
                             # calculate water loss for water type, water source, agriculture type
-                            output_df[water_loss_mgd_name] = df[agriculture_loss_fraction_name] \
-                                                             * df[agriculture_flow_name]
+                            output_df[water_loss_mgd_name] = df[sector_loss_fraction_name] * df[water_flow_data_name]
 
-                        # otherwise apply default assumption
+                        # otherwise apply default assumption in dictionary for sector
                         else:
                             # calculate water loss for water type, water source, agriculture type
-                            output_df[water_loss_mgd_name] = agriculture_type_dict[agriculture_type] \
-                                                             * df[agriculture_flow_name]
+                            output_df[water_loss_mgd_name] = sector_type_dict[sector] * df[water_flow_data_name]
 
                         # update agriculture type total in both dataframes
-                        output_df[water_loss_ag_type_name] = output_df[water_loss_ag_type_name] \
+                        output_df[water_loss_sector_mgd_name] = output_df[water_loss_sector_mgd_name] \
                                                              + output_df[water_loss_mgd_name]
-                        total_df[water_loss_ag_type_name] = total_df[water_loss_ag_type_name] \
+                        total_df[water_loss_sector_mgd_name] = total_df[water_loss_sector_mgd_name] \
                                                             + output_df[water_loss_mgd_name]
 
-                        # update agriculture grand total in both dataframes
-                        output_df[agriculture_water_loss_name] = output_df[agriculture_water_loss_name] \
-                                                                 + output_df[water_loss_mgd_name]
-                        total_df[agriculture_water_loss_name] = total_df[agriculture_water_loss_name] \
-                                                                + output_df[water_loss_mgd_name]
-
-                    # if the water flow to agriculture sector is not in the data, pass
+                    # if the water flow to sector is not in the data, pass
                     else:
                         pass
 
