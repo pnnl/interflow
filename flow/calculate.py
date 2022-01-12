@@ -473,16 +473,15 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
     # load data
     df = data
 
+    # load sector discharge to wastewater estimates
     df_ww = calc_sector_water_exports(data=df)
 
-    # todo change to nested dictionary with percent of energy added in
     # establish dictionary of treatment types as keys and energy intensities as values (kWh/MG).
     if treatment_types is None:  # default key value pairs
         treatment_type_dict = {'advanced': 2690, 'secondary': 2080, 'primary': 750}
     else:
         treatment_type_dict = treatment_types
 
-    # todo, change to nested dictionary with percent of fuel
     # if no fuel type dictionary is provided, default is electricity at 65% efficiency
     if fuel_types is None:  # default key value pairs
         fuel_type_dict = {'electricity': .65}
@@ -549,6 +548,60 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
                 # TODO: add in a default calculation here that pulls estimated total municipal ww from function
                 # will probably have to move wastewater exports function earlier
                 # change treatment_type_dict to nested dictionary with percent of treatment and use on total municipal
+
+
+
+
+    # COPY, DELETE ABOVE
+
+    treatment_type_dict = {'advanced': {'intensity': 2690, 'percent': .5},
+                           'secondary': {'intensity': 2080,'percent': .4},
+                           'primary': {'intensity': 750, 'percent': .1}}
+
+    fuel_type_dict = {'electricity': {'efficiency': .65, 'percent': 1}}
+
+    for treatment_type in treatment_type_dict:
+        treatment_flow_type = "wastewater_" + treatment_type + "_" + "treatment_mgd"
+        treatment_energy_intensity_bbtu = convert_kwh_bbtu(treatment_type_dict[treatment_type]['intensity'])
+        for fuel_type in fuel_type_dict:
+            fuel_pct = f"wastewater_{fuel_type}" + "_" + "fuel_pct"
+            fuel_efficiency = f"wastewater_{fuel_type}" + "_" + "efficiency_fraction"
+            ww_energy_value_name = f'{fuel_type}_wastewater_{treatment_type}_bbtu'
+            ww_re_name = f'wastewater_{treatment_type}_rejected_energy_bbtu'
+            ww_es_name = f'wastewater_{treatment_type}_energy_services_bbtu'
+
+            if treatment_flow_type in df.columns:
+                df[treatment_flow_type] = df[treatment_flow_type]
+            else:
+                if 'municipal_wastewater_mgd' in df.columns:
+                    df[treatment_flow_type] = df['municipal_wastewater_mgd']\
+                                              *treatment_type_dict[treatment_type]['percent']
+                elif 'municipal_wastewater_mgd' in df_ww.columns:
+                    df[treatment_flow_type] = df_ww['municipal_wastewater_mgd'] \
+                                              * treatment_type_dict[treatment_type]['percent']
+
+            if fuel_pct in df.columns:
+                df[ww_energy_value_name] = df[treatment_flow_type] * treatment_energy_intensity_bbtu * df[fuel_pct]
+            else:
+                df[ww_energy_value_name] = df[treatment_flow_type] * treatment_energy_intensity_bbtu \
+                                           * fuel_type_dict[fuel_type]['percent']
+
+            if fuel_efficiency in df.columns:
+                df[ww_re_name] = df[ww_energy_value_name] * (1 - df[fuel_efficiency])
+                df[ww_es_name] = df[ww_energy_value_name] * (df[fuel_efficiency])
+            else:
+                df[ww_re_name] = df[ww_energy_value_name] * (1 - fuel_type_dict[fuel_type]['efficiency'])
+                df[ww_es_name] = df[ww_energy_value_name] * (fuel_type_dict[fuel_type]['efficiency'])
+
+            # add to list of retained variables
+            retain_list.append(ww_energy_value_name)
+            retain_list.append(ww_re_name)
+            retain_list.append(ww_es_name)
+
+            # add on to totals
+            df[f'{fuel_type}_wastewater_bbtu'] = df[f'{fuel_type}_wastewater_bbtu'] + df[ww_energy_value_name]
+            df['wastewater_rejected_energy_bbtu'] = df['wastewater_rejected_energy_bbtu'] + df[ww_re_name]
+            df['wastewater_energy_services_bbtu'] = df['wastewater_energy_services_bbtu'] + df[ww_es_name]
 
     # add totals to retained lists of variables
     for fuel_type in fuel_type_dict:
@@ -703,7 +756,8 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
 
                         energy_value_dict.update({energy_name: energy_value})
                         total_df[f'{fuel_type}_{agriculture_type}_bbtu'] = total_df[
-                                                                               f'{fuel_type}_{agriculture_type}_bbtu'] + energy_value
+                                                                               f'{fuel_type}_{agriculture_type}_bbtu'] \
+                                                                           + energy_value
                         total_df[f'{fuel_type}_agriculture_bbtu'] = total_df[
                                                                         f'{fuel_type}_agriculture_bbtu'] + energy_value
 
@@ -720,10 +774,11 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
                         rejected_energy_dict.update({rejected_energy_name: rejected_energy_value})
                         energy_services_dict.update({energy_services_name: energy_services_value})
 
-                        total_df[f'{agriculture_type}_total_rejected_energy_bbtu'] = total_df[
-                                                                                         f'{agriculture_type}_total_rejected_energy_bbtu'] + rejected_energy_value
-                        total_df[f'{agriculture_type}_total_energy_services_bbtu'] = total_df[
-                                                                                         f'{agriculture_type}_total_energy_services_bbtu'] + energy_services_value
+
+                        total_re_name = f'{agriculture_type}_total_rejected_energy_bbtu'
+                        total_es_name = f'{agriculture_type}_total_energy_services_bbtu'
+                        total_df[total_re_name] = total_df[total_re_name] + rejected_energy_value
+                        total_df[total_es_name] = total_df[total_es_name] + energy_services_value
 
                     else:
                         pass
