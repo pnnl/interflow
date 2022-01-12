@@ -617,11 +617,26 @@ def calc_agriculture_conveyance_losses(data: pd.DataFrame, agriculture_types=Non
     # load data
     df = data
 
+
     # establish agriculture types
     if agriculture_types is None:
         agriculture_type_dict = {'crop_irrigation': .15, 'golf_irrigation': .15}
     else:
         agriculture_type_dict = agriculture_types
+
+    water_type_dict = {'fresh' : {'groundwater', 'surfacewater'}, 'saline': {'groundwater', 'surfacewater'}}
+
+    for water_type in water_type_dict:
+        for water_source in water_type_dict[water_type]:
+            for agriculture_type in agriculture_type_dict:
+                agriculture_flow_name = water_type + "_" + water_source + "_" + agriculture_type + "_mgd"
+                if agriculture_flow_name in df.columns:
+                    agriculture_loss_name = f'{agriculture_type}_conveyance_loss_fraction'
+                    #TODO Finish this and add water type then add to a total water loss by ag type and by agriculture
+                    df[f'{agriculture_type}_conveyance_loss_mgd'] = df[agriculture_loss_name] *
+
+
+    return df
 
 
 
