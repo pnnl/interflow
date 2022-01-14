@@ -1462,7 +1462,7 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
     df_corn_prod.fillna(0, inplace=True)  # replace blank values with zero
 
     # rename columns for descriptive language
-    df_corn_prod = df_corn_prod.rename(columns={'sw_ethanol_corn': 'fresh_surface_water_biomass_mgd'})
+    df_corn_prod = df_corn_prod.rename(columns={'sw_ethanol_corn': 'fresh_surfacewater_biomass_mgd'})
     df_corn_prod = df_corn_prod.rename(columns={'gw_ethanol_corn': 'fresh_groundwater_biomass_mgd'})
 
     return df_corn_prod
