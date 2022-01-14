@@ -1381,154 +1381,154 @@ def calc_hydro_water_use(data: pd.DataFrame, hydro_water_intensity=2040, regions
     return output_df
 
 
-def calc_coal_production_water_use(data: pd.DataFrame, mine_types = None, water_types=None, discharge_types = None,
-                                   regions=3, total=False):
-    """calculates total water use in hydroelectric generation by region.
-
-        Water use is determined by applying hydropower water intensity rates (mg/bbtu) to daily hydropower generation
-        (bbtu) to get mgd in each region. Water use can be interpreted as the amount of water that passes through
-        the hydropower facility on a daily basis, based on average power generation per day. If region-level hydropower
-        water intensity rates are not available, an intensity assumption is applied to all hydropower generation.
-        Surface discharge from hydropower is also calculated. This is assumed to be equal to water use in hydropower.
-        No water is assumed to be consumed or evaporated given that the water included in this calculation only
-        includes water that instantaneously passes through the hydropower facility and is immediately discharged back
-        to the surface water source.
-
-        :param data:                        DataFrame of input data
-        :type data:                         DataFrame
-
-        :param hydro_water_intensity:       The assumed million gallons required to get a billion btu from hydropower
-        :type hydro_water_intensity:        flt
-
-        :param regions:                     gives the number of columns in the dataset that should be treated as region
-                                            identifiers (e.g. "Country", "State"). Reads from the first column in the
-                                            dataframe onwards.
-        :type regions:                      int
-
-        :return:                            DataFrame of total water use by hydropower generation (mgd) and hydropower
-                                            discharge to surface waters (mgd) by region.
-
-        """
-
-    if mine_types is None:
-        mine_type_dict = {'surface': 0.000007, 'ground': 0.000029}
-    else:
-        mine_type_dict = mine_types
-
-    if water_types is None:
-        water_type_dict = {'fresh': {'surfacewater': {'flow_fraction': .5, 'consumption_fraction': .5},
-                                    'groundwater': {'flow_fraction': .5, 'consumption_fraction': .5}},
-                           'saline': {'surfacewater': {'flow_fraction': .5, 'consumption_fraction': .5},
-                                    'groundwater': {'flow_fraction': .5, 'consumption_fraction': .5}}}
-    else:
-        water_type_dict = water_types
-
-    if discharge_types is None:
-        discharge_type_dict = {'surface': 1}
-    else:
-        discharge_type_dict = discharge_types
-
-    # load data
-    df = data
-
-    region_list = df.columns[:regions].tolist()
-    output_df = df[region_list].copy()
-    total_df = df[region_list].copy()
-
-    for water_type in water_type_dict:
-        for water_source in water_type_dict[water_type]:
-            coal_water_total_name = f'{water_type}_{water_source}_coal_mgd'
-            output_df[coal_water_total_name] = 0
-            total_df[coal_water_total_name] = 0
-
-    # calculate total water to all mining (inclusive of coal)
-    df['total_water_mining_mgd'] = 0
-    for water_type in water_type_dict:
-        for water_source in water_type_dict[water_type]:
-            mining_water_flow_name = f'{water_type}_{water_source}_mining_mgd'
-            if mining_water_flow_name in df.columns:
-                df['total_water_mining_mgd'] = df['total_water_mining_mgd'] + df[mining_water_flow_name]
-            else:
-                pass
-
-    # calculate percent of total mining flows by water type and water source
-    for water_type in water_type_dict:
-        for water_source in water_type_dict[water_type]:
-
-            mining_water_flow_pct_name = f'{water_type}_{water_source}_mining_pct'
-
-            if mining_water_flow_pct_name in df.columns: #if the percent of water flows to coal mining in data
-                pass
-
-            else:  # if only water flows to all mining in data
-                mining_water_flow_name = f'{water_type}_{water_source}_mining_mgd'
-                if mining_water_flow_name in df.columns:  # if water type and water source to all mining in data
-                    df[mining_water_flow_pct_name] = np.where(df['total_water_mining_mgd'] > 0,
-                                                          (df[mining_water_flow_name] / df['total_water_mining_mgd']),
-                                                          0)
-                else:  # if no breakdown of water source and water type to all mining in data
-                    df[mining_water_flow_pct_name] = water_type_dict[water_type][water_source]['flow_fraction']
-
-            # calculate water in coal mining for each mine type by water type and water source
-            for mine_type in mine_type_dict:
-                coal_shortton_name = f'{mine_type}_coal_shortton'
-                if coal_shortton_name in df.columns:
-                    coal_water_intensity_name = f'{mine_type}_coal_water_intensity_mg_per_shortton'
-                    coal_water_total_name = f'{water_type}_{water_source}_coal_mgd'
-                    if coal_water_intensity_name in df.columns:  # if regional water intensity values available
-                        coal_water_mgd_name = f"{water_type}_{water_source}_{mine_type}_coal_mgd"
-                        output_df[coal_water_mgd_name] = df[coal_water_intensity_name] \
-                                                         * (df[coal_shortton_name]/365) \
-                                                         * df[mining_water_flow_pct_name]
-                        output_df[coal_water_total_name] = output_df[coal_water_total_name] \
-                                                           + output_df[coal_water_mgd_name]
-                        total_df[coal_water_total_name] = total_df[coal_water_total_name] \
-                                                          + output_df[coal_water_mgd_name]
-
-                    else:  # if no regional water intensity available, use assumption
-                        coal_water_mgd_name = f"{water_type}_{water_source}_{mine_type}_coal_mgd"
-                        output_df[coal_water_mgd_name] = mine_type_dict[mine_type] \
-                                                         * (df[coal_shortton_name]/365) \
-                                                         * df[mining_water_flow_pct_name]
-                        output_df[coal_water_total_name] = output_df[coal_water_total_name] \
-                                                           + output_df[coal_water_mgd_name]
-                        total_df[coal_water_total_name] = total_df[coal_water_total_name] \
-                                                          + output_df[coal_water_mgd_name]
-                else:  # if no coal mining available
-                    pass
-
-# TODO pick things up here
-
-            # calculate consumption of water in coal mining by water type and water source
-
-            # look for region- mining consumption fraction, apply it
-
-            # otherwise use dictionary values water_type_dict[water_type][water_source]['consumption_fraction']
-
-            ## look for region- mining discharge fraction, apply it
-            # for discharge_type in discharge_type dictionary:
-                #discharge_type_name = f'{water_type}_{water_source}_{mine_type}_{discharge_type}_discharge_mgd
-                #discharge_pct_name = f'{water_type}_{water_source}_{mine_type}_{discharge_type}_discharge_pct
-
-                # if discharge_pct_name in df.columns:
-                    # apply pct to total discharge
-                # else:
-                    # apply pct from dictionary
-            #
-
-    # TODO add in consumption and surface discharge
-
-
-    if total:
-        df = total_df
-    else:
-        df = output_df
-
-    return df
+#def calc_coal_production_water_use(data: pd.DataFrame, mine_types = None, water_types=None, discharge_types = None,
+#                                   regions=3, total=False):
+#    """calculates total water use in hydroelectric generation by region.
+#
+#        Water use is determined by applying hydropower water intensity rates (mg/bbtu) to daily hydropower generation
+#        (bbtu) to get mgd in each region. Water use can be interpreted as the amount of water that passes through
+#        the hydropower facility on a daily basis, based on average power generation per day. If region-level hydropower
+#        water intensity rates are not available, an intensity assumption is applied to all hydropower generation.
+#        Surface discharge from hydropower is also calculated. This is assumed to be equal to water use in hydropower.
+#        No water is assumed to be consumed or evaporated given that the water included in this calculation only
+#        includes water that instantaneously passes through the hydropower facility and is immediately discharged back
+#        to the surface water source.
+#
+#        :param data:                        DataFrame of input data
+#        :type data:                         DataFrame
+#
+#        :param hydro_water_intensity:       The assumed million gallons required to get a billion btu from hydropower
+#        :type hydro_water_intensity:        flt
+#
+#        :param regions:                     gives the number of columns in the dataset that should be treated as region
+#                                            identifiers (e.g. "Country", "State"). Reads from the first column in the
+#                                            dataframe onwards.
+#        :type regions:                      int
+#
+#        :return:                            DataFrame of total water use by hydropower generation (mgd) and hydropower
+#                                            discharge to surface waters (mgd) by region.
+#
+#        """
+#
+#    if mine_types is None:
+#        mine_type_dict = {'surface': 0.000007, 'ground': 0.000029}
+#    else:
+#        mine_type_dict = mine_types
+#
+#    if water_types is None:
+#        water_type_dict = {'fresh': {'surfacewater': {'flow_fraction': .5, 'consumption_fraction': .5},
+#                                    'groundwater': {'flow_fraction': .5, 'consumption_fraction': .5}},
+#                           'saline': {'surfacewater': {'flow_fraction': .5, 'consumption_fraction': .5},
+#                                    'groundwater': {'flow_fraction': .5, 'consumption_fraction': .5}}}
+#    else:
+#        water_type_dict = water_types
+#
+#    if discharge_types is None:
+#        discharge_type_dict = {'surface': 1}
+#    else:
+#        discharge_type_dict = discharge_types
+#
+#    # load data
+#    df = data
+#
+#    region_list = df.columns[:regions].tolist()
+#    output_df = df[region_list].copy()
+#    total_df = df[region_list].copy()
+#
+#    for water_type in water_type_dict:
+#        for water_source in water_type_dict[water_type]:
+#            coal_water_total_name = f'{water_type}_{water_source}_coal_mgd'
+#            output_df[coal_water_total_name] = 0
+#            total_df[coal_water_total_name] = 0
+#
+#    # calculate total water to all mining (inclusive of coal)
+#    df['total_water_mining_mgd'] = 0
+#    for water_type in water_type_dict:
+#        for water_source in water_type_dict[water_type]:
+#            mining_water_flow_name = f'{water_type}_{water_source}_mining_mgd'
+#            if mining_water_flow_name in df.columns:
+#                df['total_water_mining_mgd'] = df['total_water_mining_mgd'] + df[mining_water_flow_name]
+#            else:
+#                pass
+#
+#    # calculate percent of total mining flows by water type and water source
+#    for water_type in water_type_dict:
+#        for water_source in water_type_dict[water_type]:
+#
+#            mining_water_flow_pct_name = f'{water_type}_{water_source}_mining_pct'
+#
+#            if mining_water_flow_pct_name in df.columns: #if the percent of water flows to coal mining in data
+#                pass
+#
+#            else:  # if only water flows to all mining in data
+#                mining_water_flow_name = f'{water_type}_{water_source}_mining_mgd'
+#                if mining_water_flow_name in df.columns:  # if water type and water source to all mining in data
+#                    df[mining_water_flow_pct_name] = np.where(df['total_water_mining_mgd'] > 0,
+#                                                          (df[mining_water_flow_name] / df['total_water_mining_mgd']),
+#                                                          0)
+#                else:  # if no breakdown of water source and water type to all mining in data
+#                    df[mining_water_flow_pct_name] = water_type_dict[water_type][water_source]['flow_fraction']
+#
+#            # calculate water in coal mining for each mine type by water type and water source
+#            for mine_type in mine_type_dict:
+#                coal_shortton_name = f'{mine_type}_coal_shortton'
+#                if coal_shortton_name in df.columns:
+#                    coal_water_intensity_name = f'{mine_type}_coal_water_intensity_mg_per_shortton'
+#                    coal_water_total_name = f'{water_type}_{water_source}_coal_mgd'
+#                    if coal_water_intensity_name in df.columns:  # if regional water intensity values available
+#                        coal_water_mgd_name = f"{water_type}_{water_source}_{mine_type}_coal_mgd"
+#                        output_df[coal_water_mgd_name] = df[coal_water_intensity_name] \
+#                                                         * (df[coal_shortton_name]/365) \
+#                                                         * df[mining_water_flow_pct_name]
+#                        output_df[coal_water_total_name] = output_df[coal_water_total_name] \
+#                                                           + output_df[coal_water_mgd_name]
+#                        total_df[coal_water_total_name] = total_df[coal_water_total_name] \
+#                                                          + output_df[coal_water_mgd_name]
+#
+#                    else:  # if no regional water intensity available, use assumption
+#                        coal_water_mgd_name = f"{water_type}_{water_source}_{mine_type}_coal_mgd"
+#                        output_df[coal_water_mgd_name] = mine_type_dict[mine_type] \
+#                                                         * (df[coal_shortton_name]/365) \
+#                                                         * df[mining_water_flow_pct_name]
+#                        output_df[coal_water_total_name] = output_df[coal_water_total_name] \
+#                                                           + output_df[coal_water_mgd_name]
+#                        total_df[coal_water_total_name] = total_df[coal_water_total_name] \
+#                                                          + output_df[coal_water_mgd_name]
+#                else:  # if no coal mining available
+#                    pass
+#
+## TODO pick things up here
+#
+#            # calculate consumption of water in coal mining by water type and water source
+#
+#            # look for region- mining consumption fraction, apply it
+#
+#            # otherwise use dictionary values water_type_dict[water_type][water_source]['consumption_fraction']
+#
+#            ## look for region- mining discharge fraction, apply it
+#            # for discharge_type in discharge_type dictionary:
+#                #discharge_type_name = f'{water_type}_{water_source}_{mine_type}_{discharge_type}_discharge_mgd
+#                #discharge_pct_name = f'{water_type}_{water_source}_{mine_type}_{discharge_type}_discharge_pct
+#
+#                # if discharge_pct_name in df.columns:
+#                    # apply pct to total discharge
+#                # else:
+#                    # apply pct from dictionary
+#            #
+#
+#    # TODO add in consumption and surface discharge
 
 
+#    if total:
+#        df = total_df
+#    else:
+#        df = output_df
+#
+#    return df
 
-def calc_energy_production_water_use(data: pd.DataFrame, hydro_water_intensity = 2040, regions=3):
+
+
+def calc_energy_production_water_use(data: pd.DataFrame,  regions=3):
     """calculates total water use in hydroelectric generation by region.
 
         Water use is determined by applying hydropower water intensity rates (mg/bbtu) to daily hydropower generation
@@ -1622,9 +1622,8 @@ def calc_energy_production_water_use(data: pd.DataFrame, hydro_water_intensity =
                            'unconventional':
                                {'surface':.33, 'ocean':.33, 'ground':.33}}}
 
-
-
-    output_df = pd.DataFrame
+    region_list = df.columns[:regions].tolist()
+    output_df = df[region_list].copy()
 
     for fuel_type in fuel_water_type_dict:  #biomass
         for sub_fuel_type in fuel_water_type_dict[fuel_type]:  # ethanol
@@ -1667,13 +1666,14 @@ def calc_energy_production_water_use(data: pd.DataFrame, hydro_water_intensity =
                                 if sub_fuel_type in produced_water_dict:
                                     for produced_water_type in produced_water_dict[fuel_type][sub_fuel_type]:
                                         produced_water_intensity_name = f'{fuel_type}_{sub_fuel_type}_{water_type}_produced_water_intensity_mgd_bbtu'
-                                        produced_water_mgd_name = f'{produced_water_type}_produced_{fuel_type}_{sub_fuel_type}_mgd'
+
+                                        # overwriting the zero values previously stored for produced water
                                         if produced_water_intensity_name in df.columns:  # if produced water intensity data
-                                            output_df[produced_water_mgd_name] = df[produced_water_intensity_name] \
+                                            output_df[energy_production_water_name] = df[produced_water_intensity_name] \
                                                                                  * df[energy_production_name]
                                         else:
                                             produced_water_intensity_value = produced_water_dict[fuel_type][sub_fuel_type]
-                                            output_df[produced_water_mgd_name] = produced_water_intensity_value \
+                                            output_df[energy_production_water_name] = produced_water_intensity_value \
                                                                                  * df[energy_production_name]
                                 else:
                                     pass
@@ -1693,12 +1693,19 @@ def calc_energy_production_water_use(data: pd.DataFrame, hydro_water_intensity =
                                                                     * output_df[energy_production_water_name]
 
                             # calculate remaining discharges
-                            water_discharge_name
+                            for discharge_type in discharge_dict[fuel_type][sub_fuel_type]:
+                                water_discharge_name = f'{fuel_type}_{sub_fuel_type}_{discharge_type}_discharge_mgd'
+                                water_discharge_fraction_name = f'{fuel_type}_{sub_fuel_type}_{discharge_type}_discharge_fraction'
+                                if water_discharge_fraction_name in df.columns:
+                                    output_df[water_discharge_name] = df[water_discharge_fraction_name]*output_df[energy_production_water_name]
+                                else:
+                                    discharge_fraction = discharge_dict[fuel_type][sub_fuel_type][discharge_type]
+                                    output_df[water_discharge_name] = discharge_fraction * output_df[energy_production_water_name]
 
                         else:
                             pass # otherwise do nothing (baseline data requirement)
 
-
+    return output_df
 
 def convert_mwh_bbtu(x: float) -> float:
     """converts MWh to billion btu.
