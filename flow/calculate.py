@@ -1560,7 +1560,7 @@ def calc_energy_production_water_use(data: pd.DataFrame, regions=3):
     df = data
 
     # dictionary of the water intensities by energy production type (mgd/bbtu)
-    fuel_water_intensity_dict = {'biomass_ethanol': {'water_use_intensity':100, 'water_production_intensity':0},
+    fuel_water_intensity_dict = {'biomass_ethanol': {'water_use_intensity':100},
                       'coal_surface': {'water_use_intensity':100, 'water_production_intensity':0},
                       'coal_underground': {'water_use_intensity':100, 'water_production_intensity':0},
                       'natgas_unconventional': {'water_use_intensity':100, 'water_production_intensity':100},
@@ -1691,18 +1691,26 @@ def calc_energy_production_water_use(data: pd.DataFrame, regions=3):
                 # calculate consumption of produced water
                 total_produced_water_name = f'total_produced_water_{fuel_type}_mgd'
                 if total_produced_water_name in output_df.columns:  # if produced water was calculated
-                    water_consumption_name = f'{fuel_type}_produced_water_consumption_mgd'
+                    produced_water_consumption_name = f'{fuel_type}_produced_water_consumption_mgd'
                     water_consumption_fraction_name = f'{fuel_type}_produced_water_consumption_fraction'
-
-                    if water_consumption_fraction_name in df.columns:  # if regional water consumption available
-                        output_df[water_consumption_name] = df[water_consumption_fraction_name] \
-                                                            * output_df[total_produced_water_name]
-                    else:  # apply dictionary assumptions across all regions
-                        consumption_fraction = produced_water_consumption_dict[fuel_type]
-                        output_df[water_consumption_name] = consumption_fraction * output_df[total_produced_water_name]
-
                     total_consumed_water_name = f'{fuel_type}_consumption_mgd'
-                    output_df[total_consumed_water_name] = output_df[total_consumed_water_name] + output_df[water_consumption_name]
+                    if water_consumption_fraction_name in df.columns:  # if regional water consumption available
+                        output_df[produced_water_consumption_name] = df[water_consumption_fraction_name] \
+                                                            * output_df[total_produced_water_name]
+                        output_df[total_consumed_water_name] = output_df[total_consumed_water_name] + output_df[
+                            produced_water_consumption_name]
+                    else:  # apply dictionary assumptions across all regions
+                        if fuel_type in produced_water_consumption_dict:
+                            consumption_fraction = produced_water_consumption_dict[fuel_type]
+                            output_df[produced_water_consumption_name] = consumption_fraction \
+                                                                         * output_df[total_produced_water_name]
+
+                            output_df[total_consumed_water_name] = output_df[total_consumed_water_name] + output_df[
+                                produced_water_consumption_name]
+                        else:
+                            pass
+
+
                 else:
                     pass
 
