@@ -1560,190 +1560,173 @@ def calc_energy_production_water_use(data: pd.DataFrame, regions=3):
     df = data
 
     # dictionary of the water intensities by energy production type (mgd/bbtu)
-    fuel_type_dict = {'biomass': {'ethanol': 100},
-                      'coal': {'surface': 100, 'underground': 100},
-                      'natgas': {'unconventional': 100},
-                      'petroleum': {'conventional': 100, 'unconventional': 100}}
+    fuel_water_intensity_dict = {'biomass_ethanol': {'water_use_intensity':100, 'water_production_intensity':0},
+                      'coal_surface': {'water_use_intensity':100, 'water_production_intensity':0},
+                      'coal_underground': {'water_use_intensity':100, 'water_production_intensity':0},
+                      'natgas_unconventional': {'water_use_intensity':100, 'water_production_intensity':100},
+                      'petroleum_conventional': {'water_use_intensity':100, 'water_production_intensity':0},
+                      'petroleum_unconventional': {'water_use_intensity':100, 'water_production_intensity':100}}
 
     # dictionary of water flow percentages and consumption fractions by water type and water source to each energy type
-    fuel_water_type_dict = {'biomass':
-                                {'ethanol':{'fresh': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
+    fuel_water_type_dict = {'biomass_ethanol':{'fresh': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
                                                       'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}},
                                             'saline': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
-                                                       'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}}}},
-                            'coal':
-                                {'surface':
-                                     {'fresh': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
-                                                'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}},
-                                      'saline': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
-                                                 'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}}}},
-                                 #'underground':
-                                 #    {'fresh': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
-                                 #               'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}},
-                                 #     'saline': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
-                                 #                'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}}}},
-                            'natgas':
-                                {'unconventional':
-                                     {'fresh': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
-                                                'groundwater': {'flow_percent': 1, 'consumption_fraction': 1},
-                                                'produced': {'flow_percent': 0, 'consumption_fraction': 1}},
-                                      'saline': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
-                                                 'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}}}},
-                            'petroleum':
-                                {'conventional':
-                                     {'fresh': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
-                                                'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}},
-                                      'saline': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
-                                                 'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}}},
-                                 'unconventional':
-                                     {'fresh': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
-                                                'groundwater': {'flow_percent': 1, 'consumption_fraction': 1},
-                                                'produced': {'flow_percent': 0, 'consumption_fraction': 1}},
-                                      'saline': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
-                                                 'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}}}
-                                 }}
+                                                       'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}}},
+                            'coal_surface':{'fresh': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
+                                                      'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}},
+                                            'saline': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
+                                                       'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}}},
+                            'coal_underground':{'fresh': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
+                                                      'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}},
+                                            'saline': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
+                                                       'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}}},
+                            'natgas_unconventional':{'fresh': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
+                                                      'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}},
+                                            'saline': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
+                                                       'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}}},
+                            'petroleum_unconventional':{'fresh': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
+                                                      'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}},
+                                            'saline': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
+                                                       'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}}},
+                            'petroleum_conventional':{'fresh': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
+                                                      'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}},
+                                            'saline': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
+                                                       'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}}}}
 
-    produced_water_dict = {'natgas': {'unconventional': {'fresh': 100}},
-                           'petroleum': {'unconventional': {'fresh': 100}}}
 
-    discharge_dict = {'biomass':
-                          {'ethanol':
-                               {'surface': .33, 'ocean': .33, 'ground': .33}},
-                      'coal':
-                          {'surface':
+    produced_water_consumption_dict = {'natgas_unconventional': .5,
+                                        'petroleum_unconventional': .5}
+
+    discharge_dict = {'biomass_ethanol':
                                {'surface': .33, 'ocean': .33, 'ground': .33},
-                           'underground':
-                               {'surface': .33, 'ocean': .33, 'ground': .33}},
-                      'natgas':
-                          {'unconventional':
-                               {'surface': .33, 'ocean': .33, 'ground': .33}},
-                      'petroleum':
-                          {'conventional':
+                      'coal_surface':
                                {'surface': .33, 'ocean': .33, 'ground': .33},
-                           'unconventional':
-                               {'surface': .33, 'ocean': .33, 'ground': .33}}}
+                      'coal_underground':
+                               {'surface': .33, 'ocean': .33, 'ground': .33},
+                      'natgas_unconventional':
+                               {'surface': .33, 'ocean': .33, 'ground': .33},
+                      'petroleum_conventional':
+                               {'surface': .33, 'ocean': .33, 'ground': .33},
+                    'petroleum_unconventional':
+                               {'surface': .33, 'ocean': .33, 'ground': .33}}
 
     region_list = df.columns[:regions].tolist()
     output_df = df[region_list].copy()
 
-    # TODO break this up into separate components (Total water, water by source, produced water, consumption, discharge)
-    # TODO fix data inputs so that each energy source is given in fuel_sub_fuel_production_bbtu by county
-    # TODO fix data inputs to that consumption fractions, or discharge percents are columns
-
     for fuel_type in fuel_water_type_dict:  # biomass
-        for sub_fuel_type in fuel_water_type_dict[fuel_type]:  # ethanol
-            energy_production_name = f'{fuel_type}_{sub_fuel_type}_production_bbtu'
-            for water_type in fuel_water_type_dict[fuel_type][sub_fuel_type]:  # saline
-                for water_source in fuel_water_type_dict[fuel_type][sub_fuel_type][water_type]:  # groundwater
-                    energy_production_water_name = f'{water_type}_{water_source}_{fuel_type}_{sub_fuel_type}_mgd'
-                    if energy_production_water_name in df.columns:
-                        output_df[energy_production_water_name] = df[energy_production_water_name]  # if already in data
-                    else:
-                        if energy_production_name in df.columns:  # if you have the energy production amount
-                            energy_water_intensity_name = f'{fuel_type}_{sub_fuel_type}_water_intensity_mgd_per_bbtu'
-                            total_water_name = f'total_water_{fuel_type}_{sub_fuel_type}_mgd'
-
-                            # calculate total water to fuel + fuel_subtype
-                            # if you have regional water intensities
-                            if energy_water_intensity_name in df.columns:
-
-                                output_df[total_water_name] = df[energy_water_intensity_name] \
-                                                              * df[energy_production_name]
-                            else:
-                                # apply dictionary intensities from fuel_type_dict
-                                for fuel_type in fuel_type_dict:
-                                    for sub_fuel_type in fuel_type_dict[fuel_type]:
-                                        output_df[total_water_name] = fuel_type_dict[fuel_type][sub_fuel_type] \
-                                                                      * df[energy_production_name]
+        energy_production_name = f'{fuel_type}_production_bbtu'
+        for water_type in fuel_water_type_dict[fuel_type]:  # saline
+            for water_source in fuel_water_type_dict[fuel_type][water_type]:  # groundwater
+                energy_production_water_name = f'{water_type}_{water_source}_{fuel_type}_mgd'
+                if energy_production_water_name in df.columns:
+                    output_df[energy_production_water_name] = df[energy_production_water_name]  # if already in data
+                else:
+                    if energy_production_name in df.columns:  # if you have the energy production amount
+                        energy_water_use_intensity_name = f'{fuel_type}_water_intensity_mgd_per_bbtu'
+                        total_water_name = f'total_water_use_{fuel_type}_mgd'
+                        # calculate total water to fuel + fuel_subtype
+                        # if you have regional water intensities
+                        if energy_water_use_intensity_name in df.columns:
+                            output_df[total_water_name] = df[energy_water_use_intensity_name] \
+                                                          * df[energy_production_name]
                         else:
-                            pass  # otherwise do nothing (baseline data requirement)
+                            # apply dictionary intensities from fuel_type_dict
+                            output_df[total_water_name] = fuel_water_intensity_dict[fuel_type]['water_use_intensity'] \
+                                                          * df[energy_production_name]
+
+                        # calculate produced water
+                        energy_water_production_intensity_name = f'{fuel_type}_produced_water_intensity_mgd_per_bbtu'
+                        total_produced_water_name = f'total_produced_water_{fuel_type}_mgd'
+                        if energy_water_production_intensity_name in df.columns:
+                            output_df[total_produced_water_name] = df['energy_water_production_intensity_name'] \
+                                                                   * df[energy_production_name]
+                        else:
+                            produced_water_value = fuel_water_intensity_dict[fuel_type]['water_production_intensity']
+                            output_df[total_produced_water_name] = produced_water_value * df[energy_production_name]
+                    else:
+                        pass  # otherwise do nothing (baseline data requirement)
 
     # split out total water in energy type by water type and water source
     for fuel_type in fuel_water_type_dict:  # biomass
-        for sub_fuel_type in fuel_water_type_dict[fuel_type]:  # ethanol
-            energy_production_name = f'{fuel_type}_{sub_fuel_type}_production_bbtu'
-            for water_type in fuel_water_type_dict[fuel_type][sub_fuel_type]:  # saline
-                for water_source in fuel_water_type_dict[fuel_type][sub_fuel_type][water_type]:  # groundwater
-                    energy_production_water_name = f'{water_type}_{water_source}_{fuel_type}_{sub_fuel_type}_mgd'
-                    water_fraction_name = f'{water_type}_{water_source}_{fuel_type}_{sub_fuel_type}_fraction'
-                    total_water_name = f'total_water_{fuel_type}_{sub_fuel_type}_mgd'
-                    if total_water_name in output_df.columns:
-                        # spit out total (will apply 0% to produced water type) for inflows
-                        if water_fraction_name in df.columns:  # if regional water fraction to fuel type available
-                            output_df[energy_production_water_name] = output_df[total_water_name] * df[water_fraction_name]
-                        else:  # if regional data is unavailable, apply assumptions from dictionary
-                            flow_percent = fuel_water_type_dict[fuel_type][sub_fuel_type][water_type][water_source][
-                                'flow_percent']
-                            output_df[energy_production_water_name] = output_df[total_water_name] * flow_percent
-                    else:
-                        pass
-
-    # calculate produced water
-    for fuel_type in fuel_water_type_dict:  # biomass
-        if fuel_type in produced_water_dict:
-            for sub_fuel_type in fuel_water_type_dict[fuel_type]:  # ethanol
-                if sub_fuel_type in produced_water_dict:
-                    energy_production_name = f'{fuel_type}_{sub_fuel_type}_production_bbtu'
-                    for water_type in fuel_water_type_dict[fuel_type][sub_fuel_type]:  # saline
-                        for water_source in fuel_water_type_dict[fuel_type][sub_fuel_type][water_type]:
-                            energy_production_water_name = f'{water_type}_{water_source}_{fuel_type}_{sub_fuel_type}_mgd'
-                            # calculate produced water and add to output, if applicable, stores as type_produced_fuel_subfuel_mgd
-                            for produced_water_type in produced_water_dict[fuel_type][sub_fuel_type]:
-                                produced_water_intensity_name = f'{fuel_type}_{sub_fuel_type}_{water_type}_produced_water_intensity_mgd_bbtu'
-                                # overwriting the zero values previously stored for produced water
-                                if produced_water_intensity_name in df.columns:  # if produced water intensity data
-                                    output_df[energy_production_water_name] = df[produced_water_intensity_name] \
-                                                                              * df[energy_production_name]
-                                else:
-                                    produced_water_intensity_value = produced_water_dict[fuel_type][sub_fuel_type]
-                                    output_df[energy_production_water_name] = produced_water_intensity_value \
-                                                                              * df[energy_production_name]
+        energy_production_name = f'{fuel_type}_production_bbtu'
+        for water_type in fuel_water_type_dict[fuel_type]:  # saline
+            for water_source in fuel_water_type_dict[fuel_type][water_type]:  # groundwater
+                energy_production_water_name = f'{water_type}_{water_source}_{fuel_type}_mgd'
+                water_fraction_name = f'{water_type}_{water_source}_{fuel_type}_fraction'
+                total_water_name = f'total_water_use_{fuel_type}_mgd'
+                if total_water_name in output_df.columns:
+                    # spit out total (will apply 0% to produced water type) for inflows
+                    if water_fraction_name in df.columns:  # if regional water fraction to fuel type available
+                        output_df[energy_production_water_name] = output_df[total_water_name] * df[water_fraction_name]
+                    else:  # if regional data is unavailable, apply assumptions from dictionary
+                        flow_percent = fuel_water_type_dict[fuel_type][water_type][water_source]['flow_percent']
+                        output_df[energy_production_water_name] = output_df[total_water_name] * flow_percent
                 else:
                     pass
-        else:
-            pass
+
+    for fuel_type in fuel_water_type_dict:  # biomass
+        output_df[f'{fuel_type}_consumption_mgd'] = 0
 
     # calculate consumption of water
     for fuel_type in fuel_water_type_dict:  # biomass
-        for sub_fuel_type in fuel_water_type_dict[fuel_type]:  # ethanol
-            for water_type in fuel_water_type_dict[fuel_type][sub_fuel_type]:  # saline
-                for water_source in fuel_water_type_dict[fuel_type][sub_fuel_type][water_type]:  # groundwater
-                    energy_production_water_name = f'{water_type}_{water_source}_{fuel_type}_{sub_fuel_type}_mgd'
-                    if energy_production_water_name in output_df.columns:  # if water was calculated
-                        water_consumption_name = f'{fuel_type}_{sub_fuel_type}_{water_type}_{water_source}_consumption_mgd'
-                        water_consumption_fraction_name = f'{fuel_type}_{sub_fuel_type}_{water_type}_{water_source}_consumption_fraction'
+        for water_type in fuel_water_type_dict[fuel_type]:  # saline
+            for water_source in fuel_water_type_dict[fuel_type][water_type]:  # groundwater
+                energy_production_water_name = f'{water_type}_{water_source}_{fuel_type}_mgd'
+                if energy_production_water_name in output_df.columns:  # if water was calculated
+                    water_consumption_name = f'{fuel_type}_{water_type}_{water_source}_consumption_mgd'
+                    water_consumption_fraction_name = f'{fuel_type}_{water_type}_{water_source}_consumption_fraction'
 
-                        if water_consumption_fraction_name in df.columns:  # if regional water consumption available
-                            output_df[water_consumption_name] = df[water_consumption_fraction_name] \
-                                                                * output_df[energy_production_water_name]
-                        else:  # apply dictionary assumptions across all regions
-                            consumption_fraction = \
-                                fuel_water_type_dict[fuel_type][sub_fuel_type][water_type][water_source][
-                                    'consumption_fraction']
-                            output_df[water_consumption_name] = consumption_fraction \
-                                                                * output_df[energy_production_water_name]
-                    else:
-                        pass
+                    if water_consumption_fraction_name in df.columns:  # if regional water consumption available
+                        output_df[water_consumption_name] = df[water_consumption_fraction_name] \
+                                                            * output_df[energy_production_water_name]
+                    else:  # apply dictionary assumptions across all regions
+                        consumption_fraction = fuel_water_type_dict[fuel_type][water_type][water_source]['consumption_fraction']
+                        output_df[water_consumption_name] = consumption_fraction * output_df[energy_production_water_name]
+
+                    total_consumed_water_name = f'{fuel_type}_consumption_mgd'
+                    output_df[total_consumed_water_name] = output_df[total_consumed_water_name] + output_df[water_consumption_name]
+                else:
+                    pass
+
+                # calculate consumption of produced water
+                total_produced_water_name = f'total_produced_water_{fuel_type}_mgd'
+                if total_produced_water_name in output_df.columns:  # if produced water was calculated
+                    water_consumption_name = f'{fuel_type}_produced_water_consumption_mgd'
+                    water_consumption_fraction_name = f'{fuel_type}_produced_water_consumption_fraction'
+
+                    if water_consumption_fraction_name in df.columns:  # if regional water consumption available
+                        output_df[water_consumption_name] = df[water_consumption_fraction_name] \
+                                                            * output_df[total_produced_water_name]
+                    else:  # apply dictionary assumptions across all regions
+                        consumption_fraction = produced_water_consumption_dict[fuel_type]
+                        output_df[water_consumption_name] = consumption_fraction * output_df[total_produced_water_name]
+
+                    total_consumed_water_name = f'{fuel_type}_consumption_mgd'
+                    output_df[total_consumed_water_name] = output_df[total_consumed_water_name] + output_df[water_consumption_name]
+                else:
+                    pass
 
     # calculate remaining discharges
     for fuel_type in fuel_water_type_dict:  # biomass
-        for sub_fuel_type in fuel_water_type_dict[fuel_type]:  # ethanol
-            for water_type in fuel_water_type_dict[fuel_type][sub_fuel_type]:
-                for water_source in fuel_water_type_dict[fuel_type][sub_fuel_type][water_type]:
-                    energy_production_water_name = f'{water_type}_{water_source}_{fuel_type}_{sub_fuel_type}_mgd'
-                    if energy_production_water_name in output_df.columns:
-                        for discharge_type in discharge_dict[fuel_type][sub_fuel_type]:
-                            water_discharge_name = f'{fuel_type}_{sub_fuel_type}_{discharge_type}_discharge_mgd'
-                            water_discharge_fraction_name = f'{fuel_type}_{sub_fuel_type}_{discharge_type}_discharge_fraction'
-                            if water_discharge_fraction_name in df.columns:
-                                output_df[water_discharge_name] = df[water_discharge_fraction_name] \
-                                                                  * output_df[energy_production_water_name]
-                            else:
-                                discharge_fraction = discharge_dict[fuel_type][sub_fuel_type][discharge_type]
-                                output_df[water_discharge_name] = discharge_fraction * output_df[
-                                    energy_production_water_name]
-                    else:
-                        pass
+        total_consumed_water_name = f'{fuel_type}_consumption_mgd'
+        for water_type in fuel_water_type_dict[fuel_type]:
+            for water_source in fuel_water_type_dict[fuel_type][water_type]:
+                energy_production_water_name = f'{water_type}_{water_source}_{fuel_type}_mgd'
+                water_consumption_name = f'{fuel_type}_{water_type}_{water_source}_consumption_mgd'
+                if energy_production_water_name in output_df.columns:
+                    for discharge_type in discharge_dict[fuel_type]:
+                        water_discharge_name = f'{fuel_type}_{discharge_type}_discharge_mgd'
+                        water_discharge_fraction_name = f'{fuel_type}_{discharge_type}_discharge_fraction'
+                        if water_discharge_fraction_name in df.columns:
+                            output_df[water_discharge_name] = df[water_discharge_fraction_name] \
+                                                              * (output_df[energy_production_water_name]
+                                                                 - output_df[total_consumed_water_name])
+                        else:
+                            discharge_fraction = discharge_dict[fuel_type][discharge_type]
+                            output_df[water_discharge_name] = discharge_fraction * (output_df[energy_production_water_name]
+                                                                 - output_df[total_consumed_water_name])
+                else:
+                    pass
 
     return output_df
 

@@ -1314,9 +1314,9 @@ def prep_county_coal_production_data() -> pd.DataFrame:
                                        + df_coal['Underground'])
 
     # rename short ton production columns to add units
-    coal_prod_dict = {"Refuse": "coal_refuse_production_bbtu",  # refuse coal production in short tons
-                      "Surface": "coal_surface_production_bbtu",  # coal production from surface mines in short tons
-                      "Underground": "coal_underground_production_bbtu",  # coal production from underground mines, short tons
+    coal_prod_dict = {"Refuse": "coal_refuse_production_bbtu",  # refuse coal production
+                      "Surface": "coal_surface_production_bbtu",  # coal production from surface mines
+                      "Underground": "coal_underground_production_bbtu",  # coal production from underground mines
                       }
     df_coal.rename(columns=coal_prod_dict, inplace=True)  # rename columns to add descriptive language
 
@@ -1465,8 +1465,8 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
     df_corn_prod.fillna(0, inplace=True)  # replace blank values with zero
 
     # rename columns for descriptive language
-    df_corn_prod = df_corn_prod.rename(columns={'sw_ethanol_corn': 'fresh_surfacewater_biomass_mgd'})
-    df_corn_prod = df_corn_prod.rename(columns={'gw_ethanol_corn': 'fresh_groundwater_biomass_mgd'})
+    df_corn_prod = df_corn_prod.rename(columns={'sw_ethanol_corn': 'fresh_surfacewater_biomass_ethanol_mgd'})
+    df_corn_prod = df_corn_prod.rename(columns={'gw_ethanol_corn': 'fresh_groundwater_biomass_ethanol_mgd'})
 
     return df_corn_prod
 
