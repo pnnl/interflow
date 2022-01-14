@@ -1306,14 +1306,17 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     df_coal = df_coal.rename_axis(None, axis=1)  # drop index name
     df_coal.fillna(0, inplace=True)
 
-    # calculate total coal production per county in billion btus
+    # calculate coal production per county in billion btus
+    df_coal['Refuse'] = df_coal['Refuse'] * shortton_bbtu_conversion
+    df_coal['Surface'] = df_coal['Surface'] * shortton_bbtu_conversion
+    df_coal['Underground'] = df_coal['Underground'] * shortton_bbtu_conversion
     df_coal['coal_production_bbtu'] = (df_coal['Refuse'] + df_coal['Surface']
-                                       + df_coal['Underground']) * shortton_bbtu_conversion
+                                       + df_coal['Underground'])
 
     # rename short ton production columns to add units
-    coal_prod_dict = {"Refuse": "refuse_coal_shortton",  # refuse coal production in short tons
-                      "Surface": "surface_coal_shortton",  # coal production from surface mines in short tons
-                      "Underground": "underground_coal_shortton",  # coal production from underground mines, short tons
+    coal_prod_dict = {"Refuse": "coal_refuse_production_bbtu",  # refuse coal production in short tons
+                      "Surface": "coal_surface_production_bbtu",  # coal production from surface mines in short tons
+                      "Underground": "coal_underground_production_bbtu",  # coal production from underground mines, short tons
                       }
     df_coal.rename(columns=coal_prod_dict, inplace=True)  # rename columns to add descriptive language
 
