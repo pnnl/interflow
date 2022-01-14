@@ -711,7 +711,7 @@ def prep_electricity_generation() -> pd.DataFrame:
                  'HPS': 'hydro',  # hydro pumped storage
                  'HYC': 'hydro',  # hydro conventional
                  'MLG': 'biomass',  # biogenic municipal solid waste and landfill gas
-                 'NG': 'natural_gas',  # natural gas
+                 'NG': 'natgas',  # natural gas
                  'NUC': 'nuclear',  # nuclear
                  'OOG': 'other',  # other gases
                  'ORW': 'other',  # other renewables
@@ -1121,7 +1121,7 @@ def prep_state_fuel_production_data() -> pd.DataFrame:
     # list of fuel demand codes that are relevant from dataset
     msn_prod_dict = {"PAPRB": "petroleum_production_bbtu",  # crude oil production (including lease condensate) (BBTU)
                      "EMFDB": "biomass_production_bbtu",  # biomass inputs to the production of fuel ethanol (BBTU)
-                     "NGMPB": "natural_gas_production_bbtu",  # natural gas marketed production (BBTU)
+                     "NGMPB": "natgas_production_bbtu",  # natural gas marketed production (BBTU)
                      "CLPRB": "coal_production_bbtu",  # coal production (BBTU)
                      }
     df = df[df['MSN'].isin(msn_prod_dict)]  # grabbing MSN codes that are relevant
@@ -1141,9 +1141,9 @@ def prep_state_fuel_production_data() -> pd.DataFrame:
 
     # add rows for puerto rico and virgin islands
     pr_df = {'State': 'PR', 'petroleum_production_bbtu': 0, 'biomass_production_bbtu': 0,
-             'natural_gas_production_bbtu': 0, 'coal_production_bbtu': 0}
+             'natgas_production_bbtu': 0, 'coal_production_bbtu': 0}
     vi_df = {'State': 'VI', 'petroleum_production_bbtu': 0, 'biomass_production_bbtu': 0,
-             'natural_gas_production_bbtu': 0, 'coal_production_bbtu': 0}
+             'natgas_production_bbtu': 0, 'coal_production_bbtu': 0}
     df = df.append(pr_df, ignore_index=True)
     df = df.append(vi_df, ignore_index=True)
 
@@ -1159,11 +1159,16 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     :return:                DataFrame of a oil production (bbtu) by county
 
     """
+    UNCONVENTIONAL_PETROLEUM_FRACTION = .63
+    GALLON_OIL_TO_BBTU_CONVERSION = 0.0001355
+    MILLION_MULTIPLIER = 1000000
 
     # read in data
     df = prep_state_fuel_production_data()  # read in 2015 state level petroleum production data
     df_petroleum_loc = get_county_oil_gas_production_data()  # read in 2011 county level oil data
     df_loc = prep_water_use_2015()  # read in FIPS codes and states from 2015 water dataset
+    df_conventional_water = get_conventional_oil_water_intensity_data() # read water withdrawal intensity values
+    df_unconventional_water = get_unconventional_oil_gas_production_data()
 
     # reduce dataframes to required variables
     df = df[["State", "petroleum_production_bbtu"]]
@@ -1193,8 +1198,32 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     # calculate 2015 percent by county
     df['petroleum_production_bbtu'] = df['petroleum_production_bbtu'] * df['oil_pct']
 
+    # split into unconventional and conventional
+    df['petroleum_unconventional_production_bbtu'] = UNCONVENTIONAL_PETROLEUM_FRACTION \
+                                                     * df['petroleum_production_bbtu']
+    df['petroleum_conventional_production_bbtu'] = (1- UNCONVENTIONAL_PETROLEUM_FRACTION) \
+                                                   * df['petroleum_production_bbtu']
+
+    # unconventional water use
+    df_unconventional_water = [['State', 'FSW_Unconventional_Oil(MGD)', 'FGW_Unconventional_Oil(MGD)']]
+    df = pd.merge(df, df_unconventional_water, how='left', on='State')
+    df['fresh_surfacewater_petroleum_unconventional_mgd'] = df['FSW_Unconventional_Oil(MGD)'] * df['oil_pct']
+    df['fresh_groundwater_petroleum_unconventional_mgd'] = df['FGW_Unconventional_Oil(MGD)'] * df['oil_pct']
+
+
+    # calculate mg/bbtu water intensity for conventional petroleum by county
+    intensity_name = 'petroleum_conventional_water_use_intensity_mg_per_bbtu'
+    df_conventional_water[intensity_name] = (df_conventional_water['GalWater_GalOil']/MILLION_MULTIPLIER) \
+                                            * GALLON_OIL_TO_BBTU_CONVERSION
+    df_conventional_water = df_conventional_water[["State", intensity_name]]
+    df_conventional_water = pd.merge(df_loc, df_conventional_water, how='left', on='State')
+    df = pd.merge(df, df_conventional_water, how='right', on='FIPS')
+
     # reduce dataframe
-    df = df[['FIPS', 'petroleum_production_bbtu']]
+    df = df[['FIPS', 'petroleum_production_bbtu',
+             'petroleum_unconventional_production_bbtu',
+             'petroleum_conventional_production_bbtu', intensity_name,
+             'fresh_surfacewater_petroleum_unconventional_mgd', 'fresh_groundwater_petroleum_unconventional_mgd']]
 
     # merge with county data to distribute value to each county in a state and include all FIPS
     df = pd.merge(df_loc, df, how='left', on='FIPS')
@@ -1249,10 +1278,10 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     df = pd.merge(df_ng_loc, df, how='left', on="State")
 
     # calculate 2015 percent by county
-    df['natgas_unconventional_production_bbtu'] = df['natural_gas_production_bbtu'] * df['gas_pct']
+    df['natgas_unconventional_production_bbtu'] = df['natgas_production_bbtu'] * df['gas_pct']
 
     # reduce dataframe
-    df = df[['FIPS', 'natgas_unconventional_production_bbtu']]
+    df = df[['FIPS', 'natgas_unconventional_production_bbtu', 'natgas_production_bbtu']]
 
     # merge with county data to distribute value to each county in a state and include all FIPS
     df = pd.merge(df_loc, df, how='left', on='FIPS')
@@ -1364,6 +1393,7 @@ def prep_county_ethanol_production_data() -> pd.DataFrame:
     # split out state level 2015 ethanol production to individual counties by state
     df_biomass['biomass_production_bbtu'] = df_biomass['biomass_production_bbtu'] * df_biomass['ethanol_pct']
     df_biomass = df_biomass[['FIPS', 'biomass_production_bbtu']]
+    df_biomass['biomass_ethanol_production_bbtu'] = df_biomass['biomass_production_bbtu']
 
     # merge with full county data to distribute value to each county in a state and include all FIPS
     df_biomass = pd.merge(df_loc, df_biomass, how='left', on='FIPS')
@@ -1457,7 +1487,7 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
     # calculate corn for ethanol by county based on percent of state total corn growth
     df_corn_prod = pd.merge(df_corn_prod, df_corn, how='left', on='State')  # merge dataframes
     df_corn_prod['sw_ethanol_corn'] = df_corn_prod['sw_ethanol_corn'] * df_corn_prod['corn_frac']  # calc surface water
-    df_corn_prod['gw_ethanol_corn'] = df_corn_prod['gw_ethanol_corn'] * df_corn_prod['corn_frac']  # calc groudnwater
+    df_corn_prod['gw_ethanol_corn'] = df_corn_prod['gw_ethanol_corn'] * df_corn_prod['corn_frac']  # calc groundwater
 
     # combine with full county list to get complete US water for corn irrigation for ethanol by county
     df_corn_prod = df_corn_prod[['FIPS', 'sw_ethanol_corn', 'gw_ethanol_corn']]  # reduce dataframe
