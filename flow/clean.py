@@ -1249,10 +1249,10 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     df = pd.merge(df_ng_loc, df, how='left', on="State")
 
     # calculate 2015 percent by county
-    df['natural_gas_production_bbtu'] = df['natural_gas_production_bbtu'] * df['gas_pct']
+    df['natgas_unconventional_production_bbtu'] = df['natural_gas_production_bbtu'] * df['gas_pct']
 
     # reduce dataframe
-    df = df[['FIPS', 'natural_gas_production_bbtu']]
+    df = df[['FIPS', 'natgas_unconventional_production_bbtu']]
 
     # merge with county data to distribute value to each county in a state and include all FIPS
     df = pd.merge(df_loc, df, how='left', on='FIPS')

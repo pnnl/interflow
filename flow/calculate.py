@@ -1625,6 +1625,10 @@ def calc_energy_production_water_use(data: pd.DataFrame,  regions=3):
     region_list = df.columns[:regions].tolist()
     output_df = df[region_list].copy()
 
+    # TODO break this up into separate components (Total water, water by source, produced water, consumption, discharge)
+    # TODO fix data inputs so that each energy source is given in fuel_sub_fuel_production_bbtu by county
+    # TODO fix data inputs to that consumption fractions, or discharge percents are columns
+
     for fuel_type in fuel_water_type_dict:  #biomass
         for sub_fuel_type in fuel_water_type_dict[fuel_type]:  # ethanol
             energy_production_name = f'{fuel_type}_{sub_fuel_type}_production_bbtu'
