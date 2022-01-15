@@ -1330,6 +1330,7 @@ def calc_energy_production_exports(data: pd.DataFrame, sector_types=None, fuel_t
 
 
 def calc_hydro_water_use(data: pd.DataFrame, hydro_water_intensity=2040, regions=3):
+    # TODO change to water in all electricity generation
     """calculates total water use in hydroelectric generation by region.
 
         Water use is determined by applying hydropower water intensity rates (mg/bbtu) to daily hydropower generation
@@ -1388,6 +1389,7 @@ def calc_hydro_water_use(data: pd.DataFrame, hydro_water_intensity=2040, regions
 
 
 def calc_energy_production_water(data: pd.DataFrame, regions=3):
+    # TODO add in default assumptions for parameters
     """calculates total water use in hydroelectric generation by region.
 
         Water use is determined by applying hydropower water intensity rates (mg/bbtu) to daily hydropower generation
