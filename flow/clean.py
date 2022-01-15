@@ -1159,9 +1159,10 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     :return:                DataFrame of a oil production (bbtu) by county
 
     """
-    UNCONVENTIONAL_PETROLEUM_FRACTION = .63
-    GALLON_OIL_TO_BBTU_CONVERSION = 0.0001355
-    MILLION_MULTIPLIER = 1000000
+    UNCONVENTIONAL_PETROLEUM_FRACTION = .63  # fraction of all petroleum production that is unconventional
+    GALLON_OIL_TO_BBTU_CONVERSION = 0.0001355  # gallon of oil to billion btu conversion
+    MILLION_MULTIPLIER = 1000000  # a million
+    SURFACEWATER_PCT = .8  # assumed percent of withdrawals for unconventional petroleum from surface water
 
     # read in data
     df = prep_state_fuel_production_data()  # read in 2015 state level petroleum production data
@@ -1205,10 +1206,36 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
                                                    * df['petroleum_production_bbtu']
 
     # unconventional water use
-    df_unconventional_water = [['State', 'FSW_Unconventional_Oil(MGD)', 'FGW_Unconventional_Oil(MGD)']]
+    df_unconventional_water = df_unconventional_water[['State', 'FSW_Unconventional_Oil (MGD)', 'FGW_Unconventional_Oil (MGD)']]
     df = pd.merge(df, df_unconventional_water, how='left', on='State')
-    df['fresh_surfacewater_petroleum_unconventional_mgd'] = df['FSW_Unconventional_Oil(MGD)'] * df['oil_pct']
-    df['fresh_groundwater_petroleum_unconventional_mgd'] = df['FGW_Unconventional_Oil(MGD)'] * df['oil_pct']
+    df['fresh_surfacewater_petroleum_unconventional_mgd'] = df['FSW_Unconventional_Oil (MGD)'] * df['oil_pct']
+    df['fresh_groundwater_petroleum_unconventional_mgd'] = df['FGW_Unconventional_Oil (MGD)'] * df['oil_pct']
+
+    # fill water values with average water intensity for locations where petroleum is produced, but no water estimates
+    df['total_water'] = df['fresh_surfacewater_petroleum_unconventional_mgd'] + df[
+        'fresh_groundwater_petroleum_unconventional_mgd']
+    df['intensity_mg_per_bbtu'] = np.where(df['petroleum_unconventional_production_bbtu'] > 0,
+                                           df['total_water'] / (df['petroleum_unconventional_production_bbtu'] / 365), 0)
+    avg_intensity = df['intensity_mg_per_bbtu'].mean()
+
+    # rows where there is natural gas production
+    prod_rows = df['petroleum_unconventional_production_bbtu'].notnull()
+
+    # rows where there is no surface water withdrawal
+    sw_rows = df['fresh_surfacewater_petroleum_unconventional_mgd'].isna()
+    # rows where there is no groundwater withdrawal
+    gw_rows = df['fresh_groundwater_petroleum_unconventional_mgd'].isna()
+
+    df['fresh_surfacewater_petroleum_unconventional_mgd'] = np.where(prod_rows & sw_rows,
+                                                                  df['petroleum_unconventional_production_bbtu']
+                                                                     * avg_intensity * SURFACEWATER_PCT,
+                                                                  df['fresh_surfacewater_petroleum_unconventional_mgd'])
+    df['fresh_groundwater_petroleum_unconventional_mgd'] = np.where(prod_rows & gw_rows,
+                                                                 df['petroleum_unconventional_production_bbtu']
+                                                                    * avg_intensity * ( 1 - SURFACEWATER_PCT),
+                                                                 df['fresh_groundwater_petroleum_unconventional_mgd'])
+
+    df = df.drop(['total_water', 'intensity_mg_per_bbtu'], axis=1)
 
 
     # calculate mg/bbtu water intensity for conventional petroleum by county
@@ -1236,19 +1263,26 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     """prepares a dataframe of natural gas production by county for the year 2015. The dataframe uses 2011 natural gas
      production (million cubic ft) by county in the US to determine which counties in a given state contribute the
      most to the state total. These percent of state total values from 2011 are mapped to 2015 state total natural gas
-      production to get 2015 values on a county level.
+      production to get 2015 values on a county level. Water withdrawal data is supplied for a select number of states
+      these state totals are split out to counties using the same county percent of total natural gas production as
+      the production calculation. For states with 2015 production but no water withdrawal estimates, the national
+      average water intensity (mg/bbtu) is applied to their natural gas production quantity. It is assumed that 80% of
+      these calculated total water use values come from fresh surface water and 20% from fresh groundwater.
 
-    :return:                DataFrame of a natural gas production (bbtu) by county
+    :return:                DataFrame of a natural gas production (bbtu) and water use (mgd) by county
 
     """
+    # establish percent of water withdrawals for unconventional natural gas from surface water
+    SURFACEWATER_PCT = .80
 
     # read in data
     df = prep_state_fuel_production_data()  # read in 2015 state level petroleum production data
     df_ng_loc = get_county_oil_gas_production_data()  # read in 2011 county level oil data
     df_loc = prep_water_use_2015()  # read in FIPS codes and states from 2015 water dataset
+    df_unconventional_water = get_unconventional_oil_gas_production_data()
 
     # reduce dataframes to required variables
-    df = df[["State", "natural_gas_production_bbtu"]]
+    df = df[["State", "natgas_production_bbtu"]]
     df_ng_loc = df_ng_loc[['FIPS', 'Stabr', 'gas2011']]
 
     # calculate percent of total 2011 state oil production by county
@@ -1278,10 +1312,44 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     df = pd.merge(df_ng_loc, df, how='left', on="State")
 
     # calculate 2015 percent by county
-    df['natgas_unconventional_production_bbtu'] = df['natgas_production_bbtu'] * df['gas_pct']
+    df['natgas_production_bbtu'] = df['natgas_production_bbtu'] * df['gas_pct']
+    df['natgas_unconventional_production_bbtu'] = df['natgas_production_bbtu']
+
+    df_unconventional_water = df_unconventional_water[['State', 'FSW_Unconventional_NG (MGD)',
+                                                       'FGW_Unconventional_NG (MGD)']]
+
+    df_unconventional_water = pd.merge(df_loc, df_unconventional_water, how='left', on='State')
+
+    df = pd.merge(df, df_unconventional_water, how='right', on="FIPS")
+    df['fresh_surfacewater_natgas_unconventional_mgd'] = df['FSW_Unconventional_NG (MGD)'] * df['gas_pct']
+    df['fresh_groundwater_natgas_unconventional_mgd'] = df['FGW_Unconventional_NG (MGD)'] * df['gas_pct']
 
     # reduce dataframe
-    df = df[['FIPS', 'natgas_unconventional_production_bbtu', 'natgas_production_bbtu']]
+    df = df[['FIPS','natgas_production_bbtu', 'natgas_unconventional_production_bbtu',
+             'fresh_surfacewater_natgas_unconventional_mgd','fresh_groundwater_natgas_unconventional_mgd']]
+
+    # fill water values with average water intensity for locations where natural gas is produced, but no water estimates
+    df['total_water'] = df['fresh_surfacewater_natgas_unconventional_mgd'] + df['fresh_groundwater_natgas_unconventional_mgd']
+    df['intensity_mg_per_bbtu'] = np.where(df['natgas_unconventional_production_bbtu'] > 0,
+                               df['total_water'] / (df['natgas_unconventional_production_bbtu'] / 365), 0)
+    avg_intensity = df['intensity_mg_per_bbtu'].mean()
+
+    #rows where there is natural gas production
+    prod_rows = df['natgas_production_bbtu'].notnull()
+
+    # rows where there is no water withdrawal
+    sw_rows = df['fresh_surfacewater_natgas_unconventional_mgd'].isna()
+    # rows where there is no water withdrawal
+    gw_rows = df['fresh_groundwater_natgas_unconventional_mgd'].isna()
+
+    df['fresh_surfacewater_natgas_unconventional_mgd'] = np.where(prod_rows & sw_rows,
+                                                                  df['natgas_production_bbtu']*avg_intensity* SURFACEWATER_PCT,
+                                                                  df['fresh_surfacewater_natgas_unconventional_mgd'])
+    df['fresh_groundwater_natgas_unconventional_mgd'] = np.where(prod_rows & gw_rows,
+                                                                  df['natgas_production_bbtu'] * avg_intensity * (1-SURFACEWATER_PCT),
+                                                                  df['fresh_groundwater_natgas_unconventional_mgd'])
+
+    df = df.drop(['total_water', 'intensity_mg_per_bbtu'], axis=1)
 
     # merge with county data to distribute value to each county in a state and include all FIPS
     df = pd.merge(df_loc, df, how='left', on='FIPS')

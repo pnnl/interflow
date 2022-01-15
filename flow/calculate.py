@@ -1420,7 +1420,7 @@ def calc_energy_production_water(data: pd.DataFrame, regions=3):
     fuel_water_intensity_dict = {'biomass_ethanol': {'water_use_intensity':100},
                       'coal_surface': {'water_use_intensity':100, 'water_production_intensity':0},
                       'coal_underground': {'water_use_intensity':100, 'water_production_intensity':0},
-                      'natgas_unconventional': {'water_use_intensity':100, 'water_production_intensity':100},
+                      'natgas_unconventional': {'water_use_intensity':0.000161, 'water_production_intensity':100},
                       'petroleum_conventional': {'water_use_intensity':100, 'water_production_intensity':0},
                       'petroleum_unconventional': {'water_use_intensity':100, 'water_production_intensity':100}}
 
@@ -1437,18 +1437,18 @@ def calc_energy_production_water(data: pd.DataFrame, regions=3):
                                                       'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}},
                                             'saline': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
                                                        'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}}},
-                            'natgas_unconventional':{'fresh': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
-                                                      'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}},
-                                            'saline': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
-                                                       'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}}},
+                            'natgas_unconventional':{'fresh': {'surfacewater': {'flow_percent': .8, 'consumption_fraction': 1},
+                                                      'groundwater': {'flow_percent': .2, 'consumption_fraction': 1}},
+                                            'saline': {'surfacewater': {'flow_percent': 0, 'consumption_fraction': 0},
+                                                       'groundwater': {'flow_percent': 0, 'consumption_fraction': 0}}},
                             'petroleum_unconventional':{'fresh': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
                                                       'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}},
-                                            'saline': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
-                                                       'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}}},
+                                            'saline': {'surfacewater': {'flow_percent': 0, 'consumption_fraction': 0},
+                                                       'groundwater': {'flow_percent': 0, 'consumption_fraction': 0}}},
                             'petroleum_conventional':{'fresh': {'surfacewater': {'flow_percent': .80, 'consumption_fraction': 1},
                                                       'groundwater': {'flow_percent': .20, 'consumption_fraction': 1}},
-                                            'saline': {'surfacewater': {'flow_percent': 0, 'consumption_fraction': 1},
-                                                       'groundwater': {'flow_percent': 0, 'consumption_fraction': 1}}}}
+                                            'saline': {'surfacewater': {'flow_percent': 0, 'consumption_fraction': 0},
+                                                       'groundwater': {'flow_percent': 0, 'consumption_fraction': 0}}}}
 
 
     produced_water_consumption_dict = {'natgas_unconventional': .5,
