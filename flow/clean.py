@@ -1215,7 +1215,8 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     df['total_water'] = df['fresh_surfacewater_petroleum_unconventional_mgd'] + df[
         'fresh_groundwater_petroleum_unconventional_mgd']
     df['intensity_mg_per_bbtu'] = np.where(df['petroleum_unconventional_production_bbtu'] > 0,
-                                           df['total_water'] / (df['petroleum_unconventional_production_bbtu'] / 365), 0)
+                                           df['total_water'] / (df['petroleum_unconventional_production_bbtu'] / 365),
+                                           np.nan)
     avg_intensity = df['intensity_mg_per_bbtu'].mean()
 
     # rows where there is natural gas production
@@ -1241,7 +1242,8 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     # calculate mg/bbtu water intensity for conventional petroleum by county
     intensity_name = 'petroleum_conventional_water_use_intensity_mg_per_bbtu'
     df_conventional_water[intensity_name] = (df_conventional_water['GalWater_GalOil']/MILLION_MULTIPLIER) \
-                                            * GALLON_OIL_TO_BBTU_CONVERSION
+                                            / GALLON_OIL_TO_BBTU_CONVERSION
+
     df_conventional_water = df_conventional_water[["State", intensity_name]]
     df_conventional_water = pd.merge(df_loc, df_conventional_water, how='left', on='State')
     df = pd.merge(df, df_conventional_water, how='right', on='FIPS')
@@ -1249,7 +1251,7 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     # reduce dataframe
     df = df[['FIPS', 'petroleum_production_bbtu',
              'petroleum_unconventional_production_bbtu',
-             'petroleum_conventional_production_bbtu', intensity_name,
+             'petroleum_conventional_production_bbtu', 'petroleum_conventional_water_use_intensity_mg_per_bbtu',
              'fresh_surfacewater_petroleum_unconventional_mgd', 'fresh_groundwater_petroleum_unconventional_mgd']]
 
     # merge with county data to distribute value to each county in a state and include all FIPS
@@ -1331,7 +1333,8 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     # fill water values with average water intensity for locations where natural gas is produced, but no water estimates
     df['total_water'] = df['fresh_surfacewater_natgas_unconventional_mgd'] + df['fresh_groundwater_natgas_unconventional_mgd']
     df['intensity_mg_per_bbtu'] = np.where(df['natgas_unconventional_production_bbtu'] > 0,
-                               df['total_water'] / (df['natgas_unconventional_production_bbtu'] / 365), 0)
+                               df['total_water'] / (df['natgas_unconventional_production_bbtu'] / 365), np.nan)
+
     avg_intensity = df['intensity_mg_per_bbtu'].mean()
 
     #rows where there is natural gas production

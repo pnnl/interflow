@@ -1416,13 +1416,13 @@ def calc_energy_production_water(data: pd.DataFrame, regions=3):
         """
     df = data
 
-    # dictionary of the water intensities by energy production type (mgd/bbtu)
-    fuel_water_intensity_dict = {'biomass_ethanol': {'water_use_intensity':100},
-                      'coal_surface': {'water_use_intensity':100, 'water_production_intensity':0},
-                      'coal_underground': {'water_use_intensity':100, 'water_production_intensity':0},
-                      'natgas_unconventional': {'water_use_intensity':0.000161, 'water_production_intensity':100},
-                      'petroleum_conventional': {'water_use_intensity':100, 'water_production_intensity':0},
-                      'petroleum_unconventional': {'water_use_intensity':100, 'water_production_intensity':100}}
+    # dictionary of the water intensities by energy production type (mg/bbtu)
+    fuel_water_intensity_dict = {'biomass_ethanol': {'water_use_intensity': .14, 'water_production_intensity': 0},
+                      'coal_surface': {'water_use_intensity': 0.00034, 'water_production_intensity':0},
+                      'coal_underground': {'water_use_intensity': 0.00144, 'water_production_intensity':0},
+                      'natgas_unconventional': {'water_use_intensity': 0.0008, 'water_production_intensity':100},
+                      'petroleum_conventional': {'water_use_intensity': 0.0149, 'water_production_intensity': 0},
+                      'petroleum_unconventional': {'water_use_intensity': 0.0019, 'water_production_intensity': 100}}
 
     # dictionary of water flow percentages and consumption fractions by water type and water source to each energy type
     fuel_water_type_dict = {'biomass_ethanol':{'fresh': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},

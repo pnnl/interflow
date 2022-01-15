@@ -22,7 +22,7 @@ def configure_data(data_path=None, region_data=None, region=[], use_water_use_da
                    use_ibt_pws_pct_data=True, ibt_pws_pct_data_path=None,
                    use_electricity_demand=True, electricity_demand_data_path=None,
                    use_fuel_demand=True, fuel_demand_data_path=None,
-                   use_petroleum_production=False, petroleum_production_data_path=None,
+                   use_petroleum_production=True, petroleum_production_data_path=None,
                    use_natgas_production=True, natgas_production_data_path=None,
                    use_coal_production=True, coal_production_data_path=None,
                    use_ethanol_production=True, ethanol_production_data_path=None,
