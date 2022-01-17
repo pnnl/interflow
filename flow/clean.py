@@ -1367,7 +1367,8 @@ def prep_petroleum_gas_discharge_data()-> pd.DataFrame:
     """prepares a dataframe of produced water intensities, consumption fractions, and discharge fractions for
     unconventional petroleum and unconventional natural gas drilling.
 
-    :return:                DataFrame of coal production values in bbtu by county
+    :return:                DataFrame of produced water intensities, consumption fractions, and discharge fractions
+                            for unconventional natural gas and petroleum production
 
     """
     # read in data

@@ -220,8 +220,6 @@ def configure_data(data_path=None, region_data=None, region=[], use_water_use_da
             df_ng_pet_water = pd.read_csv(natgas_petroleum_water_data_path)
             df = pd.merge(df, df_ng_pet_water, how='left', on=region)
 
-        prep_petroleum_gas_discharge_data
-
         # use_coal_production data
         if (use_coal_production == True) & (coal_production_data_path is None):
             df_coal_prod = cl.prep_county_coal_production_data()
