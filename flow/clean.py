@@ -1368,9 +1368,6 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     :return:                DataFrame of coal production values in bbtu by county
 
     """
-
-    # read in water use data for 2015 in million gallons per day by county
-
     # read in data
     df_coal_loc = get_coal_mine_location_data()  # coal mine location data
     df_fips = get_state_fips_data()  # State-level FIPS codes
@@ -1425,6 +1422,25 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     df_coal.fillna(0, inplace=True)
 
     return df_coal
+
+
+def prep_county_coal_water_source_data() -> pd.DataFrame:
+    """prepares a dataframe of coal production by county from surface and underground mines in bbtu. Dataframe can be
+    used to determine water in coal mining.
+
+    :return:                DataFrame of coal production values in bbtu by county
+
+    """
+
+    # read in water use data for 2015 in million gallons per day by county
+    df = prep_water_use_2015(variables=['FIPS', 'County', 'State', 'fresh_groundwater_mining_mgd',
+                                              'fresh_surface_water_mining_mgd', 'saline_groundwater_mining_mgd',
+                                              'saline_surface_water_mining_mgd'])
+
+    return df
+
+
+
 
 
 def prep_county_ethanol_production_data() -> pd.DataFrame:
