@@ -1456,7 +1456,6 @@ def calc_energy_production_water(data: pd.DataFrame, regions=3):
                                                        'groundwater': {'flow_percent': 0, 'consumption_fraction': 0},
                                                        'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}},
 
-
                             'petroleum_unconventional':{'fresh': {'surfacewater': {'flow_percent': .8, 'consumption_fraction': .05},
                                                       'groundwater': {'flow_percent': .2, 'consumption_fraction': .05},
                                                                   'wastewater': {'flow_percent': 0, 'consumption_fraction': .05}},

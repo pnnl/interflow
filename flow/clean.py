@@ -1364,8 +1364,8 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
 
 
 def prep_petroleum_gas_discharge_data()-> pd.DataFrame:
-    """prepares a dataframe of coal production by county from surface and underground mines in bbtu. Dataframe can be
-    used to determine water in coal mining.
+    """prepares a dataframe of produced water intensities, consumption fractions, and discharge fractions for
+    unconventional petroleum and unconventional natural gas drilling.
 
     :return:                DataFrame of coal production values in bbtu by county
 
@@ -1415,8 +1415,23 @@ def prep_petroleum_gas_discharge_data()-> pd.DataFrame:
         df[surface_name] = df["petroleum_unconventional_surface_discharge_fraction"]
         df[consumption_name] = df["petroleum_unconventional_consumption_fraction"]
 
-    # replace blank values with zero
+    # drop unneeded variables
+    df = df.drop(['WOR (bbl/bbl)', 'WGR (bbl/Mmcf)', 'discharge_total_pct'], axis=1)
+
+    # calculate the mean of each column
+    df_mean_dict = df[df.columns[1:].to_list()].mean().to_dict()
+
+    # replace blank values with zero at state level
     df.fillna(0, inplace=True)
+
+    # merge to get values at county level
+    df = pd.merge(df_loc, df, how='left', on='State')
+
+    # create a list of columns to fill blank values
+    fill_list = df.columns[3:].to_list()
+
+    for column in fill_list:
+        df[column].fillna(df_mean_dict[column], inplace=True)
 
     return df
 
