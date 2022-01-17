@@ -204,7 +204,7 @@ def prep_consumption_fraction() -> pd.DataFrame:
     # rename columns to add descriptive language
     df.rename(columns=variables_list_1995, inplace=True)
 
-    sector_list = ['residential', 'commercial', 'industrial']
+    sector_list = ['residential', 'commercial', 'industrial', 'mining']
     water_type_list = ['fresh', 'saline']
     water_source_list = ['groundwater', 'pws']
 
@@ -214,6 +214,8 @@ def prep_consumption_fraction() -> pd.DataFrame:
                 water_consumption_name = f'{sector}_{water_type}_surfacewater_consumption_fraction'
                 if water_consumption_name in df.columns:
                     df[f'{sector}_{water_type}_{water_source}_consumption_fraction'] = df[water_consumption_name]
+
+    df = df.drop(['mining_fresh_pws_consumption_fraction', 'mining_saline_pws_consumption_fraction'], axis=1)
 
     # merge with full list of counties from 2015 water data
     df = pd.merge(df_loc, df, how='left', on='FIPS')
@@ -1424,18 +1426,46 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     return df_coal
 
 
-def prep_county_coal_water_source_data() -> pd.DataFrame:
-    """prepares a dataframe of coal production by county from surface and underground mines in bbtu. Dataframe can be
-    used to determine water in coal mining.
+def prep_county_coal_water_source_fractions() -> pd.DataFrame:
+    """prepares a dataframe of water type and water source fractions to coal mining by county
 
-    :return:                DataFrame of coal production values in bbtu by county
+    :return:                DataFrame of water types and water source fractions to coal production
 
     """
 
     # read in water use data for 2015 in million gallons per day by county
-    df = prep_water_use_2015(variables=['FIPS', 'County', 'State', 'fresh_groundwater_mining_mgd',
-                                              'fresh_surface_water_mining_mgd', 'saline_groundwater_mining_mgd',
-                                              'saline_surface_water_mining_mgd'])
+    df = prep_water_use_2015(variables=['FIPS', 'fresh_groundwater_mining_mgd',
+                                              'fresh_surfacewater_mining_mgd', 'saline_groundwater_mining_mgd',
+                                              'saline_surfacewater_mining_mgd'])
+
+    # read in region identifier
+    df_loc = prep_water_use_2015()
+
+    # create a list of mining water source names
+    source_list = ['fresh_groundwater', 'fresh_surfacewater',
+                    'saline_groundwater', 'saline_surfacewater']
+
+    # calculate total water flows to mining
+    df['total_mining_water'] = df[df.columns[3:].to_list()].sum(axis=1)
+
+    # start a list of data to retain
+    retain_list = ['FIPS']
+
+    # calculate water fractions
+    for source in source_list:
+        fraction_name = source + "_coal_production_fraction"
+        water_name = source + "_mining_mgd"
+        df[fraction_name] = np.where(df['total_mining_water'] > 0,
+                                df[water_name]/ df['total_mining_water'],
+                                np.nan)
+
+        # fill blank water fractions
+        df[fraction_name].fillna(df[fraction_name].mean(), inplace=True)
+
+        retain_list.append(fraction_name)
+
+    # merge with county location data
+    df = pd.merge(df_loc, df[retain_list], how= 'left', on='FIPS')
 
     return df
 
