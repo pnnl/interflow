@@ -25,6 +25,7 @@ def configure_data(data_path=None, region_data=None, region=[], use_water_use_da
                    use_petroleum_production=True, petroleum_production_data_path=None,
                    use_natgas_production=True, natgas_production_data_path=None,
                    use_coal_production=True, coal_production_data_path=None,
+                   use_coal_water_source=True, coal_water_source_data_path=None,
                    use_ethanol_production=True, ethanol_production_data_path=None,
                    use_biomass_water=True, biomass_water_data_path=None) -> pd.DataFrame:
 
@@ -217,6 +218,17 @@ def configure_data(data_path=None, region_data=None, region=[], use_water_use_da
         else:
             df_coal_prod = pd.read_csv(coal_production_data_path)
             df = pd.merge(df, df_coal_prod, how='left', on=region)
+
+        # use_coal_production data
+        if (use_coal_water_source == True) & (coal_water_source_data_path is None):
+            df_coal_water = cl.prep_county_coal_water_source_fractions()
+            df = pd.merge(df, df_coal_water, how='left', on=['FIPS', 'State', 'County'])
+        elif (use_coal_production == False) & (coal_production_data_path is None):
+            pass
+        else:
+            df_coal_water = pd.read_csv(coal_production_data_path)
+            df = pd.merge(df, df_coal_water, how='left', on=region)
+
 
         # use_ethanol_production data
         if (use_ethanol_production == True) & (ethanol_production_data_path is None):

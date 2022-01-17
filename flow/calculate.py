@@ -1427,49 +1427,61 @@ def calc_energy_production_water(data: pd.DataFrame, regions=3):
                       'petroleum_unconventional': {'water_use_intensity': 0.0019, 'water_production_intensity': 100}}
 
     # dictionary of water flow percentages and consumption fractions by water type and water source to each energy type
-    fuel_water_type_dict = {
-        'biomass_ethanol': {'fresh': {'surfacewater': {'flow_percent': 1, 'consumption_fraction': 1},
-                                                      'groundwater': {'flow_percent': 1, 'consumption_fraction': 1}},
+    fuel_water_type_dict = \
+        {'biomass_ethanol': {'fresh': {'surfacewater': {'flow_percent': 0.44, 'consumption_fraction': 0.77},
+                                                      'groundwater': {'flow_percent': 0.54, 'consumption_fraction': 0.77},
+                                                          'wastewater': {'flow_percent': 0.01, 'consumption_fraction': 0.77}},
                                             'saline': {'surfacewater': {'flow_percent': 0, 'consumption_fraction': 0},
-                                                       'groundwater': {'flow_percent': 0, 'consumption_fraction': 0}}},
-
+                                                       'groundwater': {'flow_percent': 0, 'consumption_fraction': 0},
+                                                       'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}},
+                            # todo biomass IS COMPLETE
                             # todo COAL IS COMPLETE
                             'coal_surface': {'fresh': {'surfacewater': {'flow_percent': 0.43, 'consumption_fraction': .38},
-                                                      'groundwater': {'flow_percent': 0.38, 'consumption_fraction': .38}},
+                                                      'groundwater': {'flow_percent': 0.38, 'consumption_fraction': .38},
+                                                       'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}},
                                             'saline': {'surfacewater': {'flow_percent': 0.01, 'consumption_fraction': .16},
-                                                       'groundwater': {'flow_percent': 0.18, 'consumption_fraction': .16}}},
+                                                       'groundwater': {'flow_percent': 0.18, 'consumption_fraction': .16},
+                                                       'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}},
                             'coal_underground':{'fresh': {'surfacewater': {'flow_percent': 0.43, 'consumption_fraction': 0.38},
-                                                      'groundwater': {'flow_percent': 0.38, 'consumption_fraction': 0.38}},
+                                                      'groundwater': {'flow_percent': 0.38, 'consumption_fraction': 0.38},
+                                                          'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}},
                                             'saline': {'surfacewater': {'flow_percent': 0.01, 'consumption_fraction': 0.16},
-                                                       'groundwater': {'flow_percent': 0.18, 'consumption_fraction': 0.16}}},
+                                                       'groundwater': {'flow_percent': 0.18, 'consumption_fraction': 0.16},
+                                                       'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}},
 
 
                             'natgas_unconventional':{'fresh': {'surfacewater': {'flow_percent': .8, 'consumption_fraction': 1},
-                                                      'groundwater': {'flow_percent': .2, 'consumption_fraction': 1}},
+                                                      'groundwater': {'flow_percent': .2, 'consumption_fraction': 1},
+                                                               'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}},
                                             'saline': {'surfacewater': {'flow_percent': 0, 'consumption_fraction': 0},
-                                                       'groundwater': {'flow_percent': 0, 'consumption_fraction': 0}}},
+                                                       'groundwater': {'flow_percent': 0, 'consumption_fraction': 0},
+                                                       'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}},
 
 
 
                             'petroleum_unconventional':{'fresh': {'surfacewater': {'flow_percent': .8, 'consumption_fraction': 1},
-                                                      'groundwater': {'flow_percent': .2, 'consumption_fraction': 1}},
+                                                      'groundwater': {'flow_percent': .2, 'consumption_fraction': 1},
+                                                                  'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}},
                                             'saline': {'surfacewater': {'flow_percent': 0, 'consumption_fraction': 0},
-                                                       'groundwater': {'flow_percent': 0, 'consumption_fraction': 0}}},
+                                                       'groundwater': {'flow_percent': 0, 'consumption_fraction': 0},
+                                                       'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}},
                             'petroleum_conventional':{'fresh': {'surfacewater': {'flow_percent': .80, 'consumption_fraction': 1},
-                                                      'groundwater': {'flow_percent': .20, 'consumption_fraction': 1}},
+                                                      'groundwater': {'flow_percent': .20, 'consumption_fraction': 1},
+                                                                'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}},
                                             'saline': {'surfacewater': {'flow_percent': 0, 'consumption_fraction': 0},
-                                                       'groundwater': {'flow_percent': 0, 'consumption_fraction': 0}}}}
+                                                       'groundwater': {'flow_percent': 0, 'consumption_fraction': 0},
+                                                       'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}}}
 
 
     produced_water_consumption_dict = {'natgas_unconventional': .5,
                                         'petroleum_unconventional': .5}
 
     discharge_dict = {'biomass_ethanol':
-                               {'surface': .33, 'ocean': .33, 'ground': .33},
+                               {'surface': 1, 'ocean': 0, 'ground': 0},
                       'coal_surface':
-                               {'surface': .33, 'ocean': .33, 'ground': .33},
+                               {'surface': 1, 'ocean': 0, 'ground': 0},
                       'coal_underground':
-                               {'surface': .33, 'ocean': .33, 'ground': .33},
+                               {'surface': 1, 'ocean': 0, 'ground': 0},
                       'natgas_unconventional':
                                {'surface': .33, 'ocean': .33, 'ground': .33},
                       'petroleum_conventional':

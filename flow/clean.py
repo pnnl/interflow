@@ -1362,6 +1362,55 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
 
     return df
 
+def prep_petroleum_gas_discharge_data()-> pd.DataFrame:
+    """prepares a dataframe of coal production by county from surface and underground mines in bbtu. Dataframe can be
+    used to determine water in coal mining.
+
+    :return:                DataFrame of coal production values in bbtu by county
+
+    """
+    # read in data
+    df = get_oil_gas_discharge_data()
+    df_loc = prep_water_use_2015()
+
+    # rename dictionary
+    rename_dict = {'Total injected (%)': "petroleum_unconventional_ground_discharge_fraction",
+                   'Surface Discharge (%)': 'petroleum_unconventional_surface_discharge_fraction',
+                   'Evaporation/ Consumption (%)': 'petroleum_unconventional_consumption_fraction'}
+
+    generation_list = ['natgas_unconventional', 'natgas_conventional']
+
+    # establish conversion factors
+    WATER_BARREL_TO_MG_CONVERSION = 0.000042
+    OIL_BARREL_TO_BBTU_CONVERSION = 0.005691
+    GAS_MMCF_TO_BBTU_CONVERSION = 1
+
+    # convert barrels of water per barrel of oil to million gallons per bbtu of oil
+    df['petroleum_unconventional_produced_water_intensity_mg_per_bbtu'] = df['WOR (bbl/bbl)'] \
+                                                                          * (WATER_BARREL_TO_MG_CONVERSION
+                                                                             / OIL_BARREL_TO_BBTU_CONVERSION)
+
+    # convert barrels of water per mmcf of natural gas to million gallons per bbtu of natural gas
+    df['natgas_unconventional_produced_water_intensity_mg_per_bbtu'] = df['WGR (bbl/Mmcf)'] \
+                                                                          * (WATER_BARREL_TO_MG_CONVERSION
+                                                                             / GAS_MMCF_TO_BBTU_CONVERSION)
+
+    # rename columns
+    df.rename(columns=rename_dict, inplace=True)
+
+    # copy discharge and consumption fractions to each generation type
+    for gen_type in generation_list:
+        ground_name = gen_type + "_ground_discharge_fraction"
+        surface_name = gen_type + "_surface_discharge_fraction"
+        consumption_name = gen_type + "_consumption_fraction"
+
+        df[ground_name] = df["petroleum_unconventional_ground_discharge_fraction"]
+        df[surface_name] = df["petroleum_unconventional_surface_discharge_fraction"]
+        df[consumption_name] = df["petroleum_unconventional_consumption_fraction"]
+
+    return df
+
+
 
 def prep_county_coal_production_data() -> pd.DataFrame:
     """prepares a dataframe of coal production by county from surface and underground mines in bbtu. Dataframe can be
