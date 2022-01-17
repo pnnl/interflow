@@ -1362,6 +1362,7 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
 
     return df
 
+
 def prep_petroleum_gas_discharge_data()-> pd.DataFrame:
     """prepares a dataframe of coal production by county from surface and underground mines in bbtu. Dataframe can be
     used to determine water in coal mining.
@@ -1395,6 +1396,12 @@ def prep_petroleum_gas_discharge_data()-> pd.DataFrame:
                                                                           * (WATER_BARREL_TO_MG_CONVERSION
                                                                              / GAS_MMCF_TO_BBTU_CONVERSION)
 
+    # recalculate discharge fractions as a percent of remaining water, not inclusive of consumption fraction
+    df['discharge_total_pct'] = df['Surface Discharge (%)'] + df['Total injected (%)']
+    df['Surface Discharge (%)'] = df['Surface Discharge (%)'] / df['discharge_total_pct']
+    df['Total injected (%)'] = df['Total injected (%)'] / df['discharge_total_pct']
+
+
     # rename columns
     df.rename(columns=rename_dict, inplace=True)
 
@@ -1407,6 +1414,9 @@ def prep_petroleum_gas_discharge_data()-> pd.DataFrame:
         df[ground_name] = df["petroleum_unconventional_ground_discharge_fraction"]
         df[surface_name] = df["petroleum_unconventional_surface_discharge_fraction"]
         df[consumption_name] = df["petroleum_unconventional_consumption_fraction"]
+
+    # replace blank values with zero
+    df.fillna(0, inplace=True)
 
     return df
 

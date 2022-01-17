@@ -1422,9 +1422,9 @@ def calc_energy_production_water(data: pd.DataFrame, regions=3):
     fuel_water_intensity_dict = {'biomass_ethanol': {'water_use_intensity': .14, 'water_production_intensity': 0},
                       'coal_surface': {'water_use_intensity': 0.00034, 'water_production_intensity':0},
                       'coal_underground': {'water_use_intensity': 0.00144, 'water_production_intensity':0},
-                      'natgas_unconventional': {'water_use_intensity': 0.0008, 'water_production_intensity':100},
+                      'natgas_unconventional': {'water_use_intensity': 0.0008, 'water_production_intensity': 0.01},
                       'petroleum_conventional': {'water_use_intensity': 0.0149, 'water_production_intensity': 0},
-                      'petroleum_unconventional': {'water_use_intensity': 0.0019, 'water_production_intensity': 100}}
+                      'petroleum_unconventional': {'water_use_intensity': 0.0019, 'water_production_intensity': 0.08}}
 
     # dictionary of water flow percentages and consumption fractions by water type and water source to each energy type
     fuel_water_type_dict = \
@@ -1434,8 +1434,7 @@ def calc_energy_production_water(data: pd.DataFrame, regions=3):
                                             'saline': {'surfacewater': {'flow_percent': 0, 'consumption_fraction': 0},
                                                        'groundwater': {'flow_percent': 0, 'consumption_fraction': 0},
                                                        'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}},
-                            # todo biomass IS COMPLETE
-                            # todo COAL IS COMPLETE
+
                             'coal_surface': {'fresh': {'surfacewater': {'flow_percent': 0.43, 'consumption_fraction': .38},
                                                       'groundwater': {'flow_percent': 0.38, 'consumption_fraction': .38},
                                                        'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}},
@@ -1458,36 +1457,35 @@ def calc_energy_production_water(data: pd.DataFrame, regions=3):
                                                        'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}},
 
 
-
-                            'petroleum_unconventional':{'fresh': {'surfacewater': {'flow_percent': .8, 'consumption_fraction': 1},
-                                                      'groundwater': {'flow_percent': .2, 'consumption_fraction': 1},
-                                                                  'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}},
+                            'petroleum_unconventional':{'fresh': {'surfacewater': {'flow_percent': .8, 'consumption_fraction': .05},
+                                                      'groundwater': {'flow_percent': .2, 'consumption_fraction': .05},
+                                                                  'wastewater': {'flow_percent': 0, 'consumption_fraction': .05}},
                                             'saline': {'surfacewater': {'flow_percent': 0, 'consumption_fraction': 0},
                                                        'groundwater': {'flow_percent': 0, 'consumption_fraction': 0},
                                                        'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}},
-                            'petroleum_conventional':{'fresh': {'surfacewater': {'flow_percent': .80, 'consumption_fraction': 1},
-                                                      'groundwater': {'flow_percent': .20, 'consumption_fraction': 1},
-                                                                'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}},
+                            'petroleum_conventional':{'fresh': {'surfacewater': {'flow_percent': .80, 'consumption_fraction': .05},
+                                                      'groundwater': {'flow_percent': .20, 'consumption_fraction': .05},
+                                                                'wastewater': {'flow_percent': 0, 'consumption_fraction': .05}},
                                             'saline': {'surfacewater': {'flow_percent': 0, 'consumption_fraction': 0},
                                                        'groundwater': {'flow_percent': 0, 'consumption_fraction': 0},
                                                        'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}}}
 
 
-    produced_water_consumption_dict = {'natgas_unconventional': .5,
-                                        'petroleum_unconventional': .5}
+    produced_water_consumption_dict = {'natgas_unconventional': .05,
+                                        'petroleum_unconventional': .05}
 
     discharge_dict = {'biomass_ethanol':
-                               {'surface': 1, 'ocean': 0, 'ground': 0},
+                               {'surface': 1, 'ground': 0},
                       'coal_surface':
-                               {'surface': 1, 'ocean': 0, 'ground': 0},
+                               {'surface': 1, 'ground': 0},
                       'coal_underground':
-                               {'surface': 1, 'ocean': 0, 'ground': 0},
+                               {'surface': 1, 'ground': 0},
                       'natgas_unconventional':
-                               {'surface': .33, 'ocean': .33, 'ground': .33},
+                               {'surface': .05, 'ground': .95},
                       'petroleum_conventional':
-                               {'surface': .33, 'ocean': .33, 'ground': .33},
+                               {'surface': .05, 'ground': .95},
                     'petroleum_unconventional':
-                               {'surface': .33, 'ocean': .33, 'ground': .33}}
+                               {'surface': .05, 'ground': .95}}
 
     region_list = df.columns[:regions].tolist()
     output_df = df[region_list].copy()
