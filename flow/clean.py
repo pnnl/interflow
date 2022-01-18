@@ -856,7 +856,7 @@ def prep_thermo_cooling_data() -> pd.DataFrame:
     # TODO map values to power plant location FIPS codes
 
     # TODO combine columns to get single name fresh_surfacewater_biomass_tower_mgd
-    
+
     # TODO pivot to get each one as a column
 
     return df
