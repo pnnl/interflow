@@ -780,7 +780,65 @@ def prep_electricity_generation() -> pd.DataFrame:
     # merge dataframe with county data to distribute value to each county in a state
     df.fillna(0, inplace=True)  # fill nan with zero
 
+
     return df
+
+
+def prep_thermo_cooling_data() -> pd.DataFrame:
+    """prepping irrigation data so that
+
+    :return:                DataFrame of percent of total irrigation using specified fuel type for pumping by county
+
+    """
+
+    df = get_powerplant_cooling_data()
+    df_primary = get_powerplant_primary_data()
+
+    fuel_dict = {'GAS STEAM': 'NATGAS',  # gas steam
+                 'NGCC': 'NATGAS',  # gas combined cycle
+                 'OIL CC': 'PETROLEUM',  # petroleum
+                 'OIL': 'PETROLEUM'}
+
+
+    df['WATER_SOURCE_CODE'].replace("-nr-", "SW", inplace=True)  # all blanks assumed to be surface water
+    df['WATER_SOURCE_CODE'].replace("GW & PD", "GW", inplace=True)  #all GW+PS are assumed to be groundwater only
+    df['WATER_SOURCE_CODE'].replace("GW & SW", "SW", inplace=True) # all GW+SW combinations are assumed to be SW
+
+    # all surface water without a type is assumed to be fresh
+    df['WATER_TYPE_CODE'] = np.where(df['WATER_SOURCE_CODE'] == "SW" and df['WATER_TYPE_CODE'] == "-nr-",
+                                     "FR", df['WATER_TYPE_CODE'])
+
+    # all groundwater without a type is assumed to be fresh
+    df['WATER_TYPE_CODE'] = np.where(df['WATER_SOURCE_CODE'] == "GW" and df['WATER_TYPE_CODE'] == "-nr-",
+                                     "FR", df['WATER_TYPE_CODE'])
+
+    # all combinations with fresh and BE are assumed to be fresh
+    df['WATER_TYPE_CODE'].replace("FR & BE", "FR", inplace=True)
+
+    # all BE should be changed to fresh (pws)
+    df['WATER_TYPE_CODE'].replace("BE", "FR", inplace=True)
+
+    # all brackish should be changed to saline
+    df['WATER_TYPE_CODE'].replace("BR", "SA", inplace=True)
+
+    # combine generation types
+    df['GENERATION_TYPE'].rename(columns=fuel_dict, inplace=True)
+
+
+
+    return df
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def prep_irrigation_fuel_data() -> pd.DataFrame:

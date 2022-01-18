@@ -133,7 +133,7 @@ def get_powerplant_primary_data():
 
 
 def get_powerplant_cooling_data():
-    """Read in a dataframe of power plant primary generation type by power plant ID
+    """Read in a dataframe water withdrawals and consumption for thermoelectric cooling by power plant ID
 
             :return:                        dataframe of values
 
@@ -144,7 +144,7 @@ def get_powerplant_cooling_data():
 
     # read in data
     return pd.read_csv(data, usecols=['EIA_PLANT_ID', "COUNTY", 'STATE', 'GENERATION_TYPE', 'COOLING_TYPE',
-                                      'WATER_SOURCE_CODE','WATER_TYPE_CODE', 'WITHDRAWAL','CONSUMPTION'])
+                                      'WATER_SOURCE_CODE','WATER_TYPE_CODE', 'WITHDRAWAL', 'CONSUMPTION'])
 
 def get_irrigation_data():
     """Read in a dataframe of irrigation well depth, pressure, and pump fuel type by state
