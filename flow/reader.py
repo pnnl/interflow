@@ -140,7 +140,7 @@ def get_powerplant_cooling_data():
             """
 
     data = pkg_resources.resource_filename('flow',
-                                           'data/2015_TE_Model_Estimates_2015.csv')
+                                           'data/2015_TE_Model_Estimates_USGS.csv')
 
     # read in data
     return pd.read_csv(data, usecols=['EIA_PLANT_ID', "COUNTY", 'STATE', 'GENERATION_TYPE', 'COOLING_TYPE',
