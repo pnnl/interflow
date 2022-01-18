@@ -106,7 +106,6 @@ def get_electricity_generation_data():
     return pd.read_csv(data, skiprows=5)
 
 def get_power_plant_county_data():
-    # TODO add test
     """Read in a dataframe of power plant locations
 
         :return:                        dataframe of values
@@ -119,6 +118,33 @@ def get_power_plant_county_data():
     # read in data
     return pd.read_csv(data, skiprows=1, usecols= ['Plant Code', "State", 'County'])
 
+def get_powerplant_primary_data():
+    """Read in a dataframe of power plant primary generation type by power plant ID
+
+            :return:                        dataframe of values
+
+            """
+
+    data = pkg_resources.resource_filename('flow',
+                                           'data/eia_powerplant_primary_2020.csv')
+
+    # read in data
+    return pd.read_csv(data, usecols=['Plant_Code', "StateName", 'County', 'PrimSource'])
+
+
+def get_powerplant_cooling_data():
+    """Read in a dataframe of power plant primary generation type by power plant ID
+
+            :return:                        dataframe of values
+
+            """
+
+    data = pkg_resources.resource_filename('flow',
+                                           'data/2015_TE_Model_Estimates_2015.csv')
+
+    # read in data
+    return pd.read_csv(data, usecols=['EIA_PLANT_ID', "COUNTY", 'STATE', 'GENERATION_TYPE', 'COOLING_TYPE',
+                                      'WATER_SOURCE_CODE','WATER_TYPE_CODE', 'WITHDRAWAL','CONSUMPTION'])
 
 def get_irrigation_data():
     """Read in a dataframe of irrigation well depth, pressure, and pump fuel type by state

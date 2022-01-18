@@ -1385,6 +1385,10 @@ def calc_hydro_water_use(data: pd.DataFrame, hydro_water_intensity=2040, regions
     return output_df
 
 
+
+
+
+
 def calc_energy_production_water(data: pd.DataFrame,water_intensity_values=None, water_flow_values=None,
                                  produced_water_consumption_values=None, discharge_fractions=None, regions=3):
     # TODO consider changing all calculations to dictionary.update like in discharge for efficiency.
