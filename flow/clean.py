@@ -792,6 +792,7 @@ def prep_thermo_cooling_data() -> pd.DataFrame:
     df = get_powerplant_cooling_data()
     df_primary = get_powerplant_primary_data()
     df_plant_923 = get_electricity_generation_data()
+    df_plant_loc = prep_power_plant_location()
 
     fuel_dict = {'BIOMASS': 'biomass',
                  'COAL': 'coal',
@@ -802,8 +803,7 @@ def prep_thermo_cooling_data() -> pd.DataFrame:
                  'OIL': 'petroleum',
                  'COMPLEX': 'complex'}
 
-    eia_fuel_dict = {'natural gas': 'natgas',
-                     }
+    eia_fuel_dict = {'natural gas': 'natgas'}
 
     cooling_dict = {'COMPLEX': 'complex',
                     'ONCE-THROUGH FRESH': 'oncethrough',
@@ -825,11 +825,11 @@ def prep_thermo_cooling_data() -> pd.DataFrame:
                        'OT': 'fresh', # all other source is assumed to be surface water
                        "FR & BE": 'fresh', # all combinations with fresh and BE are assumed to be fresh
                        "BE": "fresh",  # all BE should be changed to fresh (pws)
-                        "BR": "saline"      # all brackish should be changed to saline
-                        }
+                        "BR": "saline",      # all brackish should be changed to saline
+                        "": "fresh"}
 
     # create a dictionary to bin power plant fuel types
-    fuel_dict = {'SUN': 'solar',  # solar
+    eia_923_fuel_dict = {'SUN': 'solar',  # solar
                  'COL': 'coal',  # coal
                  'DFO': 'petroleum',  # distillate petroleum
                  "GEO": 'geothermal',  # geothermal
@@ -862,20 +862,21 @@ def prep_thermo_cooling_data() -> pd.DataFrame:
     df['COOLING_TYPE'] = df['COOLING_TYPE'].map(cooling_dict)  # rename cooling types
     df['WATER_SOURCE_CODE'] = df['WATER_SOURCE_CODE'].map(water_source_dict)  # rename water sources
     df['WATER_TYPE_CODE'] = df['WATER_TYPE_CODE'].map(water_type_dict)  # rename water types
-
+    df['WATER_TYPE_CODE'].fillna('fresh', inplace=True)
+    df['WATER_SOURCE_CODE'].fillna('surfacewater', inplace=True)
     #
     df_primary = df_primary.rename(columns={'Plant_Code': 'EIA_PLANT_ID'})
 
     df = pd.merge(df, df_primary, how='left', on='EIA_PLANT_ID')
     df['PrimSource'].replace('natural gas', 'natgas', inplace=True)
 
-    # fill complex generation types with primary source from EIA data set
+     #fill complex generation types with primary source from EIA data set
     df['GENERATION_TYPE'] = np.where(df["GENERATION_TYPE"] == "complex", df['PrimSource'], df['GENERATION_TYPE'])
 
     # copy rows with no generation type
     df_copy = df.copy()
     df_copy.fillna('NOTYPE', inplace=True)
-    df_copy = [df_copy.PrimSource == 'NOTYPE']
+    df_copy = df_copy[df_copy.PrimSource == 'NOTYPE']
 
     df_plant_923 = df_plant_923[['Plant Id', "AER\nFuel Type Code", "Net Generation\n(Megawatthours)"]]
 
@@ -891,17 +892,47 @@ def prep_thermo_cooling_data() -> pd.DataFrame:
         df_plant_923[col] = df_plant_923[col].astype(float)  # convert to float
 
     # using fuel type dictionary to bin fuel types
-    df_plant_923['fuel_type'] = df_plant_923['fuel_type'].map(fuel_dict)  # bin fuel types
+    df_plant_923['fuel_type'] = df_plant_923['fuel_type'].map(eia_923_fuel_dict)  # bin fuel types
 
     df_copy = pd.merge(df_plant_923, df_copy, how='left', on='EIA_PLANT_ID')
+    df_copy = df_copy.dropna(subset=["GENERATION_TYPE"])
+    df_copy = df_copy.loc[df_copy.groupby('EIA_PLANT_ID').generation_mwh.idxmax()]
+    df_copy = df_copy[['EIA_PLANT_ID', 'fuel_type']]
+
+    df = pd.merge(df, df_copy, on='EIA_PLANT_ID', how='left')
+    df['GENERATION_TYPE'].fillna(df['fuel_type'], inplace=True)
+
+
 
     # TODO map values to power plant location FIPS codes
+    df_plant_loc = df_plant_loc.rename(columns={'plant_code': 'EIA_PLANT_ID'})
+    df = pd.merge(df, df_plant_loc, how='left', on = 'EIA_PLANT_ID')
 
     # TODO combine columns to get single name fresh_surfacewater_biomass_tower_mgd
+    df['withdrawal_identifier'] = df['WATER_TYPE_CODE'] + "_" + df['WATER_SOURCE_CODE'] + "_" \
+                                  + df['GENERATION_TYPE'] + "_" + df['COOLING_TYPE'] + "_mgd"
+    df['consumption_identifier'] = + df['GENERATION_TYPE'] + "_" + df['COOLING_TYPE'] + "consumption_mgd"
+
+    df = df[['FIPS', 'withdrawal_identifier', 'consumption_identifier', 'WITHDRAWAL',
+             'CONSUMPTION']]
 
     # TODO pivot to get each one as a column
+    withdrawal_df = df[['FIPS', 'withdrawal_identifier', 'WITHDRAWAL']].copy()
+    # Pivoting dataframe
+    withdrawal_df = pd.pivot_table(withdrawal_df, values='WITHDRAWAL', index=['FIPS'],
+                        columns=['withdrawal_identifier'], aggfunc=np.sum, fill_value=0)
+    withdrawal_df = withdrawal_df.reset_index().rename_axis(None, axis=1)  # reset index to remove multi-index
+#
+    consumption_df = df = df[['FIPS', 'consumption_identifier', 'CONSUMPTION']].copy()
+    consumption_df = pd.pivot_table(consumption_df, values='CONSUMPTION', index=['FIPS'],
+                                   columns=['consumption_identifier'], aggfunc=np.sum, fill_value=0)
+    consumption_df = consumption_df.reset_index().rename_axis(None, axis=1)  # reset index to remove multi-index
 
-    return df_copy
+    #TODO recombine pivot tables after combining with total FIPS on FIPS
+
+
+
+    return withdrawal_df
 
 
 def prep_irrigation_fuel_data() -> pd.DataFrame:
