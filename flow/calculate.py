@@ -1531,7 +1531,7 @@ def calc_energy_production_water(data: pd.DataFrame,water_intensity_values=None,
         energy_production_name = f'{fuel_type}_production_bbtu'
         for water_type in fuel_water_type_dict[fuel_type]:  # saline
             for water_source in fuel_water_type_dict[fuel_type][water_type]:  # groundwater
-                energy_production_water_name = f'{water_type}_{water_source}_{fuel_type}_mgd'
+                energy_production_water_name = f'{water_type}_{water_source}_{fuel_type}_production_mgd'
                 if energy_production_water_name in df.columns:
                     output_df[energy_production_water_name] = df[energy_production_water_name]  # if already in data
                 else:
@@ -1565,7 +1565,7 @@ def calc_energy_production_water(data: pd.DataFrame,water_intensity_values=None,
     for fuel_type in fuel_water_type_dict:  # biomass
         for water_type in fuel_water_type_dict[fuel_type]:  # saline
             for water_source in fuel_water_type_dict[fuel_type][water_type]:  # groundwater
-                energy_production_water_name = f'{water_type}_{water_source}_{fuel_type}_mgd'
+                energy_production_water_name = f'{water_type}_{water_source}_{fuel_type}_production_mgd'
                 water_fraction_name = f'{water_type}_{water_source}_{fuel_type}_fraction'
                 total_water_name = f'total_water_use_{fuel_type}_mgd'
                 if total_water_name in output_df.columns:
@@ -1585,7 +1585,7 @@ def calc_energy_production_water(data: pd.DataFrame,water_intensity_values=None,
     for fuel_type in fuel_water_type_dict:  # biomass
         for water_type in fuel_water_type_dict[fuel_type]:  # saline
             for water_source in fuel_water_type_dict[fuel_type][water_type]:  # groundwater
-                energy_production_water_name = f'{water_type}_{water_source}_{fuel_type}_mgd'
+                energy_production_water_name = f'{water_type}_{water_source}_{fuel_type}_production_mgd'
                 if energy_production_water_name in output_df.columns:  # if water was calculated
                     water_consumption_name = f'{fuel_type}_{water_type}_{water_source}_consumption_mgd'
                     water_consumption_fraction_name = f'{fuel_type}_{water_type}_{water_source}_consumption_fraction'
