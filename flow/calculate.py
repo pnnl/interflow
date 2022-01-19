@@ -38,7 +38,7 @@ def calc_electricity_rejected_energy(data: pd.DataFrame, generation_types=None, 
 
     # load data
     df = data
-
+    # TODO reconfigure as nested dictionary with efficiencies
     # establish list of generation types
     if generation_types is None:
         generation_type_list = ['biomass', 'coal', 'geothermal', 'hydro', 'natgas', 'nuclear',

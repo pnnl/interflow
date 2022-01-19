@@ -791,6 +791,7 @@ def prep_thermo_cooling_data() -> pd.DataFrame:
 
     df = get_powerplant_cooling_data()
     df_primary = get_powerplant_primary_data()
+    df_plant_923 = get_electricity_generation_data()
 
     fuel_dict = {'BIOMASS': 'biomass',
                  'COAL': 'coal',
@@ -827,6 +828,26 @@ def prep_thermo_cooling_data() -> pd.DataFrame:
                         "BR": "saline"      # all brackish should be changed to saline
                         }
 
+    # create a dictionary to bin power plant fuel types
+    fuel_dict = {'SUN': 'solar',  # solar
+                 'COL': 'coal',  # coal
+                 'DFO': 'petroleum',  # distillate petroleum
+                 "GEO": 'geothermal',  # geothermal
+                 'HPS': 'hydro',  # hydro pumped storage
+                 'HYC': 'hydro',  # hydro conventional
+                 'MLG': 'biomass',  # biogenic municipal solid waste and landfill gas
+                 'NG': 'natgas',  # natural gas
+                 'NUC': 'nuclear',  # nuclear
+                 'OOG': 'other',  # other gases
+                 'ORW': 'other',  # other renewables
+                 'OTH': 'other',  # other
+                 'PC': 'petroleum',  # petroleum coke
+                 'RFO': 'petroleum',  # residual petroleum
+                 'WND': 'wind',  # wind
+                 'WOC': 'coal',  # waste coal
+                 'WOO': 'petroleum',  # waste oil
+                 'WWW': 'biomass'}  # wood and wood waste
+
 
     # all surface water without a type is assumed to be fresh
     df['WATER_TYPE_CODE'] = np.where((df["WATER_SOURCE_CODE"] == "SW") & (df["WATER_TYPE_CODE"] == "-nr-"),
@@ -851,7 +872,28 @@ def prep_thermo_cooling_data() -> pd.DataFrame:
     # fill complex generation types with primary source from EIA data set
     df['GENERATION_TYPE'] = np.where(df["GENERATION_TYPE"] == "complex", df['PrimSource'], df['GENERATION_TYPE'])
 
-    # TODO fill NAN power plant types
+    # copy rows with no generation type
+    df_copy = df.copy()
+    df_copy.fillna('NOTYPE', inplace=True)
+    df_copy = [df_copy.PrimSource == 'NOTYPE']
+
+    df_plant_923 = df_plant_923[['Plant Id', "AER\nFuel Type Code", "Net Generation\n(Megawatthours)"]]
+
+    # rename columns in power plant generation data file
+    df_plant_923 = df_plant_923.rename(columns={"Plant Id": "EIA_PLANT_ID"})
+    df_plant_923 = df_plant_923.rename(columns={"AER\nFuel Type Code": "fuel_type"})
+    df_plant_923 = df_plant_923.rename(columns={"Net Generation\n(Megawatthours)": "generation_mwh"})
+
+    # changing string columns to numeric
+    string_col = df_plant_923.columns[2:]  # create list of string columns
+    for col in string_col:
+        df_plant_923[col] = df_plant_923[col].str.replace(r"[^\w ]", '', regex=True)  # replace any non alphanumeric values
+        df_plant_923[col] = df_plant_923[col].astype(float)  # convert to float
+
+    # using fuel type dictionary to bin fuel types
+    df_plant_923['fuel_type'] = df_plant_923['fuel_type'].map(fuel_dict)  # bin fuel types
+
+    df_copy = pd.merge(df_plant_923, df_copy, how='left', on='EIA_PLANT_ID')
 
     # TODO map values to power plant location FIPS codes
 
@@ -859,7 +901,7 @@ def prep_thermo_cooling_data() -> pd.DataFrame:
 
     # TODO pivot to get each one as a column
 
-    return df
+    return df_copy
 
 
 def prep_irrigation_fuel_data() -> pd.DataFrame:

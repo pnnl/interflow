@@ -2,6 +2,16 @@ import pkg_resources
 
 import pandas as pd
 
+def get_electricity_dict():
+    """Read in a dataframe of 2015 USGS Water Use Data.
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/electricity_generation_dict.csv')
+
+    return pd.read_csv(data)
 
 def get_water_use_2015():
     """Read in a dataframe of 2015 USGS Water Use Data.

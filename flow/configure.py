@@ -5,6 +5,11 @@ from .calculate import *
 from .reader import *
 from .clean import *
 
+#TODO put assumption file reader here and convert to dictionaries
+
+
+
+
 #TODO figure out if it makes more sense for it to load paths or have another function that loads the data
 #TODO could have the other function read in everything and store it in a dataframe, which is called here.
 
