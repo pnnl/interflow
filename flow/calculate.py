@@ -8,7 +8,7 @@ import flow.construct as co
 
 def calc_electricity_generation_energy_discharge(data: pd.DataFrame, regions=3, total=False):
 
-    """calculates rejected energy (losses) and total energy services (generation) from electricity generation
+    """Calculates rejected energy (losses) and total energy services (generation) from electricity generation
     by generating type for each region.
 
     Function requires two items:
@@ -20,9 +20,7 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, regions=3, 
 
     For each generator type (fuel_type + sub_fuel_type), the following process occurs:
 
-    The calculation begins by looking for generator to rejected energy data in the baseline data provided to avoid
-    overwriting data already provided. If the data is already calculated, it copies the data at the region-level to the
-    output. If energy consumption to generator flows (fuel demand) are not found in the baseline data, the function
+    If energy consumption to generator flows (fuel demand) are not found in the baseline data, the function
     returns nothing as this is a baseline requirement outlined above. Otherwise, if it is available and generator to
     energy services (electricity generation) data is also available, rejected energy is calculated as the difference
     between the two (total fuel in - total generation out). If electricity generation out data is not provided in the
@@ -47,7 +45,8 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, regions=3, 
                                             major fuel type.
         :type total:                        bool
 
-        :return:                            DataFrame of rejected energy in billion btu from electricity generation
+        :return:                            DataFrame of rejected energy and energy services values in billion btu
+                                            from electricity generation by generator type
 
         """
 
@@ -69,6 +68,9 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, regions=3, 
     for fuel_type in efficiency_dict:
 
         # create total rejected energy by fuel type variable name and initialize value to 0
+        fuel_use_total_name = f'ec_consumption_' + fuel_type + "_" + '_to_eg_generation_bbtu'
+        fuel_use_total_value = 0
+
         rejected_energy_total_name = f'eg_generation_' + fuel_type + "_to_re_bbtu"
         rejected_energy_total_value = 0
 
@@ -80,14 +82,17 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, regions=3, 
 
             # build data names from parameter inputs to look for in baseline dataset
             fuel_use_name = f'ec_consumption_' + fuel_type + "_" + sub_fuel_type + '_to_eg_generation_bbtu'
+            rejected_energy_name = f'eg_generation_' + fuel_type + "_" + sub_fuel_type + "_to_re_bbtu"
             energy_services_name = f'eg_generation_' + fuel_type + "_" + sub_fuel_type + "_to_es_bbtu"
             region_efficiency_fraction_name = f'eg_' + fuel_type + '_'+ sub_fuel_type + '_efficiency_fraction'
 
-            # create a variable name for rejected energy output
-            rejected_energy_name = f'eg_generation_' + fuel_type + "_" + sub_fuel_type + "_to_re_bbtu"
-
             # if fuel to electricity generation by fuel_type and sub_fuel type is in the baseline data
             if fuel_use_name in df.columns:
+                fuel_use_value = df[fuel_use_name]
+                output_dict.update({fuel_use_name: fuel_use_value})
+                fuel_use_total_value = fuel_use_total_value + fuel_use_value
+                output_dict.update({fuel_use_total_name: fuel_use_total_value})
+                total_dict.update({fuel_use_total_name: fuel_use_total_value})
 
                 # if electricity generation (energy services) by fuel type and fuel_subtype is in the baseline data
                 if energy_services_name in df.columns:
