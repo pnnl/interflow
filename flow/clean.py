@@ -759,6 +759,7 @@ def prep_electricity_generation() -> pd.DataFrame:
     df_fuel = df[["FIPS", "fuel_amt", "fuel_type"]].copy()  # create a copy of fuel type data
     df_fuel["fuel_type"] = 'ec_consumption_' + df_fuel["fuel_type"] + '_total_to_eg_generation_bbtu'  # add naming
 
+
     df_fuel = pd.pivot_table(df_fuel, values='fuel_amt', index=['FIPS'], columns=['fuel_type'], aggfunc=np.sum)  # pivot
     df_fuel = df_fuel.reset_index()  # reset index to remove multi-index from pivot table
     df_fuel = df_fuel.rename_axis(None, axis=1)  # drop index name

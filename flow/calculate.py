@@ -111,32 +111,33 @@ def calc_electricity_energy_discharge(data: pd.DataFrame, regions=3, total=False
     #efficiency_dict = {'biomass', 'coal', 'geothermal', 'hydro', 'natgas', 'nuclear',
     #                   'oil', 'other', 'solar', 'wind'}
 
+    output_list = []
     # loop through each fuel type in parameter data provided
     for fuel_type in efficiency_dict:
 
         # create total rejected energy by fuel type variable name and initialize value to 0
-        rejected_energy_total_name = f'eg_generation_' + {fuel_type} + "_to_re_bbtu"
+        rejected_energy_total_name = f'eg_generation_' + fuel_type + "_to_re_bbtu"
         rejected_energy_total_value = 0
 
-        energy_services_total_name = f'eg_generation_' + {fuel_type} + "_to_es_bbtu"
+        energy_services_total_name = f'eg_generation_' + fuel_type + "_to_es_bbtu"
         energy_services_total_value = 0
 
         # loop through each sub_fuel type for each fuel type in parameter data provided
         for sub_fuel_type in efficiency_dict[fuel_type]:
 
             # build data names from parameter inputs to look for in baseline dataset
-            fuel_use_name = f'ec_consumption_' + {fuel_type} + "-" + {sub_fuel_type} + '_to_eg_generation_bbtu'
-            energy_services_name = f'eg_generation_' + "_" + {fuel_type} + "_" + {sub_fuel_type} + "_to_es_bbtu"
-            region_efficiency_fraction_name = f'eg_' + {fuel_type} + '_'+ {sub_fuel_type} + '_efficiency_fraction'
+            fuel_use_name = f'ec_consumption_' + fuel_type + "_" + sub_fuel_type + '_to_eg_generation_bbtu'
+            energy_services_name = f'eg_generation_' + fuel_type + "_" + sub_fuel_type + "_to_es_bbtu"
+            region_efficiency_fraction_name = f'eg_' + fuel_type + '_'+ sub_fuel_type + '_efficiency_fraction'
 
             # create a variable name for rejected energy output
-            rejected_energy_name = f'eg_generation_' + "_" + {fuel_type} + "_" + {sub_fuel_type} + "_to_re_bbtu"
+            rejected_energy_name = f'eg_generation_' + fuel_type + "_" + sub_fuel_type + "_to_re_bbtu"
 
             # if fuel to electricity generation by fuel_type and sub_fuel type is in the baseline data
-            if fuel_use_name in df.columns():
+            if fuel_use_name in df.columns:
 
                 # if electricity generation (energy services) by fuel type and fuel_subtype is in the baseline data
-                if energy_services_name in df.columns():
+                if energy_services_name in df.columns:
 
                     # calculate rejected energy as the difference between fuel input and generation output (to ES)
                     rejected_energy_value = df[fuel_use_name] - df[energy_services_name]
@@ -169,8 +170,8 @@ def calc_electricity_energy_discharge(data: pd.DataFrame, regions=3, total=False
 
                 # append energy services (generation) values to output dictionaries
                 output_dict.update({energy_services_name: energy_services_value})
-                total_dict.update({energy_services_total_value: energy_services_total_value})
-                output_dict.update({energy_services_total_value: energy_services_total_value})
+                total_dict.update({energy_services_total_name: energy_services_total_value})
+                output_dict.update({energy_services_total_name: energy_services_total_value})
 
             # fuel to electricity is a baseline data requirement
             else:
