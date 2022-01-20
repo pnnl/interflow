@@ -11,7 +11,9 @@ class TestCalculate(unittest.TestCase):
     def test_calc_electricity_generation_energy_discharge(self):
         # load data
         data = configure_data()
-        df = calc_electricity_generation_energy_discharge(data)
+        parameters = get_electricity_generation_efficiency_parameters()
+        df = calc_electricity_generation_energy_discharge(data, parameters)
+
 
         # test that the output has the correct number of columns and rows
         self.assertEqual(df.shape[0], data.shape[0])
@@ -33,9 +35,30 @@ class TestCalculate(unittest.TestCase):
         # test that the rejected energy within a single region is equal to fuel - energy services
         rejected_energy_output_value = df[rejected_energy_total_name][10]
         rejected_energy_test_value = df[fuel_input_total_name][10] - df[energy_services_total_name][10]
-
         self.assertAlmostEqual(rejected_energy_test_value, rejected_energy_output_value, 2)
+
         # test that the total energy services is equal to fuel - rejected energy
+        energy_services_output_value = df[energy_services_total_name].sum()
+        energy_services_test_value = df[fuel_input_total_name].sum() - df[rejected_energy_total_name].sum()
+        self.assertAlmostEqual(energy_services_test_value, energy_services_output_value, 2)
+
+        # test that the rejected energy within a single region is equal to fuel - energy services
+        energy_services_output_value = df[energy_services_total_name][10]
+        energy_services_test_value = df[fuel_input_total_name][10] - df[rejected_energy_total_name][10]
+        self.assertAlmostEqual(energy_services_test_value, energy_services_output_value, 2)
+
+        # test that there are no blank rows
+        is_NaN = df.isnull()
+        row_has_NaN = is_NaN.any(axis=1)
+        rows_with_NaN = df[row_has_NaN]
+        self.assertEqual(rows_with_NaN.shape[0], 0)
+
+        # test that having the incorrect number of columns in parameter data raises a ValueError
+        fail_parameter_data = get_electricity_generation_efficiency_parameters()
+        fail_parameter_data = fail_parameter_data.drop(fail_parameter_data.columns[2], axis=1)
+        with self.assertRaises(ValueError):
+            calc_electricity_generation_energy_discharge(data, fail_parameter_data)
+
 
 if __name__ == '__main__':
     unittest.main()

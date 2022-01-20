@@ -6,7 +6,7 @@ import flow.configure as conf
 import flow.construct as co
 
 
-def calc_electricity_generation_energy_discharge(data: pd.DataFrame, regions=3, total=False):
+def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters: pd.DataFrame, regions=3, total=False):
 
     """Calculates rejected energy (losses) and total energy services (generation) from electricity generation
     by generating type for each region.
@@ -36,6 +36,10 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, regions=3, 
                                             electricity generation by type
         :type data:                         DataFrame
 
+        :param parameters:                  DataFrame of input parameters containing fuel efficiency data by fuel_type +
+                                            fuel_sub_type combination.
+        :type parameters:                   DataFrame
+
         :param regions:                     The number of columns (inclusive) in the baseline dataset that include
                                             region identifiers (e.g. "Country", "State"). Reads from the first column
                                             in the dataframe onwards. Default is set to 3.
@@ -56,96 +60,100 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, regions=3, 
     # TODO unlock this later when the load_baseline_data is hooked up to a data reader
     #df = load_baseline_data()
 
-    # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings
-    parameters = get_electricity_generation_efficiency_parameters()
+    # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings and change to nested dict
     efficiency_dict = co.construct_nested_dictionary(parameters)
 
-    # initialize output dictionaries with region identifiers
-    output_dict = df[df.columns[:regions].tolist()].to_dict()
-    total_dict = df[df.columns[:regions].tolist()].to_dict()
+    if parameters.shape[1] != 4:
+        raise ValueError('Input parameter data does not have correct number of columns')
 
-    # loop through each fuel type in parameter data provided
-    for fuel_type in efficiency_dict:
-
-        # create total rejected energy by fuel type variable name and initialize value to 0
-        fuel_use_total_name = f'ec_consumption_' + fuel_type + "_" + '_to_eg_generation_bbtu'
-        fuel_use_total_value = 0
-
-        rejected_energy_total_name = f'eg_generation_' + fuel_type + "_to_re_bbtu"
-        rejected_energy_total_value = 0
-
-        energy_services_total_name = f'eg_generation_' + fuel_type + "_to_es_bbtu"
-        energy_services_total_value = 0
-
-        # loop through each sub_fuel type for each fuel type in parameter data provided
-        for sub_fuel_type in efficiency_dict[fuel_type]:
-
-            # build data names from parameter inputs to look for in baseline dataset
-            fuel_use_name = f'ec_consumption_' + fuel_type + "_" + sub_fuel_type + '_to_eg_generation_bbtu'
-            rejected_energy_name = f'eg_generation_' + fuel_type + "_" + sub_fuel_type + "_to_re_bbtu"
-            energy_services_name = f'eg_generation_' + fuel_type + "_" + sub_fuel_type + "_to_es_bbtu"
-            region_efficiency_fraction_name = f'eg_' + fuel_type + '_'+ sub_fuel_type + '_efficiency_fraction'
-
-            # if fuel to electricity generation by fuel_type and sub_fuel type is in the baseline data
-            if fuel_use_name in df.columns:
-                fuel_use_value = df[fuel_use_name]
-                output_dict.update({fuel_use_name: fuel_use_value})
-                fuel_use_total_value = fuel_use_total_value + fuel_use_value
-                output_dict.update({fuel_use_total_name: fuel_use_total_value})
-                total_dict.update({fuel_use_total_name: fuel_use_total_value})
-
-                # if electricity generation (energy services) by fuel type and fuel_subtype is in the baseline data
-                if energy_services_name in df.columns:
-
-                    # calculate rejected energy as the difference between fuel input and generation output (to ES)
-                    rejected_energy_value = df[fuel_use_name] - df[energy_services_name]
-
-                    # use the energy services value from the baseline data
-                    energy_services_value = df[energy_services_name]
-
-                # if it's not available, calculate rejected energy and energy services from parameters
-                else:
-
-                    # if region-level efficiency information is available by fuel_type + fuel sub_type
-                    if region_efficiency_fraction_name in df.columns:
-                        efficiency_value = df[region_efficiency_fraction_name]
-
-                    # otherwise use the single value assumption from the input parameters
-                    else:
-                        efficiency_value = efficiency_dict[fuel_type][sub_fuel_type]['efficiency']
-
-                    rejected_energy_value = df[fuel_use_name] * efficiency_value
-                    energy_services_value = df[fuel_use_name] - rejected_energy_value
-
-                    # add output to total rejected energy value
-                rejected_energy_total_value = rejected_energy_total_value + rejected_energy_value
-                energy_services_total_value = energy_services_total_value + energy_services_value
-
-                # append rejected energy values to output dictionaries
-                output_dict.update({rejected_energy_name: rejected_energy_value})
-                total_dict.update({rejected_energy_total_name: rejected_energy_total_value})
-                output_dict.update({rejected_energy_total_name: rejected_energy_total_value})
-
-                # append energy services (generation) values to output dictionaries
-                output_dict.update({energy_services_name: energy_services_value})
-                total_dict.update({energy_services_total_name: energy_services_total_value})
-                output_dict.update({energy_services_total_name: energy_services_total_value})
-
-            # fuel to electricity is a baseline data requirement
-            else:
-                pass
-
-    # convert output dictionaries to dataframe, merge with location information
-    output_df = pd.DataFrame.from_dict(output_dict, orient='index').transpose()
-    total_df = pd.DataFrame.from_dict(total_dict, orient='index').transpose()
-
-    # return full output or total output
-    if total:
-        df = total_df
     else:
-        df = output_df
 
-    return df
+        # initialize output dictionaries with region identifiers
+        output_dict = df[df.columns[:regions].tolist()].to_dict()
+        total_dict = df[df.columns[:regions].tolist()].to_dict()
+
+        # loop through each fuel type in parameter data provided
+        for fuel_type in efficiency_dict:
+
+            # create total rejected energy by fuel type variable name and initialize value to 0
+            fuel_use_total_name = f'ec_consumption_' + fuel_type + "_" + '_to_eg_generation_bbtu'
+            fuel_use_total_value = 0
+
+            rejected_energy_total_name = f'eg_generation_' + fuel_type + "_to_re_bbtu"
+            rejected_energy_total_value = 0
+
+            energy_services_total_name = f'eg_generation_' + fuel_type + "_to_es_bbtu"
+            energy_services_total_value = 0
+
+            # loop through each sub_fuel type for each fuel type in parameter data provided
+            for sub_fuel_type in efficiency_dict[fuel_type]:
+
+                # build data names from parameter inputs to look for in baseline dataset
+                fuel_use_name = f'ec_consumption_' + fuel_type + "_" + sub_fuel_type + '_to_eg_generation_bbtu'
+                rejected_energy_name = f'eg_generation_' + fuel_type + "_" + sub_fuel_type + "_to_re_bbtu"
+                energy_services_name = f'eg_generation_' + fuel_type + "_" + sub_fuel_type + "_to_es_bbtu"
+                region_efficiency_fraction_name = f'eg_' + fuel_type + '_'+ sub_fuel_type + '_efficiency_fraction'
+
+                # if fuel to electricity generation by fuel_type and sub_fuel type is in the baseline data
+                if fuel_use_name in df.columns:
+                    fuel_use_value = df[fuel_use_name]
+                    output_dict.update({fuel_use_name: fuel_use_value})
+                    fuel_use_total_value = fuel_use_total_value + fuel_use_value
+                    output_dict.update({fuel_use_total_name: fuel_use_total_value})
+                    total_dict.update({fuel_use_total_name: fuel_use_total_value})
+
+                    # if electricity generation (energy services) by fuel type and fuel_subtype is in the baseline data
+                    if energy_services_name in df.columns:
+
+                        # calculate rejected energy as the difference between fuel input and generation output (to ES)
+                        rejected_energy_value = df[fuel_use_name] - df[energy_services_name]
+
+                        # use the energy services value from the baseline data
+                        energy_services_value = df[energy_services_name]
+
+                    # if it's not available, calculate rejected energy and energy services from parameters
+                    else:
+
+                        # if region-level efficiency information is available by fuel_type + fuel sub_type
+                        if region_efficiency_fraction_name in df.columns:
+                            efficiency_value = df[region_efficiency_fraction_name]
+
+                        # otherwise use the single value assumption from the input parameters
+                        else:
+                            efficiency_value = efficiency_dict[fuel_type][sub_fuel_type]['efficiency']
+
+                        rejected_energy_value = df[fuel_use_name] * efficiency_value
+                        energy_services_value = df[fuel_use_name] - rejected_energy_value
+
+                        # add output to total rejected energy value
+                    rejected_energy_total_value = rejected_energy_total_value + rejected_energy_value
+                    energy_services_total_value = energy_services_total_value + energy_services_value
+
+                    # append rejected energy values to output dictionaries
+                    output_dict.update({rejected_energy_name: rejected_energy_value})
+                    total_dict.update({rejected_energy_total_name: rejected_energy_total_value})
+                    output_dict.update({rejected_energy_total_name: rejected_energy_total_value})
+
+                    # append energy services (generation) values to output dictionaries
+                    output_dict.update({energy_services_name: energy_services_value})
+                    total_dict.update({energy_services_total_name: energy_services_total_value})
+                    output_dict.update({energy_services_total_name: energy_services_total_value})
+
+                # fuel to electricity is a baseline data requirement
+                else:
+                    pass
+
+        # convert output dictionaries to dataframe, merge with location information
+        output_df = pd.DataFrame.from_dict(output_dict, orient='index').transpose()
+        total_df = pd.DataFrame.from_dict(total_dict, orient='index').transpose()
+
+        # return full output or total output
+        if total:
+            df = total_df
+        else:
+            df = output_df
+
+        return df
 
 
 
