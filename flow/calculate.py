@@ -22,13 +22,13 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
     For each generator type (fuel_type + sub_fuel_type), the following process occurs:
 
     If energy consumption to generator flows (fuel demand) are not found in the baseline data, the function
-    returns nothing as this is a baseline requirement outlined above. Otherwise, if it is available and generator to
-    energy services (electricity generation) data is also available, rejected energy is calculated as the difference
-    between the two (total fuel in - total generation out). If electricity generation out data is not provided in the
-    baseline data, the calculation determines rejected energy based on the product of fuel in and an efficiency rating.
-    The efficiency rating value used is either a) region-level efficiency ratings for each generator type provided in
-    the baseline data, or b) the singular efficiency rating provided in the input parameter data for each generator
-    type.
+    returns nothing as this is a baseline requirement outlined above. Otherwise, if it is available, the information is
+    copied to the output and generator to energy services (electricity generation) data is also available, rejected
+    energy is calculated as the difference between the two (total fuel in - total generation out). If electricity
+    generation out data is not provided in the baseline data, the calculation determines rejected energy based on the
+    product of fuel in and an efficiency rating. The efficiency rating value used is either a) region-level efficiency
+    ratings for each generator type provided in the baseline data, or b) the singular efficiency rating provided in the
+    input parameter data for each generator type.
 
     To determine energy services for each generator type, either the values are already provided in the baseline data
     or they are calculated from the difference between fuel input to the generator and the rejected energy calculated.
@@ -46,12 +46,20 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
                                             in the dataframe onwards. Default is set to 3.
         :type regions:                      int
 
-        :param total:                       If true, returns total rejected energy and total energy services by each
-                                            major fuel type.
+        :param all_output:                  If true, returns all fuel use, rejected energy and energy service for each
+                                            fuel_type and fuel_sub_type within each region
+        :type all_output:                   bool
+
+        :param total:                       If true, returns total fuel use, rejected energy and total energy services
+                                            by each fuel type within each region
         :type total:                        bool
 
-        :return:                            DataFrame of rejected energy and energy services values in billion btu
-                                            from electricity generation by generator type
+        :param grandtotal:                  If true, returns grand total fuel use in electricity generation, rejected
+                                            energy and total energy services within each region.
+        :type grandtotal:                   bool
+
+        :return:                            DataFrame of fuel use, rejected energy, and energy services values in
+                                            billion btu per year related to electricity generation
 
         """
 
@@ -91,7 +99,6 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
             rejected_energy_grandtotal_value = 0
             energy_services_grandtotal_name = f'eg_generation_to_es_bbtu'
             energy_services_grandtotal_value = 0
-
 
             # loop through each sub_fuel type for each fuel type in parameter data provided
             for sub_fuel_type in efficiency_dict[fuel_type]:
@@ -160,7 +167,6 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
         total_df = pd.DataFrame.from_dict(total_dict, orient='index').transpose()
         grandtotal_df = pd.DataFrame.from_dict(grandtotal_dict, orient='index').transpose()
 
-
         # return combinations of output specified.
         if all_output:
             if total:
@@ -175,7 +181,16 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
                 else:
                     df = output_df
         else:
-            df = df[df.columns[:regions].tolist()]
+            if total:
+                if grandtotal:
+                    df = pd.merge(grandtotal_df, total_df, how='left', on=df.columns[0:regions].to_list())
+                else:
+                    df = total_df
+            else:
+                if grandtotal:
+                    df = grandtotal_df
+                else:
+                    df = df[df.columns[:regions].tolist()]
 
         return df
 
