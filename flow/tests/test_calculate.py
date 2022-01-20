@@ -14,8 +14,7 @@ class TestCalculate(unittest.TestCase):
         parameters = get_electricity_generation_efficiency_parameters()
         df = calc_electricity_generation_energy_discharge(data, parameters)
 
-
-        # test that the output has the correct number of columns and rows
+        # test that the output has the correct number of  rows
         self.assertEqual(df.shape[0], data.shape[0])
 
         # test that the total across regions for rejected energy is equal to fuel - energy services
@@ -32,9 +31,10 @@ class TestCalculate(unittest.TestCase):
 
         self.assertAlmostEqual(rejected_energy_test_value, rejected_energy_output_value, 2)
 
-        # test that the rejected energy within a single region is equal to fuel - energy services
-        rejected_energy_output_value = df[rejected_energy_total_name][10]
-        rejected_energy_test_value = df[fuel_input_total_name][10] - df[energy_services_total_name][10]
+        # test that the rejected energy within each region is equal to fuel - energy services
+        for i in range(1, df.shape[0]):
+            rejected_energy_output_value = df[rejected_energy_total_name][i]
+            rejected_energy_test_value = df[fuel_input_total_name][i] - df[energy_services_total_name][i]
         self.assertAlmostEqual(rejected_energy_test_value, rejected_energy_output_value, 2)
 
         # test that the total energy services is equal to fuel - rejected energy
@@ -42,12 +42,13 @@ class TestCalculate(unittest.TestCase):
         energy_services_test_value = df[fuel_input_total_name].sum() - df[rejected_energy_total_name].sum()
         self.assertAlmostEqual(energy_services_test_value, energy_services_output_value, 2)
 
-        # test that the rejected energy within a single region is equal to fuel - energy services
-        energy_services_output_value = df[energy_services_total_name][10]
-        energy_services_test_value = df[fuel_input_total_name][10] - df[rejected_energy_total_name][10]
-        self.assertAlmostEqual(energy_services_test_value, energy_services_output_value, 2)
+        # test that the energy services within each region is equal to fuel - rejected energy
+        for i in range(1, df.shape[0]):
+            energy_services_output_value = df[energy_services_total_name][i]
+            energy_services_test_value = df[fuel_input_total_name][i] - df[rejected_energy_total_name][i]
+            self.assertAlmostEqual(energy_services_test_value, energy_services_output_value, 2)
 
-        # test that there are no blank rows
+        # test that there are no blank values in any row
         is_NaN = df.isnull()
         row_has_NaN = is_NaN.any(axis=1)
         rows_with_NaN = df[row_has_NaN]
