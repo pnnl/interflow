@@ -757,7 +757,8 @@ def prep_electricity_generation() -> pd.DataFrame:
 
     # splitting out fuel data into a separate dataframe and pivoting to get fuel (bbtu) as columns by type
     df_fuel = df[["FIPS", "fuel_amt", "fuel_type"]].copy()  # create a copy of fuel type data
-    df_fuel["fuel_type"] = df_fuel["fuel_type"] + "_fuel_bbtu"  # add units to fuel type column name
+    df_fuel["fuel_type"] = 'ec_consumption_' + df_fuel["fuel_type"] + '_total_to_eg_generation_bbtu'  # add naming
+
     df_fuel = pd.pivot_table(df_fuel, values='fuel_amt', index=['FIPS'], columns=['fuel_type'], aggfunc=np.sum)  # pivot
     df_fuel = df_fuel.reset_index()  # reset index to remove multi-index from pivot table
     df_fuel = df_fuel.rename_axis(None, axis=1)  # drop index name
@@ -766,7 +767,8 @@ def prep_electricity_generation() -> pd.DataFrame:
     # splitting out generation data into a separate dataframe and pivoting to get generation (mwh) as columns by type
     df_gen = df[["FIPS", "generation_mwh", "fuel_type"]].copy()  # create a copy of generation data
     df_gen['generation_mwh'] = df_gen['generation_mwh'].apply(convert_mwh_bbtu)  # convert to bbtu from mwh
-    df_gen["fuel_type"] = df_gen["fuel_type"] + "_gen_bbtu"  # add units to generation type column name
+    df_gen["fuel_type"] ='eg_generation_' + df_gen["fuel_type"] + "_total_to_es_bbtu" # add naming
+
     df_gen = pd.pivot_table(df_gen, values='generation_mwh', index=['FIPS'], columns=['fuel_type'], aggfunc=np.sum)
     df_gen = df_gen.reset_index()  # reset index to remove multi-index from pivot table
     df_gen = df_gen.rename_axis(None, axis=1)  # drop index name
