@@ -57,8 +57,8 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, regions=3, 
     #df = load_baseline_data()
 
     # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings
-    x = get_electricity_generation_efficiency_parameters()
-    efficiency_dict = co.construct_nested_dictionary(x)
+    parameters = get_electricity_generation_efficiency_parameters()
+    efficiency_dict = co.construct_nested_dictionary(parameters)
 
     # initialize output dictionaries with region identifiers
     output_dict = df[df.columns[:regions].tolist()].to_dict()
