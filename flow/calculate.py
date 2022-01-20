@@ -94,23 +94,52 @@ def calc_electricity_rejected_energy(data: pd.DataFrame, generation_types=None, 
     # load data
     df = data
 
-    df = load_baseline_data()
+    #df = load_baseline_data()
 
-    efficiency_dict = get_electricity_generation_efficiency_parameters()
-    efficiency_dict = construct_dictionary(efficiency_dict)
+    x = get_electricity_generation_efficiency_parameters()
+    efficiency_dict = construct_nested_dictionary(x)
     dictionary_levels = calc_dictionary_levels(efficiency_dict)
 
 
     # TODO reconfigure as nested dictionary with efficiencies
     # establish list of generation types
-    if generation_types is None:
-        generation_type_list = ['biomass', 'coal', 'geothermal', 'hydro', 'natgas', 'nuclear',
+    if efficiency_dict is None:
+        efficiency_dict = ['biomass', 'coal', 'geothermal', 'hydro', 'natgas', 'nuclear',
                                 'oil', 'other', 'solar', 'wind']
     else:
-        generation_type_list = generation_types
+        efficiency_dict = generation_types
 
+    # initialize total rejected energy
     df['electricity_rejected_energy_bbtu'] = 0
+
+    # initialize list of retained variables
     retain_list = []
+    output_dict = {}
+    total_dict = {}
+
+    # build data names from parameter inputs
+    for fuel_type in efficiency_dict:
+        for sub_fuel_type in efficiency_dict[fuel_type]:
+            fuel_use_name = f'ec_consumption_' + {fuel_type} + "-" + {sub_fuel_type} + '_to_eg_generation_bbtu'
+            elec_gen_name = f'eg_generation_' + "_" + {fuel_type} + "_" + {sub_fuel_type} + "_to_ES_bbtu"
+            rejected_energy_name = f'eg_generation_' + "_" + {fuel_type} + "_" + {sub_fuel_type} + "_to_RE_bbtu"
+
+            if fuel_use_name in df.columns():
+                if elec_gen_name in df.columns():
+                    # calculate the difference
+                    # append to both dictionaries
+                else:
+                    # use the coefficients in the dictionary
+                    # append to both dictionaries
+            else:
+                pass # fuel to electricity is a baseline requirement
+
+    # convert dictionaries to dataframe, merge with location information
+
+
+
+
+
     for type in generation_type_list:
         fuel_type = type + "_fuel_bbtu"
         gen_type = type + "_gen_bbtu"
