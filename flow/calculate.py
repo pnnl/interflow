@@ -2,92 +2,49 @@ import numpy as np
 import pandas as pd
 from .reader import *
 import flow.clean as cl
-import flow.configure as co
+import flow.configure as conf
+import flow.construct as co
 
 
-def calc_dictionary_levels(d:dict):
-    nest_count = max(calc_dictionary_levels(v) if isinstance(v, dict) else 0 for v in d.values()) + 1
+def calc_electricity_generation_energy_discharge(data: pd.DataFrame, regions=3, total=False):
 
-    return nest_count
+    """calculates rejected energy (losses) and total energy services (generation) from electricity generation
+    by generating type for each region.
 
-def construct_nested_dictionary(df: pd.DataFrame):
+    Function requires two items:
+    (1) input parameter data specifying a) fuel_type (major generator, e.g., natural gas), b) sub_fuel_type (e.g.,
+    combined cycle, or total if no explicit sub-types) and c) assumed efficiency rating for each fuel_type and sub_fuel
+    type combination.
+    (2) energy flow values from energy consumption to each fuel_type and sub_fuel_type specified in the parameter input
+    data following the correct naming conventions.
 
-    if len(df.columns) == 1:
-        d = df[df.columns[0]].to_list()
+    For each generator type (fuel_type + sub_fuel_type), the following process occurs:
 
-    elif len(df.columns) == 2:
-        d = 'Not enough columns passed to construct dictionary'
+    The calculation begins by looking for generator to rejected energy data in the baseline data provided to avoid
+    overwriting data already provided. If the data is already calculated, it copies the data at the region-level to the
+    output. If energy consumption to generator flows (fuel demand) are not found in the baseline data, the function
+    returns nothing as this is a baseline requirement outlined above. Otherwise, if it is available and generator to
+    energy services (electricity generation) data is also available, rejected energy is calculated as the difference
+    between the two (total fuel in - total generation out). If electricity generation out data is not provided in the
+    baseline data, the calculation determines rejected energy based on the product of fuel in and an efficiency rating.
+    The efficiency rating value used is either a) region-level efficiency ratings for each generator type provided in
+    the baseline data, or b) the singular efficiency rating provided in the input parameter data for each generator
+    type.
 
-    elif len(df.columns) == 3:
-        group1 = df.columns[0]
-        group2 = df.columns[1]
-        parameter = df.columns[-2]
-        value = df.columns[-1]
-        d = df.groupby(group1).apply(lambda x: dict(zip(x[parameter], x[value])))
-        d = d.to_dict()
-
-    elif len(df.columns) == 4:
-        group1 = df.columns[0]
-        group2 = df.columns[1]
-        parameter = df.columns[-2]
-        value = df.columns[-1]
-
-        d = df.groupby(group1).apply(lambda a: dict(a.groupby(group2).apply(lambda x: dict(zip(x[parameter], x[value])))))
-        d = d.to_dict()
-
-    elif len(df.columns) == 5:
-        group1 = df.columns[0]
-        group2 = df.columns[1]
-        group3 = df.columns[2]
-        parameter = df.columns[-2]
-        value = df.columns[-1]
-
-        d = df.groupby(group1).apply(lambda a: dict(a.groupby(group2).apply(
-            lambda b: dict(b.groupby(group3).apply(lambda x: dict(zip(x[parameter], x[value])))))))
-        d = d.to_dict()
-
-    elif len(df.columns) == 6:
-        group1 = df.columns[0]
-        group2 = df.columns[1]
-        group3 = df.columns[2]
-        group4 = df.columns[3]
-        parameter = df.columns[-2]
-        value = df.columns[-1]
-        d = df.groupby(group1).apply(lambda a: dict(a.groupby(group2).apply(lambda b: dict(b.groupby(group3).apply(
-            lambda b: dict(b.groupby(group4).apply(lambda x: dict(zip(x[parameter], x[value])))))))))
-        d = d.to_dict()
-
-    else:
-        d = 'Too many columns in dataframe. Reduce to 6 or fewer'
-
-    return d
-
-#TODO Assumes you have data on electricity generation by type or in total
-#calculates rejected energy based on efficiency fractions
-def calc_electricity_energy_discharge(data: pd.DataFrame, regions=3, total=False):
-    """calculates rejected energy (losses) by region and generating type in billion btu. Rejected energy is calculated
-    as the difference between total fuel use in electricity generation and total output of electricity generation. If
-    electricity generation is not provided, function applies a specified efficiency (default is set to 0.30). If
-    generation is provided but fuel quantity is not, then the inverse of the specified efficiency is applied.
-    If no generation types are specified, the function uses a default list of generator types which includes 'biomass',
-    'coal', 'geothermal', 'hydro', 'natgas', and 'nuclear'.
+    To determine energy services for each generator type, either the values are already provided in the baseline data
+    or they are calculated from the difference between fuel input to the generator and the rejected energy calculated.
 
         :param data:                        DataFrame of input data containing electricity generation fuel and total
                                             electricity generation by type
         :type data:                         DataFrame
 
-        :param generation_types:            a list of generation types to include (e.g. ['biomass','coal'])
-        :type generation_types:             list
-
-        :param regions:                     gives the number of columns in the dataset that should be treated as region
-                                            identifiers (e.g. "Country", "State"). Reads from the first column in the
-                                            dataframe onwards.
+        :param regions:                     The number of columns (inclusive) in the baseline dataset that include
+                                            region identifiers (e.g. "Country", "State"). Reads from the first column
+                                            in the dataframe onwards. Default is set to 3.
         :type regions:                      int
 
-        :param generation_efficiency:       assumed efficiency rate of electricity generation
-        :type generation_efficiency:        float
-
-        :param total:                       If true, returns dataframe of identifier columns and total rejected energy
+        :param total:                       If true, returns total rejected energy and total energy services by each
+                                            major fuel type.
         :type total:                        bool
 
         :return:                            DataFrame of rejected energy in billion btu from electricity generation
@@ -102,16 +59,12 @@ def calc_electricity_energy_discharge(data: pd.DataFrame, regions=3, total=False
 
     # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings
     x = get_electricity_generation_efficiency_parameters()
-    efficiency_dict = construct_nested_dictionary(x)
+    efficiency_dict = co.construct_nested_dictionary(x)
 
     # initialize output dictionaries with region identifiers
     output_dict = df[df.columns[:regions].tolist()].to_dict()
     total_dict = df[df.columns[:regions].tolist()].to_dict()
 
-    #efficiency_dict = {'biomass', 'coal', 'geothermal', 'hydro', 'natgas', 'nuclear',
-    #                   'oil', 'other', 'solar', 'wind'}
-
-    output_list = []
     # loop through each fuel type in parameter data provided
     for fuel_type in efficiency_dict:
 
@@ -189,46 +142,7 @@ def calc_electricity_energy_discharge(data: pd.DataFrame, regions=3, total=False
 
     return df
 
-def calc_electricity_rejected_energy(data: pd.DataFrame, generation_types=None, regions=3,
-                                         generation_efficiency=.30, total=False):
 
-    for type in generation_type_list:
-        fuel_type = type + "_fuel_bbtu"
-        gen_type = type + "_gen_bbtu"
-
-        if (fuel_type in df.columns) and (gen_type in df.columns):
-            df[f'electricity_{type}_rejected_energy_bbtu'] = df[fuel_type] - df[gen_type]
-            df['electricity_rejected_energy_bbtu'] = df['electricity_rejected_energy_bbtu'] \
-                                                     + df[f'electricity_{type}_rejected_energy_bbtu']
-            retain_list.append(f'electricity_{type}_rejected_energy_bbtu')
-        elif (fuel_type in df.columns) and (gen_type not in df.columns):
-            df[f'electricity_{type}_rejected_energy_bbtu'] = df[fuel_type] * (1 - generation_efficiency)
-            df['electricity_rejected_energy_bbtu'] = df['electricity_rejected_energy_bbtu'] \
-                                                     + df[f'electricity_{type}_rejected_energy_bbtu']
-            retain_list.append(f'electricity_{type}_rejected_energy_bbtu')
-        elif (fuel_type not in df.columns) and (gen_type in df.columns):
-            df[f'electricity_{type}_rejected_energy_bbtu'] = df[fuel_type] * (1 / (1 - generation_efficiency))
-            df['electricity_rejected_energy_bbtu'] = df['electricity_rejected_energy_bbtu'] \
-                                                     + df[f'electricity_{type}_rejected_energy_bbtu']
-            retain_list.append(f'electricity_{type}_rejected_energy_bbtu')
-
-        else:
-            df[f'electricity_{type}_rejected_energy_bbtu'] = 0
-            df['electricity_rejected_energy_bbtu'] = df['electricity_rejected_energy_bbtu'] \
-                                                     + df[f'electricity_{type}_rejected_energy_bbtu']
-
-    if total:
-        column_list = df.columns[:regions].tolist()
-        column_list.append('electricity_rejected_energy_bbtu')
-        df = df[column_list]
-    else:
-        column_list = df.columns[:regions].tolist()
-        for item in retain_list:
-            column_list.append(item)
-        column_list.append('electricity_rejected_energy_bbtu')
-        df = df[column_list]
-
-    return df
 
 
 def calc_sectoral_use_energy_discharge(data: pd.DataFrame, sector_types=None, fuel_types=None, regions=3, total=False):
@@ -664,7 +578,7 @@ def calc_energy_wastewater(data: pd.DataFrame, treatment_types=None, fuel_types=
     # loop through treatment types and fuel types to calculate energy in wastewater (bbtu)
     for treatment_type in treatment_type_dict:
         treatment_flow_type_mgd = "wastewater_" + treatment_type + "_" + "treatment_mgd"
-        treatment_energy_intensity_bbtu = convert_kwh_bbtu(treatment_type_dict[treatment_type]['intensity'])
+        treatment_energy_intensity_bbtu = co.convert_kwh_bbtu(treatment_type_dict[treatment_type]['intensity'])
         for fuel_type in fuel_type_dict:
             fuel_pct = f"wastewater_{fuel_type}" + "_" + "fuel_pct"
             fuel_efficiency = f"wastewater_{fuel_type}" + "_" + "efficiency_fraction"
@@ -986,10 +900,10 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
                                     pumping_intensity_type] * 365
                         else:
                             if fuel_type_pct in df.columns:
-                                energy_value = df[fuel_type_pct] * df[pumping_flow_type] * convert_kwh_bbtu(
+                                energy_value = df[fuel_type_pct] * df[pumping_flow_type] * co.convert_kwh_bbtu(
                                     pumping_type_dict[pumping_type]) * 365
                             else:
-                                energy_value = fuel_percent_dict[fuel_type] * df[pumping_flow_type] * convert_kwh_bbtu(
+                                energy_value = fuel_percent_dict[fuel_type] * df[pumping_flow_type] * co.convert_kwh_bbtu(
                                     pumping_type_dict[pumping_type]) * 365
 
                         energy_value_dict.update({energy_name: energy_value})
@@ -1180,7 +1094,7 @@ def calc_energy_pws(data: pd.DataFrame, water_energy_types=None, fuel_types=None
                                                                                                 fuel_type_dict[
                                                                                                     fuel_type][
                                                                                                     'fuel_pct']) * 365 \
-                                                                                               * convert_kwh_bbtu(
+                                                                                               * co.convert_kwh_bbtu(
                             types_dict[water_type][
                                 source_type][
                                 energy_type])
@@ -1811,52 +1725,12 @@ def calc_energy_production_water(data: pd.DataFrame,water_intensity_values=None,
     return output_df
 
 
-def convert_mwh_bbtu(x: float) -> float:
-    """converts MWh to billion btu.
 
-    :return:                Value in bbtu
-
-    """
-    bbtu = x * 0.003412
-
-    return bbtu
-
-
-def convert_kwh_bbtu(x: float) -> float:
-    """converts kWh to billion btu.
-
-    :return:                Value in bbtu
-
-    """
-    bbtu = x * 0.000003412140
-
-    return bbtu
-
-
-def calc_population_county_weight(df: pd.DataFrame) -> pd.DataFrame:
-    # TODO move to weighting.py
-
-    """calculates the percentage of state total population by county and merges to provided dataframe
-    by 'State'
-
-    :return:                DataFrame of water consumption fractions for various sectors by county
-
-    """
-    df_state = cl.prep_water_use_2015(variables=["FIPS", "State", "County", "population"])
-    df_state_sum = df_state.groupby("State", as_index=False).sum()
-    df_state_sum = df_state_sum.rename(columns={"population": "state_pop_sum"})
-    df_state = pd.merge(df_state, df_state_sum, how='left', on='State')
-    df_state['pop_weight'] = df_state['population'] / df_state['state_pop_sum']
-    df_state = df_state[['FIPS', 'State', 'County', 'pop_weight']]
-
-    df_state = pd.merge(df_state, df, how="left", on="State")
-
-    return df_state
 
 
 def aggregate(df_list=None, total=False, regions=3):
     print('loading baseline data...')
-    data = co.configure_data()
+    data = conf.configure_data()
     if df_list is None:
         df = data
         print('baseline dataset loaded...')

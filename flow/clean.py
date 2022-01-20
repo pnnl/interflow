@@ -3,6 +3,7 @@ import pandas as pd
 
 from .calculate import *
 from .reader import *
+import flow.construct as co
 
 
 def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
@@ -236,7 +237,7 @@ def prep_hydroelectric_water_intensity(intensity_cap=False, intensity_cap_amt=48
     df_loc = prep_water_use_2015()  # prepared list of 2015 counties with FIPS codes
 
     # convert from mwh of generation to bbtu
-    df["HY-InPow"] = df["HY-InPow"].apply(convert_mwh_bbtu)
+    df["HY-InPow"] = df["HY-InPow"].apply(co.convert_mwh_bbtu)
 
     # get daily power generation from annual generation (annual bbtu generated)
     df["HY-InPow"] = df["HY-InPow"] / 365
@@ -767,7 +768,7 @@ def prep_electricity_generation() -> pd.DataFrame:
 
     # splitting out generation data into a separate dataframe and pivoting to get generation (mwh) as columns by type
     df_gen = df[["FIPS", "generation_mwh", "fuel_type"]].copy()  # create a copy of generation data
-    df_gen['generation_mwh'] = df_gen['generation_mwh'].apply(convert_mwh_bbtu)  # convert to bbtu from mwh
+    df_gen['generation_mwh'] = df_gen['generation_mwh'].apply(co.convert_mwh_bbtu)  # convert to bbtu from mwh
     df_gen["fuel_type"] ='eg_generation_' + df_gen["fuel_type"] + "_total_to_es_bbtu" # add naming
 
     df_gen = pd.pivot_table(df_gen, values='generation_mwh', index=['FIPS'], columns=['fuel_type'], aggfunc=np.sum)
@@ -1303,7 +1304,7 @@ def prep_electricity_demand_data() -> pd.DataFrame:
     # convert electricity demand values from mwh to bbtu
     column_list = df.columns[1:]
     for col in column_list:
-        df[col] = df[col].apply(convert_mwh_bbtu)
+        df[col] = df[col].apply(co.convert_mwh_bbtu)
 
     # rename columns to add descriptive language
     df.rename(columns=rename_dict, inplace=True)
@@ -1317,7 +1318,7 @@ def prep_electricity_demand_data() -> pd.DataFrame:
         df[m] = np.where(df['State'] == "VI", df[m] * virgin_islands_percent, df[m])
 
     # split out into county values based on percent of state population
-    df = calc_population_county_weight(df)
+    df = co.calc_population_county_weight(df)
     demand_columns = df.columns[3:7]
     for d in demand_columns:
         df[d] = df[d] * df['pop_weight']
@@ -1370,7 +1371,7 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     df.fillna(0, inplace=True)  # filling blanks with zero
 
     # split out data into county values and multiply by population weighting
-    df = calc_population_county_weight(df)
+    df = co.calc_population_county_weight(df)
     energy_columns = df.columns[3:]
     for d in energy_columns:
         df[d] = df[d] * df['pop_weight']
