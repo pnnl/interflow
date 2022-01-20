@@ -812,9 +812,9 @@ def prep_thermo_cooling_data() -> pd.DataFrame:
                     'RECIRCULATING POND': 'pond',
                     'ONCE-THROUGH SALINE': 'oncethrough'}
 
-    water_source_dict = {'SW': 'surfacewater',
-                         'GW': 'groundwater',
-                         'PD': 'pws',
+    water_source_dict = {'SW': 'surfacewater',  # river, canal, bay
+                         'GW': 'groundwater',  # well, aquifer
+                         'PD': 'wastewater',  # PD = plant discharge
                          "-nr-": "surfacewater",  # all blanks assumed to be surface water
                          "GW & PD": "groundwater",  # all GW+PD are assumed to be groundwater only
                          "GW & SW": 'surfacewater',  # all GW+SW combinations are assumed to be SW
@@ -825,7 +825,7 @@ def prep_thermo_cooling_data() -> pd.DataFrame:
                        'SA': 'saline',
                        'OT': 'fresh', # all other source is assumed to be surface water
                        "FR & BE": 'fresh', # all combinations with fresh and BE are assumed to be fresh
-                       "BE": "fresh",  # all BE should be changed to fresh (pws)
+                       "BE": "fresh",  # reclaimed wastewater
                         "BR": "saline",      # all brackish should be changed to saline
                         "": "fresh"}
 
@@ -861,22 +861,22 @@ def prep_thermo_cooling_data() -> pd.DataFrame:
 
     # only bays with saline water are ocean discharge (some bays are on lakes (e.g. Green Bay))
     df['OCEAN_DISCHARGE_MGD'] = np.where(df['NAME_OF_WATER_SOURCE'].str.contains('Gulf', regex=False) &
-                                           df['TYPE'] == "SA",
+                                           df['WATER_TYPE_CODE'] == "SA",
                                            df['WITHDRAWAL'] - df['CONSUMPTION'],
                                            df['OCEAN_DISCHARGE_MGD'])
     # harbors
     df['OCEAN_DISCHARGE_MGD'] = np.where(df['NAME_OF_WATER_SOURCE'].str.contains('Harbor', regex=False) &
-        df['TYPE'] == "SA",
+        df['WATER_TYPE_CODE'] == "SA",
         df['WITHDRAWAL'] - df['CONSUMPTION'],
         df['OCEAN_DISCHARGE_MGD'])
     # channels
     df['OCEAN_DISCHARGE_MGD'] = np.where(df['NAME_OF_WATER_SOURCE'].str.contains('Channel', regex=False) &
-        df['TYPE'] == "SA",
+        df['WATER_TYPE_CODE'] == "SA",
         df['WITHDRAWAL'] - df['CONSUMPTION'],
         df['OCEAN_DISCHARGE_MGD'])
     # sounds
     df['OCEAN_DISCHARGE_MGD'] = np.where(df['NAME_OF_WATER_SOURCE'].str.contains('Sound', regex=False) &
-        df['TYPE'] == "SA",
+        df['WATER_TYPE_CODE'] == "SA",
         df['WITHDRAWAL'] - df['CONSUMPTION'],
         df['OCEAN_DISCHARGE_MGD'])
 
@@ -952,11 +952,11 @@ def prep_thermo_cooling_data() -> pd.DataFrame:
     df['consumption_identifier'] =  df['GENERATION_TYPE'] + "_" + df['COOLING_TYPE'] + "_generation_consumption_mgd"
     df['total_consumption_identifier'] = df['GENERATION_TYPE'] + "_generation_consumption_mgd"
 
-    df['surface_identifier'] = df['GENERATION_TYPE'] + "_" + df['COOLING_TYPE'] + "_surface_discharge_mgd"
-    df['total_surface_identifier'] = df['GENERATION_TYPE'] + "_surface_discharge_mgd"
+    df['surface_identifier'] = df['GENERATION_TYPE'] + "_" + df['COOLING_TYPE'] + "_generation_surface_discharge_mgd"
+    df['total_surface_identifier'] = df['GENERATION_TYPE'] + "_generation_surface_discharge_mgd"
 
-    df['ocean_identifier'] = df['GENERATION_TYPE'] + "_" + df['COOLING_TYPE'] + "_ocean_discharge_mgd"
-    df['total_ocean_identifier'] = df['GENERATION_TYPE'] + "_ocean_discharge_mgd"
+    df['ocean_identifier'] = df['GENERATION_TYPE'] + "_" + df['COOLING_TYPE'] + "_generation_ocean_discharge_mgd"
+    df['total_ocean_identifier'] = df['GENERATION_TYPE'] + "_generation_ocean_discharge_mgd"
 
 
     # reduce dataframe
@@ -1010,23 +1010,44 @@ def prep_thermo_cooling_data() -> pd.DataFrame:
     detailed_od_df = df[['FIPS','ocean_identifier', 'OCEAN_DISCHARGE_MGD']].copy()
     total_od_df = df[['FIPS','total_ocean_identifier', 'OCEAN_DISCHARGE_MGD']].copy()
 
+    detailed_od_df = pd.pivot_table(detailed_od_df, values='OCEAN_DISCHARGE_MGD', index=['FIPS'],
+                                    columns=['ocean_identifier'], aggfunc=np.sum, fill_value=0)
+    detailed_od_df = detailed_od_df.reset_index().rename_axis(None, axis=1)  # reset index to remove multi-index
+
+    total_od_df = pd.pivot_table(total_od_df, values='OCEAN_DISCHARGE_MGD', index=['FIPS'],
+                                 columns=['total_ocean_identifier'], aggfunc=np.sum, fill_value=0)
+    total_od_df = total_od_df.reset_index().rename_axis(None, axis=1)  # reset index to remove multi-index
+
     #TODO recombine pivot tables after combining with total FIPS on FIPS
-    withdrawal_df = pd.merge(df_loc, detailed_withdrawal_df, how='left', on='FIPS')
-    consumption_df = pd.merge(df_loc, detailed_consumption_df, how='left', on='FIPS')
+    detailed_withdrawal_df = pd.merge(df_loc, detailed_withdrawal_df, how='left', on='FIPS')
+    detailed_consumption_df = pd.merge(df_loc, detailed_consumption_df, how='left', on='FIPS')
+    detailed_sd_df= pd.merge(df_loc, detailed_sd_df, how='left', on='FIPS')
+    detailed_od_df= pd.merge(df_loc, detailed_od_df, how='left', on='FIPS')
     total_withdrawal_df = pd.merge(df_loc, total_withdrawal_df, how='left', on='FIPS')
     total_consumption_df = pd.merge(df_loc, total_consumption_df, how='left', on='FIPS')
+    total_sd_df = pd.merge(df_loc, total_sd_df, how='left', on='FIPS')
+    total_od_df = pd.merge(df_loc, total_od_df, how='left', on='FIPS')
 
 
     detailed_withdrawal_df.fillna(0, inplace=True)
     detailed_consumption_df.fillna(0, inplace=True)
     total_withdrawal_df.fillna(0, inplace=True)
     total_consumption_df.fillna(0, inplace=True)
+    detailed_sd_df.fillna(0, inplace=True)
+    detailed_od_df.fillna(0, inplace=True)
+    total_sd_df.fillna(0, inplace=True)
+    total_od_df.fillna(0, inplace=True)
 
 
-    df_list = [total_withdrawal_df, withdrawal_df, total_consumption_df, consumption_df ]
 
+    df_list = [total_withdrawal_df, detailed_withdrawal_df, total_consumption_df, detailed_consumption_df,
+               total_sd_df, detailed_sd_df, total_od_df, detailed_od_df]
 
-    return total_consumption_df
+    df = df_loc
+    for df_item in df_list:
+        df = pd.merge(df,df_item, how='left', on= ['FIPS', 'County', 'State'])
+
+    return df
 
 
 def prep_irrigation_fuel_data() -> pd.DataFrame:

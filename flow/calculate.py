@@ -5,6 +5,61 @@ import flow.clean as cl
 import flow.configure as co
 
 
+def calc_dictionary_levels(d:dict):
+    nest_count = max(calc_dictionary_levels(v) if isinstance(v, dict) else 0 for v in d.values()) + 1
+
+    return nest_count
+
+def construct_nested_dictionary(df: pd.DataFrame):
+
+    if len(df.columns) == 1:
+        d = df[df.columns[0]].to_list()
+
+    elif len(df.columns) == 2:
+        d = 'Not enough columns passed to construct dictionary'
+
+    elif len(df.columns) == 3:
+        group1 = df.columns[0]
+        group2 = df.columns[1]
+        parameter = df.columns[-2]
+        value = df.columns[-1]
+        d = df.groupby(group1).apply(lambda x: dict(zip(x[parameter], x[value])))
+
+    elif len(df.columns) == 4:
+        group1 = df.columns[0]
+        group2 = df.columns[1]
+        parameter = df.columns[-2]
+        value = df.columns[-1]
+
+        d = df.groupby(group1).apply(lambda a: dict(a.groupby(group2).apply(lambda x: dict(zip(x[parameter], x[value])))))
+
+    elif len(df.columns) == 5:
+        group1 = df.columns[0]
+        group2 = df.columns[1]
+        group3 = df.columns[2]
+        parameter = df.columns[-2]
+        value = df.columns[-1]
+
+        d = df.groupby(group1).apply(lambda a: dict(a.groupby(group2).apply(
+            lambda b: dict(b.groupby(group3).apply(lambda x: dict(zip(x[parameter], x[value])))))))
+
+    elif len(df.columns) == 6:
+        group1 = df.columns[0]
+        group2 = df.columns[1]
+        group3 = df.columns[2]
+        group4 = df.columns[3]
+        parameter = df.columns[-2]
+        value = df.columns[-1]
+        d = df.groupby(group1).apply(lambda a: dict(a.groupby(group2).apply(lambda b: dict(b.groupby(group3).apply(
+            lambda b: dict(b.groupby(group4).apply(lambda x: dict(zip(x[parameter], x[value])))))))))
+
+    else:
+        d = 'Too many columns in dataframe. Reduce to 6 or fewer'
+
+    return d
+
+#TODO Assumes you have data on electricity generation by type or in total
+#calculates rejected energy based on efficiency fractions
 def calc_electricity_rejected_energy(data: pd.DataFrame, generation_types=None, regions=3,
                                      generation_efficiency=.30, total=False):
     """calculates rejected energy (losses) by region and generating type in billion btu. Rejected energy is calculated
@@ -38,6 +93,14 @@ def calc_electricity_rejected_energy(data: pd.DataFrame, generation_types=None, 
 
     # load data
     df = data
+
+    df = load_baseline_data()
+
+    efficiency_dict = get_electricity_generation_efficiency_parameters()
+    efficiency_dict = construct_dictionary(efficiency_dict)
+    dictionary_levels = calc_dictionary_levels(efficiency_dict)
+
+
     # TODO reconfigure as nested dictionary with efficiencies
     # establish list of generation types
     if generation_types is None:

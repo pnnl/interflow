@@ -13,6 +13,35 @@ def get_electricity_dict():
 
     return pd.read_csv(data)
 
+def load_baseline_data():
+    """Read in a dataframe of 2015 USGS Water Use Data.
+
+            :return:                        dataframe of values
+
+            """
+
+    data = pkg_resources.resource_filename('flow', 'data/baseline_data.csv')
+
+    return pd.read_csv(data)
+
+def get_electricity_generation_efficiency_parameters():
+    """Read in .
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/configuration_data/electricitygeneration_efficiency_parameters.csv')
+
+    return pd.read_csv(data)
+
+
+
+
+
+
+# Items below are for US sample data
+
 def get_water_use_2015():
     """Read in a dataframe of 2015 USGS Water Use Data.
 
@@ -153,8 +182,9 @@ def get_powerplant_cooling_data():
                                            'data/2015_TE_Model_Estimates_USGS.csv')
 
     # read in data
-    return pd.read_csv(data, usecols=['EIA_PLANT_ID', "COUNTY", 'STATE', 'GENERATION_TYPE', 'COOLING_TYPE',
-                                      'WATER_SOURCE_CODE','WATER_TYPE_CODE', 'WITHDRAWAL', 'CONSUMPTION'])
+    return pd.read_csv(data, usecols=['EIA_PLANT_ID', "COUNTY", 'STATE', 'NAME_OF_WATER_SOURCE','GENERATION_TYPE',
+                                      'COOLING_TYPE','WATER_SOURCE_CODE','WATER_TYPE_CODE', 'WITHDRAWAL',
+                                      'CONSUMPTION'])
 
 def get_irrigation_data():
     """Read in a dataframe of irrigation well depth, pressure, and pump fuel type by state
