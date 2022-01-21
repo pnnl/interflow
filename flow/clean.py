@@ -1344,10 +1344,10 @@ def prep_fuel_demand_data() -> pd.DataFrame:
                 "EMACB": "biomass_transportation_bbtu",  # Fuel ethanol, transportation sector (bbtu)
                 "GECCB": "geothermal_commercial_bbtu",  # Geothermal, commercial sector (bbtu)
                 "GERCB": "geothermal_residential_bbtu",  # Geothermal, residential sector (bbtu)
-                "NGACB": "natural_gas_transportation_bbtu",  # Natural gas, transportation sector  (bbtu)
-                "NGCCB": "natural_gas_commercial_bbtu",  # Natural gas, commercial sector (bbtu)
-                "NGICB": "natural_gas_industrial_bbtu",  # Natural gas, industrial sector (bbtu)
-                "NGRCB": "natural_gas_residential_bbtu",  # Natural gas, residential sector (bbtu
+                "NGACB": "natgas_transportation_bbtu",  # Natural gas, transportation sector  (bbtu)
+                "NGCCB": "natgas_commercial_bbtu",  # Natural gas, commercial sector (bbtu)
+                "NGICB": "natgas_industrial_bbtu",  # Natural gas, industrial sector (bbtu)
+                "NGRCB": "natgas_residential_bbtu",  # Natural gas, residential sector (bbtu
                 "PAACB": "petroleum_transportation_bbtu",  # petroleum products, transportation sector (bbtu)
                 "PACCB": "petroleum_commercial_bbtu",  # petroleum products, commercial sector (bbtu)
                 "PAICB": "petroleum_industrial_bbtu",  # petroleum products, industrial sector (bbtu)
