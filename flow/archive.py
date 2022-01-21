@@ -87,3 +87,34 @@
 #
 #    return df
 #
+
+# WATER DISCHARGE FROM SECTORS
+if sector_types is None:
+    sector_consumption_dict = {'residential': {'groundwater': {'saline': 0, 'fresh': .3},
+                                               'surfacewater': {'saline': 0, 'fresh': .3},
+                                               'pws': {'fresh': .3}},
+                               'commercial': {'groundwater': {'saline': 0, 'fresh': .15},
+                                              'surfacewater': {'saline': 0, 'fresh': .15},
+                                              'pws': {'fresh': .15}},
+                               'industrial': {'groundwater': {'saline': .003, 'fresh': .15},
+                                              'surfacewater': {'saline': .003, 'fresh': .15},
+                                              'pws': {'fresh': .15}},
+                               'mining': {'groundwater': {'saline': .03, 'fresh': .15},
+                                          'surfacewater': {'saline': .03, 'fresh': .15}},
+                               'crop_irrigation': {'groundwater': {'saline': 0, 'fresh': .3},
+                                                   'surfacewater': {'saline': 0, 'fresh': .3}},
+                               'livestock': {'groundwater': {'saline': 0, 'fresh': .87},
+                                             'surfacewater': {'saline': 0, 'fresh': .87}},
+                               'aquaculture': {'groundwater': {'saline': 0, 'fresh': .5},
+                                               'surfacewater': {'saline': 0, 'fresh': .5}}}
+else:
+    sector_consumption_dict = sector_types
+if discharge_types is None:
+    water_discharge_dict = {'surfacewater': {'fresh': {'wastewater': 0, 'ocean': 0, 'surface': 1},
+                                             'saline': {'wastewater': 0, 'ocean': 1, 'surface': 0}},
+                            'groundwater': {'fresh': {'wastewater': 0, 'ocean': 0, 'surface': 1},
+                                            'saline': {'wastewater': 0, 'ocean': 1, 'surface': 0}},
+                            'pws': {'fresh': {'wastewater': 1, 'ocean': 0, 'surface': 0}}}
+else:
+    water_discharge_dict = discharge_types
+

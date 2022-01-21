@@ -703,10 +703,11 @@ def prep_electricity_generation() -> pd.DataFrame:
 
     # remove unnecessary variables
     df_gen_loc = df_gen_loc[['FIPS', 'plant_code']]
-    df = df[['Plant Id', "AER\nFuel Type Code", "Total Fuel Consumption\nMMBtu", "Net Generation\n(Megawatthours)"]]
+    df = df[['Plant Id', "AER\nFuel Type Code", "Reported\nPrime Mover", "Total Fuel Consumption\nMMBtu",
+             "Net Generation\n(Megawatthours)"]]
 
     # create a dictionary to bin power plant fuel types
-    fuel_dict = {'SUN': 'solar',  # solar
+    fuel_consumption_dict = {'SUN': 'solar',  # solar
                  'COL': 'coal',  # coal
                  'DFO': 'petroleum',  # distillate petroleum
                  "GEO": 'geothermal',  # geothermal
@@ -725,11 +726,31 @@ def prep_electricity_generation() -> pd.DataFrame:
                  'WOO': 'petroleum',  # waste oil
                  'WWW': 'biomass'}  # wood and wood waste
 
+    prime_mover_dict = {'HY':'hydro',
+                        'CA':'combinedcycle',
+                    'CT':'combinedcycle',
+                    'ST':'steam',
+                    'GT':'combustionturbine',
+                    'IC':'internalcombustion',
+                    'WT':'onshore',
+                    'PS':'pumpedstorage',
+                    'PV':'photovoltaic',
+                    'CS':'combinedcycle',
+                    'CE':'compressedair',
+                    'BT':'binarycycle',
+                    'OT':'other',
+                    'FC':'fuelcell',
+                    'CP':'csp',
+                    'BA':'battery',
+                    'FW':'flywheel'
+                    }
+
     # rename columns in power plant generation data file
     df = df.rename(columns={"Plant Id": "plant_code"})
     df = df.rename(columns={"AER\nFuel Type Code": "fuel_type"})
     df = df.rename(columns={"Total Fuel Consumption\nMMBtu": "fuel_amt"})
     df = df.rename(columns={"Net Generation\n(Megawatthours)": "generation_mwh"})
+    df = df.rename(columns={"Reported\nPrime Mover": "prime_mover"})
 
     # changing string columns to numeric
     string_col = df.columns[2:]  # create list of string columns
@@ -756,10 +777,19 @@ def prep_electricity_generation() -> pd.DataFrame:
     # merging power plant location data with power plant generation data
     df = pd.merge(df, df_gen_loc, how='left', on='plant_code')
 
+    # need to merge with cooling type information by plant code
+
+    
+
+
+
+
     # splitting out fuel data into a separate dataframe and pivoting to get fuel (bbtu) as columns by type
     df_fuel = df[["FIPS", "fuel_amt", "fuel_type"]].copy()  # create a copy of fuel type data
-    df_fuel["fuel_type"] = 'ec_consumption_' + df_fuel["fuel_type"] + '_total_to_eg_generation_bbtu'  # add naming
-
+    df_fuel["fuel_type"] = 'EC_' + df_fuel["fuel_type"] +'_' + '_total_total_total_to_EG_' \
+                           + df_fuel["fuel_type"] +'_' + df_fuel["prime_mover"] + '_'\
+                           + df_fuel['cooling_type'] + '_total_bbtu'  # add naming
+    # example: EC_Coal_total_total_total_to_EG_coal_combustionturbine_oncethrough_total_bbtu'
 
     df_fuel = pd.pivot_table(df_fuel, values='fuel_amt', index=['FIPS'], columns=['fuel_type'], aggfunc=np.sum)  # pivot
     df_fuel = df_fuel.reset_index()  # reset index to remove multi-index from pivot table

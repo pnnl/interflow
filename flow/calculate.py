@@ -5,10 +5,9 @@ import flow.clean as cl
 import flow.configure as conf
 import flow.construct as co
 
-
-def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters: pd.DataFrame, regions=3,
+def calc_electricity_generation_energy_discharge(data: pd.DataFrame, source_parameters: pd.DataFrame,
+                                                 target_parameters: pd.DataFrame, regions=3,
                                                  all_output=True, total=False, grandtotal=False):
-
     """Calculates rejected energy (losses) and total generation from electricity generation
     by generating type for each region.
 
@@ -67,7 +66,162 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
     df = data
 
     # TODO unlock this later when the load_baseline_data is hooked up to a data reader
-    #df = load_baseline_data()
+    # df = load_baseline_data()
+
+    # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings and change to nested dict
+    s_dict = co.construct_nested_dictionary(source_parameters)
+    d_dict = co.construct_nested_dictionary(target_parameters)
+
+    if source_parameters.shape[1] != 5:
+        raise ValueError('Input source parameter data does not have correct number of levels')
+
+    elif target_parameters.shape[1] != 5:
+        raise ValueError('Input target parameter data does not have correct number of levels')
+
+    else:
+
+        # initialize output dictionaries with region identifiers
+        l5_dict = df[df.columns[:regions].tolist()].to_dict()
+        l4_dict = df[df.columns[:regions].tolist()].to_dict()
+        l3_dict = df[df.columns[:regions].tolist()].to_dict()
+        l2_dict = df[df.columns[:regions].tolist()].to_dict()
+        l1_dict = df[df.columns[:regions].tolist()].to_dict()
+
+        for s1 in s_dict:
+            for t1 in t_dict:
+                l1_name = f'{s1}_to_{t1}_bbtu'
+                l1_dict.update({l1_name: 0})
+                for s2 in s_dict[s_1]:
+                    for t2 in t_dict[t_1]:
+                        l2_name = f'{s1}_{s2}_to_{t1}_{t2}_bbtu'
+                        l2_dict.update({l2_name: 0})
+                        for s3 in s_dict[s1][s2]:
+                            for t3 in t_dict[t1][t2]:
+                                l3_name = f'{s1}_{s2}_{s3}_to_{t1}_{t2}_{t3}_bbtu'
+                                l3_dict.update({l3_name: 0})
+                                for s4 in s_dict[s1][s2][s3]:
+                                    for t4 in t_dict[t1][t2][t3]:
+                                        l4_name = f'{s1}_{s2}_{s3}_{s4}_to_{t1}_{t2}_{t3}_{t4}_bbtu'
+                                        l4_dict.update({l4_name: 0})
+                                        for s5 in s_dict[s1][s2][s3][s4]:
+                                            for t5 in t_dict[t1][t2][t3][t4]:
+                                                l5_name = f'{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_bbtu'
+                                                l5_dict.update({l5_name: 0})
+        for s1 in s_dict:
+            for t1 in t_dict:
+                l1_name = f'{s1}_to_{t1}_bbtu'
+                for s2 in s_dict[s_1]:
+                    for t2 in t_dict[t_1]:
+                        l2_name = f'{s1}_{s2}_to_{t1}_{t2}_bbtu'
+                        for s3 in s_dict[s1][s2]:
+                            for t3 in t_dict[t1][t2]:
+                                l3_name = f'{s1}_{s2}_{s3}_to_{t1}_{t2}_{t3}_bbtu'
+                                for s4 in s_dict[s1][s2][s3]:
+                                    for t4 in t_dict[t1][t2][t3]:
+                                        l4_name = f'{s1}_{s2}_{s3}_{s4}_to_{t1}_{t2}_{t3}_{t4}_bbtu'
+                                        for s5 in s_dict[s1][s2][s3][s4]:
+                                            for t5 in t_dict[t1][t2][t3][t4]:
+                                                l5_name = f'{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_bbtu'
+                                                if l5_name in df.columns:
+                                                    l5_value = df[l5_name]
+                                                    l4_value = l4_dict[l4_name] + l5_value
+                                                    l3_value = l3_dict[l4_name] + l5_value
+                                                    l2_value = l2_dict[l4_name] + l5_value
+                                                    l1_value = l1_dict[l4_name] + l5_value
+
+                                                    l1_dict.update({l1_name: l1_value})
+                                                    l2_dict.update({l2_name: l2_value})
+                                                    l3_dict.update({l3_name: l3_value})
+                                                    l4_dict.update({l4_name: l4_value})
+                                                    l5_dict.update({l5_name: l5_value})
+                                                else:
+                                                    pass
+        # convert output dictionaries to dataframe, merge with location information
+        l1_df = pd.DataFrame.from_dict(l1_dict, orient='index').transpose()
+        l2_df = pd.DataFrame.from_dict(l2_dict, orient='index').transpose()
+        l3_df = pd.DataFrame.from_dict(l3_dict, orient='index').transpose()
+        l4_df = pd.DataFrame.from_dict(l4_dict, orient='index').transpose()
+        l5_df = pd.DataFrame.from_dict(l5_dict, orient='index').transpose()
+
+        if output == l1:
+            df = l1_df
+        elif output == l2:
+            df = l1_df
+        elif output == l3:
+            df = l1_df
+        elif output == l4:
+            df = l1_df
+        elif output == l5:
+            df = l1_df
+        else:
+            m = 'incorrect level of granularity specified. Must be one of the following: l1, l2, l3, l4, or l5'
+            raise ValueError(m)
+
+        return df
+
+
+
+def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters: pd.DataFrame, regions=3,
+                                                 all_output=True, total=False, grandtotal=False):
+    """Calculates rejected energy (losses) and total generation from electricity generation
+    by generating type for each region.
+
+    Function requires two items:
+    (1) input parameter data specifying a) fuel_type (major generator, e.g., natural gas), b) sub_fuel_type (e.g.,
+    combined cycle, or total if no explicit sub-types) and c) assumed efficiency rating for each fuel_type and sub_fuel
+    type combination.
+    (2) energy flow values from energy consumption to each fuel_type and sub_fuel_type specified in the parameter input
+    data following the correct naming conventions.
+
+    For each generator type (fuel_type + sub_fuel_type), the following process occurs:
+
+    If energy consumption to generator flows (fuel demand) are not found in the baseline data, the function
+    returns nothing as this is a baseline requirement outlined above. Otherwise, if it is available, the information is
+    copied to the output and generator to generation (electricity generation) data is also available, rejected
+    energy is calculated as the difference between the two (total fuel in - total generation out). If electricity
+    generation out data is not provided in the baseline data, the calculation determines rejected energy based on the
+    product of fuel in and an efficiency rating. The efficiency rating value used is either a) region-level efficiency
+    ratings for each generator type provided in the baseline data, or b) the singular efficiency rating provided in the
+    input parameter data for each generator type.
+
+    To determine generation for each generator type, either the values are already provided in the baseline data
+    or they are calculated from the difference between fuel input to the generator and the rejected energy calculated.
+
+        :param data:                        DataFrame of input data containing electricity generation fuel and total
+                                            electricity generation by type
+        :type data:                         DataFrame
+
+        :param parameters:                  DataFrame of input parameters containing fuel efficiency data by fuel_type +
+                                            fuel_sub_type combination.
+        :type parameters:                   DataFrame
+
+        :param regions:                     The number of columns (inclusive) in the baseline dataset that include
+                                            region identifiers (e.g. "Country", "State"). Reads from the first column
+                                            in the dataframe onwards. Default is set to 3.
+        :type regions:                      int
+
+        :param all_output:                  If true, returns all fuel use, rejected energy and energy service for each
+                                            fuel_type and fuel_sub_type within each region
+        :type all_output:                   bool
+
+        :param total:                       If true, returns total fuel use, rejected energy and total generation
+                                            by each fuel type within each region
+        :type total:                        bool
+
+        :param grandtotal:                  If true, returns grand total fuel use in electricity generation, rejected
+                                            energy and total generation within each region.
+        :type grandtotal:                   bool
+
+        :return:                            DataFrame of fuel use, rejected energy, and generation values in
+                                            billion btu per year related to electricity generation
+
+        """
+
+    # load data
+    df = data
+
+    # TODO unlock this later when the load_baseline_data is hooked up to a data reader
+    # df = load_baseline_data()
 
     # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings and change to nested dict
     efficiency_dict = co.construct_nested_dictionary(parameters)
@@ -93,11 +247,11 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
             generation_total_name = f'eg_generation_' + fuel_type + "_bbtu"
             generation_total_value = 0
 
-            fuel_use_grandtotal_name = f'ec_consumption_to_eg_generation_total_bbtu'
+            fuel_use_grandtotal_name = f'ec_consumption_to_eg_generation_bbtu'
             fuel_use_grandtotal_value = 0
-            rejected_energy_grandtotal_name = f'eg_generation_total_to_re_bbtu'
+            rejected_energy_grandtotal_name = f'eg_generation_to_re_bbtu'
             rejected_energy_grandtotal_value = 0
-            generation_grandtotal_name = f'eg_generation_total_bbtu'
+            generation_grandtotal_name = f'eg_generation_bbtu'
             generation_grandtotal_value = 0
 
             # loop through each sub_fuel type for each fuel type in parameter data provided
@@ -107,7 +261,7 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
                 fuel_use_name = f'ec_consumption_' + fuel_type + "_" + sub_fuel_type + '_to_eg_generation_bbtu'
                 rejected_energy_name = f'eg_generation_' + fuel_type + "_" + sub_fuel_type + "_to_re_bbtu"
                 generation_name = f'eg_generation_' + fuel_type + "_" + sub_fuel_type + "_bbtu"
-                region_efficiency_fraction_name = f'eg_' + fuel_type + '_'+ sub_fuel_type + '_efficiency_fraction'
+                region_efficiency_fraction_name = f'eg_' + fuel_type + '_' + sub_fuel_type + '_efficiency_fraction'
 
                 # if fuel to electricity generation by fuel_type and sub_fuel type is in the baseline data
                 if fuel_use_name in df.columns:
@@ -194,8 +348,10 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
 
         return df
 
+
 # calculate water withdrawals/discharge from sectors
-def calc_sectoral_use_water_discharge(data: pd.DataFrame, parameters: pd.DataFrame, sector_types=None, discharge_types=None,
+def calc_sectoral_use_water_discharge(data: pd.DataFrame, consumption_parameters: pd.DataFrame,
+                                      discharge_parameters: pd.DataFrame, sector_types=None, discharge_types=None,
                                       regions=3, total=False):
     """calculates water consumption and discharge in mgd for various sectors. Consumption is calculated first based on
     assumed consumption fractions provided either in the dataset on a regional level or using the values in the
@@ -227,60 +383,68 @@ def calc_sectoral_use_water_discharge(data: pd.DataFrame, parameters: pd.DataFra
 
         """
 
-    # load data
-    df = data
+    # checking inputs are correctly shaped and sectors+sub_sectors match across both files
 
-    # TODO unlock this later when the load_baseline_data is hooked up to a data reader
-    # df = load_baseline_data()
+    consumption_sector_list = (consumption_parameters[consumption_parameters.columns[0]]
+                               + consumption_parameters[consumption_parameters.columns[1]]).drop_duplicates().to_list()
 
-    # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings and change to nested dict
-    efficiency_dict = co.construct_nested_dictionary(parameters)
+    discharge_sector_list = (discharge_parameters[discharge_parameters.columns[0]]
+                             + discharge_parameters[discharge_parameters.columns[1]]).drop_duplicates().to_list()
 
-    if parameters.shape[1] != 6:
-        raise ValueError('Input parameter data does not have correct number of columns')
+    if consumption_parameters.shape[1] != 6:
+        m = 'Input consumption parameter data does not have correct number of columns'
+        raise ValueError(m)
+
+    elif discharge_parameters.shape[1] != 5:
+        m = 'Input discharge parameter data does not have correct number of columns'
+        raise ValueError(m)
+
+    elif set(consumption_sector_list) != set(discharge_sector_list):
+        m = 'Sector + sub_sector combinations listed in input consumption parameter data do not match those  ' \
+            'provided in input discharge parameter data'
+        raise ValueError(m)
 
     else:
 
+        # build nested dictionaries from parameter inputs
+        consumption_dict = co.construct_nested_dictionary(consumption_parameters)
+        discharge_dict = co.construct_nested_dictionary(consumption_parameters)
+
+        # load data
+        df = data
+
+        # TODO unlock this later when the load_baseline_data is hooked up to a data reader
+        # df = load_baseline_data()
+
+        # initialize output dictionaries with region identifiers
+        output_dict = df[df.columns[:regions].tolist()].to_dict()
+        total_dict = df[df.columns[:regions].tolist()].to_dict()
+        grandtotal_dict = df[df.columns[:regions].tolist()].to_dict()
+
+        # loop through each fuel type in parameter data provided
+        for sector_type in consumption_dict:
+            for sub_sector_type in consumption_dict[sector_type]:
+                for water_source in consumption_dict[sector_type][sub_sector_type]:
+                    for water_type in consumption_dict[sector_type][sub_sector_type][water_source]:
+
+                        # create total water withdrawal names
+                        water_withdrawal_total_name = f'ws_withdrawals_{water_type}_{water_source}_' \
+                                               f'to_{sector_type}_{sub_sector_type}_mgd '
 
 
+            fuel_use_total_value = 0
+            rejected_energy_total_name = f'eg_generation_' + fuel_type + "_to_re_bbtu"
+            rejected_energy_total_value = 0
+            generation_total_name = f'eg_generation_' + fuel_type + "_bbtu"
+            generation_total_value = 0
 
+            fuel_use_grandtotal_name = f'ec_consumption_to_eg_generation_total_bbtu'
+            fuel_use_grandtotal_value = 0
+            rejected_energy_grandtotal_name = f'eg_generation_total_to_re_bbtu'
+            rejected_energy_grandtotal_value = 0
+            generation_grandtotal_name = f'eg_generation_total_bbtu'
+            generation_grandtotal_value = 0
 
-
-
-
-
-
-    # load data
-    df = data
-
-    if sector_types is None:
-        sector_consumption_dict = {'residential': {'groundwater': {'saline': 0, 'fresh': .3},
-                                                   'surfacewater': {'saline': 0, 'fresh': .3},
-                                                   'pws': {'fresh': .3}},
-                                   'commercial': {'groundwater': {'saline': 0, 'fresh': .15},
-                                                  'surfacewater': {'saline': 0, 'fresh': .15},
-                                                  'pws': {'fresh': .15}},
-                                   'industrial': {'groundwater': {'saline': .003, 'fresh': .15},
-                                                  'surfacewater': {'saline': .003, 'fresh': .15},
-                                                  'pws': {'fresh': .15}},
-                                   'mining': {'groundwater': {'saline': .03, 'fresh': .15},
-                                              'surfacewater': {'saline': .03, 'fresh': .15}},
-                                   'crop_irrigation': {'groundwater': {'saline': 0, 'fresh': .3},
-                                                       'surfacewater': {'saline': 0, 'fresh': .3}},
-                                   'livestock': {'groundwater': {'saline': 0, 'fresh': .87},
-                                                 'surfacewater': {'saline': 0, 'fresh': .87}},
-                                   'aquaculture': {'groundwater': {'saline': 0, 'fresh': .5},
-                                                   'surfacewater': {'saline': 0, 'fresh': .5}}}
-    else:
-        sector_consumption_dict = sector_types
-    if discharge_types is None:
-        water_discharge_dict = {'surfacewater': {'fresh': {'wastewater': 0, 'ocean': 0, 'surface': 1},
-                                                 'saline': {'wastewater': 0, 'ocean': 1, 'surface': 0}},
-                                'groundwater': {'fresh': {'wastewater': 0, 'ocean': 0, 'surface': 1},
-                                                'saline': {'wastewater': 0, 'ocean': 1, 'surface': 0}},
-                                'pws': {'fresh': {'wastewater': 1, 'ocean': 0, 'surface': 0}}}
-    else:
-        water_discharge_dict = discharge_types
 
     column_list = df.columns[:regions].tolist()
     output_df = df[column_list].copy()
@@ -384,15 +548,12 @@ def calc_sectoral_use_water_discharge(data: pd.DataFrame, parameters: pd.DataFra
     return df
 
 
-
-
-
 # calculate energy in pws
 # calculate energy in ww
 # calculate energy in ag
 # calculate energy in sectors
-    # split the leftovers from electricity generation and others
-    # or grab values
+# split the leftovers from electricity generation and others
+# or grab values
 # calculate imports/exports from electricity total
 # calculate sector discharge from energy
 
@@ -402,7 +563,7 @@ def calc_sectoral_use_water_discharge(data: pd.DataFrame, parameters: pd.DataFra
 
 def calc_sectoral_use_energy_discharge(data: pd.DataFrame, parameters: pd.DataFrame, regions=3, all_output=True,
                                        total=False, grandtotal=False):
-    #TODO only calculates energy discharge for simple sectors
+    # TODO only calculates energy discharge for simple sectors
     # TODO NEED to add back in major sector to calculations to capture electricity
 
     # TODO GRandtotal broken
@@ -438,7 +599,7 @@ def calc_sectoral_use_energy_discharge(data: pd.DataFrame, parameters: pd.DataFr
     df = data
 
     # TODO unlock this later when the load_baseline_data is hooked up to a data reader
-    #df = load_baseline_data()
+    # df = load_baseline_data()
 
     # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings and change to nested dict
     efficiency_dict = co.construct_nested_dictionary(parameters)
@@ -518,7 +679,7 @@ def calc_sectoral_use_energy_discharge(data: pd.DataFrame, parameters: pd.DataFr
         # convert output dictionaries to dataframe, merge with location information
         output_df = pd.DataFrame.from_dict(output_dict, orient='index').transpose()
         total_df = pd.DataFrame.from_dict(total_dict, orient='index').transpose()
-        #grandtotal_df = pd.DataFrame.from_dict(grandtotal_dict, orient='index').transpose()
+        # grandtotal_df = pd.DataFrame.from_dict(grandtotal_dict, orient='index').transpose()
 
         # return combinations of output specified.
         if all_output:
@@ -545,18 +706,6 @@ def calc_sectoral_use_energy_discharge(data: pd.DataFrame, parameters: pd.DataFr
                 else:
                     df = df[df.columns[:regions].tolist()]
         return df
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def calc_sector_water_exports(data: pd.DataFrame, sector_types=None, regions=3, total=False):
@@ -1063,7 +1212,8 @@ def calc_energy_agriculture(data: pd.DataFrame, pumping_types=None, agriculture_
                                 energy_value = df[fuel_type_pct] * df[pumping_flow_type] * co.convert_kwh_bbtu(
                                     pumping_type_dict[pumping_type]) * 365
                             else:
-                                energy_value = fuel_percent_dict[fuel_type] * df[pumping_flow_type] * co.convert_kwh_bbtu(
+                                energy_value = fuel_percent_dict[fuel_type] * df[
+                                    pumping_flow_type] * co.convert_kwh_bbtu(
                                     pumping_type_dict[pumping_type]) * 365
 
                         energy_value_dict.update({energy_name: energy_value})
@@ -1603,11 +1753,7 @@ def calc_hydro_water_use(data: pd.DataFrame, hydro_water_intensity=2040, regions
     return output_df
 
 
-
-
-
-
-def calc_energy_production_water(data: pd.DataFrame,water_intensity_values=None, water_flow_values=None,
+def calc_energy_production_water(data: pd.DataFrame, water_intensity_values=None, water_flow_values=None,
                                  produced_water_consumption_values=None, discharge_fractions=None, regions=3):
     # TODO consider changing all calculations to dictionary.update like in discharge for efficiency.
 
@@ -1663,54 +1809,58 @@ def calc_energy_production_water(data: pd.DataFrame,water_intensity_values=None,
     # dictionary of the water intensities by energy production type (mg/bbtu)
     if water_intensity_values is None:
         fuel_water_intensity_dict = {'biomass_ethanol': {'water_use_intensity': .14, 'water_production_intensity': 0},
-                      'coal_surface': {'water_use_intensity': 0.00034, 'water_production_intensity':0},
-                      'coal_underground': {'water_use_intensity': 0.00144, 'water_production_intensity':0},
-                      'natgas_unconventional': {'water_use_intensity': 0.0008, 'water_production_intensity': 0.01},
-                      'petroleum_conventional': {'water_use_intensity': 0.0149, 'water_production_intensity': 0},
-                      'petroleum_unconventional': {'water_use_intensity': 0.0019, 'water_production_intensity': 0.08}}
+                                     'coal_surface': {'water_use_intensity': 0.00034, 'water_production_intensity': 0},
+                                     'coal_underground': {'water_use_intensity': 0.00144,
+                                                          'water_production_intensity': 0},
+                                     'natgas_unconventional': {'water_use_intensity': 0.0008,
+                                                               'water_production_intensity': 0.01},
+                                     'petroleum_conventional': {'water_use_intensity': 0.0149,
+                                                                'water_production_intensity': 0},
+                                     'petroleum_unconventional': {'water_use_intensity': 0.0019,
+                                                                  'water_production_intensity': 0.08}}
     else:
         fuel_water_intensity_dict = water_intensity_values
 
     # dictionary of water flow percentages and consumption fractions by water type and water source to each energy type
     if water_flow_values is None:
         fuel_water_type_dict = \
-        {'biomass_ethanol':
-             {'fresh': {'surfacewater': {'flow_percent': 0.44, 'consumption_fraction': 0.77},
-                        'groundwater': {'flow_percent': 0.54, 'consumption_fraction': 0.77},
-                        'wastewater': {'flow_percent': 0.01, 'consumption_fraction': 0.77}},
-              'saline': {'surfacewater': {'flow_percent': 0, 'consumption_fraction': 0},
-                         'groundwater': {'flow_percent': 0, 'consumption_fraction': 0},
-                         'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}},
-         'coal_surface': {'fresh': {'surfacewater': {'flow_percent': 0.43, 'consumption_fraction': .38},
-                                    'groundwater': {'flow_percent': 0.38, 'consumption_fraction': .38},
-                                    'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}},
-                          'saline': {'surfacewater': {'flow_percent': 0.01, 'consumption_fraction': .16},
-                                     'groundwater': {'flow_percent': 0.18, 'consumption_fraction': .16},
-                                     'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}},
-         'coal_underground':{'fresh': {'surfacewater': {'flow_percent': 0.43, 'consumption_fraction': 0.38},
-                                       'groundwater': {'flow_percent': 0.38, 'consumption_fraction': 0.38},
-                                       'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}},
-                             'saline': {'surfacewater': {'flow_percent': 0.01, 'consumption_fraction': 0.16},
-                                        'groundwater': {'flow_percent': 0.18, 'consumption_fraction': 0.16},
-                                        'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}},
-         'natgas_unconventional':{'fresh': {'surfacewater': {'flow_percent': .8, 'consumption_fraction': 1},
-                                            'groundwater': {'flow_percent': .2, 'consumption_fraction': 1},
+            {'biomass_ethanol':
+                 {'fresh': {'surfacewater': {'flow_percent': 0.44, 'consumption_fraction': 0.77},
+                            'groundwater': {'flow_percent': 0.54, 'consumption_fraction': 0.77},
+                            'wastewater': {'flow_percent': 0.01, 'consumption_fraction': 0.77}},
+                  'saline': {'surfacewater': {'flow_percent': 0, 'consumption_fraction': 0},
+                             'groundwater': {'flow_percent': 0, 'consumption_fraction': 0},
+                             'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}},
+             'coal_surface': {'fresh': {'surfacewater': {'flow_percent': 0.43, 'consumption_fraction': .38},
+                                        'groundwater': {'flow_percent': 0.38, 'consumption_fraction': .38},
+                                        'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}},
+                              'saline': {'surfacewater': {'flow_percent': 0.01, 'consumption_fraction': .16},
+                                         'groundwater': {'flow_percent': 0.18, 'consumption_fraction': .16},
+                                         'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}},
+             'coal_underground': {'fresh': {'surfacewater': {'flow_percent': 0.43, 'consumption_fraction': 0.38},
+                                            'groundwater': {'flow_percent': 0.38, 'consumption_fraction': 0.38},
                                             'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}},
-                                  'saline': {'surfacewater': {'flow_percent': 0, 'consumption_fraction': 0},
-                                             'groundwater': {'flow_percent': 0, 'consumption_fraction': 0},
+                                  'saline': {'surfacewater': {'flow_percent': 0.01, 'consumption_fraction': 0.16},
+                                             'groundwater': {'flow_percent': 0.18, 'consumption_fraction': 0.16},
                                              'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}},
-         'petroleum_unconventional':{'fresh': {'surfacewater': {'flow_percent': .8, 'consumption_fraction': .05},
-                                               'groundwater': {'flow_percent': .2, 'consumption_fraction': .05},
-                                               'wastewater': {'flow_percent': 0, 'consumption_fraction': .05}},
-                                     'saline': {'surfacewater': {'flow_percent': 0, 'consumption_fraction': 0},
-                                                'groundwater': {'flow_percent': 0, 'consumption_fraction': 0},
-                                                'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}},
-         'petroleum_conventional':{'fresh': {'surfacewater': {'flow_percent': .80, 'consumption_fraction': .05},
-                                             'groundwater': {'flow_percent': .20, 'consumption_fraction': .05},
-                                             'wastewater': {'flow_percent': 0, 'consumption_fraction': .05}},
-                                   'saline': {'surfacewater': {'flow_percent': 0, 'consumption_fraction': 0},
-                                              'groundwater': {'flow_percent': 0, 'consumption_fraction': 0},
-                                              'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}}}
+             'natgas_unconventional': {'fresh': {'surfacewater': {'flow_percent': .8, 'consumption_fraction': 1},
+                                                 'groundwater': {'flow_percent': .2, 'consumption_fraction': 1},
+                                                 'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}},
+                                       'saline': {'surfacewater': {'flow_percent': 0, 'consumption_fraction': 0},
+                                                  'groundwater': {'flow_percent': 0, 'consumption_fraction': 0},
+                                                  'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}},
+             'petroleum_unconventional': {'fresh': {'surfacewater': {'flow_percent': .8, 'consumption_fraction': .05},
+                                                    'groundwater': {'flow_percent': .2, 'consumption_fraction': .05},
+                                                    'wastewater': {'flow_percent': 0, 'consumption_fraction': .05}},
+                                          'saline': {'surfacewater': {'flow_percent': 0, 'consumption_fraction': 0},
+                                                     'groundwater': {'flow_percent': 0, 'consumption_fraction': 0},
+                                                     'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}},
+             'petroleum_conventional': {'fresh': {'surfacewater': {'flow_percent': .80, 'consumption_fraction': .05},
+                                                  'groundwater': {'flow_percent': .20, 'consumption_fraction': .05},
+                                                  'wastewater': {'flow_percent': 0, 'consumption_fraction': .05}},
+                                        'saline': {'surfacewater': {'flow_percent': 0, 'consumption_fraction': 0},
+                                                   'groundwater': {'flow_percent': 0, 'consumption_fraction': 0},
+                                                   'wastewater': {'flow_percent': 0, 'consumption_fraction': 0}}}}
 
     else:
         fuel_water_type_dict = water_flow_values
@@ -1718,24 +1868,24 @@ def calc_energy_production_water(data: pd.DataFrame,water_intensity_values=None,
     # a dictionary of produced water consumption fractions
     if produced_water_consumption_values is None:
         produced_water_consumption_dict = {'natgas_unconventional': .05,
-                                        'petroleum_unconventional': .05}
+                                           'petroleum_unconventional': .05}
     else:
         produced_water_consumption_dict = produced_water_consumption_values
 
     # a dictionary of water discharge fractions
     if discharge_fractions is None:
         discharge_dict = {'biomass_ethanol':
-                               {'surface': 1, 'ground': 0},
-                      'coal_surface':
-                               {'surface': 1, 'ground': 0},
-                      'coal_underground':
-                               {'surface': 1, 'ground': 0},
-                      'natgas_unconventional':
-                               {'surface': .05, 'ground': .95},
-                      'petroleum_conventional':
-                               {'surface': .05, 'ground': .95},
-                    'petroleum_unconventional':
-                               {'surface': .05, 'ground': .95}}
+                              {'surface': 1, 'ground': 0},
+                          'coal_surface':
+                              {'surface': 1, 'ground': 0},
+                          'coal_underground':
+                              {'surface': 1, 'ground': 0},
+                          'natgas_unconventional':
+                              {'surface': .05, 'ground': .95},
+                          'petroleum_conventional':
+                              {'surface': .05, 'ground': .95},
+                          'petroleum_unconventional':
+                              {'surface': .05, 'ground': .95}}
 
     else:
         discharge_dict = discharge_fractions
@@ -1760,22 +1910,22 @@ def calc_energy_production_water(data: pd.DataFrame,water_intensity_values=None,
                         # if you have regional water intensities
                         if energy_water_use_intensity_name in df.columns:
                             output_df[total_water_name] = df[energy_water_use_intensity_name] \
-                                                          * (df[energy_production_name]/365)
+                                                          * (df[energy_production_name] / 365)
                         else:
                             # apply dictionary intensities from fuel_type_dict
                             output_df[total_water_name] = fuel_water_intensity_dict[fuel_type]['water_use_intensity'] \
-                                                          * (df[energy_production_name]/365)
+                                                          * (df[energy_production_name] / 365)
 
                         # calculate produced water
                         energy_water_production_intensity_name = f'{fuel_type}_produced_water_intensity_mg_per_bbtu'
                         total_produced_water_name = f'total_produced_water_{fuel_type}_mgd'
                         if energy_water_production_intensity_name in df.columns:
                             output_df[total_produced_water_name] = df[energy_water_production_intensity_name] \
-                                                                   * (df[energy_production_name]/365)
+                                                                   * (df[energy_production_name] / 365)
                         else:
                             produced_water_value = fuel_water_intensity_dict[fuel_type]['water_production_intensity']
                             output_df[total_produced_water_name] = produced_water_value \
-                                                                   * (df[energy_production_name]/365)
+                                                                   * (df[energy_production_name] / 365)
                     else:
                         pass  # otherwise do nothing (baseline data requirement)
 
@@ -1812,7 +1962,8 @@ def calc_energy_production_water(data: pd.DataFrame,water_intensity_values=None,
                         output_df[water_consumption_name] = df[water_consumption_fraction_name] \
                                                             * output_df[energy_production_water_name]
                     else:  # apply dictionary assumptions across all regions
-                        consumption_fraction = fuel_water_type_dict[fuel_type][water_type][water_source]['consumption_fraction']
+                        consumption_fraction = fuel_water_type_dict[fuel_type][water_type][water_source][
+                            'consumption_fraction']
                         output_df[water_consumption_name] = consumption_fraction \
                                                             * output_df[energy_production_water_name]
 
@@ -1830,7 +1981,7 @@ def calc_energy_production_water(data: pd.DataFrame,water_intensity_values=None,
                     total_consumed_water_name = f'{fuel_type}_consumption_mgd'
                     if water_consumption_fraction_name in df.columns:  # if regional water consumption available
                         output_df[produced_water_consumption_name] = df[water_consumption_fraction_name] \
-                                                            * output_df[total_produced_water_name]
+                                                                     * output_df[total_produced_water_name]
                         output_df[total_consumed_water_name] = output_df[total_consumed_water_name] + output_df[
                             produced_water_consumption_name]
                     else:  # apply dictionary assumptions across all regions
@@ -1860,16 +2011,16 @@ def calc_energy_production_water(data: pd.DataFrame,water_intensity_values=None,
 
                 if water_discharge_fraction_name in df.columns:
                     water_discharge_value = df[water_discharge_fraction_name] \
-                                                      * ((output_df[total_water_name]
-                                                          + output_df[total_produced_water_name])
-                                                         - output_df[total_consumed_water_name])
+                                            * ((output_df[total_water_name]
+                                                + output_df[total_produced_water_name])
+                                               - output_df[total_consumed_water_name])
                     water_value_dict.update({water_discharge_name: water_discharge_value})
                 else:
                     discharge_fraction = discharge_dict[fuel_type][discharge_type]
                     water_discharge_value = discharge_fraction \
-                                                      * ((output_df[total_water_name]
-                                                          + output_df[total_produced_water_name])
-                                                         - output_df[total_consumed_water_name])
+                                            * ((output_df[total_water_name]
+                                                + output_df[total_produced_water_name])
+                                               - output_df[total_consumed_water_name])
 
                     water_value_dict.update({water_discharge_name: water_discharge_value})
         else:
@@ -1881,11 +2032,7 @@ def calc_energy_production_water(data: pd.DataFrame,water_intensity_values=None,
     # join discharge dataframe to output dataframe
     output_df = output_df.join(discharge_value_df, how='outer')
 
-
     return output_df
-
-
-
 
 
 def aggregate(df_list=None, total=False, regions=3):
