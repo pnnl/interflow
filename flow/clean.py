@@ -701,6 +701,9 @@ def prep_electricity_generation() -> pd.DataFrame:
     df_gen_loc = prep_power_plant_location()
     df_loc = prep_water_use_2015()
 
+    # read in power plant cooling type data
+    df_cooling = get_powerplant_cooling_data()
+
     # remove unnecessary variables
     df_gen_loc = df_gen_loc[['FIPS', 'plant_code']]
     df = df[['Plant Id', "AER\nFuel Type Code", "Reported\nPrime Mover", "Total Fuel Consumption\nMMBtu",
@@ -745,15 +748,39 @@ def prep_electricity_generation() -> pd.DataFrame:
                     'FW':'flywheel'
                     }
 
+    water_source_dict = {'SW': 'surfacewater',  # river, canal, bay
+                         'GW': 'groundwater',  # well, aquifer
+                         'PD': 'wastewater',  # PD = plant discharge
+                         "-nr-": "surfacewater",  # all blanks assumed to be surface water
+                         "GW & PD": "groundwater",  # all GW+PD are assumed to be groundwater only
+                         "GW & SW": 'surfacewater',  # all GW+SW combinations are assumed to be SW
+                        "OT": "surfacewater"
+                         }
+
+    water_type_dict = {'FR': 'fresh',
+                       'SA': 'saline',
+                       'OT': 'fresh', # all other source is assumed to be surface water
+                       "FR & BE": 'fresh', # all combinations with fresh and BE are assumed to be fresh
+                       "BE": "fresh",  # reclaimed wastewater
+                        "BR": "saline",      # all brackish should be changed to saline
+                        "": "fresh"}
+
+    cooling_dict = {'COMPLEX': 'complex',
+                    'ONCE-THROUGH FRESH': 'oncethrough',
+                    'RECIRCULATING TOWER': 'tower',
+                    'RECIRCULATING POND': 'pond',
+                    'ONCE-THROUGH SALINE': 'oncethrough'}
+
     # rename columns in power plant generation data file
     df = df.rename(columns={"Plant Id": "plant_code"})
     df = df.rename(columns={"AER\nFuel Type Code": "fuel_type"})
+    df = df.rename(columns={"Reported\nPrime Mover": "prime_mover"})
     df = df.rename(columns={"Total Fuel Consumption\nMMBtu": "fuel_amt"})
     df = df.rename(columns={"Net Generation\n(Megawatthours)": "generation_mwh"})
-    df = df.rename(columns={"Reported\nPrime Mover": "prime_mover"})
+
 
     # changing string columns to numeric
-    string_col = df.columns[2:]  # create list of string columns
+    string_col = df.columns[3:]  # create list of string columns
     for col in string_col:
         df[col] = df[col].str.replace(r"[^\w ]", '', regex=True)  # replace any non alphanumeric values
         df[col] = df[col].astype(float)  # convert to float
@@ -766,54 +793,138 @@ def prep_electricity_generation() -> pd.DataFrame:
     df.drop(index_list, inplace=True)  # dropping rows with zero fuel and zero generation amount
 
     # using fuel type dictionary to bin fuel types
-    df['fuel_type'] = df['fuel_type'].map(fuel_dict)  # bin fuel types
+    df['fuel_type'] = df['fuel_type'].map(fuel_consumption_dict)  # bin fuel types
+
+    # using prime_mover_dict to bin prime mover types
+    df['prime_mover'] = df['prime_mover'].map(prime_mover_dict)  # bin fuel types
 
     # converting units to billion btu from million btu
     df["fuel_amt"] = df["fuel_amt"] / 1000
 
     # grouping rows by both plant code and fuel type
-    df = df.groupby(['plant_code', 'fuel_type'], as_index=False).sum()
+    df = df.groupby(['plant_code', 'fuel_type', 'prime_mover'], as_index=False).sum()
 
     # merging power plant location data with power plant generation data
     df = pd.merge(df, df_gen_loc, how='left', on='plant_code')
 
-    # need to merge with cooling type information by plant code
 
-    
+    # COOLING WATER DATA
+#
+    ## need to merge with cooling type information by plant code
+    # estimate discharge location from source information
+    df_cooling['OCEAN_DISCHARGE_MGD'] = np.where(df_cooling['NAME_OF_WATER_SOURCE'].str.contains('Ocean', regex=False),
+                                           df_cooling['WITHDRAWAL'] - df_cooling['CONSUMPTION'],
+                                           0)
+    # gulf of mexico
+    df_cooling['OCEAN_DISCHARGE_MGD'] = np.where(df_cooling['NAME_OF_WATER_SOURCE'].str.contains('Gulf', regex=False),
+                                           df_cooling['WITHDRAWAL'] - df_cooling['CONSUMPTION'],
+                                           df_cooling['OCEAN_DISCHARGE_MGD'])
+
+    # only bays with saline water are ocean discharge (some bays are on lakes (e.g. Green Bay))
+    df_cooling['OCEAN_DISCHARGE_MGD'] = np.where(df_cooling['NAME_OF_WATER_SOURCE'].str.contains('Gulf', regex=False) &
+                                           df_cooling['WATER_TYPE_CODE'] == "SA",
+                                           df_cooling['WITHDRAWAL'] - df_cooling['CONSUMPTION'],
+                                           df_cooling['OCEAN_DISCHARGE_MGD'])
+    # harbors
+    df_cooling['OCEAN_DISCHARGE_MGD'] = np.where(df_cooling['NAME_OF_WATER_SOURCE'].str.contains('Harbor', regex=False) &
+        df_cooling['WATER_TYPE_CODE'] == "SA",
+        df_cooling['WITHDRAWAL'] - df_cooling['CONSUMPTION'],
+        df_cooling['OCEAN_DISCHARGE_MGD'])
+    # channels
+    df_cooling['OCEAN_DISCHARGE_MGD'] = np.where(df_cooling['NAME_OF_WATER_SOURCE'].str.contains('Channel', regex=False) &
+        df_cooling['WATER_TYPE_CODE'] == "SA",
+        df_cooling['WITHDRAWAL'] - df_cooling['CONSUMPTION'],
+        df_cooling['OCEAN_DISCHARGE_MGD'])
+    # sounds
+    df_cooling['OCEAN_DISCHARGE_MGD'] = np.where(df_cooling['NAME_OF_WATER_SOURCE'].str.contains('Sound', regex=False) &
+        df_cooling['WATER_TYPE_CODE'] == "SA",
+        df_cooling['WITHDRAWAL'] - df_cooling['CONSUMPTION'],
+        df_cooling['OCEAN_DISCHARGE_MGD'])
+
+    # all remaining discharge is to surface water
+    df_cooling['SURFACE_DISCHARGE_MGD'] = np.where(df_cooling['OCEAN_DISCHARGE_MGD'] == 0,
+                                           df_cooling['WITHDRAWAL'] - df_cooling['CONSUMPTION'],
+                                           0)
+    # Fix water source and type data
+    # all surface water without a type is assumed to be fresh
+    df_cooling['WATER_TYPE_CODE'] = np.where((df_cooling["WATER_SOURCE_CODE"] == "SW")
+                                             & (df_cooling["WATER_TYPE_CODE"] == "-nr-"),
+                                     "FR", df_cooling['WATER_TYPE_CODE'])
+
+    # all groundwater without a type is assumed to be fresh
+    df_cooling['WATER_TYPE_CODE'] = np.where((df_cooling["WATER_SOURCE_CODE"] == "GW")
+                                             & (df_cooling["WATER_TYPE_CODE"] == "-nr-"),
+                                     "FR", df_cooling['WATER_TYPE_CODE'])
+
+    # apply dictionaries
+    df_cooling['COOLING_TYPE'] = df_cooling['COOLING_TYPE'].map(cooling_dict)  # rename cooling types
+    df_cooling['WATER_SOURCE_CODE'] = df_cooling['WATER_SOURCE_CODE'].map(water_source_dict)  # rename water sources
+    df_cooling['WATER_TYPE_CODE'] = df_cooling['WATER_TYPE_CODE'].map(water_type_dict)  # rename water types
+    df_cooling['WATER_TYPE_CODE'].fillna('fresh', inplace=True)
+    df_cooling['WATER_SOURCE_CODE'].fillna('surfacewater', inplace=True)
 
 
+    df_cooling = df_cooling[['EIA_PLANT_ID', 'COOLING_TYPE', 'WATER_SOURCE_CODE', 'WATER_TYPE_CODE', 'WITHDRAWAL',
+                             'CONSUMPTION', 'SURFACE_DISCHARGE_MGD', 'OCEAN_DISCHARGE_MGD']]
+    df_cooling = df_cooling.rename(columns={'EIA_PLANT_ID':'plant_code'})
+#
+    df = pd.merge(df, df_cooling, how='left', on='plant_code')
 
+    no_cool_list = ['hydro', 'wind', 'solar']
 
-    # splitting out fuel data into a separate dataframe and pivoting to get fuel (bbtu) as columns by type
-    df_fuel = df[["FIPS", "fuel_amt", "fuel_type"]].copy()  # create a copy of fuel type data
-    df_fuel["fuel_type"] = 'EC_' + df_fuel["fuel_type"] +'_' + '_total_total_total_to_EG_' \
+    for item in no_cool_list:
+        df["COOLING_TYPE"] = np.where(df['fuel_type'] == item, np.nan, df["COOLING_TYPE"])
+#
+    ## splitting out fuel data into a separate dataframe and pivoting to get fuel (bbtu) as columns by type
+    df_fuel = df[["FIPS", "fuel_amt", "fuel_type", 'prime_mover',"COOLING_TYPE"]].copy()  # create a copy of fuel type data
+    df_fuel['COOLING_TYPE'].fillna('nocooling', inplace=True)
+
+    df_fuel["fuel_name"] = 'EC_' + df_fuel["fuel_type"] +'_total_total_total_to_EG_' \
                            + df_fuel["fuel_type"] +'_' + df_fuel["prime_mover"] + '_'\
-                           + df_fuel['cooling_type'] + '_total_bbtu'  # add naming
-    # example: EC_Coal_total_total_total_to_EG_coal_combustionturbine_oncethrough_total_bbtu'
+                           + df_fuel['COOLING_TYPE'] + '_total_bbtu'  # add naming
+     #example: EC_Coal_total_total_total_to_EG_coal_combustionturbine_oncethrough_total_bbtu'
 
-    df_fuel = pd.pivot_table(df_fuel, values='fuel_amt', index=['FIPS'], columns=['fuel_type'], aggfunc=np.sum)  # pivot
+    df_fuel = pd.pivot_table(df_fuel, values='fuel_amt', index=['FIPS'], columns=['fuel_name'], aggfunc=np.sum)  # pivot
     df_fuel = df_fuel.reset_index()  # reset index to remove multi-index from pivot table
     df_fuel = df_fuel.rename_axis(None, axis=1)  # drop index name
     df_fuel.fillna(0, inplace=True)  # fill nan with zero
-
-    # splitting out generation data into a separate dataframe and pivoting to get generation (mwh) as columns by type
-    df_gen = df[["FIPS", "generation_mwh", "fuel_type"]].copy()  # create a copy of generation data
+#
+    ## splitting out generation data into a separate dataframe and pivoting to get generation (mwh) as columns by type
+    df_gen = df[["FIPS", "generation_mwh", 'prime_mover', "fuel_type", 'COOLING_TYPE']].copy()  # create a copy of generation data
+    df_gen['COOLING_TYPE'].fillna('nocooling', inplace=True)
     df_gen['generation_mwh'] = df_gen['generation_mwh'].apply(co.convert_mwh_bbtu)  # convert to bbtu from mwh
-    df_gen["fuel_type"] ='eg_generation_' + df_gen["fuel_type"] + "_total_to_es_bbtu" # add naming
 
-    df_gen = pd.pivot_table(df_gen, values='generation_mwh', index=['FIPS'], columns=['fuel_type'], aggfunc=np.sum)
+    df_gen["fuel_type_name"] = 'EG_' + df_gen["fuel_type"] + '_' + df_gen["prime_mover"] + '_'\
+                           + df_gen['COOLING_TYPE'] + "_total_to_ES_total_total_total_total_bbtu" # add naming
+#
+    df_gen = pd.pivot_table(df_gen, values='generation_mwh', index=['FIPS'], columns=['fuel_type_name'], aggfunc=np.sum)
     df_gen = df_gen.reset_index()  # reset index to remove multi-index from pivot table
     df_gen = df_gen.rename_axis(None, axis=1)  # drop index name
     df_gen.fillna(0, inplace=True)  # fill nan with zero
 
-    # merge fuel and generation dataframes into single dataframe
-    df = pd.merge(df_fuel, df_gen, how='left', on='FIPS')
-    df = pd.merge(df_loc, df, how='left')
+    df_cooling_w = df[["FIPS", 'plant_code','prime_mover', "fuel_type", 'COOLING_TYPE', 'WATER_TYPE_CODE','WATER_SOURCE_CODE', 'WITHDRAWAL']].copy()
+    df_cooling_w["water_withdrawal_name"] = 'WS_' + df_cooling_w["WATER_TYPE_CODE"] + '_' \
+                                            + df_cooling_w["WATER_SOURCE_CODE"] + '_total_total_to_' + df['fuel_type'] \
+                                            + '_' + df['prime_mover'] + '_' + df['COOLING_TYPE'] + '_total_total_mgd'
+    cooling_only = df_cooling_w[df_cooling_w.COOLING_TYPE != 'nocooling'].groupby('plant_code', as_index=False).count()
+    cooling_only = cooling_only.rename(columns={'FIPS':'count'})
+    cooling_only = cooling_only[['plant_code', 'count']]
+    df_cooling_w = pd.merge(df_cooling_w, cooling_only, how='left', on='plant_code')
+    df_cooling_w['count'].fillna(1, inplace=True)
 
-    # merge dataframe with county data to distribute value to each county in a state
-    df.fillna(0, inplace=True)  # fill nan with zero
+    #df_cooling_w = pd.pivot_table(df_cooling_w, values='WITHDRAWAL', index=['FIPS'], columns=['water_withdrawal_name'], aggfunc=np.sum)
+    #df_cooling_w = df_cooling_w.reset_index()  # reset index to remove multi-index from pivot table
+    #df_cooling_w = df_cooling_w.rename_axis(None, axis=1)  # drop index name
+    #df_cooling_w.fillna(0, inplace=True)  # fill nan with zero
+#
+    ## merge fuel and generation dataframes into single dataframe
+    #df = pd.merge(df_fuel, df_gen, how='left', on='FIPS')
+    #df = pd.merge(df_loc, df, how='left')
+#
+    ## merge dataframe with county data to distribute value to each county in a state
+    #df.fillna(0, inplace=True)  # fill nan with zero
 
-    return df
+    return df_cooling_w
 
 
 def prep_thermo_cooling_data() -> pd.DataFrame:
@@ -936,6 +1047,8 @@ def prep_thermo_cooling_data() -> pd.DataFrame:
     df['WATER_TYPE_CODE'].fillna('fresh', inplace=True)
     df['WATER_SOURCE_CODE'].fillna('surfacewater', inplace=True)
     #
+
+
     df_primary = df_primary.rename(columns={'Plant_Code': 'EIA_PLANT_ID'})
 
     df = pd.merge(df, df_primary, how='left', on='EIA_PLANT_ID')
