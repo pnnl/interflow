@@ -9,7 +9,7 @@ import flow.construct as co
 def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters: pd.DataFrame, regions=3,
                                                  all_output=True, total=False, grandtotal=False):
 
-    """Calculates rejected energy (losses) and total energy services (generation) from electricity generation
+    """Calculates rejected energy (losses) and total generation from electricity generation
     by generating type for each region.
 
     Function requires two items:
@@ -23,14 +23,14 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
 
     If energy consumption to generator flows (fuel demand) are not found in the baseline data, the function
     returns nothing as this is a baseline requirement outlined above. Otherwise, if it is available, the information is
-    copied to the output and generator to energy services (electricity generation) data is also available, rejected
+    copied to the output and generator to generation (electricity generation) data is also available, rejected
     energy is calculated as the difference between the two (total fuel in - total generation out). If electricity
     generation out data is not provided in the baseline data, the calculation determines rejected energy based on the
     product of fuel in and an efficiency rating. The efficiency rating value used is either a) region-level efficiency
     ratings for each generator type provided in the baseline data, or b) the singular efficiency rating provided in the
     input parameter data for each generator type.
 
-    To determine energy services for each generator type, either the values are already provided in the baseline data
+    To determine generation for each generator type, either the values are already provided in the baseline data
     or they are calculated from the difference between fuel input to the generator and the rejected energy calculated.
 
         :param data:                        DataFrame of input data containing electricity generation fuel and total
@@ -50,15 +50,15 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
                                             fuel_type and fuel_sub_type within each region
         :type all_output:                   bool
 
-        :param total:                       If true, returns total fuel use, rejected energy and total energy services
+        :param total:                       If true, returns total fuel use, rejected energy and total generation
                                             by each fuel type within each region
         :type total:                        bool
 
         :param grandtotal:                  If true, returns grand total fuel use in electricity generation, rejected
-                                            energy and total energy services within each region.
+                                            energy and total generation within each region.
         :type grandtotal:                   bool
 
-        :return:                            DataFrame of fuel use, rejected energy, and energy services values in
+        :return:                            DataFrame of fuel use, rejected energy, and generation values in
                                             billion btu per year related to electricity generation
 
         """
@@ -90,15 +90,15 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
             fuel_use_total_value = 0
             rejected_energy_total_name = f'eg_generation_' + fuel_type + "_to_re_bbtu"
             rejected_energy_total_value = 0
-            energy_services_total_name = f'eg_generation_' + fuel_type + "_to_es_bbtu"
-            energy_services_total_value = 0
+            generation_total_name = f'eg_generation_' + fuel_type + "_bbtu"
+            generation_total_value = 0
 
             fuel_use_grandtotal_name = f'ec_consumption_to_eg_generation_bbtu'
             fuel_use_grandtotal_value = 0
             rejected_energy_grandtotal_name = f'eg_generation_to_re_bbtu'
             rejected_energy_grandtotal_value = 0
-            energy_services_grandtotal_name = f'eg_generation_to_es_bbtu'
-            energy_services_grandtotal_value = 0
+            generation_grandtotal_name = f'eg_generation_bbtu'
+            generation_grandtotal_value = 0
 
             # loop through each sub_fuel type for each fuel type in parameter data provided
             for sub_fuel_type in efficiency_dict[fuel_type]:
@@ -106,7 +106,7 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
                 # build data names from parameter inputs to look for in baseline dataset
                 fuel_use_name = f'ec_consumption_' + fuel_type + "_" + sub_fuel_type + '_to_eg_generation_bbtu'
                 rejected_energy_name = f'eg_generation_' + fuel_type + "_" + sub_fuel_type + "_to_re_bbtu"
-                energy_services_name = f'eg_generation_' + fuel_type + "_" + sub_fuel_type + "_to_es_bbtu"
+                generation_name = f'eg_generation_' + fuel_type + "_" + sub_fuel_type + "_bbtu"
                 region_efficiency_fraction_name = f'eg_' + fuel_type + '_'+ sub_fuel_type + '_efficiency_fraction'
 
                 # if fuel to electricity generation by fuel_type and sub_fuel type is in the baseline data
@@ -118,16 +118,16 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
                     total_dict.update({fuel_use_total_name: fuel_use_total_value})
                     grandtotal_dict.update({fuel_use_grandtotal_name: fuel_use_grandtotal_value})
 
-                    # if electricity generation (energy services) by fuel type and fuel_subtype is in the baseline data
-                    if energy_services_name in df.columns:
+                    # if electricity generation by fuel type and fuel_subtype is in the baseline data
+                    if generation_name in df.columns:
 
                         # calculate rejected energy as the difference between fuel input and generation output (to ES)
-                        rejected_energy_value = df[fuel_use_name] - df[energy_services_name]
+                        rejected_energy_value = df[fuel_use_name] - df[generation_name]
 
-                        # use the energy services value from the baseline data
-                        energy_services_value = df[energy_services_name]
+                        # use the generation value from the baseline data
+                        generation_value = df[generation_name]
 
-                    # if it's not available, calculate rejected energy and energy services from parameters
+                    # if it's not available, calculate rejected energy and generation from parameters
                     else:
 
                         # if region-level efficiency information is available by fuel_type + fuel sub_type
@@ -139,24 +139,24 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
                             efficiency_value = efficiency_dict[fuel_type][sub_fuel_type]['efficiency']
 
                         rejected_energy_value = df[fuel_use_name] * (1 - efficiency_value)
-                        energy_services_value = df[fuel_use_name] - rejected_energy_value
+                        generation_value = df[fuel_use_name] - rejected_energy_value
 
                     # add output to total and grandtotal rejected energy value
                     rejected_energy_total_value = rejected_energy_total_value + rejected_energy_value
-                    energy_services_total_value = energy_services_total_value + energy_services_value
+                    generation_total_value = generation_total_value + generation_value
 
                     rejected_energy_grandtotal_value = rejected_energy_grandtotal_value + rejected_energy_value
-                    energy_services_grandtotal_value = energy_services_grandtotal_value + energy_services_value
+                    generation_grandtotal_value = generation_grandtotal_value + generation_value
 
                     # append rejected energy values to output dictionaries
                     output_dict.update({rejected_energy_name: rejected_energy_value})
                     total_dict.update({rejected_energy_total_name: rejected_energy_total_value})
                     grandtotal_dict.update({rejected_energy_grandtotal_name: rejected_energy_grandtotal_value})
 
-                    # append energy services (generation) values to output dictionaries
-                    output_dict.update({energy_services_name: energy_services_value})
-                    total_dict.update({energy_services_total_name: energy_services_total_value})
-                    grandtotal_dict.update({energy_services_grandtotal_name: energy_services_grandtotal_value})
+                    # append generation values to output dictionaries
+                    output_dict.update({generation_name: generation_value})
+                    total_dict.update({generation_total_name: generation_total_value})
+                    grandtotal_dict.update({generation_grandtotal_name: generation_grandtotal_value})
 
                 # fuel to electricity is a baseline data requirement
                 else:
@@ -194,10 +194,8 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
 
         return df
 
-
-
-
-def calc_sectoral_use_energy_discharge(data: pd.DataFrame, sector_types=None, fuel_types=None, regions=3, total=False):
+def calc_sectoral_use_energy_discharge(data: pd.DataFrame, parameters: pd.DataFrame, regions=3, all_output=True,
+                                       total=False, grandtotal=False):
     """calculates rejected energy (losses) and energy services for each region for each sector type in billion btu.
     Rejected energy is calculated as energy delivered multiplied by the efficiency rating for a given sector.
 
@@ -228,61 +226,123 @@ def calc_sectoral_use_energy_discharge(data: pd.DataFrame, sector_types=None, fu
     # load data
     df = data
 
-    # establish dictionary of sector types as keys and efficiency as value.
-    if sector_types is None:  # default key value pairs
-        sector_type_dict = {'residential': 0.65, 'commercial': 0.65, 'industrial': 0.49,
-                            'mining': 0.65, 'transportation': 0.21}
+    # TODO unlock this later when the load_baseline_data is hooked up to a data reader
+    #df = load_baseline_data()
+
+    # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings and change to nested dict
+    efficiency_dict = co.construct_nested_dictionary(parameters)
+
+    if parameters.shape[1] != 5:
+        raise ValueError('Input parameter data does not have correct number of columns')
+
     else:
-        sector_type_dict = sector_types
+        # initialize output dictionaries with region identifiers
+        output_dict = df[df.columns[:regions].tolist()].to_dict()
+        total_dict = df[df.columns[:regions].tolist()].to_dict()
+        grandtotal_dict = df[df.columns[:regions].tolist()].to_dict()
 
-    #  establish list of fuel types to include
-    if fuel_types is None:  # default fuel types
-        fuel_type_list = ['electricity', 'coal', 'biomass', 'geothermal', 'natgas', 'petroleum', 'solar', 'wind']
-    else:
-        fuel_type_list = fuel_types
+        # loop through each fuel type in parameter data provided
+        for sector_type in efficiency_dict:
+            # create total fuel use by fuel type in each sector and initalize to zero
+            fuel_use_grandtotal_name = f'ec_consumption_to_' + sector_type + '_bbtu'
+            fuel_use_grandtotal_value = 0
+            rejected_energy_grandtotal_name = f'{sector_type}_to_re_bbtu'
+            rejected_energy_grandtotal_value = 0
+            energy_services_grandtotal_name = f'{sector_type}_to_es_bbtu'
+            energy_services_grandtotal_value = 0
 
-    # loop through each sector + fuel pair and calculate rejected energy and energy services if in dataset
-    retain_list = []
-    total_list = []
-    for sector_type in sector_type_dict:
-        df[f'{sector_type}_total_rejected_energy_bbtu'] = 0
-        df[f'{sector_type}_total_energy_services_bbtu'] = 0
+            for sub_sector_type in efficiency_dict[sector_type]:
+                for fuel_type in efficiency_dict[sector_type][sub_sector_type]:
 
-        for fuel_type in fuel_type_list:
-            fuel_demand_type = fuel_type + "_" + sector_type + "_bbtu"
-            if fuel_demand_type in df.columns:
-                df[f'{sector_type}_{fuel_type}_rejected_energy_bbtu'] = df[fuel_demand_type] \
-                                                                        * (1 - sector_type_dict[sector_type])
+                    fuel_use_total_name = f'ec_consumption_{fuel_type}_to_{sector_type}_bbtu'
+                    fuel_use_total_value = 0
+                    rejected_energy_total_name = f'{sector_type}_{sub_sector_type}_to_re_bbtu'
+                    rejected_energy_total_value = 0
+                    energy_services_total_name = f'{sector_type}_{sub_sector_type}_to_es_bbtu'
+                    energy_services_total_value = 0
 
-                df[f'{sector_type}_{fuel_type}_energy_services_bbtu'] = df[fuel_demand_type] \
-                                                                        * (sector_type_dict[sector_type])
+                    fuel_use_name = f'ec_consumption_{fuel_type}_to_{sector_type}_{sub_sector_type}_bbtu'
+                    rejected_energy_name = f'{sector_type}_{sub_sector_type}_{fuel_type}_to_re_bbtu'
+                    energy_services_name = f'{sector_type}_{sub_sector_type}_{fuel_type}_to_es_bbtu'
+                    region_efficiency_fraction_name = f'{sector_type}_{sub_sector_type}_{fuel_type}_efficiency_fraction'
 
-                retain_list.append(f'{sector_type}_{fuel_type}_rejected_energy_bbtu')
-                retain_list.append(f'{sector_type}_{fuel_type}_energy_services_bbtu')
+                    # if fuel to electricity generation by fuel_type and sub_fuel type is in the baseline data
+                    if fuel_use_name in df.columns:
+                        fuel_use_value = df[fuel_use_name]
+                        output_dict.update({fuel_use_name: fuel_use_value})
+                        fuel_use_total_value = fuel_use_total_value + fuel_use_value
+                        total_dict.update({fuel_use_total_name: fuel_use_total_value})
+                        grandtotal_dict.update({fuel_use_grandtotal_name: fuel_use_grandtotal_value})
 
-                df[f'{sector_type}_total_rejected_energy_bbtu'] = df[f'{sector_type}_total_rejected_energy_bbtu'] \
-                                                                  + df[
-                                                                      f'{sector_type}_{fuel_type}_rejected_energy_bbtu']
+                        # if region-level efficiency information is available by fuel_type + fuel sub_type
+                        if region_efficiency_fraction_name in df.columns:
+                            efficiency_value = df[region_efficiency_fraction_name]
+                        # otherwise use the single value assumption from the input parameters
+                        else:
+                            efficiency_value = efficiency_dict[sector_type][sub_sector_type][fuel_type]['efficiency']
+                        rejected_energy_value = df[fuel_use_name] * (1 - efficiency_value)
+                        energy_services_value = df[fuel_use_name] - rejected_energy_value
+
+                        # add output to total and grandtotal rejected energy value
+                        rejected_energy_total_value = rejected_energy_total_value + rejected_energy_value
+                        energy_services_total_value = energy_services_total_value + energy_services_value
+
+                        rejected_energy_grandtotal_value = rejected_energy_grandtotal_value + rejected_energy_value
+                        energy_services_grandtotal_value = energy_services_grandtotal_value + energy_services_value
+
+                        # append rejected energy values to output dictionaries
+                        output_dict.update({rejected_energy_name: rejected_energy_value})
+                        total_dict.update({rejected_energy_total_name: rejected_energy_total_value})
+                        grandtotal_dict.update({rejected_energy_grandtotal_name: rejected_energy_grandtotal_value})
+
+                        # append energy services (generation) values to output dictionaries
+                        output_dict.update({energy_services_name: energy_services_value})
+                        total_dict.update({energy_services_total_name: energy_services_total_value})
+                        grandtotal_dict.update({energy_services_grandtotal_name: energy_services_grandtotal_value})
+
+                    # fuel to electricity is a baseline data requirement
+                    else:
+                        pass
+
+        # convert output dictionaries to dataframe, merge with location information
+        output_df = pd.DataFrame.from_dict(output_dict, orient='index').transpose()
+        total_df = pd.DataFrame.from_dict(total_dict, orient='index').transpose()
+        grandtotal_df = pd.DataFrame.from_dict(grandtotal_dict, orient='index').transpose()
+
+        # return combinations of output specified.
+        if all_output:
+            if total:
+                if grandtotal:
+                    df = pd.merge(grandtotal_df, total_df, how='left', on=df.columns[0:regions].to_list())
+                    df = pd.merge(df, output_df, how='left', on=df.columns[0:regions])
+                else:
+                    df = pd.merge(output_df, total_df, how='left', on=df.columns[0:regions].to_list())
             else:
-                pass
+                if grandtotal:
+                    df = pd.merge(grandtotal_df, output_df, how='left', on=df.columns[0:regions].to_list())
+                else:
+                    df = output_df
+        else:
+            if total:
+                if grandtotal:
+                    df = pd.merge(grandtotal_df, total_df, how='left', on=df.columns[0:regions].to_list())
+                else:
+                    df = total_df
+            else:
+                if grandtotal:
+                    df = grandtotal_df
+                else:
+                    df = df[df.columns[:regions].tolist()]
+        return df
 
-        retain_list.append(f'{sector_type}_total_rejected_energy_bbtu')
-        total_list.append(f'{sector_type}_total_rejected_energy_bbtu')
 
-    # establish list of region columns to include in output
-    column_list = df.columns[:regions].tolist()
 
-    # if total is True, only return total rejected energy and energy services by sector
-    if total:
-        for item in total_list:
-            column_list.append(item)
-        df = df[column_list]
-    else:
-        for item in retain_list:
-            column_list.append(item)
-        df = df[column_list]
+# calculate total electricity demand first
 
-    return df
+# calculate imports/exports from electricity total
+
+# calculate sector discharge from electricity
+
 
 
 def calc_sectoral_use_water_discharge(data: pd.DataFrame, sector_types=None, discharge_types=None,
@@ -449,6 +509,11 @@ def calc_sectoral_use_water_discharge(data: pd.DataFrame, sector_types=None, dis
     else:
         df = output_df
     return df
+
+
+
+
+
 
 
 def calc_sector_water_exports(data: pd.DataFrame, sector_types=None, regions=3, total=False):
