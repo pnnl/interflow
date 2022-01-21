@@ -195,6 +195,198 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
         return df
 
 # calculate water withdrawals/discharge from sectors
+def calc_sectoral_use_water_discharge(data: pd.DataFrame, parameters: pd.DataFrame, sector_types=None, discharge_types=None,
+                                      regions=3, total=False):
+    """calculates water consumption and discharge in mgd for various sectors. Consumption is calculated first based on
+    assumed consumption fractions provided either in the dataset on a regional level or using the values in the
+    sector_types dictionary. Additional discharge locations (e.g., surface discharge, ocean discharge) are determined
+    by the remaining water delivered to each sector that is not consumed. Discharge fractions can be used from the data
+    if available, otherwise values in the discharge_types dictionary are used.
+
+        :param data:                        DataFrame of input data containing fuel demand data for each sector
+        :type data:                         DataFrame
+
+        :param sector_types:                a nested dictionary of water consumption fractions by sector types, water
+                                            source, and water type.
+        :type sector_types:                 dictionary
+
+        :param water_types:                 a nested dictionary of discharge fractions for each discharge type, listed
+                                            by water source and water type.
+        :type water_types:                  dictionary
+
+        :param regions:                     gives the number of columns in the dataset that should be treated as region
+                                            identifiers (e.g. "Country", "State"). Reads from the first column in the
+                                            dataframe onwards.
+        :type regions:                      int
+
+        :param total:                       If true, returns dataframe of identifier columns and total rejected energy
+                                            and total energy services by sector instead of by fuel type
+        :type total:                        bool
+
+        :return:                            DataFrame of water discharge estimates from various sectors
+
+        """
+
+    # load data
+    df = data
+
+    # TODO unlock this later when the load_baseline_data is hooked up to a data reader
+    # df = load_baseline_data()
+
+    # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings and change to nested dict
+    efficiency_dict = co.construct_nested_dictionary(parameters)
+
+    if parameters.shape[1] != 6:
+        raise ValueError('Input parameter data does not have correct number of columns')
+
+    else:
+
+
+
+
+
+
+
+
+
+
+    # load data
+    df = data
+
+    if sector_types is None:
+        sector_consumption_dict = {'residential': {'groundwater': {'saline': 0, 'fresh': .3},
+                                                   'surfacewater': {'saline': 0, 'fresh': .3},
+                                                   'pws': {'fresh': .3}},
+                                   'commercial': {'groundwater': {'saline': 0, 'fresh': .15},
+                                                  'surfacewater': {'saline': 0, 'fresh': .15},
+                                                  'pws': {'fresh': .15}},
+                                   'industrial': {'groundwater': {'saline': .003, 'fresh': .15},
+                                                  'surfacewater': {'saline': .003, 'fresh': .15},
+                                                  'pws': {'fresh': .15}},
+                                   'mining': {'groundwater': {'saline': .03, 'fresh': .15},
+                                              'surfacewater': {'saline': .03, 'fresh': .15}},
+                                   'crop_irrigation': {'groundwater': {'saline': 0, 'fresh': .3},
+                                                       'surfacewater': {'saline': 0, 'fresh': .3}},
+                                   'livestock': {'groundwater': {'saline': 0, 'fresh': .87},
+                                                 'surfacewater': {'saline': 0, 'fresh': .87}},
+                                   'aquaculture': {'groundwater': {'saline': 0, 'fresh': .5},
+                                                   'surfacewater': {'saline': 0, 'fresh': .5}}}
+    else:
+        sector_consumption_dict = sector_types
+    if discharge_types is None:
+        water_discharge_dict = {'surfacewater': {'fresh': {'wastewater': 0, 'ocean': 0, 'surface': 1},
+                                                 'saline': {'wastewater': 0, 'ocean': 1, 'surface': 0}},
+                                'groundwater': {'fresh': {'wastewater': 0, 'ocean': 0, 'surface': 1},
+                                                'saline': {'wastewater': 0, 'ocean': 1, 'surface': 0}},
+                                'pws': {'fresh': {'wastewater': 1, 'ocean': 0, 'surface': 0}}}
+    else:
+        water_discharge_dict = discharge_types
+
+    column_list = df.columns[:regions].tolist()
+    output_df = df[column_list].copy()
+    total_df = df[column_list].copy()
+
+    for sector_type in sector_consumption_dict:
+        consumptive_use_total_name = f'{sector_type}_consumption_mgd'
+        total_df[consumptive_use_total_name] = 0
+        for water_source in sector_consumption_dict[sector_type]:
+            for water_type in sector_consumption_dict[sector_type][water_source]:
+                consumptive_use_name = f'{sector_type}_{water_type}_{water_source}_consumption_mgd'
+                output_df[consumptive_use_name] = 0
+
+    # calculate consumptive use
+    for sector_type in sector_consumption_dict:
+        for water_source in sector_consumption_dict[sector_type]:
+            for water_type in sector_consumption_dict[sector_type][water_source]:
+                water_withdrawal_name = f'{water_type}_{water_source}_{sector_type}_mgd'
+                if water_withdrawal_name in df.columns:
+                    consumptive_use_total_name = f'{sector_type}_consumption_mgd'
+                    consumptive_use_name = f'{sector_type}_{water_type}_{water_source}_consumption_mgd'
+                    if consumptive_use_name in df.columns:
+                        output_df[consumptive_use_name] = df[consumptive_use_name]
+                        total_df[consumptive_use_total_name] = total_df[consumptive_use_total_name] \
+                                                               + df[consumptive_use_name]
+                    else:
+                        consumptive_fraction_name = f'{sector_type}_{water_type}_{water_source}_consumption_fraction'
+                        if consumptive_fraction_name in df.columns:
+                            consumptive_use_value = df[consumptive_fraction_name] * df[water_withdrawal_name]
+                            output_df[consumptive_use_name] = output_df[consumptive_use_name] + consumptive_use_value
+                            total_df[consumptive_use_total_name] = total_df[consumptive_use_total_name] \
+                                                                   + consumptive_use_value
+                        else:
+                            consumptive_use_value = sector_consumption_dict[sector_type][water_source][water_type] \
+                                                    * df[water_withdrawal_name]
+                            output_df[consumptive_use_name] = output_df[consumptive_use_name] \
+                                                              + consumptive_use_value
+                            total_df[consumptive_use_total_name] = total_df[consumptive_use_total_name] \
+                                                                   + consumptive_use_value
+                else:
+                    pass
+
+    # set initial discharge total value
+    for sector_type in sector_consumption_dict:  # residential, commercial, etc.
+        for water_source in water_discharge_dict:  # groundwater, pws, etc.
+            for water_type in water_discharge_dict[water_source]:  # fresh, saline
+                water_withdrawal_name = f'{water_type}_{water_source}_{sector_type}_mgd'
+                if water_withdrawal_name in df.columns:
+                    consumptive_use_name = f'{sector_type}_{water_type}_{water_source}_consumption_mgd'
+                    if consumptive_use_name in output_df.columns:
+                        for discharge_type in water_discharge_dict[water_source][water_type]:
+                            discharge_total_name = f'{sector_type}_{discharge_type}_discharge_mgd'
+                            total_df[discharge_total_name] = 0
+
+    # calculate discharge
+    for sector_type in sector_consumption_dict:  # residential, commercial, etc.
+        for water_source in water_discharge_dict:  # groundwater, pws, etc.
+            for water_type in water_discharge_dict[water_source]:  # fresh, saline
+                water_withdrawal_name = f'{water_type}_{water_source}_{sector_type}_mgd'
+                if water_withdrawal_name in df.columns:
+                    consumptive_use_name = f'{sector_type}_{water_type}_{water_source}_consumption_mgd'
+                    if consumptive_use_name in output_df.columns:
+                        for discharge_type in water_discharge_dict[water_source][water_type]:
+                            discharge_total_name = f'{sector_type}_{discharge_type}_discharge_mgd'
+                            discharge_name = f'{sector_type}_{water_type}_{water_source}_{discharge_type}_discharge_mgd'
+                            # if the discharge quantity is already in the baseline dataset, use it
+                            if discharge_name in df.columns:
+                                output_df[discharge_name] = df[discharge_name]
+                                total_df[discharge_total_name] = total_df[discharge_total_name] + df[discharge_name]
+
+                            # otherwise calculate it
+                            else:
+                                # if there's region-level discharge fractions, use that
+                                discharge_fraction_name = f'{sector_type}_{water_type}_{water_source}_{discharge_type}_fraction'
+                                if discharge_fraction_name in df.columns:
+                                    output_df[discharge_name] = df[discharge_fraction_name] \
+                                                                * (df[water_withdrawal_name]
+                                                                   - output_df[consumptive_use_name])
+                                    total_df[discharge_total_name] = total_df[discharge_total_name] + output_df[
+                                        discharge_name]
+
+                                # otherwise calculate from default fraction assumptions in dictionary
+                                else:
+                                    output_df[discharge_name] = water_discharge_dict[water_source][water_type][
+                                                                    discharge_type] \
+                                                                * (df[water_withdrawal_name] - output_df[
+                                        consumptive_use_name])
+
+                                    total_df[discharge_total_name] = total_df[discharge_total_name] + output_df[
+                                        discharge_name]
+                    else:
+                        pass
+                else:
+                    pass
+
+    # if total is True, only return total rejected energy and energy services by sector
+    if total:
+        df = total_df
+    else:
+        df = output_df
+    return df
+
+
+
+
+
 # calculate energy in pws
 # calculate energy in ww
 # calculate energy in ag
@@ -360,170 +552,6 @@ def calc_sectoral_use_energy_discharge(data: pd.DataFrame, parameters: pd.DataFr
 
 
 
-def calc_sectoral_use_water_discharge(data: pd.DataFrame, sector_types=None, discharge_types=None,
-                                      regions=3, total=False):
-    """calculates water consumption and discharge in mgd for various sectors. Consumption is calculated first based on
-    assumed consumption fractions provided either in the dataset on a regional level or using the values in the
-    sector_types dictionary. Additional discharge locations (e.g., surface discharge, ocean discharge) are determined
-    by the remaining water delivered to each sector that is not consumed. Discharge fractions can be used from the data
-    if available, otherwise values in the discharge_types dictionary are used.
-
-        :param data:                        DataFrame of input data containing fuel demand data for each sector
-        :type data:                         DataFrame
-
-        :param sector_types:                a nested dictionary of water consumption fractions by sector types, water
-                                            source, and water type.
-        :type sector_types:                 dictionary
-
-        :param water_types:                 a nested dictionary of discharge fractions for each discharge type, listed
-                                            by water source and water type.
-        :type water_types:                  dictionary
-
-        :param regions:                     gives the number of columns in the dataset that should be treated as region
-                                            identifiers (e.g. "Country", "State"). Reads from the first column in the
-                                            dataframe onwards.
-        :type regions:                      int
-
-        :param total:                       If true, returns dataframe of identifier columns and total rejected energy
-                                            and total energy services by sector instead of by fuel type
-        :type total:                        bool
-
-        :return:                            DataFrame of water discharge estimates from various sectors
-
-        """
-
-    # load data
-    df = data
-
-    if sector_types is None:
-        sector_consumption_dict = {'residential': {'groundwater': {'saline': 0, 'fresh': .3},
-                                                   'surfacewater': {'saline': 0, 'fresh': .3},
-                                                   'pws': {'fresh': .3}},
-                                   'commercial': {'groundwater': {'saline': 0, 'fresh': .15},
-                                                  'surfacewater': {'saline': 0, 'fresh': .15},
-                                                  'pws': {'fresh': .15}},
-                                   'industrial': {'groundwater': {'saline': .003, 'fresh': .15},
-                                                  'surfacewater': {'saline': .003, 'fresh': .15},
-                                                  'pws': {'fresh': .15}},
-                                   'mining': {'groundwater': {'saline': .03, 'fresh': .15},
-                                              'surfacewater': {'saline': .03, 'fresh': .15}},
-                                   'crop_irrigation': {'groundwater': {'saline': 0, 'fresh': .3},
-                                                       'surfacewater': {'saline': 0, 'fresh': .3}},
-                                   'livestock': {'groundwater': {'saline': 0, 'fresh': .87},
-                                                 'surfacewater': {'saline': 0, 'fresh': .87}},
-                                   'aquaculture': {'groundwater': {'saline': 0, 'fresh': .5},
-                                                   'surfacewater': {'saline': 0, 'fresh': .5}}}
-    else:
-        sector_consumption_dict = sector_types
-    if discharge_types is None:
-        water_discharge_dict = {'surfacewater': {'fresh': {'wastewater': 0, 'ocean': 0, 'surface': 1},
-                                                 'saline': {'wastewater': 0, 'ocean': 1, 'surface': 0}},
-                                'groundwater': {'fresh': {'wastewater': 0, 'ocean': 0, 'surface': 1},
-                                                'saline': {'wastewater': 0, 'ocean': 1, 'surface': 0}},
-                                'pws': {'fresh': {'wastewater': 1, 'ocean': 0, 'surface': 0}}}
-    else:
-        water_discharge_dict = discharge_types
-
-    column_list = df.columns[:regions].tolist()
-    output_df = df[column_list].copy()
-    total_df = df[column_list].copy()
-
-    for sector_type in sector_consumption_dict:
-        consumptive_use_total_name = f'{sector_type}_consumption_mgd'
-        total_df[consumptive_use_total_name] = 0
-        for water_source in sector_consumption_dict[sector_type]:
-            for water_type in sector_consumption_dict[sector_type][water_source]:
-                consumptive_use_name = f'{sector_type}_{water_type}_{water_source}_consumption_mgd'
-                output_df[consumptive_use_name] = 0
-
-    # calculate consumptive use
-    for sector_type in sector_consumption_dict:
-        for water_source in sector_consumption_dict[sector_type]:
-            for water_type in sector_consumption_dict[sector_type][water_source]:
-                water_withdrawal_name = f'{water_type}_{water_source}_{sector_type}_mgd'
-                if water_withdrawal_name in df.columns:
-                    consumptive_use_total_name = f'{sector_type}_consumption_mgd'
-                    consumptive_use_name = f'{sector_type}_{water_type}_{water_source}_consumption_mgd'
-                    if consumptive_use_name in df.columns:
-                        output_df[consumptive_use_name] = df[consumptive_use_name]
-                        total_df[consumptive_use_total_name] = total_df[consumptive_use_total_name] \
-                                                               + df[consumptive_use_name]
-                    else:
-                        consumptive_fraction_name = f'{sector_type}_{water_type}_{water_source}_consumption_fraction'
-                        if consumptive_fraction_name in df.columns:
-                            consumptive_use_value = df[consumptive_fraction_name] * df[water_withdrawal_name]
-                            output_df[consumptive_use_name] = output_df[consumptive_use_name] + consumptive_use_value
-                            total_df[consumptive_use_total_name] = total_df[consumptive_use_total_name] \
-                                                                   + consumptive_use_value
-                        else:
-                            consumptive_use_value = sector_consumption_dict[sector_type][water_source][water_type] \
-                                                    * df[water_withdrawal_name]
-                            output_df[consumptive_use_name] = output_df[consumptive_use_name] \
-                                                              + consumptive_use_value
-                            total_df[consumptive_use_total_name] = total_df[consumptive_use_total_name] \
-                                                                   + consumptive_use_value
-                else:
-                    pass
-
-    # set initial discharge total value
-    for sector_type in sector_consumption_dict:  # residential, commercial, etc.
-        for water_source in water_discharge_dict:  # groundwater, pws, etc.
-            for water_type in water_discharge_dict[water_source]:  # fresh, saline
-                water_withdrawal_name = f'{water_type}_{water_source}_{sector_type}_mgd'
-                if water_withdrawal_name in df.columns:
-                    consumptive_use_name = f'{sector_type}_{water_type}_{water_source}_consumption_mgd'
-                    if consumptive_use_name in output_df.columns:
-                        for discharge_type in water_discharge_dict[water_source][water_type]:
-                            discharge_total_name = f'{sector_type}_{discharge_type}_discharge_mgd'
-                            total_df[discharge_total_name] = 0
-
-    # calculate discharge
-    for sector_type in sector_consumption_dict:  # residential, commercial, etc.
-        for water_source in water_discharge_dict:  # groundwater, pws, etc.
-            for water_type in water_discharge_dict[water_source]:  # fresh, saline
-                water_withdrawal_name = f'{water_type}_{water_source}_{sector_type}_mgd'
-                if water_withdrawal_name in df.columns:
-                    consumptive_use_name = f'{sector_type}_{water_type}_{water_source}_consumption_mgd'
-                    if consumptive_use_name in output_df.columns:
-                        for discharge_type in water_discharge_dict[water_source][water_type]:
-                            discharge_total_name = f'{sector_type}_{discharge_type}_discharge_mgd'
-                            discharge_name = f'{sector_type}_{water_type}_{water_source}_{discharge_type}_discharge_mgd'
-                            # if the discharge quantity is already in the baseline dataset, use it
-                            if discharge_name in df.columns:
-                                output_df[discharge_name] = df[discharge_name]
-                                total_df[discharge_total_name] = total_df[discharge_total_name] + df[discharge_name]
-
-                            # otherwise calculate it
-                            else:
-                                # if there's region-level discharge fractions, use that
-                                discharge_fraction_name = f'{sector_type}_{water_type}_{water_source}_{discharge_type}_fraction'
-                                if discharge_fraction_name in df.columns:
-                                    output_df[discharge_name] = df[discharge_fraction_name] \
-                                                                * (df[water_withdrawal_name]
-                                                                   - output_df[consumptive_use_name])
-                                    total_df[discharge_total_name] = total_df[discharge_total_name] + output_df[
-                                        discharge_name]
-
-                                # otherwise calculate from default fraction assumptions in dictionary
-                                else:
-                                    output_df[discharge_name] = water_discharge_dict[water_source][water_type][
-                                                                    discharge_type] \
-                                                                * (df[water_withdrawal_name] - output_df[
-                                        consumptive_use_name])
-
-                                    total_df[discharge_total_name] = total_df[discharge_total_name] + output_df[
-                                        discharge_name]
-                    else:
-                        pass
-                else:
-                    pass
-
-    # if total is True, only return total rejected energy and energy services by sector
-    if total:
-        df = total_df
-    else:
-        df = output_df
-    return df
 
 
 

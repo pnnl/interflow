@@ -46,7 +46,16 @@ def get_sectoral_efficiency_parameters():
 
     return pd.read_csv(data)
 
+def get_sectoral_water_consumption_parameters():
+    """Read in .
 
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/configuration_data/sector_water_consumption_fractions.csv')
+
+    return pd.read_csv(data)
 
 
 # Items below are for US sample data
