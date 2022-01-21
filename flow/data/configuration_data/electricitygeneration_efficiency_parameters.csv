@@ -1,4 +1,4 @@
-fuel_type,sub-fuel,parameter,value
+fuel_type,sub_fuel,parameter,value
 biomass,total,efficiency,0.3
 coal,total,efficiency,0.3
 geothermal,total,efficiency,0.3

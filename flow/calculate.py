@@ -138,7 +138,7 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
                         else:
                             efficiency_value = efficiency_dict[fuel_type][sub_fuel_type]['efficiency']
 
-                        rejected_energy_value = df[fuel_use_name] * efficiency_value
+                        rejected_energy_value = df[fuel_use_name] * (1 - efficiency_value)
                         energy_services_value = df[fuel_use_name] - rejected_energy_value
 
                     # add output to total and grandtotal rejected energy value
