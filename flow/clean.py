@@ -1285,10 +1285,10 @@ def prep_electricity_demand_data() -> pd.DataFrame:
     df_terr = get_territory_electricity_demand_data()
 
     # build renaming dictionary
-    rename_dict = {"RESIDENTIAL": "eg_generation_to_residential_total_bbtu",
-                   "COMMERCIAL": "eg_generation_to_commercial_total_bbtu",
-                   "INDUSTRIAL": "eg_generation_to_industrial_total_bbtu",
-                   "TRANSPORTATION": "eg_generation_to_transportation_total_bbtu"}
+    rename_dict = {"RESIDENTIAL": "eg_generation_total_to_residential_total_bbtu",
+                   "COMMERCIAL": "eg_generation_total_to_commercial_total_bbtu",
+                   "INDUSTRIAL": "eg_generation_total_industrial_total_bbtu",
+                   "TRANSPORTATION": "eg_generation_total_to_transportation_total_bbtu"}
 
     # concatenate state and territory demand data
     df_list = [df_states, df_terr]
@@ -1359,8 +1359,6 @@ def prep_fuel_demand_data() -> pd.DataFrame:
                 "WWICB": "ec_consumption_biomass_to_industrial_total_bbtu",  # Wood and waste energy, industrial sector (bbtu)
                 "WYCCB": "ec_consumption_wind_to_commercial_total_bbtu"  # Wind energy, commercial sector (bbtu)
                 }
-
-    f'{fuel_type_source_sector}_{fuel_type}_to_{sector_type}_{sub_sector_type}_eg_generation_bbtu'
 
     # reduce dataframe
     df = df[df['MSN'].isin(msn_dict)]  # using MSN codes that are relevant

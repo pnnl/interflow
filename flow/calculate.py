@@ -86,18 +86,18 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
         for fuel_type in efficiency_dict:
 
             # create total rejected energy by fuel type variable name and initialize value to 0
-            fuel_use_total_name = f'ec_consumption_' + fuel_type + '_to_eg_generation_bbtu'
+            fuel_use_total_name = f'ec_consumption_' + fuel_type + '_to_eg_generation_total_bbtu'
             fuel_use_total_value = 0
             rejected_energy_total_name = f'eg_generation_' + fuel_type + "_to_re_bbtu"
             rejected_energy_total_value = 0
             generation_total_name = f'eg_generation_' + fuel_type + "_bbtu"
             generation_total_value = 0
 
-            fuel_use_grandtotal_name = f'ec_consumption_to_eg_generation_bbtu'
+            fuel_use_grandtotal_name = f'ec_consumption_to_eg_generation_total_bbtu'
             fuel_use_grandtotal_value = 0
-            rejected_energy_grandtotal_name = f'eg_generation_to_re_bbtu'
+            rejected_energy_grandtotal_name = f'eg_generation_total_to_re_bbtu'
             rejected_energy_grandtotal_value = 0
-            generation_grandtotal_name = f'eg_generation_bbtu'
+            generation_grandtotal_name = f'eg_generation_total_bbtu'
             generation_grandtotal_value = 0
 
             # loop through each sub_fuel type for each fuel type in parameter data provided
@@ -194,8 +194,27 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters:
 
         return df
 
+# calculate water withdrawals/discharge from sectors
+# calculate energy in pws
+# calculate energy in ww
+# calculate energy in ag
+# calculate energy in sectors
+    # split the leftovers from electricity generation and others
+    # or grab values
+# calculate imports/exports from electricity total
+# calculate sector discharge from energy
+
+# calculate water in electricity generation
+# calculate water in energy production
+
+
 def calc_sectoral_use_energy_discharge(data: pd.DataFrame, parameters: pd.DataFrame, regions=3, all_output=True,
                                        total=False, grandtotal=False):
+    #TODO only calculates energy discharge for simple sectors
+    # TODO NEED to add back in major sector to calculations to capture electricity
+
+    # TODO GRandtotal broken
+
     """calculates rejected energy (losses) and energy services for each region for each sector type in billion btu.
     Rejected energy is calculated as energy delivered multiplied by the efficiency rating for a given sector.
 
@@ -280,13 +299,13 @@ def calc_sectoral_use_energy_discharge(data: pd.DataFrame, parameters: pd.DataFr
                         # otherwise use the single value assumption from the input parameters
                         else:
                             efficiency_value = efficiency_dict[sector_type][sub_sector_type][fuel_type]['efficiency']
+
                         rejected_energy_value = df[fuel_use_name] * (1 - efficiency_value)
                         energy_services_value = df[fuel_use_name] - rejected_energy_value
 
                         # add output to total and grandtotal rejected energy value
                         rejected_energy_total_value = rejected_energy_total_value + rejected_energy_value
                         energy_services_total_value = energy_services_total_value + energy_services_value
-
                         rejected_energy_grandtotal_value = rejected_energy_grandtotal_value + rejected_energy_value
                         energy_services_grandtotal_value = energy_services_grandtotal_value + energy_services_value
 
@@ -307,7 +326,7 @@ def calc_sectoral_use_energy_discharge(data: pd.DataFrame, parameters: pd.DataFr
         # convert output dictionaries to dataframe, merge with location information
         output_df = pd.DataFrame.from_dict(output_dict, orient='index').transpose()
         total_df = pd.DataFrame.from_dict(total_dict, orient='index').transpose()
-        grandtotal_df = pd.DataFrame.from_dict(grandtotal_dict, orient='index').transpose()
+        #grandtotal_df = pd.DataFrame.from_dict(grandtotal_dict, orient='index').transpose()
 
         # return combinations of output specified.
         if all_output:
@@ -337,11 +356,7 @@ def calc_sectoral_use_energy_discharge(data: pd.DataFrame, parameters: pd.DataFr
 
 
 
-# calculate total electricity demand first
 
-# calculate imports/exports from electricity total
-
-# calculate sector discharge from electricity
 
 
 

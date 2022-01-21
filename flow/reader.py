@@ -35,7 +35,16 @@ def get_electricity_generation_efficiency_parameters():
 
     return pd.read_csv(data)
 
+def get_sectoral_efficiency_parameters():
+    """Read in .
 
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/configuration_data/sectoral_efficiency_parameters.csv')
+
+    return pd.read_csv(data)
 
 
 
