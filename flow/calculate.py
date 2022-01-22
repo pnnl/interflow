@@ -5,9 +5,8 @@ import flow.clean as cl
 import flow.configure as conf
 import flow.construct as co
 
-def calc_electricity_generation_energy_discharge(data: pd.DataFrame, source_parameters: pd.DataFrame,
-                                                 target_parameters: pd.DataFrame, regions=3,
-                                                 all_output=True, total=False, grandtotal=False):
+def calc_energy_consumption_to_nonwater_sectors(data: pd.DataFrame, source_parameters: pd.DataFrame,
+                                                 target_parameters: pd.DataFrame, output='l1', regions=3):
     """Calculates rejected energy (losses) and total generation from electricity generation
     by generating type for each region.
 
@@ -70,12 +69,12 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, source_para
 
     # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings and change to nested dict
     s_dict = co.construct_nested_dictionary(source_parameters)
-    d_dict = co.construct_nested_dictionary(target_parameters)
+    t_dict = co.construct_nested_dictionary(target_parameters)
 
-    if source_parameters.shape[1] != 5:
+    if source_parameters.shape[1] != 7:
         raise ValueError('Input source parameter data does not have correct number of levels')
 
-    elif target_parameters.shape[1] != 5:
+    elif target_parameters.shape[1] != 7:
         raise ValueError('Input target parameter data does not have correct number of levels')
 
     else:
@@ -90,45 +89,30 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, source_para
         for s1 in s_dict:
             for t1 in t_dict:
                 l1_name = f'{s1}_to_{t1}_bbtu'
-                l1_dict.update({l1_name: 0})
-                for s2 in s_dict[s_1]:
-                    for t2 in t_dict[t_1]:
+                l1_value = 0
+                for s2 in s_dict[s1]:
+                    for t2 in t_dict[t1]:
                         l2_name = f'{s1}_{s2}_to_{t1}_{t2}_bbtu'
-                        l2_dict.update({l2_name: 0})
+                        l2_value = 0
                         for s3 in s_dict[s1][s2]:
                             for t3 in t_dict[t1][t2]:
                                 l3_name = f'{s1}_{s2}_{s3}_to_{t1}_{t2}_{t3}_bbtu'
-                                l3_dict.update({l3_name: 0})
+                                l3_value = 0
                                 for s4 in s_dict[s1][s2][s3]:
                                     for t4 in t_dict[t1][t2][t3]:
                                         l4_name = f'{s1}_{s2}_{s3}_{s4}_to_{t1}_{t2}_{t3}_{t4}_bbtu'
-                                        l4_dict.update({l4_name: 0})
-                                        for s5 in s_dict[s1][s2][s3][s4]:
-                                            for t5 in t_dict[t1][t2][t3][t4]:
-                                                l5_name = f'{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_bbtu'
-                                                l5_dict.update({l5_name: 0})
-        for s1 in s_dict:
-            for t1 in t_dict:
-                l1_name = f'{s1}_to_{t1}_bbtu'
-                for s2 in s_dict[s_1]:
-                    for t2 in t_dict[t_1]:
-                        l2_name = f'{s1}_{s2}_to_{t1}_{t2}_bbtu'
-                        for s3 in s_dict[s1][s2]:
-                            for t3 in t_dict[t1][t2]:
-                                l3_name = f'{s1}_{s2}_{s3}_to_{t1}_{t2}_{t3}_bbtu'
-                                for s4 in s_dict[s1][s2][s3]:
-                                    for t4 in t_dict[t1][t2][t3]:
-                                        l4_name = f'{s1}_{s2}_{s3}_{s4}_to_{t1}_{t2}_{t3}_{t4}_bbtu'
+                                        l4_value = 0
                                         for s5 in s_dict[s1][s2][s3][s4]:
                                             for t5 in t_dict[t1][t2][t3][t4]:
                                                 l5_name = f'{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_bbtu'
                                                 if l5_name in df.columns:
                                                     l5_value = df[l5_name]
-                                                    l4_value = l4_dict[l4_name] + l5_value
-                                                    l3_value = l3_dict[l4_name] + l5_value
-                                                    l2_value = l2_dict[l4_name] + l5_value
-                                                    l1_value = l1_dict[l4_name] + l5_value
 
+                                                    l4_value = l4_value + l5_value
+                                                    l3_value = l3_value + l5_value
+                                                    l2_value = l2_value + l5_value
+                                                    l1_value = l1_value + l5_value
+##
                                                     l1_dict.update({l1_name: l1_value})
                                                     l2_dict.update({l2_name: l2_value})
                                                     l3_dict.update({l3_name: l3_value})
@@ -136,6 +120,8 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, source_para
                                                     l5_dict.update({l5_name: l5_value})
                                                 else:
                                                     pass
+
+
         # convert output dictionaries to dataframe, merge with location information
         l1_df = pd.DataFrame.from_dict(l1_dict, orient='index').transpose()
         l2_df = pd.DataFrame.from_dict(l2_dict, orient='index').transpose()
@@ -143,16 +129,16 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, source_para
         l4_df = pd.DataFrame.from_dict(l4_dict, orient='index').transpose()
         l5_df = pd.DataFrame.from_dict(l5_dict, orient='index').transpose()
 
-        if output == l1:
+        if output == 'l1':
             df = l1_df
-        elif output == l2:
-            df = l1_df
-        elif output == l3:
-            df = l1_df
-        elif output == l4:
-            df = l1_df
-        elif output == l5:
-            df = l1_df
+        elif output == 'l2':
+            df = l2_df
+        elif output == 'l3':
+            df = l3_df
+        elif output == 'l4':
+            df = l4_df
+        elif output == 'l5':
+            df = l5_df
         else:
             m = 'incorrect level of granularity specified. Must be one of the following: l1, l2, l3, l4, or l5'
             raise ValueError(m)
@@ -161,7 +147,7 @@ def calc_electricity_generation_energy_discharge(data: pd.DataFrame, source_para
 
 
 
-def calc_electricity_generation_energy_discharge(data: pd.DataFrame, parameters: pd.DataFrame, regions=3,
+def calc_electricity_generation_energy_discharge_old(data: pd.DataFrame, parameters: pd.DataFrame, regions=3,
                                                  all_output=True, total=False, grandtotal=False):
     """Calculates rejected energy (losses) and total generation from electricity generation
     by generating type for each region.

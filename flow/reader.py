@@ -2,6 +2,29 @@ import pkg_resources
 
 import pandas as pd
 
+
+def get_fuel_demand_source_parameters():
+    """Read in .
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/configuration_data/EC_to_EG_Energy_Source_Parameters.csv')
+
+    return pd.read_csv(data)
+
+def get_fuel_demand_target_parameters():
+    """Read in .
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/configuration_data/EC_to_EG_Energy_Target_Parameters.csv')
+
+    return pd.read_csv(data)
+
 def get_electricity_dict():
     """Read in a dataframe of 2015 USGS Water Use Data.
 

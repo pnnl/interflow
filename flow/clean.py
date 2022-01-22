@@ -911,20 +911,77 @@ def prep_electricity_generation() -> pd.DataFrame:
     cooling_only = cooling_only[['plant_code', 'count']]
     df_cooling_w = pd.merge(df_cooling_w, cooling_only, how='left', on='plant_code')
     df_cooling_w['count'].fillna(1, inplace=True)
+    df_cooling_w = df_cooling_w.dropna(subset=["WITHDRAWAL"])
+    df_cooling_w['WITHDRAWAL'] = df_cooling_w['WITHDRAWAL']/df_cooling_w['count']
+    df_cooling_w = pd.pivot_table(df_cooling_w, values='WITHDRAWAL', index=['FIPS'], columns=['water_withdrawal_name'], aggfunc=np.sum)
+    df_cooling_w = df_cooling_w.reset_index()  # reset index to remove multi-index from pivot table
+    df_cooling_w = df_cooling_w.rename_axis(None, axis=1)  # drop index name
+    df_cooling_w.fillna(0, inplace=True)  # fill nan with zero
 
-    #df_cooling_w = pd.pivot_table(df_cooling_w, values='WITHDRAWAL', index=['FIPS'], columns=['water_withdrawal_name'], aggfunc=np.sum)
-    #df_cooling_w = df_cooling_w.reset_index()  # reset index to remove multi-index from pivot table
-    #df_cooling_w = df_cooling_w.rename_axis(None, axis=1)  # drop index name
-    #df_cooling_w.fillna(0, inplace=True)  # fill nan with zero
-#
-    ## merge fuel and generation dataframes into single dataframe
-    #df = pd.merge(df_fuel, df_gen, how='left', on='FIPS')
-    #df = pd.merge(df_loc, df, how='left')
-#
-    ## merge dataframe with county data to distribute value to each county in a state
-    #df.fillna(0, inplace=True)  # fill nan with zero
+    df_cooling_c = df[
+        ["FIPS", 'plant_code', 'prime_mover', "fuel_type", 'COOLING_TYPE', 'WATER_TYPE_CODE', 'WATER_SOURCE_CODE',
+         'CONSUMPTION']].copy()
+    df_cooling_c["water_consumption_name"] = 'EG_' + df['fuel_type'] + '_' + df['prime_mover'] + '_' + df['COOLING_TYPE'] \
+                                            + '_total_to_WC_total_total_total_total_mgd'
 
-    return df_cooling_w
+    df_cooling_c = pd.merge(df_cooling_c, cooling_only, how='left', on='plant_code')
+    df_cooling_c['count'].fillna(1, inplace=True)
+    df_cooling_c = df_cooling_c.dropna(subset=["CONSUMPTION"])
+    df_cooling_c['CONSUMPTION'] = df_cooling_c['CONSUMPTION'] / df_cooling_c['count']
+    df_cooling_c = pd.pivot_table(df_cooling_c, values='CONSUMPTION', index=['FIPS'], columns=['water_consumption_name'],
+                                  aggfunc=np.sum)
+    df_cooling_c = df_cooling_c.reset_index()  # reset index to remove multi-index from pivot table
+    df_cooling_c = df_cooling_c.rename_axis(None, axis=1)  # drop index name
+    df_cooling_c.fillna(0, inplace=True)  # fill nan with zero
+
+    df_cooling_sd = df[
+        ["FIPS", 'plant_code', 'prime_mover', "fuel_type", 'COOLING_TYPE', 'WATER_TYPE_CODE', 'WATER_SOURCE_CODE',
+         'SURFACE_DISCHARGE_MGD']].copy()
+    df_cooling_sd["sd_name"] = 'EG_' + df['fuel_type'] + '_' + df['prime_mover'] + '_' + df['COOLING_TYPE'] \
+                                            + '_total_to_SD_total_total_total_total_mgd'
+
+    df_cooling_sd = pd.merge(df_cooling_sd, cooling_only, how='left', on='plant_code')
+    df_cooling_sd['count'].fillna(1, inplace=True)
+    df_cooling_sd = df_cooling_sd.dropna(subset=["SURFACE_DISCHARGE_MGD"])
+    df_cooling_sd['SURFACE_DISCHARGE_MGD'] = df_cooling_sd['SURFACE_DISCHARGE_MGD'] / df_cooling_sd['count']
+    df_cooling_sd = pd.pivot_table(df_cooling_sd, values='SURFACE_DISCHARGE_MGD', index=['FIPS'], columns=['sd_name'],
+                      aggfunc=np.sum)
+    df_cooling_sd = df_cooling_sd.reset_index()  # reset index to remove multi-index from pivot table
+    df_cooling_sd = df_cooling_sd.rename_axis(None, axis=1)  # drop index name
+    df_cooling_sd.fillna(0, inplace=True)  # fill nan with zero
+
+    df_cooling_od = df[
+        ["FIPS", 'plant_code', 'prime_mover', "fuel_type", 'COOLING_TYPE', 'WATER_TYPE_CODE', 'WATER_SOURCE_CODE',
+         'OCEAN_DISCHARGE_MGD']].copy()
+    df_cooling_od["od_name"] = 'EG_' + df['fuel_type'] + '_' + df['prime_mover'] + '_' + df['COOLING_TYPE'] \
+                               + '_total_to_OD_total_total_total_total_mgd'
+
+    df_cooling_od = pd.merge(df_cooling_od, cooling_only, how='left', on='plant_code')
+    df_cooling_od['count'].fillna(1, inplace=True)
+    df_cooling_od = df_cooling_od.dropna(subset=["OCEAN_DISCHARGE_MGD"])
+    df_cooling_od['OCEAN_DISCHARGE_MGD'] = df_cooling_od['OCEAN_DISCHARGE_MGD'] / df_cooling_od['count']
+    df_cooling_od = pd.pivot_table(df_cooling_od, values='OCEAN_DISCHARGE_MGD', index=['FIPS'], columns=['od_name'],
+                                   aggfunc=np.sum)
+    df_cooling_od = df_cooling_od.reset_index()  # reset index to remove multi-index from pivot table
+    df_cooling_od = df_cooling_od.rename_axis(None, axis=1)  # drop index name
+    df_cooling_od.fillna(0, inplace=True)  # fill nan with zero
+
+    # merge dataframes
+    df_fuel = pd.merge(df_loc, df_fuel, how='left', on='FIPS').fillna(0)
+    df_gen = pd.merge(df_loc, df_gen, how='left', on='FIPS').fillna(0)
+    df_cooling_w = pd.merge(df_loc, df_cooling_w, how='left', on='FIPS').fillna(0)
+    df_cooling_c = pd.merge(df_loc, df_cooling_c, how='left', on='FIPS').fillna(0)
+    df_cooling_sd = pd.merge(df_loc, df_cooling_sd, how='left', on='FIPS').fillna(0)
+    df_cooling_od = pd.merge(df_loc, df_cooling_od, how='left', on='FIPS').fillna(0)
+
+    #rem_list = [df_cooling_w, df_cooling_c, df_cooling_sd, df_cooling_od]
+    out_df = pd.merge(df_fuel, df_gen, how='left', on=['FIPS','State','County'])
+    out_df = pd.merge(out_df, df_cooling_w, how='left', on=['FIPS','State','County'])
+    out_df = pd.merge(out_df, df_cooling_c, how='left', on=['FIPS','State','County'])
+    out_df = pd.merge(out_df, df_cooling_sd, how='left', on=['FIPS','State','County'])
+    out_df = pd.merge(out_df, df_cooling_od, how='left', on=['FIPS','State','County'])
+
+    return out_df
 
 
 def prep_thermo_cooling_data() -> pd.DataFrame:
@@ -1428,10 +1485,10 @@ def prep_electricity_demand_data() -> pd.DataFrame:
     df_terr = get_territory_electricity_demand_data()
 
     # build renaming dictionary
-    rename_dict = {"RESIDENTIAL": "eg_generation_total_to_residential_total_bbtu",
-                   "COMMERCIAL": "eg_generation_total_to_commercial_total_bbtu",
-                   "INDUSTRIAL": "eg_generation_total_industrial_total_bbtu",
-                   "TRANSPORTATION": "eg_generation_total_to_transportation_total_bbtu"}
+    rename_dict = {"RESIDENTIAL": "EG_total_total_total_total_to_RES_total_total_total_total_bbtu",
+                   "COMMERCIAL": "EG_total_total_total_total_to_CO_total_total_total_total_bbtu",
+                   "INDUSTRIAL": "EG_total_total_total_total_to_IN_total_total_total_total_bbtu",
+                   "TRANSPORTATION": "EG_total_total_total_total_to_TR_total_total_total_total_bbtu"}
 
     # concatenate state and territory demand data
     df_list = [df_states, df_terr]
@@ -1482,25 +1539,24 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     df = get_fuel_demand_data()
 
     # dictionary of fuel demand codes that are relevant and descriptive names
-    msn_dict = {"CLCCB": "ec_consumption_coal_to_commercial_total_bbtu",  # Coal, commercial sector (bbtu)
-                "CLICB": "ec_consumption_coal_to_industrial_total_bbtu",  # Coal, industrial sector (bbtu)
-                "EMACB": "ec_consumption_biomass_to_transportation_total_bbtu",  # Fuel ethanol, transportation sector (bbtu)
-                "GECCB": "ec_consumption_geothermal_to_commercial_total_bbtu",  # Geothermal, commercial sector (bbtu)
-                "GERCB": "ec_consumption_geothermal_to_residential_total_bbtu",  # Geothermal, residential sector (bbtu)
-                "NGACB": "ec_consumption_natgas_to_transportation_total_bbtu",  # Natural gas, transportation sector  (bbtu)
-                "NGCCB": "ec_consumption_natgas_to_commercial_total_bbtu",  # Natural gas, commercial sector (bbtu)
-                "NGICB": "ec_consumption_natgas_to_industrial_total_bbtu",  # Natural gas, industrial sector (bbtu)
-                "NGRCB": "ec_consumption_natgas_to_residential_total_bbtu",  # Natural gas, residential sector (bbtu
-                "PAACB": "ec_consumption_petroleum_to_transportation_total_bbtu",  # petroleum products, transportation sector (bbtu)
-                "PACCB": "ec_consumption_petroleum_to_commercial_total_bbtu",  # petroleum products, commercial sector (bbtu)
-                "PAICB": "ec_consumption_petroleum_to_industrial_total_bbtu",  # petroleum products, industrial sector (bbtu)
-                "PARCB": "ec_consumption_petroleum_to_residential_total_bbtu",  # petroleum products, residential sector (bbtu)
-                "SOCCB": "ec_consumption_solar_to_commercial_total_bbtu",  # Solar, commercial sector (bbtu)
-                "SORCB": "ec_consumption_solar_to_residential_total_bbtu",  # Solar, residential sector (bbtu)
-                "WDRCB": "ec_consumption_biomass_to_residential_total_bbtu",  # Wood energy, residential sector (bbtu)
-                "WWCCB": "ec_consumption_biomass_to_commercial_total_bbtu",  # Wood and waste energy, commercial sector (bbtu)
-                "WWICB": "ec_consumption_biomass_to_industrial_total_bbtu",  # Wood and waste energy, industrial sector (bbtu)
-                "WYCCB": "ec_consumption_wind_to_commercial_total_bbtu"  # Wind energy, commercial sector (bbtu)
+    msn_dict = {"CLCCB": "EC_coal_total_total_total_to_CO_total_total_total_total_bbtu",  # Coal, commercial sector (bbtu)
+                "CLICB": "EC_coal_total_total_total_to_IN_total_total_total_total_bbtu",  # Coal, industrial sector (bbtu)
+                "EMACB": "EC_biomass_total_total_total_to_TR_total_total_total_total_bbtu",  # Fuel ethanol, transportation sector (bbtu)
+                "GECCB": "EC_geothermal_total_total_total_to_CO_total_total_total_total_bbtu",  # Geothermal, commercial sector (bbtu)
+                "GERCB": "EC_geothermal_total_total_total_to_RES_total_total_total_total_bbtu",  # Geothermal, residential sector (bbtu)
+                "NGACB": "EC_natgas_total_total_total_to_TR_total_total_total_total_bbtu",  # Natural gas, transportation sector  (bbtu)
+                "NGCCB": "EC_natgas_total_total_total_to_CO_total_total_total_total_bbtu",  # Natural gas, commercial sector (bbtu)
+                "NGICB": "EC_natgas_total_total_total_to_IN_total_total_total_total_bbtu",  # Natural gas, industrial sector (bbtu)
+                "NGRCB": "EC_natgas_total_total_total_to_RES_total_total_total_total_bbtu",  # Natural gas, residential sector (bbtu
+                "PAACB": "EC_petroleum_total_total_total_to_TR_total_total_total_total_bbtu",  # petroleum products, transportation sector (bbtu)
+                "PACCB": "EC_petroleum_total_total_total_to_CO_total_total_total_total_bbtu",  # petroleum products, commercial sector (bbtu)
+                "PAICB": "EC_petroleum_total_total_total_to_IN_total_total_total_total_bbtu",  # petroleum products, industrial sector (bbtu)
+                "PARCB": "EC_petroleum_total_total_total_to_RES_total_total_total_total_bbtu",  # petroleum products, residential sector (bbtu)
+                "SOCCB": "EC_solar_total_total_total_to_CO_total_total_total_total_bbtu",  # Solar, commercial sector (bbtu)
+                "SORCB": "EC_solar_total_total_total_to_RES_total_total_total_total_btu",  # Solar, residential sector (bbtu)
+                "WDRCB": "EC_biomass_total_total_total_to_RES_total_total_total_total_bbtu",  # Wood energy, residential sector (bbtu)
+                "WWCCB": "EC_biomass_total_total_total_to_CO_total_total_total_total_bbtu",  # Wood and waste energy, commercial sector (bbtu)
+                "WWICB": "EC_wind_total_total_total_to_CO_total_total_total_total_bbtu"  # Wind energy, commercial sector (bbtu)
                 }
 
     # reduce dataframe

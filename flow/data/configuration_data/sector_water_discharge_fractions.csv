@@ -1,8 +1,4 @@
 ﻿sector_type,subsector_type,water_source,water_type,discharge_location,parameter,value
-mining,total,surface,fresh,surface,discharge_fraction,1
-mining,total,surface,saline,ocean,discharge_fraction,1
-mining,total,groundwater,fresh,surface,discharge_fraction,1
-mining,total,groundwater,saline,ocean,discharge_fraction,1
 residential,total,surface,fresh,surface,discharge_fraction,1
 residential,total,surface,saline,ocean,discharge_fraction,1
 residential,total,groundwater,fresh,surface,discharge_fraction,1
@@ -18,3 +14,7 @@ industrial,total,surface,saline,ocean,discharge_fraction,1
 industrial,total,groundwater,fresh,surface,discharge_fraction,1
 industrial,total,groundwater,saline,ocean,discharge_fraction,1
 industrial,total,pws,fresh,wastewater,discharge_fraction,1
+mining,total,surface,fresh,surface,discharge_fraction,1
+mining,total,surface,saline,ocean,discharge_fraction,1
+mining,total,groundwater,fresh,surface,discharge_fraction,1
+mining,total,groundwater,saline,ocean,discharge_fraction,1
