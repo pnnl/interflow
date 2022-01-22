@@ -5,31 +5,11 @@ import flow.clean as cl
 import flow.configure as conf
 import flow.construct as co
 
-def calc_energy_consumption_to_nonwater_sectors(data: pd.DataFrame, source_parameters: pd.DataFrame,
+def calc_energy_to_nonwater_sectors(data: pd.DataFrame, source_parameters: pd.DataFrame,
                                                  target_parameters: pd.DataFrame, output='l1', regions=3):
     """Calculates rejected energy (losses) and total generation from electricity generation
     by generating type for each region.
 
-    Function requires two items:
-    (1) input parameter data specifying a) fuel_type (major generator, e.g., natural gas), b) sub_fuel_type (e.g.,
-    combined cycle, or total if no explicit sub-types) and c) assumed efficiency rating for each fuel_type and sub_fuel
-    type combination.
-    (2) energy flow values from energy consumption to each fuel_type and sub_fuel_type specified in the parameter input
-    data following the correct naming conventions.
-
-    For each generator type (fuel_type + sub_fuel_type), the following process occurs:
-
-    If energy consumption to generator flows (fuel demand) are not found in the baseline data, the function
-    returns nothing as this is a baseline requirement outlined above. Otherwise, if it is available, the information is
-    copied to the output and generator to generation (electricity generation) data is also available, rejected
-    energy is calculated as the difference between the two (total fuel in - total generation out). If electricity
-    generation out data is not provided in the baseline data, the calculation determines rejected energy based on the
-    product of fuel in and an efficiency rating. The efficiency rating value used is either a) region-level efficiency
-    ratings for each generator type provided in the baseline data, or b) the singular efficiency rating provided in the
-    input parameter data for each generator type.
-
-    To determine generation for each generator type, either the values are already provided in the baseline data
-    or they are calculated from the difference between fuel input to the generator and the rejected energy calculated.
 
         :param data:                        DataFrame of input data containing electricity generation fuel and total
                                             electricity generation by type
@@ -121,6 +101,125 @@ def calc_energy_consumption_to_nonwater_sectors(data: pd.DataFrame, source_param
                                                 else:
                                                     pass
 
+        # convert output dictionaries to dataframe, merge with location information
+        l1_df = pd.DataFrame.from_dict(l1_dict, orient='index').transpose()
+        l2_df = pd.DataFrame.from_dict(l2_dict, orient='index').transpose()
+        l3_df = pd.DataFrame.from_dict(l3_dict, orient='index').transpose()
+        l4_df = pd.DataFrame.from_dict(l4_dict, orient='index').transpose()
+        l5_df = pd.DataFrame.from_dict(l5_dict, orient='index').transpose()
+
+        if output == 'l1':
+            df = l1_df
+        elif output == 'l2':
+            df = l2_df
+        elif output == 'l3':
+            df = l3_df
+        elif output == 'l4':
+            df = l4_df
+        elif output == 'l5':
+            df = l5_df
+        else:
+            m = 'incorrect level of granularity specified. Must be one of the following: l1, l2, l3, l4, or l5'
+            raise ValueError(m)
+
+        return df
+
+
+def calc_water_to_nonwater_sectors(data: pd.DataFrame, source_parameters: pd.DataFrame,
+                                                 target_parameters: pd.DataFrame, output='l1', regions=3):
+    """Calculates rejected energy (losses) and total generation from electricity generation
+    by generating type for each region.
+
+
+        :param data:                        DataFrame of input data containing electricity generation fuel and total
+                                            electricity generation by type
+        :type data:                         DataFrame
+
+        :param parameters:                  DataFrame of input parameters containing fuel efficiency data by fuel_type +
+                                            fuel_sub_type combination.
+        :type parameters:                   DataFrame
+
+        :param regions:                     The number of columns (inclusive) in the baseline dataset that include
+                                            region identifiers (e.g. "Country", "State"). Reads from the first column
+                                            in the dataframe onwards. Default is set to 3.
+        :type regions:                      int
+
+        :param all_output:                  If true, returns all fuel use, rejected energy and energy service for each
+                                            fuel_type and fuel_sub_type within each region
+        :type all_output:                   bool
+
+        :param total:                       If true, returns total fuel use, rejected energy and total generation
+                                            by each fuel type within each region
+        :type total:                        bool
+
+        :param grandtotal:                  If true, returns grand total fuel use in electricity generation, rejected
+                                            energy and total generation within each region.
+        :type grandtotal:                   bool
+
+        :return:                            DataFrame of fuel use, rejected energy, and generation values in
+                                            billion btu per year related to electricity generation
+
+        """
+
+    # load data
+    df = data
+
+    # TODO unlock this later when the load_baseline_data is hooked up to a data reader
+    # df = load_baseline_data()
+
+    # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings and change to nested dict
+    s_dict = co.construct_nested_dictionary(source_parameters)
+    t_dict = co.construct_nested_dictionary(target_parameters)
+
+    if source_parameters.shape[1] != 7:
+        raise ValueError('Input source parameter data does not have correct number of levels')
+
+    elif target_parameters.shape[1] != 7:
+        raise ValueError('Input target parameter data does not have correct number of levels')
+
+    else:
+
+        # initialize output dictionaries with region identifiers
+        l5_dict = df[df.columns[:regions].tolist()].to_dict()
+        l4_dict = df[df.columns[:regions].tolist()].to_dict()
+        l3_dict = df[df.columns[:regions].tolist()].to_dict()
+        l2_dict = df[df.columns[:regions].tolist()].to_dict()
+        l1_dict = df[df.columns[:regions].tolist()].to_dict()
+
+        for s1 in s_dict:
+            for t1 in t_dict:
+                l1_name = f'{s1}_to_{t1}_mgd'
+                l1_value = 0
+                for s2 in s_dict[s1]:
+                    for t2 in t_dict[t1]:
+                        l2_name = f'{s1}_{s2}_to_{t1}_{t2}_mgd'
+                        l2_value = 0
+                        for s3 in s_dict[s1][s2]:
+                            for t3 in t_dict[t1][t2]:
+                                l3_name = f'{s1}_{s2}_{s3}_to_{t1}_{t2}_{t3}_mgd'
+                                l3_value = 0
+                                for s4 in s_dict[s1][s2][s3]:
+                                    for t4 in t_dict[t1][t2][t3]:
+                                        l4_name = f'{s1}_{s2}_{s3}_{s4}_to_{t1}_{t2}_{t3}_{t4}_mgd'
+                                        l4_value = 0
+                                        for s5 in s_dict[s1][s2][s3][s4]:
+                                            for t5 in t_dict[t1][t2][t3][t4]:
+                                                l5_name = f'{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_mgd'
+                                                if l5_name in df.columns:
+                                                    l5_value = df[l5_name]
+
+                                                    l4_value = l4_value + l5_value
+                                                    l3_value = l3_value + l5_value
+                                                    l2_value = l2_value + l5_value
+                                                    l1_value = l1_value + l5_value
+##
+                                                    l1_dict.update({l1_name: l1_value})
+                                                    l2_dict.update({l2_name: l2_value})
+                                                    l3_dict.update({l3_name: l3_value})
+                                                    l4_dict.update({l4_name: l4_value})
+                                                    l5_dict.update({l5_name: l5_value})
+                                                else:
+                                                    pass
 
         # convert output dictionaries to dataframe, merge with location information
         l1_df = pd.DataFrame.from_dict(l1_dict, orient='index').transpose()

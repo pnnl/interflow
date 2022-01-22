@@ -25,6 +25,28 @@ def get_fuel_demand_target_parameters():
 
     return pd.read_csv(data)
 
+def get_water_demand_source_parameters():
+    """Read in .
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/configuration_data/WS_to_PWS_and_NonWater_Source_Parameters.csv')
+
+    return pd.read_csv(data)
+
+def get_water_demand_target_parameters():
+    """Read in .
+
+        :return:                        dataframe of values
+
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/configuration_data/WS_to_PWS_and_NonWater_Target_Parameters.csv')
+
+    return pd.read_csv(data)
+
 def get_electricity_dict():
     """Read in a dataframe of 2015 USGS Water Use Data.
 

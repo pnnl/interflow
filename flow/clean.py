@@ -35,15 +35,15 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'STATE': 'State',
                       'COUNTY': 'County',
                       'TP-TotPop': 'population',
-                      'PS-WGWFr': 'fresh_groundwater_pws_mgd',
-                      'PS-WSWFr': 'fresh_surfacewater_pws_mgd',
-                      'PS-WGWSa': 'saline_groundwater_pws_mgd',
-                      'PS-WSWSa': 'saline_surfacewater_pws_mgd',
-                      'DO-PSDel': 'fresh_pws_residential_mgd',
+                      'PS-WGWFr': 'WS_fresh_groundwater_total_total_to_PWS_fresh_groundwater_total_total_mgd',
+                      'PS-WSWFr': 'WS_fresh_surfacewater_total_total_to_PWS_fresh_surfacewater_total_total_mgd',
+                      'PS-WGWSa': 'WS_saline_groundwater_total_total_to_PWS_saline_groundwater_total_total_mgd',
+                      'PS-WSWSa': 'WS_saline_surfacewater_total_total_to_PWS_saline_surfacewater_total_total_mgd',
+                      'DO-PSDel': 'total_pws_to_residential_mgd',
                       'PS-Wtotl': 'total_pws_withdrawals_mgd',
 
-                      'DO-WGWFr': 'fresh_groundwater_residential_mgd',
-                      'DO-WSWFr': 'fresh_surfacewater_residential_mgd',
+                      'DO-WGWFr': 'WS_fresh_groundwater_total_total_to_RES_total_total_total_total_mgd',
+                      'DO-WSWFr': 'WS_fresh_surfacewater_total_total_to_RES_total_total_total_total_mgd',
 
                       'PT-WGWFr': 'fresh_groundwater_thermoelectric_mgd',
                       'PT-WGWSa': 'saline_groundwater_thermoelectric_mgd',
@@ -54,16 +54,18 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       # TODO see if consumptive use for thermoelectric is split out by fresh/surface
                       'PT-CUTot': 'thermoelectric_fresh_consumption_mgd',
 
-                      'IN-WGWFr': 'fresh_groundwater_industrial_mgd',
-                      'IN-WSWFr': 'fresh_surfacewater_industrial_mgd',
-                      'IN-WGWSa': 'saline_groundwater_industrial_mgd',
-                      'IN-WSWSa': 'saline_surfacewater_industrial_mgd',
+                      'IN-WGWFr': 'WS_fresh_groundwater_total_total_to_IN_total_total_total_total_mgd',
+                      'IN-WSWFr': 'WS_fresh_surfacewater_total_total_to_IN_total_total_total_total_mgd',
+                      'IN-WGWSa':  'WS_saline_groundwater_total_total_to_IN_total_total_total_total_mgd',
+                      'IN-WSWSa':  'WS_saline_surfacewater_total_total_to_IN_total_total_total_total_mgd',
 
-                      'MI-WGWFr': 'fresh_groundwater_mining_mgd',
-                      'MI-WSWFr': 'fresh_surfacewater_mining_mgd',
-                      'MI-WGWSa': 'saline_groundwater_mining_mgd',
-                      'MI-WSWSa': 'saline_surfacewater_mining_mgd',
+                      'MI-WGWFr': 'WS_fresh_groundwater_total_total_to_MI_total_total_total_total_mgd',
+                      'MI-WSWFr': 'WS_fresh_surfacewater_total_total_to_MI_total_total_total_total_mgd',
+                      'MI-WGWSa': 'WS_saline_groundwater_total_total_to_MI_total_total_total_total_mgd',
+                      'MI-WSWSa': 'WS_saline_surfacewater_total_total_to_MI_total_total_total_total_mgd',
 
+                        #TODO Continue updating naming and check water
+                        #TODO fix reference to coal mining
                       'IR-WGWFr': 'fresh_groundwater_total_irrigation_mgd',
                       'IR-WSWFr': 'fresh_surfacewater_total_irrigation_mgd',
                       'IR-RecWW': 'fresh_wastewater_total_irrigation_mgd',
@@ -86,6 +88,8 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       }
     df = df[variables_dict]
 
+
+
     state_irrigation_adj_list = ['AR', 'HI', 'LA', 'MS', 'MO', 'MT', 'NE', 'NJ', 'ND',
                                  'OK', 'SD', 'TX', 'WI', 'WY', 'PR', 'VI']
     for state in state_irrigation_adj_list:
@@ -102,6 +106,31 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
     # rename columns to add descriptive language
     df.rename(columns=variables_dict, inplace=True)
 
+
+    fsw_with = 'WS_fresh_surfacewater_total_total_to_PWS_fresh_surfacewater_total_total_mgd'
+    fgw_with = 'WS_fresh_groundwater_total_total_to_PWS_fresh_groundwater_total_total_mgd'
+    ssw_with = 'WS_saline_surfacewater_total_total_to_PWS_saline_surfacewater_total_total_mgd'
+    sgw_with = 'WS_saline_groundwater_total_total_to_PWS_saline_groundwater_total_total_mgd'
+
+    df['fsw_fraction'] = np.where(df['total_pws_withdrawals_mgd'] >0,
+                                  df[fsw_with]/ df['total_pws_withdrawals_mgd'], 0)
+    df['fgw_fraction'] =  np.where(df['total_pws_withdrawals_mgd'] >0,
+                                     df[fgw_with] / df['total_pws_withdrawals_mgd'], 0)
+    df['ssw_fraction'] = np.where(df['total_pws_withdrawals_mgd'] >0,
+                                  df[ssw_with] / df['total_pws_withdrawals_mgd'], 0)
+    df['sgw_fraction']  = np.where(df['total_pws_withdrawals_mgd'] >0,
+                                   df[sgw_with] / df['total_pws_withdrawals_mgd'], 0)
+
+    FSW_name = 'PWS_fresh_surfacewater_total_total_to_RES_total_total_total_total_mgd'
+    FGW_name = 'PWS_fresh_groundwater_total_total_to_RES_total_total_total_total_mgd'
+    SSW_name = 'PWS_saline_surfacewater_total_total_to_RES_total_total_total_total_mgd'
+    SGW_name = 'PWS_saline_groundwater_total_total_to_RES_total_total_total_total_mgd'
+
+    df[FSW_name] = df['total_pws_to_residential_mgd'] * df['fsw_fraction']
+    df[FGW_name]= df['total_pws_to_residential_mgd'] * df['fgw_fraction']
+    df[SSW_name]= df['total_pws_to_residential_mgd'] * df['ssw_fraction']
+    df[SGW_name]= df['total_pws_to_residential_mgd'] * df['sgw_fraction']
+
     # return variables specified
     if variables is None and all_variables is False:
         variables = ['FIPS', "State", "County"]
@@ -113,6 +142,125 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
 
     return df
 
+def calc_pws_discharge() -> pd.DataFrame:
+    """calculating public water supply demand for the commercial and industrial sectors along with total
+        public water supply exports or imports for each row of dataset.
+
+    :return:                DataFrame of public water supply demand by sector, pws imports, and pws exports
+
+    """
+
+    # read in cleaned water use data variables for 2015
+    df = prep_water_use_2015(
+        variables=["FIPS", 'State', 'County', 'total_pws_withdrawals_mgd',
+                   'PWS_fresh_surfacewater_total_total_to_RES_total_total_total_total_mgd',
+                   'PWS_fresh_groundwater_total_total_to_RES_total_total_total_total_mgd',
+                   'PWS_saline_surfacewater_total_total_to_RES_total_total_total_total_mgd',
+                   'PWS_saline_groundwater_total_total_to_RES_total_total_total_total_mgd',
+                   'fsw_fraction','fgw_fraction','ssw_fraction','sgw_fraction',
+                   'fresh_pws_thermoelectric_mgd'])
+
+    # read in dataframe of commercial and industrial pws ratios
+    df_pws = prep_public_water_supply_fraction()
+
+    # merge dataframes
+    df = pd.merge(df, df_pws, how="left", on=["FIPS", "State", "County"])
+
+    # calculate public water supply deliveries to commercial and industrial sectors
+    res_fsw_name = 'PWS_fresh_surfacewater_total_total_to_RES_total_total_total_total_mgd'
+    res_fgw_name = 'PWS_fresh_groundwater_total_total_to_RES_total_total_total_total_mgd'
+    res_ssw_name = 'PWS_saline_surfacewater_total_total_to_RES_total_total_total_total_mgd'
+    res_sgw_name = 'PWS_saline_groundwater_total_total_to_RES_total_total_total_total_mgd'
+    df['total_deliver'] = df[res_fsw_name] + df[res_fgw_name] \
+                            + df[res_ssw_name] + df[res_sgw_name] \
+                            + df['fresh_pws_thermoelectric_mgd']
+
+    df['pws_commercial_mgd'] = df["commercial_pws_fraction"] * df['total_deliver']
+    df['pws_industrial_mgd'] = df["industrial_pws_fraction"] * df['total_deliver']
+
+    co_fsw_name = 'PWS_fresh_surfacewater_total_total_to_CO_total_total_total_total_mgd'
+    co_fgw_name = 'PWS_fresh_groundwater_total_total_to_CO_total_total_total_total_mgd'
+    in_fsw_name = 'PWS_fresh_surfacewater_total_total_to_IN_total_total_total_total_mgd'
+    in_fgw_name = 'PWS_fresh_groundwater_total_total_to_IN_total_total_total_total_mgd'
+    co_ssw_name = 'PWS_saline_surfacewater_total_total_to_CO_total_total_total_total_mgd'
+    co_sgw_name = 'PWS_saline_groundwater_total_total_to_CO_total_total_total_total_mgd'
+    in_ssw_name = 'PWS_saline_surfacewater_total_total_to_IN_total_total_total_total_mgd'
+    in_sgw_name = 'PWS_saline_groundwater_total_total_to_IN_total_total_total_total_mgd'
+
+
+    df[co_fsw_name] = df['fsw_fraction'] * df['pws_commercial_mgd']
+    df[in_fsw_name] = df['fsw_fraction'] * df['pws_industrial_mgd']
+
+    df[co_fgw_name] = df['fgw_fraction'] * df['pws_commercial_mgd']
+    df[in_fgw_name] = df['fgw_fraction'] * df['pws_industrial_mgd']
+
+    df[co_ssw_name] = df['ssw_fraction'] * df['pws_commercial_mgd']
+    df[in_ssw_name] = df['ssw_fraction'] * df['pws_industrial_mgd']
+
+    df[co_sgw_name] = df['sgw_fraction'] * df['pws_commercial_mgd']
+    df[in_sgw_name] = df['sgw_fraction'] * df['pws_industrial_mgd']
+
+    # calculate new total deliveries from public water supply to all sectors
+    df['pws_deliveries_total_mgd'] =  df['fresh_pws_thermoelectric_mgd'] + df[res_fsw_name]  \
+                                      + df[res_fgw_name] +df[res_ssw_name] +df[res_sgw_name] +df[co_fsw_name] \
+                                      + df[co_fgw_name] +df[co_ssw_name] +df[co_sgw_name] +df[in_fsw_name] \
+                                      + df[in_fgw_name] +df[in_ssw_name] +df[in_sgw_name]
+
+
+
+    # calculate public water supply imports and exports
+    df['pws_imports_mgd'] = np.where(df['pws_deliveries_total_mgd'] - df['total_pws_withdrawals_mgd'] < 0,
+                                     # if withdrawals < deliveries
+                                     df['total_pws_withdrawals_mgd'] - df['pws_deliveries_total_mgd'],
+                                     # import quantity
+                                     0)
+
+    df['pws_exports_mgd'] = np.where(df['pws_deliveries_total_mgd'] - df['total_pws_withdrawals_mgd'] > 0,
+                                     # if withdrawals > deliveries
+                                     df['total_pws_withdrawals_mgd'] - df['pws_deliveries_total_mgd'],
+                                     # export quantity
+                                     0)
+
+    IX_fsw_name = 'WIX_fresh_surfacewater_total_total_to_PWS_fresh_surfacewater_total_total_mgd'
+    IX_fgw_name = 'WIX_fresh_groundwater_total_total_to_PWS_fresh_groundwater_total_total_mgd'
+    IX_ssw_name = 'WIX_saline_surfacewater_total_total_to_PWS_saline_surfacewater_total_total_mgd'
+    IX_sgw_name = 'WIX_saline_groundwater_total_total_to_PWS_saline_groundwater_total_total_mgd'
+
+    EX_fsw_name = 'PWS_fresh_surfacewater_total_total_to_WEX_fresh_surfacewater_total_total_mgd'
+    EX_fgw_name = 'PWS_fresh_groundwater_total_total_to_WEX_fresh_surfacewater_total_total_mgd'
+    EX_ssw_name = 'PWS_saline_surfacewater_total_total_to_WEX_fresh_surfacewater_total_total_mgd'
+    EX_sgw_name = 'PWS_saline_groundwater_total_total_to_WEX_fresh_surfacewater_total_total_mgd'
+
+    df[IX_fsw_name] = df['pws_imports_mgd'] * df['fsw_fraction']
+    df[IX_fgw_name] = df['pws_imports_mgd'] * df['fgw_fraction']
+    df[IX_ssw_name] = df['pws_imports_mgd'] * df['ssw_fraction']
+    df[IX_sgw_name] = df['pws_imports_mgd'] * df['sgw_fraction']
+    df[EX_fsw_name] = df['pws_exports_mgd'] * df['fsw_fraction']
+    df[EX_fgw_name] = df['pws_exports_mgd'] * df['fgw_fraction']
+    df[EX_ssw_name] = df['pws_exports_mgd'] * df['ssw_fraction']
+    df[EX_sgw_name] = df['pws_exports_mgd'] * df['sgw_fraction']
+
+
+    df = df[["FIPS", 'State', 'County',
+        co_fsw_name,
+        co_fgw_name,
+        in_fsw_name,
+        in_fgw_name,
+        co_ssw_name,
+        co_sgw_name,
+        in_ssw_name,
+        in_sgw_name,
+        IX_fsw_name,
+        IX_fgw_name,
+        IX_ssw_name,
+        IX_sgw_name,
+        EX_fsw_name,
+        EX_fgw_name,
+        EX_ssw_name,
+        EX_sgw_name]]
+
+
+    return df
 
 def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
     """prepping 1995 water use data by replacing missing values, fixing FIPS codes,
@@ -1519,7 +1667,7 @@ def prep_electricity_demand_data() -> pd.DataFrame:
 
     # split out into county values based on percent of state population
     df = co.calc_population_county_weight(df)
-    demand_columns = df.columns[3:7]
+    demand_columns = df.columns[1:5].to_list()
     for d in demand_columns:
         df[d] = df[d] * df['pop_weight']
         df[d] = df[d].round(4)
@@ -1571,7 +1719,7 @@ def prep_fuel_demand_data() -> pd.DataFrame:
 
     # split out data into county values and multiply by population weighting
     df = co.calc_population_county_weight(df)
-    energy_columns = df.columns[3:]
+    energy_columns = df.columns[1:5].to_list()
     for d in energy_columns:
         df[d] = df[d] * df['pop_weight']
 
@@ -2171,53 +2319,4 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
     return df_corn_prod
 
 
-def calc_pws_discharge() -> pd.DataFrame:
-    """calculating public water supply demand for the commercial and industrial sectors along with total
-        public water supply exports or imports for each row of dataset.
 
-    :return:                DataFrame of public water supply demand by sector, pws imports, and pws exports
-
-    """
-
-    # read in cleaned water use data variables for 2015
-    df = prep_water_use_2015(
-        variables=["FIPS", 'State', 'County', 'total_pws_withdrawals_mgd', 'fresh_pws_residential_mgd',
-                   'fresh_pws_thermoelectric_mgd'])
-
-    # read in dataframe of commercial and industrial pws ratios
-    df_pws = prep_public_water_supply_fraction()
-
-    # merge dataframes
-    df = pd.merge(df, df_pws, how="left", on=["FIPS", "State", "County"])
-
-    # calculate public water supply deliveries to commercial and industrial sectors
-    df['fresh_pws_commercial_mgd'] = df["commercial_pws_fraction"] \
-                                     * (df['fresh_pws_residential_mgd'] + df['fresh_pws_thermoelectric_mgd'])
-    df['fresh_pws_industrial_mgd'] = df["industrial_pws_fraction"] \
-                                     * (df['fresh_pws_residential_mgd'] + df['fresh_pws_thermoelectric_mgd'])
-
-    # calculate new total deliveries from public water supply to all sectors
-    df['pws_deliveries_total_mgd'] = df['fresh_pws_residential_mgd'] + df['fresh_pws_thermoelectric_mgd'] \
-                                     + df['fresh_pws_commercial_mgd'] + df['fresh_pws_industrial_mgd']
-
-    # calculate public water supply imports and exports
-    df['pws_imports_mgd'] = np.where(df['pws_deliveries_total_mgd'] - df['total_pws_withdrawals_mgd'] < 0,
-                                     # if withdrawals < deliveries
-                                     df['total_pws_withdrawals_mgd'] - df['pws_deliveries_total_mgd'],
-                                     # import quantity
-                                     0)
-
-    df['pws_exports_mgd'] = np.where(df['pws_deliveries_total_mgd'] - df['total_pws_withdrawals_mgd'] > 0,
-                                     # if withdrawals > deliveries
-                                     df['total_pws_withdrawals_mgd'] - df['pws_deliveries_total_mgd'],
-                                     # export quantity
-                                     0)
-
-    # calculate net exports
-    df['pws_net_exports_mgd'] = df['pws_exports_mgd'] - df['pws_imports_mgd']
-
-    df = df[["FIPS", 'State', 'County', 'total_pws_withdrawals_mgd', 'pws_deliveries_total_mgd',
-             "fresh_pws_commercial_mgd", "fresh_pws_industrial_mgd", "pws_imports_mgd",
-             'pws_exports_mgd', 'pws_net_exports_mgd']]
-
-    return df
