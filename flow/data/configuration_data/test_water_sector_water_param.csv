@@ -1,0 +1,7 @@
+﻿T1,T2,T3,T4,T5,S1,S2,S3,S4,S5,parameter,value
+PWS,fresh,surfacewater,total,total,WS,fresh,surfacewater,total,total,,
+PWS,fresh,groundwater,total,total,WS,fresh,groundwater,total,total,,
+PWS,saline,surfacewater,total,total,WS,fresh,surfacewater,total,total,,
+PWS,saline,groundwater,total,total,WS,fresh,groundwater,total,total,,
+CI,fresh,surfacewater,total,total,WS,fresh,surfacewater,total,total,,
+CI,fresh,groundwater,total,total,WS,fresh,groundwater,total,total,,

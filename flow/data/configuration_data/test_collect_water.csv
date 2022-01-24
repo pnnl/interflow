@@ -14,3 +14,7 @@ RES,total,total,total,total,discharge,public,Con,total,total,total,total,dischar
 CI,fresh,surfacewater,total,total,source,natural,WS,fresh,surfacewater,total,total,source_fraction,1
 CI,fresh,groundwater,total,total,source,natural,WS,fresh,groundwater,total,total,source_fraction,1
 CI,fresh,groundwater,total,total,discharge,natural,Con,total,total,total,total,discharge_fraction,0.8
+PWS,fresh,surfacewater,total,total,source,natural,WS,fresh,groundwater,total,total,source_fraction,1
+PWS,fresh,groundwater,total,total,source,natural,WS,fresh,surfacewater,total,total,source_fraction,1
+PWS,saline,surfacewater,total,total,source,natural,WS,saline,groundwater,total,total,source_fraction,1
+PWS,saline,groundwater,total,total,source,natural,WS,saline,surfacewater,total,total,source_fraction,1

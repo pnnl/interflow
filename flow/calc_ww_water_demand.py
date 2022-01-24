@@ -20,8 +20,7 @@ def calc_wastewater_water_demand(data: pd.DataFrame, target_types: pd.DataFrame,
         """
 
     # load baseline data
-    df = data
-
+    df = test_baseline()
     # TODO unlock this later when the load_baseline_data is hooked up to a data reader
     # df = load_baseline_data()
 
@@ -31,6 +30,7 @@ def calc_wastewater_water_demand(data: pd.DataFrame, target_types: pd.DataFrame,
 
 
     # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings and change to nested dict
+    target_types = test_ww_param()
     split_dict = co.construct_nested_dictionary(target_types)
 
 

@@ -69,6 +69,17 @@ def test_ww_param():
 
     return pd.read_csv(data)
 
+def test_water_sector_param():
+    """Read in .
+
+            :return:                        dataframe of values
+
+            """
+
+    data = pkg_resources.resource_filename('flow', 'data/configuration_data/test_water_sector_water_param.csv')
+
+    return pd.read_csv(data)
+
 
 
 
