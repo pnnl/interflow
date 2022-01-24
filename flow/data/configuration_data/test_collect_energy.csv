@@ -1,0 +1,10 @@
+﻿T1,T2,T3,T4,T5,movement_type,S1,S2,S3,S4,S5,parameter,value
+RES,total,total,total,total,source,ED,natgas,total,total,total,,
+RES,total,total,total,total,source,ED,solar,total,total,total,,
+RES,total,total,total,total,source,EGD,total,total,total,total,,
+EGC,natgas,CC,OT,total,source,ED,natgas,total,total,total,,
+EGC,natgas,steam,OT,total,source,ED,natgas,total,total,total,,
+RES,total,total,total,total,discharge,RE,total,total,total,total,discharge_fraction,0.6
+EGC,natgas,CC,OT,total,discharge,RE,total,total,total,total,discharge_fraction,0.7
+RES,total,total,total,total,discharge,ES,total,total,total,total,discharge_fraction,0.4
+EGC,natgas,CC,OT,total,discharge,ES,total,total,total,total,discharge_fraction,0.3

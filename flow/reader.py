@@ -3,16 +3,50 @@ import pkg_resources
 import pandas as pd
 
 
-def get_fuel_demand_source_parameters():
+def test_baseline():
     """Read in .
 
         :return:                        dataframe of values
 
         """
 
-    data = pkg_resources.resource_filename('flow', 'data/configuration_data/EC_to_EG_Energy_Source_Parameters.csv')
+    data = pkg_resources.resource_filename('flow', 'data/configuration_data/sample_EP.csv')
 
     return pd.read_csv(data)
+
+def test_EP_param():
+    """Read in .
+
+            :return:                        dataframe of values
+
+            """
+
+    data = pkg_resources.resource_filename('flow', 'data/configuration_data/EP_test_param.csv')
+
+    return pd.read_csv(data)
+
+def test_EP_flows():
+    """Read in .
+
+            :return:                        dataframe of values
+
+            """
+
+    data = pkg_resources.resource_filename('flow', 'data/configuration_data/test_nested.csv')
+
+    return pd.read_csv(data)
+
+def test_collect_water_param():
+    """Read in .
+
+            :return:                        dataframe of values
+
+            """
+
+    data = pkg_resources.resource_filename('flow', 'data/configuration_data/test_collect_water.csv')
+
+    return pd.read_csv(data)
+
 
 def get_fuel_demand_target_parameters():
     """Read in .

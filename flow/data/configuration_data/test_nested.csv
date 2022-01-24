@@ -1,0 +1,17 @@
+﻿T1,T2,T3,T4,T5,movement_type,water_type,S1,S2,S3,S4,S5,parameter,value
+EP,natgas,unconventional,total,total,source,withdrawal,WS,fresh,groundwater,total,total,source_fraction,0.5
+EP,natgas,unconventional,total,total,source,produced,WS,fresh,groundwater,total,total,source_fraction,1.5
+EP,natgas,unconventional,total,total,source,withdrawal,WS,fresh,surfacewater,total,total,source_fraction,0.5
+EP,natgas,unconventional,total,total,source,produced,WS,fresh,surfacewater,total,total,source_fraction,0.5
+EP,natgas,unconventional,total,total,source,withdrawal,WS,fresh,surfacewater,total,total,source_fraction,0.5
+EP,natgas,unconventional,total,total,source,produced,WS,saline,groundwater,total,total,source_fraction,0.5
+EP,natgas,conventional,total,total,source,withdrawal,WS,saline,surfacewater,total,total,source_fraction,0.5
+EP,natgas,conventional,total,total,source,produced,WS,saline,surfacewater,total,total,source_fraction,0.5
+EP,natgas,conventional,total,total,source,produced,WS,saline,surfacewater,total,total,source_fraction,0.5
+EP,natgas,conventional,total,total,discharge,production,OD,total,total,total,total,discharge_fraction,0.5
+EP,natgas,conventional,total,total,discharge,withdrawal,OD,total,total,total,total,discharge_fraction,0.5
+EP,natgas,conventional,total,total,discharge,production,OD,total,total,total,total,discharge_fraction,0.5
+EP,natgas,conventional,total,total,discharge,withdrawal,OD,total,total,total,total,discharge_fraction,0.5
+EP,natgas,conventional,total,total,discharge,production,SD,total,total,total,total,discharge_fraction,0.5
+EP,natgas,conventional,total,total,discharge,withdrawal,SD,total,total,total,total,discharge_fraction,0.5
+EP,natgas,conventional,total,total,discharge,production,SD,total,total,total,total,discharge_fraction,0.5

@@ -1,0 +1,11 @@
+﻿T1,T2,T3,T4,T5,movement_type,water_type,S1,S2,S3,S4,S5,parameter,value
+RES,total,total,total,total,source,natural,WS,fresh,groundwater,total,total,source_fraction,1
+RES,total,total,total,total,source,natural,WS,fresh,surfacewater,total,total,source_fraction,1
+RES,total,total,total,total,source,natural,WS,saline,groundwater,total,total,source_fraction,1
+RES,total,total,total,total,source,natural,WS,saline,surfacewater,total,total,source_fraction,1
+RES,total,total,total,total,source,public,PWSD,total,total,total,total,source_fraction,1
+RES,total,total,total,total,discharge,natural,SD,total,total,total,total,discharge_fraction,0
+RES,total,total,total,total,discharge,natural,OD,total,total,total,total,discharge_fraction,0
+RES,total,total,total,total,discharge,natural,Con,total,total,total,total,discharge_fraction,0
+RES,total,total,total,total,discharge,public,WWS,total,total,total,total,discharge_fraction,0.5
+RES,total,total,total,total,discharge,public,Con,total,total,total,total,discharge_fraction,0

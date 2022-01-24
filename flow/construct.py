@@ -91,6 +91,37 @@ def construct_nested_dictionary(df: pd.DataFrame):
                 lambda x: dict(zip(x[parameter], x[value])))))))))))))
         d = d.to_dict()
 
+    elif len(df.columns) == 14:
+        group1 = df.columns[0]
+        group2 = df.columns[1]
+        group3 = df.columns[2]
+        group4 = df.columns[3]
+        group5 = df.columns[4]
+        group6 = df.columns[5]
+        group7 = df.columns[6]
+        group8 = df.columns[7]
+        group9 = df.columns[8]
+        group10 = df.columns[9]
+        group11 = df.columns[10]
+        group12 = df.columns[11]
+
+        parameter = df.columns[-2]
+        value = df.columns[-1]
+        d = df.groupby(group1).apply(
+            lambda a: dict(a.groupby(group2).apply(
+            lambda b: dict(b.groupby(group3).apply(
+            lambda c: dict(c.groupby(group4).apply(
+            lambda d: dict(d.groupby(group5).apply(
+            lambda e: dict(e.groupby(group6).apply(
+            lambda f: dict(f.groupby(group7).apply(
+            lambda g: dict(g.groupby(group8).apply(
+            lambda h: dict(h.groupby(group9).apply(
+            lambda i: dict(i.groupby(group10).apply(
+            lambda k: dict(k.groupby(group11).apply(
+            lambda k: dict(k.groupby(group12).apply(
+            lambda x: dict(zip(x[parameter], x[value])))))))))))))))))))))))))
+        d = d.to_dict()
+
     else:
         d = 'Too many columns in dataframe'
 

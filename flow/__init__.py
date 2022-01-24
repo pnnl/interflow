@@ -5,6 +5,9 @@ from .calculate import *
 from .visualize import *
 from .configure import *
 from .construct import *
+from .calculates_flows import *
+from .collect_water import *
+
 
 from .sample import *
 
