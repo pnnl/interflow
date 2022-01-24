@@ -1,6 +1,5 @@
 ﻿T1,T2,T3,T4,T5,movement_type,S1,S2,S3,S4,S5,parameter,value
 RES,total,total,total,total,source,ED,natgas,total,total,total,,
-RES,total,total,total,total,source,ED,solar,total,total,total,,
 RES,total,total,total,total,source,EGD,total,total,total,total,,
 EGC,natgas,CC,OT,total,source,ED,natgas,total,total,total,,
 EGC,natgas,steam,OT,total,source,ED,natgas,total,total,total,,

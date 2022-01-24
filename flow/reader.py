@@ -47,6 +47,32 @@ def test_collect_water_param():
 
     return pd.read_csv(data)
 
+def test_collect_energy_param():
+    """Read in .
+
+            :return:                        dataframe of values
+
+            """
+
+    data = pkg_resources.resource_filename('flow', 'data/configuration_data/test_collect_energy.csv')
+
+    return pd.read_csv(data)
+
+def test_ww_param():
+    """Read in .
+
+            :return:                        dataframe of values
+
+            """
+
+    data = pkg_resources.resource_filename('flow', 'data/configuration_data/water_sector_params.csv')
+
+    return pd.read_csv(data)
+
+
+
+
+
 
 def get_fuel_demand_target_parameters():
     """Read in .

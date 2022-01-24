@@ -7,6 +7,8 @@ from .configure import *
 from .construct import *
 from .calculates_flows import *
 from .collect_water import *
+from .collect_energy import *
+from .calc_ww_water_demand import *
 
 
 from .sample import *

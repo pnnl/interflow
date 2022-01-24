@@ -5,8 +5,7 @@ import flow.clean as cl
 import flow.configure as conf
 import flow.construct as co
 
-def calc_collect_water_use(data: pd.DataFrame, target_types: pd.DataFrame,
-                                                 output='l5', regions=3):
+def calc_collect_water_use(output='l5', regions=3):
     """Calculates rejected energy (losses) and total generation from electricity generation
     by generating type for each region.
 
@@ -19,12 +18,13 @@ def calc_collect_water_use(data: pd.DataFrame, target_types: pd.DataFrame,
         """
 
     # load data
-    df = data
+    df = test_baseline()
 
     # TODO unlock this later when the load_baseline_data is hooked up to a data reader
     # df = load_baseline_data()
 
     # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings and change to nested dict
+    target_types = test_collect_water_param()
     split_dict = co.construct_nested_dictionary(target_types)
 
 
@@ -137,7 +137,6 @@ def calc_collect_water_use(data: pd.DataFrame, target_types: pd.DataFrame,
                                                         for s5 in split_dict[x1][x2][x3][x4][x5][m_type][w_type][s1][s2][s3][s4]:
                                                             l5_d_name = f'{x1}_{x2}_{x3}_{x4}_{x5}_to_{s1}_{s2}_{s3}_{s4}_{s5}_mgd'
                                                             if l5_total_name in l5_dict:
-
                                                                 for p in split_dict[x1][x2][x3][x4][x5][m_type][w_type][s1][s2][s3][s4][s5]:
                                                                     frac_name = f'{x1}_{x2}_{x3}_{x4}_{x5}_to_{s1}_{s2}_{s3}_{s4}_{s5}_fraction'
                                                                     if frac_name in df.columns:
@@ -149,14 +148,14 @@ def calc_collect_water_use(data: pd.DataFrame, target_types: pd.DataFrame,
                                                                     l3_d_value = l3_dict[l3_total_name] * frac
                                                                     l2_d_value = l2_dict[l2_total_name] * frac
                                                                     l1_d_value = l1_dict[l1_total_name] * frac
-
-                                                                    l1_dict.update({l5_d_name: l1_d_value})
+                                                                    l1_dict.update({l1_d_name: l1_d_value})
                                                                     l2_dict.update({l2_d_name: l2_d_value})
                                                                     l3_dict.update({l3_d_name: l3_d_value})
                                                                     l4_dict.update({l4_d_name: l4_d_value})
                                                                     l5_dict.update({l5_d_name: l5_d_value})
                                                             else:
                                                                 pass
+
                                 else:
                                     pass
 

@@ -5,7 +5,7 @@ import flow.clean as cl
 import flow.configure as conf
 import flow.construct as co
 
-def calc_collect_water_use(data: pd.DataFrame, target_types: pd.DataFrame,
+def calc_collect_energy_use(data: pd.DataFrame, target_types: pd.DataFrame,
                                                  output='l5', regions=3):
     """Calculates rejected energy (losses) and total generation from electricity generation
     by generating type for each region.
@@ -50,32 +50,31 @@ def calc_collect_water_use(data: pd.DataFrame, target_types: pd.DataFrame,
                         for x5 in split_dict[x1][x2][x3][x4]:
                             for m_type in split_dict[x1][x2][x3][x4][x5]:
                                 if m_type == 'source':
-                                    for w_type in split_dict[x1][x2][x3][x4][x5][m_type]:
-                                        for s1 in split_dict[x1][x2][x3][x4][x5][m_type][w_type]:
-                                            l1_total_name = f'{x1}_{w_type}_mgd'
+                                        for s1 in split_dict[x1][x2][x3][x4][x5][m_type]:
+                                            l1_total_name = f'{x1}_bbtu'
                                             l1_total_value = 0
-                                            l2_total_name = f'{x1}_{x2}_{w_type}_mgd'
+                                            l2_total_name = f'{x1}_{x2}_bbtu'
                                             l2_total_value = 0
-                                            l3_total_name = f'{x1}_{x2}_{x3}_{w_type}_mgd'
+                                            l3_total_name = f'{x1}_{x2}_{x3}_bbtu'
                                             l3_total_value = 0
-                                            l4_total_name = f'{x1}_{x2}_{x3}_{x4}_{w_type}_mgd'
+                                            l4_total_name = f'{x1}_{x2}_{x3}_{x4}_bbtu'
                                             l4_total_value = 0
-                                            l5_total_name = f'{x1}_{x2}_{x3}_{x4}_{x5}_{w_type}_mgd'
+                                            l5_total_name = f'{x1}_{x2}_{x3}_{x4}_{x5}_bbtu'
                                             l5_total_value = 0
 
                                             l1_s_name = f'{s1}_to_{x1}_mgd'
                                             l1_s_value = 0
-                                            for s2 in split_dict[x1][x2][x3][x4][x5][m_type][w_type][s1]:
-                                                l2_s_name = f'{s1}_{s2}_to_{x1}_{x2}_mgd'
+                                            for s2 in split_dict[x1][x2][x3][x4][x5][m_type][s1]:
+                                                l2_s_name = f'{s1}_{s2}_to_{x1}_{x2}_bbtu'
                                                 l2_s_value = 0
-                                                for s3 in split_dict[x1][x2][x3][x4][x5][m_type][w_type][s1][s2]:
-                                                    l3_s_name = f'{s1}_{s2}_{s3}_to_{x1}_{x2}_{x3}_mgd'
+                                                for s3 in split_dict[x1][x2][x3][x4][x5][m_type][s1][s2]:
+                                                    l3_s_name = f'{s1}_{s2}_{s3}_to_{x1}_{x2}_{x3}_bbtu'
                                                     l3_s_value = 0
-                                                    for s4 in split_dict[x1][x2][x3][x4][x5][m_type][w_type][s1][s2][s3]:
-                                                        l4_s_name = f'{s1}_{s2}_{s3}_{s4}_to_{x1}_{x2}_{x3}_{x4}_mgd'
+                                                    for s4 in split_dict[x1][x2][x3][x4][x5][m_type][s1][s2][s3]:
+                                                        l4_s_name = f'{s1}_{s2}_{s3}_{s4}_to_{x1}_{x2}_{x3}_{x4}_bbtu'
                                                         l4_s_value = 0
-                                                        for s5 in split_dict[x1][x2][x3][x4][x5][m_type][w_type][s1][s2][s3][s4]:
-                                                            l5_s_name = f'{s1}_{s2}_{s3}_{s4}_{s5}_to_{x1}_{x2}_{x3}_{x4}_{x5}_mgd'
+                                                        for s5 in split_dict[x1][x2][x3][x4][x5][m_type][s1][s2][s3][s4]:
+                                                            l5_s_name = f'{s1}_{s2}_{s3}_{s4}_{s5}_to_{x1}_{x2}_{x3}_{x4}_{x5}_bbtu'
 
                                                             if l5_s_name in df.columns:
                                                                 l5_s_value = df[l5_s_name]
@@ -115,42 +114,41 @@ def calc_collect_water_use(data: pd.DataFrame, target_types: pd.DataFrame,
                         for x5 in split_dict[x1][x2][x3][x4]:
                             for m_type in split_dict[x1][x2][x3][x4][x5]:
                                 if m_type == 'discharge':
-                                    for w_type in split_dict[x1][x2][x3][x4][x5][m_type]:
-                                        l1_total_name = f'{x1}_{w_type}_mgd'
-                                        l2_total_name = f'{x1}_{x2}_{w_type}_mgd'
-                                        l3_total_name = f'{x1}_{x2}_{x3}_{w_type}_mgd'
-                                        l4_total_name = f'{x1}_{x2}_{x3}_{x4}_{w_type}_mgd'
-                                        l5_total_name = f'{x1}_{x2}_{x3}_{x4}_{x5}_{w_type}_mgd'
+                                        l1_total_name = f'{x1}_bbtu'
+                                        l2_total_name = f'{x1}_{x2}_bbtu'
+                                        l3_total_name = f'{x1}_{x2}_{x3}_bbtu'
+                                        l4_total_name = f'{x1}_{x2}_{x3}_{x4}_bbtu'
+                                        l5_total_name = f'{x1}_{x2}_{x3}_{x4}_{x5}_bbtu'
 
-                                        for s1 in split_dict[x1][x2][x3][x4][x5][m_type][w_type]:
-                                            l1_d_name = f'{x1}_to_{s1}_mgd'
+                                        for s1 in split_dict[x1][x2][x3][x4][x5][m_type]:
+                                            l1_d_name = f'{x1}_to_{s1}_bbtu'
                                             l1_d_value = 0
-                                            for s2 in split_dict[x1][x2][x3][x4][x5][m_type][w_type][s1]:
-                                                l2_d_name = f'{x1}_{x2}_to_{s1}_{s2}_mgd'
+                                            for s2 in split_dict[x1][x2][x3][x4][x5][m_type][s1]:
+                                                l2_d_name = f'{x1}_{x2}_to_{s1}_{s2}_bbtu'
                                                 l2_d_value = 0
-                                                for s3 in split_dict[x1][x2][x3][x4][x5][m_type][w_type][s1][s2]:
-                                                    l3_d_name = f'{x1}_{x2}_{x3}_to_{s1}_{s2}_{s3}_mgd'
+                                                for s3 in split_dict[x1][x2][x3][x4][x5][m_type][s1][s2]:
+                                                    l3_d_name = f'{x1}_{x2}_{x3}_to_{s1}_{s2}_{s3}_bbtu'
                                                     l3_d_value = 0
-                                                    for s4 in split_dict[x1][x2][x3][x4][x5][m_type][w_type][s1][s2][s3]:
-                                                        l4_d_name = f'{x1}_{x2}_{x3}_{x4}_to_{s1}_{s2}_{s3}_{s4}_mgd'
+                                                    for s4 in split_dict[x1][x2][x3][x4][x5][m_type][s1][s2][s3]:
+                                                        l4_d_name = f'{x1}_{x2}_{x3}_{x4}_to_{s1}_{s2}_{s3}_{s4}_bbtu'
                                                         l4_d_value = 0
-                                                        for s5 in split_dict[x1][x2][x3][x4][x5][m_type][w_type][s1][s2][s3][s4]:
-                                                            l5_d_name = f'{x1}_{x2}_{x3}_{x4}_{x5}_to_{s1}_{s2}_{s3}_{s4}_{s5}_mgd'
+                                                        for s5 in split_dict[x1][x2][x3][x4][x5][m_type][s1][s2][s3][s4]:
+                                                            l5_d_name = f'{x1}_{x2}_{x3}_{x4}_{x5}_to_{s1}_{s2}_{s3}_{s4}_{s5}_bbtu'
                                                             if l5_total_name in l5_dict:
 
-                                                                for p in split_dict[x1][x2][x3][x4][x5][m_type][w_type][s1][s2][s3][s4][s5]:
+                                                                for p in split_dict[x1][x2][x3][x4][x5][m_type][s1][s2][s3][s4][s5]:
                                                                     frac_name = f'{x1}_{x2}_{x3}_{x4}_{x5}_to_{s1}_{s2}_{s3}_{s4}_{s5}_fraction'
                                                                     if frac_name in df.columns:
                                                                         frac = df[frac_name]
                                                                     else:
-                                                                        frac = split_dict[x1][x2][x3][x4][x5][m_type][w_type][s1][s2][s3][s4][s5][p]
+                                                                        frac = split_dict[x1][x2][x3][x4][x5][m_type][s1][s2][s3][s4][s5][p]
                                                                     l5_d_value = l5_dict[l5_total_name] * frac
                                                                     l4_d_value = l4_dict[l4_total_name] * frac
                                                                     l3_d_value = l3_dict[l3_total_name] * frac
                                                                     l2_d_value = l2_dict[l2_total_name] * frac
                                                                     l1_d_value = l1_dict[l1_total_name] * frac
 
-                                                                    l1_dict.update({l5_d_name: l1_d_value})
+                                                                    l1_dict.update({l1_d_name: l1_d_value})
                                                                     l2_dict.update({l2_d_name: l2_d_value})
                                                                     l3_dict.update({l3_d_name: l3_d_value})
                                                                     l4_dict.update({l4_d_name: l4_d_value})
