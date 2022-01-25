@@ -1,30 +1,41 @@
 import numpy as np
 import pandas as pd
 from .reader import *
-import flow.clean as cl
-import flow.configure as conf
 import flow.construct as co
-import flow.collect_water as cw
-
-def calc_water_sector_water(data=None,level='l5', regions=3):
-    """Calculates rejected energy (losses) and total generation from electricity generation
-    by generating type for each region.
 
 
-        :param data:                        DataFrame of input data containing electricity generation fuel and total
-                                            electricity generation by type
+def calc_water_sector_water(data=None, level=5, regions=3):
+    """Collects water demand data to water sectors (sectors whose energy demand is strictly dependent on their water
+    demand) that directly withdraw their water from the water supply (e.g., public water supply) and aggregates the
+    values.
+
+        :param data:                        dataframe of baseline values to run calculations off of. Default is set to
+                                            baseline dataframe specified in configuration.
         :type data:                         DataFrame
 
+        :param level:                       Specifies what level of granularity to provide results. Must be an integer
+                                            between 1 and 5, inclusive. Level 5 is the highest granularity, showing
+                                            results down to the 5th level of specificity in each sector. Level 1 is the
+                                            lowest level of granularity, showing results summed to the major sector
+                                            level.
+        :type level:                        int
 
+        :param regions:                     The number of columns (inclusive) in the baseline dataset that include
+                                            region identifiers (e.g. "Country", "State"). Reads from the first column
+                                            in the dataframe onwards. Is used to combine various datasets to match
+                                            values to each region included. Default number of regions is set to 3.
+        :type regions:                      int
+
+        :return:                            DataFrame of aggregated water demand values by source for water sectors
+                                            (those whose energy demand is determined by their water demand) that
+                                            withdraw their water directly from the water supply.
         """
 
-    # load baseline data
     # load data
     if data:
         df = data
     else:
         df = test_baseline()
-    # TODO unlock this later when the load_baseline_data is hooked up to a data reader
 
 
     # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings and change to nested dict
@@ -102,18 +113,18 @@ def calc_water_sector_water(data=None,level='l5', regions=3):
         l4_df = pd.DataFrame.from_dict(l4_dict, orient='index').transpose()
         l5_df = pd.DataFrame.from_dict(l5_dict, orient='index').transpose()
 
-        if level == 'l1':
+        if level == 1:
             df = l1_df
-        elif level == 'l2':
+        elif level == 2:
             df = l2_df
-        elif level == 'l3':
+        elif level == 3:
             df = l3_df
-        elif level == 'l4':
+        elif level == 4:
             df = l4_df
-        elif level == 'l5':
+        elif level == 5:
             df = l5_df
         else:
-            m = 'incorrect level of granularity specified. Must be one of the following: l1, l2, l3, l4, or l5'
+            m = 'incorrect level of granularity specified. Must be an integer between 1 and 5, inclusive.'
             raise ValueError(m)
 
         return df

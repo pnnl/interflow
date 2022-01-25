@@ -9,7 +9,7 @@ from .calc_water_in_energy import *
 from .collect_water import *
 from .collect_energy import *
 from .calc_ww_water_demand import *
-from .collect_water_sector_water import *
+from .calc_water_sector_water_totals import *
 from .calc_water_sector_energy import *
 from .updater import *
 from .run import *

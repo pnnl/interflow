@@ -1,15 +1,12 @@
 import numpy as np
 import pandas as pd
 from .reader import *
-import flow.clean as cl
-import flow.configure as conf
 import flow.construct as co
-import flow.collect_water as cw
 import flow.calc_ww_water_demand as wwd
-import flow.collect_water_sector_water as ws
+import flow.calc_water_sector_water_totals as ws
 
 
-def calc_water_sector_energy(data=None, level='l5', regions=3):
+def calc_water_sector_energy(data=None, level=5, regions=3):
     """Calculates energy demand in sectors that have their energy demand dependent on their water use (e.g., public
     water supply). Additionally takes the total energy demand and splits it up by source (e.g., electricity) sector
     based on assumed source percentages and calculates discharge (e.g., rejected energy) based on assumed efficiency.
@@ -32,7 +29,8 @@ def calc_water_sector_energy(data=None, level='l5', regions=3):
         :type regions:                      int
 
         :return:                            DataFrame of calculated water and energy sector flow values by region at
-                                            specified level of granularity (see 'level' parameter)
+                                            specified level of granularity (see 'level' parameter) updated for
+                                            double counting.
 
         """
 
@@ -236,18 +234,18 @@ def calc_water_sector_energy(data=None, level='l5', regions=3):
         l4_df = pd.DataFrame.from_dict(l4_dict, orient='index').transpose()
         l5_df = pd.DataFrame.from_dict(l5_dict, orient='index').transpose()
 
-        if level == 'l1':
+        if level == 1:
             df = l1_df
-        elif level == 'l2':
+        elif level == 2:
             df = l2_df
-        elif level == 'l3':
+        elif level == 3:
             df = l3_df
-        elif level == 'l4':
+        elif level == 4:
             df = l4_df
-        elif level == 'l5':
+        elif level == 5:
             df = l5_df
         else:
-            m = 'incorrect level of granularity specified. Must be one of the following: l1, l2, l3, l4, or l5'
+            m = 'incorrect level of granularity specified. Must be an integer between 1 and 5, inclusive.'
             raise ValueError(m)
 
         return df

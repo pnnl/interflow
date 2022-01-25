@@ -8,7 +8,7 @@ import calc_water_in_energy as esw
 import flow.collect_water as cw
 import flow.collect_energy as ce
 import flow.calc_ww_water_demand as wwd
-import flow.collect_water_sector_water as ws
+import flow.calc_water_sector_water_totals as ws
 import flow.calc_water_sector_energy as wse
 
 
