@@ -4,7 +4,7 @@ import read_config as r
 
 
 def read_baseline_data():
-    """Read in baseline data and output as DataFrame.
+    """Read in baseline data as DataFrame.
 
         :return:                        dataframe of values
 
@@ -107,7 +107,7 @@ def read_cwwwd_water_flow_targets():
 
 
 def read_cwswd_water_flow_targets():
-    """Read in water to water-sector data.
+    """Read in water flows to water-sector data, not including wastewater sector.
 
         :return:                        dataframe of values
 
@@ -149,6 +149,23 @@ def read_cwse_water_sector_energy_split_fractions():
 
     # collect path to file
     path = r.read_config('calc_water_sector_energy', 'file2')
+
+    # collect file
+    data = pkg_resources.resource_filename('flow', path)
+
+    # return as DataFrame
+    return pd.read_csv(data)
+
+
+def read_update_data():
+    """Read in flow value update sets to update flow output and remove double counting.
+
+        :return:                        dataframe of values
+
+        """
+
+    # collect path to file
+    path = r.read_config('update_flow_data', 'file1')
 
     # collect file
     data = pkg_resources.resource_filename('flow', path)

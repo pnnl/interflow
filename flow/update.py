@@ -59,7 +59,7 @@ def calculate_flows_and_updates(data=None, level=5, regions=3):
     for item in rem_list:
         calc_df = pd.merge(calc_df, item, how='left', on = df.columns[:regions].tolist())
 
-    update_file = test_update_data()
+    update_file = read_update_data()
     t_dict = co.construct_nested_dictionary(update_file)
 
     if t_dict.shape[1] > 15:

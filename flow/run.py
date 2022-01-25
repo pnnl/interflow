@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import flow.updater as up
+import flow.update as up
 
 
 def run(level=5, regions=3, output_file_path=None):

@@ -37,3 +37,8 @@ calc_water_sector_energy:
   file2:
     name: 'water_sector_energy_split_fractions'
     path: 'data/configuration_data/cwse_water_sector_energy_split_fractions.csv'
+
+update:
+  file1:
+    name: 'update_flow_data'
+    path: 'data/configuration_data/flow_value_updates.csv'

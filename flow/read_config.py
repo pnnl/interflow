@@ -5,13 +5,14 @@ import pkg_resources
 def read_config(name: str, file_number: str):
     """Reads file paths from configuration yaml file.
 
-        :param name:                    either name of module or "baseline"
+        :param name:                    The name of the specific module for the input paramater data or "baseline" for
+                                        the baseline data.
         :type name:                     str
 
-        :param file_number:             file number associated with module name or baseline data
+        :param file_number:             file number associated with module name or baseline data (file1 or file2)
         :type file_number:              str
 
-        :return:                        path to data
+        :return:                        path to data as a string
 
         """
     config_file = 'data/configuration_data/config.yml'
