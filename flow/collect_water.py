@@ -1,36 +1,44 @@
 import numpy as np
 import pandas as pd
 from .reader import *
-import flow.clean as cl
-import flow.configure as conf
 import flow.construct as co
 
-def calc_collect_water_use(data=None, level='l5', regions=3):
-    """Calculates rejected energy (losses) and total generation from electricity generation
-    by generating type for each region.
 
+def collect_water_use(data=None, level=5, regions=3):
+    """ Collects water demand flows provided in the baseline dataset for all sectors that do not have their total
+    water demand dependent on their energy use (i.e., non-energy sectors). For example, residential water demand.
+    Also determines discharge of water demand values (e.g., surface discharge) based on discharge fraction assumptions.
 
-        :param data:                        DataFrame of input data containing electricity generation fuel and total
-                                            electricity generation by type
+        :param data:                        dataframe of baseline values to run calculations off of. Default is set to
+                                            baseline dataframe specified in configuration.
         :type data:                         DataFrame
 
+        :param level:                       Specifies what level of granularity to provide results. Must be an integer
+                                            between 1 and 5, inclusive. Level 5 is the highest granularity, showing
+                                            results down to the 5th level of specificity in each sector. Level 1 is the
+                                            lowest level of granularity, showing results summed to the major sector
+                                            level.
+        :type level:                        int
 
+        :param regions:                     The number of columns (inclusive) in the baseline dataset that include
+                                            region identifiers (e.g. "Country", "State"). Reads from the first column
+                                            in the dataframe onwards. Is used to combine various datasets to match
+                                            values to each region included. Default number of regions is set to 3.
+        :type regions:                      int
+
+        :return:                            DataFrame of water demand flows and water discharge flows for non-energy
+                                            sectors for each region.
         """
 
-    # load data
     # load data
     if data:
         df = data
     else:
-        df = test_baseline()
-
-    # TODO unlock this later when the load_baseline_data is hooked up to a data reader
-    # df = load_baseline_data()
+        df = read_baseline_data()
 
     # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings and change to nested dict
-    target_types = test_collect_water_param()
+    target_types = read_cw_water_flow_targets()
     split_dict = co.construct_nested_dictionary(target_types)
-
 
     if target_types.shape[1] > 15:
         raise ValueError('Input source parameter data does not have correct number of levels')

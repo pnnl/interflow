@@ -35,14 +35,14 @@ def calc_wastewater_water_demand(data=None, level=5, regions=3):
     if data:
         df = data
     else:
-        df = test_baseline()
+        df = read_baseline_data()
 
     # load water discharge estimates
-    ww_supply = cw.calc_collect_water_use()
+    ww_supply = cw.collect_water_use()
 
 
     # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings and change to nested dict
-    target_types = test_ww_param()
+    target_types = read_cwwwd_water_flow_targets()
     split_dict = co.construct_nested_dictionary(target_types)
 
 

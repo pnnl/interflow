@@ -4,10 +4,11 @@ from .reader import *
 import flow.construct as co
 
 
-def calc_collect_energy_use(data=None, level=5, regions=3):
+def collect_energy_use(data=None, level=5, regions=3):
     """ Collects energy demand flows provided in the baseline dataset for all sectors that do not have their total
     energy demand dependent on their water use (i.e., non-water sectors). For example, natural gas energy demand by
-    the residential sector or natural gas energy demand by natural gas electricity generation.
+    the residential sector or natural gas energy demand by natural gas electricity generation. Also determines discharge
+    of energy demand values (e.g., rejected energy) based on efficiency assumptions.
 
         :param data:                        dataframe of baseline values to run calculations off of. Default is set to
                                             baseline dataframe specified in configuration.
@@ -26,19 +27,18 @@ def calc_collect_energy_use(data=None, level=5, regions=3):
                                             values to each region included. Default number of regions is set to 3.
         :type regions:                      int
 
-        :return:                            DataFrame of energy demand values for non-water sectors for each region.
+        :return:                            DataFrame of energy demand flows and energy discharge flows for non-water
+                                            sectors for each region.
         """
 
     # load data
     if data:
         df = data
     else:
-        df = test_baseline()
-
-    # df = load_baseline_data()
+        df = read_baseline_data()
 
     # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings and change to nested dict
-    target_types = test_collect_energy_param()
+    target_types = read_ce_energy_flow_targets()
     split_dict = co.construct_nested_dictionary(target_types)
 
     if target_types.shape[1] > 15:

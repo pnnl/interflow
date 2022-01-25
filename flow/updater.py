@@ -4,11 +4,11 @@ from .reader import *
 import flow.clean as cl
 import flow.configure as conf
 import flow.construct as co
-import calc_water_in_energy as esw
+import flow.calc_energy_sector_water as esw
 import flow.collect_water as cw
 import flow.collect_energy as ce
 import flow.calc_ww_water_demand as wwd
-import flow.calc_water_sector_water_totals as ws
+import flow.calc_water_sector_water_demand as ws
 import flow.calc_water_sector_energy as wse
 
 
@@ -41,18 +41,18 @@ def calculate_flows_and_updates(data=None, level=5, regions=3):
     if data:
         df = data
     else:
-        df = test_baseline()    # TODO unlock this later when the load_baseline_data is hooked up to a data reader
+        df = read_baseline_data()    # TODO unlock this later when the load_baseline_data is hooked up to a data reader
 
     # construct a copy of the baseline dataset to update
     df_updated = df.copy()
 
     # run calculations for each sector and combine ouptut
-    d1 = esw.calc_energy_direct_demand_water_use()
-    d2 = cw.calc_collect_water_use()
-    d3 = ce.calc_collect_energy_use()
+    d1 = esw.calc_energy_sector_water_demand()
+    d2 = cw.collect_water_use()
+    d3 = ce.collect_energy_use()
     d4 = wwd.calc_wastewater_water_demand()
     d5 = ws.calc_water_sector_water()
-    d6 = wse.calc_water_sector_energy()
+    d6 = wse.calc_water_sector_energy_demand()
 
     calc_df = d1
     rem_list = [d2,d3,d4,d5,d6]
@@ -118,12 +118,12 @@ def calculate_flows_and_updates(data=None, level=5, regions=3):
 
     #rerun updated baseline data through functions
 
-    d1 = esw.calc_energy_direct_demand_water_use(data=df_updated, level=level, regions=regions)
-    d2 = cw.calc_collect_water_use(data=df_updated, level=level, regions=regions)
-    d3 = ce.calc_collect_energy_use(data=df_updated, level=level, regions=regions)
+    d1 = esw.calc_energy_sector_water_demand(data=df_updated, level=level, regions=regions)
+    d2 = cw.collect_water_use(data=df_updated, level=level, regions=regions)
+    d3 = ce.collect_energy_use(data=df_updated, level=level, regions=regions)
     d4 = wwd.calc_wastewater_water_demand(data=df_updated, level=level, regions=regions)
     d5 = ws.calc_water_sector_water(data=df_updated, level=level, regions=regions)
-    d6 = wse.calc_water_sector_energy(data=df_updated, level=level, regions=regions)
+    d6 = wse.calc_water_sector_energy_demand(data=df_updated, level=level, regions=regions)
 
     out_df = d1.copy()
     rem_list = [d2, d3, d4, d5, d6]

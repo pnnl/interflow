@@ -3,13 +3,16 @@ import pandas as pd
 from .reader import *
 import flow.construct as co
 import flow.calc_ww_water_demand as wwd
-import flow.calc_water_sector_water_totals as ws
+import flow.calc_water_sector_water_demand as ws
 
 
-def calc_water_sector_energy(data=None, level=5, regions=3):
-    """Calculates energy demand in sectors that have their energy demand dependent on their water use (e.g., public
-    water supply). Additionally takes the total energy demand and splits it up by source (e.g., electricity) sector
-    based on assumed source percentages and calculates discharge (e.g., rejected energy) based on assumed efficiency.
+def calc_water_sector_energy_demand(data=None, level=5, regions=3):
+    """Calculates energy demand flows in water sectors (i.e., those that have their energy demand dependent on their
+    water demand). Total energy demand values are then 1) split by energy sector source based on provided energy sector
+    source fractions to determine energy flows into the water sectors (e.g., electricity generation to public water
+    supply and 2) split by energy discharge locations based on provided discharge fractions to determine energy flows
+    from water sectors (e.g., flows to rejected energy based on efficiency). Calculations are conducted for each region
+    provided in the baseline dataset.
 
         :param data:                        dataframe of baseline values to run calculations off of. Default is set to
                                             baseline dataframe specified in configuration.
@@ -38,7 +41,7 @@ def calc_water_sector_energy(data=None, level=5, regions=3):
     if data:
         df = data
     else:
-        df = test_baseline()
+        df = read_baseline_data()
 
     # bring in wastewater total
     df_ww = wwd.calc_wastewater_water_demand()
@@ -52,12 +55,11 @@ def calc_water_sector_energy(data=None, level=5, regions=3):
 
     # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings and change to nested dict
 
-    sector_types = test_water_sector_energy()
-    t_dict = co.construct_nested_dictionary(sector_types)
+    target_types = read_cwse_water_flow_targets()
+    t_dict = co.construct_nested_dictionary(target_types)
 
-    target_types = test_water_sector_energy_discharge()
-    split_dict = co.construct_nested_dictionary(target_types)
-
+    split_types = read_cwse_water_sector_energy_split_fractions()
+    split_dict = co.construct_nested_dictionary(split_types)
 
     if target_types.shape[1] > 15:
         raise ValueError('Input source parameter data does not have correct number of levels')

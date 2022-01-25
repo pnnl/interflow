@@ -1,18 +1,166 @@
 import pkg_resources
-
 import pandas as pd
+import read_config as r
 
 
-def test_baseline():
-    """Read in .
+def read_baseline_data():
+    """Read in baseline data and output as DataFrame.
 
         :return:                        dataframe of values
 
         """
 
-    data = pkg_resources.resource_filename('flow', 'data/configuration_data/sample_EP.csv')
+    # collect path to file
+    path = r.read_config('baseline', 'file1')
 
+    # collect file
+    data = pkg_resources.resource_filename('flow', path)
+
+    # return as DataFrame
     return pd.read_csv(data)
+
+
+def read_cesw_energy_flow_targets():
+    """Read in energy flow target data for calculating water in energy sector and output as DataFrame.
+
+        :return:                        dataframe of values
+
+        """
+
+    # collect path to file
+    path = r.read_config('calc_energy_sector_water', 'file1')
+
+    # collect file
+    data = pkg_resources.resource_filename('flow', path)
+
+    # return as DataFrame
+    return pd.read_csv(data)
+
+
+def read_cesw_energy_sector_water_split_fractions():
+    """Read in water split data for calculating water sources to and discharges from the energy sector and output as a
+    DataFrame.
+
+        :return:                        dataframe of values
+
+        """
+
+    # collect path to file
+    path = r.read_config('calc_energy_sector_water', 'file2')
+
+    # collect file
+    data = pkg_resources.resource_filename('flow', path)
+
+    # return as DataFrame
+    return pd.read_csv(data)
+
+
+def read_cw_water_flow_targets():
+    """Read in water flow target data for collecting water flows to non-energy sectors. Provides output as a DataFrame.
+
+        :return:                        dataframe of values
+
+        """
+
+    # collect path to file
+    path = r.read_config('collect_water', 'file1')
+
+    # collect file
+    data = pkg_resources.resource_filename('flow', path)
+
+    # return as DataFrame
+    return pd.read_csv(data)
+
+
+def read_ce_energy_flow_targets():
+    """Read in energy flow target data for collecting energy flows to non-water sectors. Provides output as a DataFrame.
+
+        :return:                        dataframe of values
+
+        """
+
+    # collect path to file
+    path = r.read_config('collect_energy', 'file1')
+
+    # collect file
+    data = pkg_resources.resource_filename('flow', path)
+
+    # return as DataFrame
+    return pd.read_csv(data)
+
+
+def read_cwwwd_water_flow_targets():
+    """Read in water flow to wastewater target data.
+
+        :return:                        dataframe of values
+
+        """
+
+    # collect path to file
+    path = r.read_config('calc_ww_water_demand', 'file1')
+
+    # collect file
+    data = pkg_resources.resource_filename('flow', path)
+
+    # return as DataFrame
+    return pd.read_csv(data)
+
+
+def read_cwswd_water_flow_targets():
+    """Read in water to water-sector data.
+
+        :return:                        dataframe of values
+
+        """
+
+    # collect path to file
+    path = r.read_config('calc_water_sector_water_demand', 'file1')
+
+    # collect file
+    data = pkg_resources.resource_filename('flow', path)
+
+    # return as DataFrame
+    return pd.read_csv(data)
+
+
+def read_cwse_water_flow_targets():
+    """Read in water_sector water target data and energy intensities.
+
+        :return:                        dataframe of values
+
+        """
+
+    # collect path to file
+    path = r.read_config('calc_water_sector_energy', 'file1')
+
+    # collect file
+    data = pkg_resources.resource_filename('flow', path)
+
+    # return as DataFrame
+    return pd.read_csv(data)
+
+
+def read_cwse_water_sector_energy_split_fractions():
+    """Read in water sector energy split data to determine energy sources and energy discharge locations.
+
+        :return:                        dataframe of values
+
+        """
+
+    # collect path to file
+    path = r.read_config('calc_water_sector_energy', 'file2')
+
+    # collect file
+    data = pkg_resources.resource_filename('flow', path)
+
+    # return as DataFrame
+    return pd.read_csv(data)
+
+
+
+# TODO ###### BELOW TO BE DELETED #######
+# TODO ######
+
 
 def test_EP_param():
     """Read in .
