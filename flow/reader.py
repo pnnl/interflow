@@ -80,6 +80,31 @@ def test_water_sector_param():
 
     return pd.read_csv(data)
 
+def test_water_sector_energy():
+    """Read in .
+
+            :return:                        dataframe of values
+
+            """
+
+    data = pkg_resources.resource_filename('flow', 'data/configuration_data/test_water_sector_energy_param.csv')
+
+    return pd.read_csv(data)
+
+def test_water_sector_energy_discharge():
+    """Read in .
+
+            :return:                        dataframe of values
+
+            """
+
+    data = pkg_resources.resource_filename('flow', 'data/configuration_data/test_water_sector_energy_discharge.csv')
+
+    return pd.read_csv(data)
+
+
+
+
 
 
 
