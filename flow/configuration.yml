@@ -1,1 +1,9 @@
+# An example YAML file
 
+baseline_data:
+  path: "https://example.org/primenumbers/v1"
+
+paramater_data:
+  function:
+    name: 'water_in_energy'
+    path: "https://example.org/primenumbers/v1"
