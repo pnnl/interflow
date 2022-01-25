@@ -5,8 +5,7 @@ import flow.clean as cl
 import flow.configure as conf
 import flow.construct as co
 
-def calc_collect_energy_use(data: pd.DataFrame, target_types: pd.DataFrame,
-                                                 output='l5', regions=3):
+def calc_collect_energy_use(data=None, output='l5', regions=3):
     """Calculates rejected energy (losses) and total generation from electricity generation
     by generating type for each region.
 
@@ -19,14 +18,17 @@ def calc_collect_energy_use(data: pd.DataFrame, target_types: pd.DataFrame,
         """
 
     # load data
-    df = data
+    if data:
+        df = data
+    else:
+        df = test_baseline()
 
     # TODO unlock this later when the load_baseline_data is hooked up to a data reader
     # df = load_baseline_data()
 
     # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings and change to nested dict
+    target_types = test_collect_energy_param()
     split_dict = co.construct_nested_dictionary(target_types)
-
 
     if target_types.shape[1] > 15:
         raise ValueError('Input source parameter data does not have correct number of levels')

@@ -9,7 +9,7 @@ import flow.calc_ww_water_demand as wwd
 import flow.collect_water_sector_water as ws
 
 
-def calc_water_sector_energy(output='l5', regions=3):
+def calc_water_sector_energy(data=None, output='l5', regions=3):
     """Calculates rejected energy (losses) and total generation from electricity generation
     by generating type for each region.
 
@@ -22,8 +22,10 @@ def calc_water_sector_energy(output='l5', regions=3):
         """
 
     # load baseline data
-    df = test_baseline()
-    # TODO unlock this later when the load_baseline_data is hooked up to a data reader
+    if data:
+        df = data
+    else:
+        df = test_baseline()    # TODO unlock this later when the load_baseline_data is hooked up to a data reader
 
     # bring in wastewater total
     df_ww = wwd.calc_wastewater_water_demand()

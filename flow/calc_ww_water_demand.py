@@ -6,7 +6,7 @@ import flow.configure as conf
 import flow.construct as co
 import flow.collect_water as cw
 
-def calc_wastewater_water_demand(output='l5', regions=3):
+def calc_wastewater_water_demand(data=None,output='l5', regions=3):
     """Calculates rejected energy (losses) and total generation from electricity generation
     by generating type for each region.
 
@@ -19,9 +19,10 @@ def calc_wastewater_water_demand(output='l5', regions=3):
         """
 
     # load baseline data
-    df = test_baseline()
-    # TODO unlock this later when the load_baseline_data is hooked up to a data reader
-    # df = load_baseline_data()
+    if data:
+        df = data
+    else:
+        df = test_baseline()
 
     # load water discharge estimates
     #TODO change this  file input later

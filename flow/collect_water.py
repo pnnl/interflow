@@ -5,7 +5,7 @@ import flow.clean as cl
 import flow.configure as conf
 import flow.construct as co
 
-def calc_collect_water_use(output='l5', regions=3):
+def calc_collect_water_use(data=None, output='l5', regions=3):
     """Calculates rejected energy (losses) and total generation from electricity generation
     by generating type for each region.
 
@@ -18,7 +18,11 @@ def calc_collect_water_use(output='l5', regions=3):
         """
 
     # load data
-    df = test_baseline()
+    # load data
+    if data:
+        df = data
+    else:
+        df = test_baseline()
 
     # TODO unlock this later when the load_baseline_data is hooked up to a data reader
     # df = load_baseline_data()

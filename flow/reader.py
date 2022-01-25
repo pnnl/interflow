@@ -103,6 +103,18 @@ def test_water_sector_energy_discharge():
     return pd.read_csv(data)
 
 
+def test_update_data():
+    """Read in .
+
+            :return:                        dataframe of values
+
+            """
+
+    data = pkg_resources.resource_filename('flow', 'data/configuration_data/test_updater.csv')
+
+    return pd.read_csv(data)
+
+
 
 
 
