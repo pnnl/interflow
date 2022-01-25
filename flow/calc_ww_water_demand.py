@@ -1,21 +1,34 @@
 import numpy as np
 import pandas as pd
 from .reader import *
-import flow.clean as cl
-import flow.configure as conf
 import flow.construct as co
 import flow.collect_water as cw
 
-def calc_wastewater_water_demand(data=None,level='l5', regions=3):
-    """Calculates rejected energy (losses) and total generation from electricity generation
-    by generating type for each region.
 
+def calc_wastewater_water_demand(data=None, level=5, regions=3):
+    """ Determines wastewater sector water demand as equal to either 1) aggregate calculated sector water discharge to
+    wastewater supply values (e.g., residential discharge to wastewater supply) or 2) wastewater water demand values if
+    available in the baseline dataset. Gives the ability to introduce actual wastewater treatment water data by county
+    if available, rather than relying on estimates calculated from sector discharge to wastewater.
 
-        :param data:                        DataFrame of input data containing electricity generation fuel and total
-                                            electricity generation by type
+        :param data:                        dataframe of baseline values to run calculations off of. Default is set to
+                                            baseline dataframe specified in configuration.
         :type data:                         DataFrame
 
+        :param level:                       Specifies what level of granularity to provide results. Must be an integer
+                                            between 1 and 5, inclusive. Level 5 is the highest granularity, showing
+                                            results down to the 5th level of specificity in each sector. Level 1 is the
+                                            lowest level of granularity, showing results summed to the major sector
+                                            level.
+        :type level:                        int
 
+        :param regions:                     The number of columns (inclusive) in the baseline dataset that include
+                                            region identifiers (e.g. "Country", "State"). Reads from the first column
+                                            in the dataframe onwards. Is used to combine various datasets to match
+                                            values to each region included. Default number of regions is set to 3.
+        :type regions:                      int
+
+        :return:                            DataFrame of aggregated wastewater treatment water demand values by region.
         """
 
     # load baseline data
@@ -25,7 +38,6 @@ def calc_wastewater_water_demand(data=None,level='l5', regions=3):
         df = test_baseline()
 
     # load water discharge estimates
-    #TODO change this  file input later
     ww_supply = cw.calc_collect_water_use()
 
 
@@ -133,18 +145,18 @@ def calc_wastewater_water_demand(data=None,level='l5', regions=3):
         l4_df = pd.DataFrame.from_dict(l4_dict, orient='index').transpose()
         l5_df = pd.DataFrame.from_dict(l5_dict, orient='index').transpose()
 
-        if level == 'l1':
+        if level == 1:
             df = l1_df
-        elif level == 'l2':
+        elif level == 2:
             df = l2_df
-        elif level == 'l3':
+        elif level == 3:
             df = l3_df
-        elif level == 'l4':
+        elif level == 4:
             df = l4_df
-        elif level == 'l5':
+        elif level == 5:
             df = l5_df
         else:
-            m = 'incorrect level of granularity specified. Must be one of the following: l1, l2, l3, l4, or l5'
+            m = 'incorrect level of granularity specified. Must be an integer between 1 and 5, inclusive.'
             raise ValueError(m)
 
         return df
