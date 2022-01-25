@@ -108,7 +108,7 @@ def calc_water_sector_energy(output='l5', regions=3):
                     for x4 in split_dict[x1][x2][x3]:
                         l4_energy_name = f'{x1}_{x2}_{x3}_{x4}_bbtu'
                         for x5 in split_dict[x1][x2][x3][x4]:
-                            l5_energy_name = f'{x1}_{x2}_{x3}_{x4}_{x5}_mgd'
+                            l5_energy_name = f'{x1}_{x2}_{x3}_{x4}_{x5}_bbtu'
                             if l5_energy_name in l5_dict:
                                 l5_energy_value = l5_dict[l5_energy_name]
                                 for m_type in split_dict[x1][x2][x3][x4][x5]:
@@ -126,18 +126,19 @@ def calc_water_sector_energy(output='l5', regions=3):
                                                 for s3 in split_dict[x1][x2][x3][x4][x5][m_type][s1][s2]:
                                                     l3_s_name = f'{s1}_{s2}_{s3}'
                                                     l3_x_name = f'{x1}_{x2}_{x3}'
-                                                    l3_name = l3_s_name + '_to_' + l3_x_name + 'bbtu'
+                                                    l3_name = l3_s_name + '_to_' + l3_x_name + '_bbtu'
                                                     l3_value = 0
                                                     for s4 in \
                                                     split_dict[x1][x2][x3][x4][x5][m_type][s1][s2][s3]:
                                                         l4_s_name = f'{s1}_{s2}_{s3}_{s4}'
                                                         l4_x_name = f'{x1}_{x2}_{x3}_{x4}'
-                                                        l4_name = l4_s_name + '_to_' + l4_x_name + 'bbtu'
+                                                        l4_name = l4_s_name + '_to_' + l4_x_name + '_bbtu'
                                                         l4_value = 0
                                                         for s5 in split_dict[x1][x2][x3][x4][x5][m_type][s1][s2][s3][s4]:
                                                             l5_s_name = f'{s1}_{s2}_{s3}_{s4}_{s5}'
                                                             l5_x_name = f'{x1}_{x2}_{x3}_{x4}_{x5}'
-                                                            l5_name = l5_s_name + '_to_' + l5_x_name + 'bbtu'
+                                                            l5_name = l5_s_name + '_to_' + l5_x_name + '_bbtu'
+                                                            print(l5_name)
                                                             for p in split_dict[x1][x2][x3][x4][x5][m_type][s1][s2][s3][s4][s5]:
                                                                 frac_name = l5_s_name + '_to_' + l5_x_name + '_fraction'
                                                                 if frac_name in df.columns:
