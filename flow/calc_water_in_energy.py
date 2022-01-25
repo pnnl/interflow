@@ -253,18 +253,18 @@ def calc_energy_direct_demand_water_use(data = None, level='l5', regions=3):
         l4_df = pd.DataFrame.from_dict(l4_dict, orient='index').transpose()
         l5_df = pd.DataFrame.from_dict(l5_dict, orient='index').transpose()
 
-        if level == 'l1':
+        if level == 1:
             df = l1_df
-        elif level == 'l2':
+        elif level == 2:
             df = l2_df
-        elif level == 'l3':
+        elif level == 3:
             df = l3_df
-        elif level == 'l4':
+        elif level == 4:
             df = l4_df
-        elif level == 'l5':
+        elif level == 5:
             df = l5_df
         else:
-            m = 'incorrect level of granularity specified. Must be one of the following: l1, l2, l3, l4, or l5'
+            m = 'incorrect level of granularity specified. Must be an integer between 1 and 5, inclusive.'
             raise ValueError(m)
 
         return df

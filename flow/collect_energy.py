@@ -1,20 +1,32 @@
 import numpy as np
 import pandas as pd
 from .reader import *
-import flow.clean as cl
-import flow.configure as conf
 import flow.construct as co
 
-def calc_collect_energy_use(data=None, level='l5', regions=3):
-    """Calculates rejected energy (losses) and total generation from electricity generation
-    by generating type for each region.
 
+def calc_collect_energy_use(data=None, level=5, regions=3):
+    """ Collects energy demand flows provided in the baseline dataset for all sectors that do not have their total
+    energy demand dependent on their water use (i.e., non-water sectors). For example, natural gas energy demand by
+    the residential sector or natural gas energy demand by natural gas electricity generation.
 
-        :param data:                        DataFrame of input data containing electricity generation fuel and total
-                                            electricity generation by type
+        :param data:                        dataframe of baseline values to run calculations off of. Default is set to
+                                            baseline dataframe specified in configuration.
         :type data:                         DataFrame
 
+        :param level:                       Specifies what level of granularity to provide results. Must be an integer
+                                            between 1 and 5, inclusive. Level 5 is the highest granularity, showing
+                                            results down to the 5th level of specificity in each sector. Level 1 is the
+                                            lowest level of granularity, showing results summed to the major sector
+                                            level.
+        :type level:                        int
 
+        :param regions:                     The number of columns (inclusive) in the baseline dataset that include
+                                            region identifiers (e.g. "Country", "State"). Reads from the first column
+                                            in the dataframe onwards. Is used to combine various datasets to match
+                                            values to each region included. Default number of regions is set to 3.
+        :type regions:                      int
+
+        :return:                            DataFrame of energy demand values for non-water sectors for each region.
         """
 
     # load data
@@ -23,7 +35,6 @@ def calc_collect_energy_use(data=None, level='l5', regions=3):
     else:
         df = test_baseline()
 
-    # TODO unlock this later when the load_baseline_data is hooked up to a data reader
     # df = load_baseline_data()
 
     # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings and change to nested dict
@@ -169,18 +180,18 @@ def calc_collect_energy_use(data=None, level='l5', regions=3):
         l4_df = pd.DataFrame.from_dict(l4_dict, orient='index').transpose()
         l5_df = pd.DataFrame.from_dict(l5_dict, orient='index').transpose()
 
-        if level == 'l1':
+        if level == 1:
             df = l1_df
-        elif level == 'l2':
+        elif level == 2:
             df = l2_df
-        elif level == 'l3':
+        elif level == 3:
             df = l3_df
-        elif level == 'l4':
+        elif level == 4:
             df = l4_df
-        elif level == 'l5':
+        elif level == 5:
             df = l5_df
         else:
-            m = 'incorrect level of granularity specified. Must be one of the following: l1, l2, l3, l4, or l5'
+            m = 'incorrect level of granularity specified. Must be an integer between 1 and 5, inclusive.'
             raise ValueError(m)
 
         return df
