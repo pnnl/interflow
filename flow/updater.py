@@ -12,15 +12,30 @@ import flow.collect_water_sector_water as ws
 import flow.calc_water_sector_energy as wse
 
 
-def calculate_flows_and_updates(data=None, level='l5', regions=3):
-    """Calculates rejected energy (losses) and total generation from electricity generation
-    by generating type for each region.
+def calculate_flows_and_updates(data=None, level=5, regions=3):
+    """Runs each energy and water calculation for each region, updates calculations to remove double counting, and
+    produces output in the form of a Pandas DataFrame with the option to save output to a csv.
 
 
-        :param data:                        DataFrame of input data containing electricity generation fuel and total
-                                            electricity generation by type
+        :param data:                        dataframe of baseline values to run calculations off of. Default is set to
+                                            baseline dataframe specified in configuration.
         :type data:                         DataFrame
 
+        :param level:                       Specifies what level of granularity to provide results. Must be an integer
+                                            between 1 and 5, inclusive. Level 5 is the highest granularity, showing
+                                            results down to the 5th level of specificity in each sector. Level 1 is the
+                                            lowest level of granularity, showing results summed to the major sector
+                                            level.
+        :type level:                        int
+
+        :param regions:                     The number of columns (inclusive) in the baseline dataset that include
+                                            region identifiers (e.g. "Country", "State"). Reads from the first column
+                                            in the dataframe onwards. Is used to combine various datasets to match
+                                            values to each region included. Default number of regions is set to 3.
+        :type regions:                      int
+
+        :return:                            DataFrame of calculated water and energy sector flow values by region at
+                                            specified level of granularity (see 'level' parameter)
 
         """
 

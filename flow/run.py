@@ -27,7 +27,7 @@ def run(level=5, regions=3, output_file_path=None):
         :type output_file_path:             str
 
         :return:                            DataFrame of calculated water and energy sector flow values by region at
-                                            specfied level of granularity (see 'level' parameter)
+                                            specified level of granularity (see 'level' parameter)
 
         """
 
