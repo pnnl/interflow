@@ -5,8 +5,7 @@ import flow.clean as cl
 import flow.configure as conf
 import flow.construct as co
 
-def calc_energy_direct_demand_water_use(data: pd.DataFrame, fuel_types: pd.DataFrame,
-                                                 split_types: pd.DataFrame, output='l5', regions=3):
+def calc_energy_direct_demand_water_use(output='l5', regions=3):
     """Calculates rejected energy (losses) and total generation from electricity generation
     by generating type for each region.
 
@@ -19,20 +18,23 @@ def calc_energy_direct_demand_water_use(data: pd.DataFrame, fuel_types: pd.DataF
         """
 
     # load data
-    df = data
+    df = test_baseline()
 
     # TODO unlock this later when the load_baseline_data is hooked up to a data reader
     # df = load_baseline_data()
 
     # get input parameters for fuel types, sub_fuel_types, and associated efficiency ratings and change to nested dict
+    fuel_types = test_EP_param()
     t_dict = co.construct_nested_dictionary(fuel_types)
+
+    split_types = test_EP_flows()
     split_dict = co.construct_nested_dictionary(split_types)
 
 
-    if fuel_types.shape[1] != 7:
+    if fuel_types.shape[1] >20:
         raise ValueError('Input source parameter data does not have correct number of levels')
 
-    elif fuel_types.shape[1] != 7:
+    elif fuel_types.shape[1]  >20:
         raise ValueError('Input target parameter data does not have correct number of levels')
 
     else:
@@ -45,98 +47,98 @@ def calc_energy_direct_demand_water_use(data: pd.DataFrame, fuel_types: pd.DataF
 
         # grab production values, calculate water values
         for t1 in t_dict:  # EP
-            l1_EP_name = f'{t1}_production_bbtu'
-            l1_EP_value = 0
             l1_W_name = f'{t1}_withdrawal_mgd'
             l1_W_value = 0
             l1_P_name = f'{t1}_produced_mgd'
             l1_P_value = 0
             for t2 in t_dict[t1]:
-               l2_EP_name = f'{t1}_{t2}_production_bbtu'
-               l2_EP_value = 0
                l2_W_name = f'{t1}_{t2}_withdrawal_mgd'
                l2_W_value = 0
                l2_P_name = f'{t1}_{t2}_produced_mgd'
                l2_P_value = 0
-
                for t3 in t_dict[t1][t2]:
-                   l3_EP_name = f'{t1}_{t2}_{t3}_production_bbtu'
-                   l3_EP_value = 0
                    l3_W_name = f'{t1}_{t2}_{t3}_withdrawal_mgd'
                    l3_W_value = 0
                    l3_P_name = f'{t1}_{t2}_{t3}_produced_mgd'
                    l3_P_value = 0
-
                    for t4 in t_dict[t1][t2][t3]:
-                       l4_EP_name = f'{t1}_{t2}_{t3}_{t4}_production_bbtu'
-                       l4_EP_value = 0
                        l4_W_name = f'{t1}_{t2}_{t3}_{t4}_withdrawal_mgd'
                        l4_W_value = 0
                        l4_P_name = f'{t1}_{t2}_{t3}_{t4}_produced_mgd'
                        l4_P_value = 0
-
                        for t5 in t_dict[t1][t2][t3][t4]:
-                           l5_EP_name = f'{t1}_{t2}_{t3}_{t4}_{t5}_production_bbtu'
-                           if l5_EP_name in df.columns:
-                                l5_EP_value = df[l5_EP_name]   # grab energy production value in bbtu
+                           for s1 in t_dict[t1][t2][t3][t4][t5]:
+                               l1_EP_name = f'{s1}_to_{t1}_bbtu'
+                               l1_EP_value = 0
+                               for s2 in t_dict[t1][t2][t3][t4][t5][s1]:
+                                   l2_EP_name = f'{s1}_{s2}_to_{t1}_{t2}_bbtu'
+                                   l2_EP_value = 0
+                                   for s3 in t_dict[t1][t2][t3][t4][t5][s1][s2]:
+                                       l3_EP_name = f'{s1}_{s2}_{s3}_to_{t1}_{t2}_{t3}_bbtu'
+                                       l3_EP_value = 0
+                                       for s4 in t_dict[t1][t2][t3][t4][t5][s1][s2][s3]:
+                                           l4_EP_name = f'{s1}_{s2}_{s3}_{s4}_to_{t1}_{t2}_{t3}_{t4}_bbtu'
+                                           l4_EP_value = 0
+                                           for s5 in t_dict[t1][t2][t3][t4][t5][s1][s2][s3][s4]:
+                                               l5_EP_name = f'{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_bbtu'
+                                               if l5_EP_name in df.columns:
+                                                   l5_EP_value = df[l5_EP_name]   # grab energy production value in bbtu
+                                                   for water_type in t_dict[t1][t2][t3][t4][t5][s1][s2][s3][s4][s5]:
+                                                        if water_type == 'withdrawal':
+                                                            l5_W_name = f'{t1}_{t2}_{t3}_{t4}_{t5}_withdrawal_mgd'
+                                                            with_int_name = f'{t1}_{t2}_{t3}_{t4}_{t5}_withdrawal_intensity'
+                                                            if with_int_name in df.columns:
+                                                                with_int_value = df[with_int_name]
+                                                            else:
+                                                                with_int_value = t_dict[t1][t2][t3][t4][t5][s1][s2][s3][s4][s5][water_type]
 
-                                # calculate water withdrawal/produced water
-                                for water_type in t_dict[t1][t2][t3][t4][t5]:  # withdrawal or production
-                                    if water_type == 'withdrawal':
-                                        l5_W_name = f'{t1}_{t2}_{t3}_{t4}_{t5}_withdrawal_mgd'
-                                        with_int_name = f'{t1}_{t2}_{t3}_{t4}_{t5}_withdrawal_intensity'
-                                        if with_int_name in df.columns:
-                                            with_int_value = df[with_int_name]
-                                        else:
-                                            with_int_value = t_dict[t1][t2][t3][t4][t5][water_type]
-                                        l5_W_value = l5_EP_value * with_int_value
+                                                            l5_W_value = l5_EP_value * with_int_value
 
-                                        l4_W_value = l4_W_value + l5_W_value
-                                        l3_W_value = l3_W_value + l5_W_value
-                                        l2_W_value = l2_W_value + l5_W_value
-                                        l1_W_value = l1_W_value + l5_W_value
+                                                            l4_W_value = l4_W_value + l5_W_value
+                                                            l3_W_value = l3_W_value + l5_W_value
+                                                            l2_W_value = l2_W_value + l5_W_value
+                                                            l1_W_value = l1_W_value + l5_W_value
 
-                                        l1_dict.update({l1_W_name: l1_W_value})
-                                        l2_dict.update({l2_W_name: l2_W_value})
-                                        l3_dict.update({l3_W_name: l3_W_value})
-                                        l4_dict.update({l4_W_name: l4_W_value})
-                                        l5_dict.update({l5_W_name: l5_W_value})
+                                                            l1_dict.update({l1_W_name: l1_W_value})
+                                                            l2_dict.update({l2_W_name: l2_W_value})
+                                                            l3_dict.update({l3_W_name: l3_W_value})
+                                                            l4_dict.update({l4_W_name: l4_W_value})
+                                                            l5_dict.update({l5_W_name: l5_W_value})
 
+                                                        elif water_type == 'produced':
+                                                             l5_P_name = f'{t1}_{t2}_{t3}_{t4}_{t5}_produced_mgd'
+                                                             prod_int_name = f'{t1}_{t2}_{t3}_{t4}_{t5}_produced_intensity'
+                                                             if prod_int_name in df.columns:
+                                                                 prod_int_value = df[prod_int_name]
+                                                             else:
+                                                                 prod_int_value = t_dict[t1][t2][t3][t4][t5][s1][s2][s3][s4][s5][water_type]
+                                                             l5_P_value = l5_EP_value * prod_int_value
 
-                                    elif water_type == 'produced':
-                                        l5_P_name = f'{t1}_{t2}_{t3}_{t4}_{t5}_produced_mgd'
-                                        prod_int_name = f'{t1}_{t2}_{t3}_{t4}_{t5}_produced_intensity'
-                                        if prod_int_name in df.columns:
-                                            prod_int_value = df[prod_int_name]
-                                        else:
-                                            prod_int_value = t_dict[t1][t2][t3][t4][t5][water_type]
-                                        l5_P_value = l5_EP_value * prod_int_value
+                                                             l4_P_value = l4_P_value + l5_P_value
+                                                             l3_P_value = l3_P_value + l5_P_value
+                                                             l2_P_value = l2_P_value + l5_P_value
+                                                             l1_P_value = l1_P_value + l5_P_value
 
-                                        l4_P_value = l4_P_value + l5_P_value
-                                        l3_P_value = l3_P_value + l5_P_value
-                                        l2_P_value = l2_P_value + l5_P_value
-                                        l1_P_value = l1_P_value + l5_P_value
+                                                             l1_dict.update({l1_P_name: l1_P_value})
+                                                             l2_dict.update({l2_P_name: l2_P_value})
+                                                             l3_dict.update({l3_P_name: l3_P_value})
+                                                             l4_dict.update({l4_P_name: l4_P_value})
+                                                             l5_dict.update({l5_P_name: l5_P_value})
+                                                        else:
+                                                            pass
 
-                                        l1_dict.update({l1_P_name: l1_P_value})
-                                        l2_dict.update({l2_P_name: l2_P_value})
-                                        l3_dict.update({l3_P_name: l3_P_value})
-                                        l4_dict.update({l4_P_name: l4_P_value})
-                                        l5_dict.update({l5_P_name: l5_P_value})
-                                    else:
-                                        pass
+                                                   l4_EP_value = l4_EP_value + l5_EP_value
+                                                   l3_EP_value = l3_EP_value + l5_EP_value
+                                                   l2_EP_value = l2_EP_value + l5_EP_value
+                                                   l1_EP_value = l1_EP_value + l5_EP_value
 
-                                l4_EP_value = l4_EP_value + l5_EP_value
-                                l3_EP_value = l3_EP_value + l5_EP_value
-                                l2_EP_value = l2_EP_value + l5_EP_value
-                                l1_EP_value = l1_EP_value + l5_EP_value
-
-                                l1_dict.update({l1_EP_name: l1_EP_value})
-                                l2_dict.update({l2_EP_name: l2_EP_value})
-                                l3_dict.update({l3_EP_name: l3_EP_value})
-                                l4_dict.update({l4_EP_name: l4_EP_value})
-                                l5_dict.update({l5_EP_name: l5_EP_value})
-                           else:
-                               pass
+                                                   l1_dict.update({l1_EP_name: l1_EP_value})
+                                                   l2_dict.update({l2_EP_name: l2_EP_value})
+                                                   l3_dict.update({l3_EP_name: l3_EP_value})
+                                                   l4_dict.update({l4_EP_name: l4_EP_value})
+                                                   l5_dict.update({l5_EP_name: l5_EP_value})
+                                               else:
+                                                   pass
         for x1 in split_dict:
             for x2 in split_dict[x1]:
                 for x3 in split_dict[x1][x2]:
@@ -237,7 +239,6 @@ def calc_energy_direct_demand_water_use(data: pd.DataFrame, fuel_types: pd.DataF
                                                                     l3_dict.update({l3_name: l3_value})
                                                                     l4_dict.update({l4_name: l4_value})
                                                                     l5_dict.update({l5_name: l5_value})
-
                                 else:
                                     pass
 

@@ -1,5 +1,6 @@
-﻿T1,T2,T3,T4,T5,parameter,value
-EP,natgas,unconventional,total,total,withdrawal,500
-EP,natgas,unconventional,total,total,produced,500
-EP,natgas,conventional,total,total,withdrawal,500
-EP,natgas,conventional,total,total,produced,500
+﻿T1,T2,T3,T4,T5,S1,S2,S3,S4,S5,parameter,value
+ES,natgas,unconventional,total,total,ES,natgas,unconventional,total,total,withdrawal,500
+ES,natgas,unconventional,total,total,ES,natgas,unconventional,total,total,produced,500
+ES,natgas,conventional,total,total,ES,natgas,conventional,total,total,withdrawal,500
+ES,natgas,conventional,total,total,ES,natgas,conventional,total,total,produced,500
+EGS,natgas,total,total,total,EC,natgas,total,total,total,withdrawal,500
