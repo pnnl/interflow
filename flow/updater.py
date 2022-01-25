@@ -13,9 +13,7 @@ import flow.calc_water_sector_energy as wse
 
 
 def calculate_flows_and_updates(data=None, level=5, regions=3):
-    """Runs each energy and water calculation for each region, updates calculations to remove double counting, and
-    produces output in the form of a Pandas DataFrame with the option to save output to a csv.
-
+    """Runs energy and water calculations for each region and then reruns calculations to remove double counting.
 
         :param data:                        dataframe of baseline values to run calculations off of. Default is set to
                                             baseline dataframe specified in configuration.

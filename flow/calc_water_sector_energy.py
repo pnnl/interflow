@@ -10,14 +10,29 @@ import flow.collect_water_sector_water as ws
 
 
 def calc_water_sector_energy(data=None, level='l5', regions=3):
-    """Calculates rejected energy (losses) and total generation from electricity generation
-    by generating type for each region.
+    """Calculates energy demand in sectors that have their energy demand dependent on their water use (e.g., public
+    water supply). Additionally takes the total energy demand and splits it up by source (e.g., electricity) sector
+    based on assumed source percentages and calculates discharge (e.g., rejected energy) based on assumed efficiency.
 
-
-        :param data:                        DataFrame of input data containing electricity generation fuel and total
-                                            electricity generation by type
+        :param data:                        dataframe of baseline values to run calculations off of. Default is set to
+                                            baseline dataframe specified in configuration.
         :type data:                         DataFrame
 
+        :param level:                       Specifies what level of granularity to provide results. Must be an integer
+                                            between 1 and 5, inclusive. Level 5 is the highest granularity, showing
+                                            results down to the 5th level of specificity in each sector. Level 1 is the
+                                            lowest level of granularity, showing results summed to the major sector
+                                            level.
+        :type level:                        int
+
+        :param regions:                     The number of columns (inclusive) in the baseline dataset that include
+                                            region identifiers (e.g. "Country", "State"). Reads from the first column
+                                            in the dataframe onwards. Is used to combine various datasets to match
+                                            values to each region included. Default number of regions is set to 3.
+        :type regions:                      int
+
+        :return:                            DataFrame of calculated water and energy sector flow values by region at
+                                            specified level of granularity (see 'level' parameter)
 
         """
 
@@ -25,7 +40,7 @@ def calc_water_sector_energy(data=None, level='l5', regions=3):
     if data:
         df = data
     else:
-        df = test_baseline()    # TODO unlock this later when the load_baseline_data is hooked up to a data reader
+        df = test_baseline()
 
     # bring in wastewater total
     df_ww = wwd.calc_wastewater_water_demand()
