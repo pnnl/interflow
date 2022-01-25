@@ -53,107 +53,76 @@ def calc_wastewater_water_demand(output='l5', regions=3):
             l1_ww_name = f'{x1}_mgd'
             l1_ww_value = 0
             l1_demand_name = 'WWD_mgd'
+            l1_demand_value = 0
             for x2 in split_dict[x1]:
                 l2_ww_name = f'{x1}_{x2}_mgd'
                 l2_ww_value = 0
+                l2_demand_value = 0
                 l2_demand_name = f'WWD_{x2}_mgd'
                 for x3 in split_dict[x1][x2]:
                     l3_ww_name = f'{x1}_{x2}_{x3}_mgd'
                     l3_ww_value = 0
+                    l3_demand_value = 0
                     l3_demand_name = f'WWD_{x2}_{x3}_mgd'
                     for x4 in split_dict[x1][x2][x3]:
                         l4_ww_name = f'{x1}_{x2}_{x3}_{x4}_mgd'
                         l4_ww_value = 0
+                        l4_demand_value = 0
                         l4_demand_name = f'WWD_{x2}_{x3}_{x4}_mgd'
                         for x5 in split_dict[x1][x2][x3][x4]:
                             l5_ww_name = f'{x1}_{x2}_{x3}_{x4}_{x5}_mgd'
                             l5_ww_value = 0
-                            l5_demand_name = f'WWD_{x2}_{x3}_{x4}__{x5}_mgd'
-                            for type in split_dict[x1][x2][x3][x4][x5]:
-                                if type == 'source':
-                                    for s1 in split_dict[x1][x2][x3][x4][x5]:
-                                        l1_supply_name = f'{s1}_to_{x1}_mgd'
-                                        l1_supply_value = 0
-                                        for s2 in split_dict[x1][x2][x3][x4][x5][s1]:
-                                            l2_supply_name = f'{s1}_{s2}_to_{x1}_{x2}_mgd'
-                                            l2_supply_value = 0
-                                            for s3 in split_dict[x1][x2][x3][x4][x5][s1][s2]:
-                                                l3_supply_name = f'{s1}_{s2}_{s3}_to_{x1}_{x2}_{x3}_mgd'
-                                                l3_supply_value = 0
-                                                for s4 in split_dict[x1][x2][x3][x4][x5][s1][s2][s3]:
-                                                    l4_supply_name = f'{s1}_{s2}_{s3}_{s4}_to_{x1}_{x2}_{x3}_{x4}_mgd'
-                                                    l4_supply_value = 0
-                                                    for s5 in split_dict[x1][x2][x3][x4][x5][s1][s2][s3][s4]:
-                                                        l5_supply_name = f'{s1}_{s2}_{s3}_{s4}_{s5}_to_{x1}_{x2}_{x3}_{x4}_{x5}_mgd'
-                                                        if l5_supply_name in ww_supply:
-                                                            l5_supply_value = ww_supply[l5_supply_name]
-                                                            l4_supply_value = l4_supply_value + l5_supply_value
-                                                            l3_supply_value = l3_supply_value + l5_supply_value
-                                                            l2_supply_value = l2_supply_value + l5_supply_value
-                                                            l1_supply_value = l1_supply_value + l5_supply_value
+                            l5_demand_name = f'WWD_{x2}_{x3}_{x4}_{x5}_mgd'
+                            for s1 in split_dict[x1][x2][x3][x4][x5]:
+                                l1_supply_name = f'{s1}_to_{x1}_mgd'
+                                l1_supply_value = 0
+                                for s2 in split_dict[x1][x2][x3][x4][x5][s1]:
+                                    l2_supply_name = f'{s1}_{s2}_to_{x1}_{x2}_mgd'
+                                    l2_supply_value = 0
+                                    for s3 in split_dict[x1][x2][x3][x4][x5][s1][s2]:
+                                        l3_supply_name = f'{s1}_{s2}_{s3}_to_{x1}_{x2}_{x3}_mgd'
+                                        l3_supply_value = 0
+                                        for s4 in split_dict[x1][x2][x3][x4][x5][s1][s2][s3]:
+                                            l4_supply_name = f'{s1}_{s2}_{s3}_{s4}_to_{x1}_{x2}_{x3}_{x4}_mgd'
+                                            l4_supply_value = 0
+                                            for s5 in split_dict[x1][x2][x3][x4][x5][s1][s2][s3][s4]:
+                                                l5_supply_name = f'{s1}_{s2}_{s3}_{s4}_{s5}_to_{x1}_{x2}_{x3}_{x4}_{x5}_mgd'
+                                                if l5_supply_name in ww_supply:
+                                                    l5_supply_value = ww_supply[l5_supply_name]
+                                                    l4_supply_value = l4_supply_value + l5_supply_value
+                                                    l3_supply_value = l3_supply_value + l5_supply_value
+                                                    l2_supply_value = l2_supply_value + l5_supply_value
+                                                    l1_supply_value = l1_supply_value + l5_supply_value
+                                                    l1_dict.update({l1_supply_name: l1_supply_value})
+                                                    l2_dict.update({l2_supply_name: l2_supply_value})
+                                                    l3_dict.update({l3_supply_name: l3_supply_value})
+                                                    l4_dict.update({l4_supply_name: l4_supply_value})
+                                                    l5_dict.update({l5_supply_name: l5_supply_value})
+                                                    if l5_demand_name in df.columns:
+                                                        l5_demand_value = df[l5_demand_name]
+                                                        l4_demand_value = l4_demand_value + l5_demand_value
+                                                        l3_demand_value = l3_demand_value + l5_demand_value
+                                                        l2_demand_value = l2_demand_value + l5_demand_value
+                                                        l1_demand_value = l1_demand_value + l5_demand_value
+                                                        l1_dict.update({l1_demand_name: l1_demand_value})
+                                                        l2_dict.update({l2_demand_name: l2_demand_value})
+                                                        l3_dict.update({l3_demand_name: l3_demand_value})
+                                                        l4_dict.update({l4_demand_name: l4_demand_value})
+                                                        l5_dict.update({l5_demand_name: l5_demand_value})
+                                                    else:
+                                                        l5_demand_value = l5_supply_value
+                                                        l4_demand_value = l4_supply_value + l5_supply_value
+                                                        l3_demand_value = l3_supply_value + l5_supply_value
+                                                        l2_demand_value = l2_supply_value + l5_supply_value
+                                                        l1_demand_value = l1_supply_value + l5_supply_value
+                                                        l1_dict.update({l1_demand_name: l1_demand_value})
+                                                        l2_dict.update({l2_demand_name: l2_demand_value})
+                                                        l3_dict.update({l3_demand_name: l3_demand_value})
+                                                        l4_dict.update({l4_demand_name: l4_demand_value})
+                                                        l5_dict.update({l5_demand_name: l5_demand_value})
 
-                                                            l5_demand_value = l5_supply_value
-                                                            l4_demand_value = l4_supply_value + l5_supply_value
-                                                            l3_demand_value = l3_supply_value + l5_supply_value
-                                                            l2_demand_value = l2_supply_value + l5_supply_value
-                                                            l1_demand_value = l1_supply_value + l5_supply_value
-
-                                                            l1_dict.update({l1_supply_name: l1_supply_value})
-                                                            l2_dict.update({l2_supply_name: l2_supply_value})
-                                                            l3_dict.update({l3_supply_name: l3_supply_value})
-                                                            l4_dict.update({l4_supply_name: l4_supply_value})
-                                                            l5_dict.update({l5_supply_name: l5_supply_value})
-
-                                                            l1_dict.update({l1_demand_name: l1_demand_value})
-                                                            l2_dict.update({l2_demand_name: l2_demand_value})
-                                                            l3_dict.update({l3_demand_name: l3_demand_value})
-                                                            l4_dict.update({l4_demand_name: l4_demand_value})
-                                                            l5_dict.update({l5_demand_name: l5_demand_value})
-                                else:
-                                    pass
-        for x1 in split_dict:
-            l1_ww_name = f'{x1}_mgd'
-            l1_ww_value = 0
-            for x2 in split_dict[x1]:
-                l2_ww_name = f'{x1}_{x2}_mgd'
-                l2_ww_value = 0
-                for x3 in split_dict[x1][x2]:
-                    l3_ww_name = f'{x1}_{x2}_{x3}_mgd'
-                    l3_ww_value = 0
-                    for x4 in split_dict[x1][x2][x3]:
-                        l4_ww_name = f'{x1}_{x2}_{x3}_{x4}_mgd'
-                        l4_ww_value = 0
-                        for x5 in split_dict[x1][x2][x3][x4]:
-                            l5_ww_name = f'{x1}_{x2}_{x3}_{x4}_{x5}_mgd'
-                            l5_ww_value = 0
-                            for type in split_dict[x1][x2][x3][x4][x5]:
-                                if type == 'discharge':
-                                    for s1 in split_dict[x1][x2][x3][x4][x5]:
-                                        l1_demand_name = f'{s1}_mgd'
-                                        l1_demand_value = 0
-                                        for s2 in split_dict[x1][x2][x3][x4][x5][s1]:
-                                            l2_demand_name = f'{s1}_{s2}_mgd'
-                                            l2_demand_value = 0
-                                            for s3 in split_dict[x1][x2][x3][x4][x5][s1][s2]:
-                                                l3_demand_name = f'{s1}_{s2}_{s3}_mgd'
-                                                l3_demand_value = 0
-                                                for s4 in split_dict[x1][x2][x3][x4][x5][s1][s2][s3]:
-                                                    l4_demand_name = f'{s1}_{s2}_{s3}_{s4}_mgd'
-                                                    l4_demand_value = 0
-                                                    for s5 in split_dict[x1][x2][x3][x4][x5][s1][s2][s3][s4]:
-                                                        l5_demand_name = f'{s1}_{s2}_{s3}_{s4}_{s5}_mgd'
-                                                        if l5_demand_name in df.columns:
-                                                            l5_demand_value = df[l5_demand_name]
-                                                            l4_demand_value = l4_demand_value + l5_demand_value
-                                                            l3_demand_value = l3_demand_value + l5_demand_value
-                                                            l2_demand_value = l2_demand_value + l5_demand_value
-                                                            l1_demand_value = l1_demand_value + l5_demand_value
-
-                                                            l1_dict.update({l1_demand_name: l1_demand_value})
-                                                            l2_dict.update({l2_demand_name: l2_demand_value})
-                                                            l3_dict.update({l3_demand_name: l3_demand_value})
-                                                            l4_dict.update({l4_demand_name: l4_demand_value})
-                                                            l5_dict.update({l5_demand_name: l5_demand_value})
+                                                else:
+                                                    pass
 
 
        # convert output dictionaries to dataframe, merge with location information
