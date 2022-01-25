@@ -12,7 +12,7 @@ import flow.collect_water_sector_water as ws
 import flow.calc_water_sector_energy as wse
 
 
-def calculate_flows_and_updates(data=None, output='l5', regions=3):
+def calculate_flows_and_updates(data=None, level='l5', regions=3):
     """Calculates rejected energy (losses) and total generation from electricity generation
     by generating type for each region.
 
@@ -105,12 +105,12 @@ def calculate_flows_and_updates(data=None, output='l5', regions=3):
 
     #rerun updated baseline data through functions
 
-    d1 = esw.calc_energy_direct_demand_water_use(data=df_updated, output=output, regions=regions)
-    d2 = cw.calc_collect_water_use(data=df_updated, output=output, regions=regions)
-    d3 = ce.calc_collect_energy_use(data=df_updated, output=output, regions=regions)
-    d4 = wwd.calc_wastewater_water_demand(data=df_updated, output=output, regions=regions)
-    d5 = ws.calc_water_sector_water(data=df_updated, output=output, regions=regions)
-    d6 = wse.calc_water_sector_energy(data=df_updated, output=output, regions=regions)
+    d1 = esw.calc_energy_direct_demand_water_use(data=df_updated, level=level, regions=regions)
+    d2 = cw.calc_collect_water_use(data=df_updated, level=level, regions=regions)
+    d3 = ce.calc_collect_energy_use(data=df_updated, level=level, regions=regions)
+    d4 = wwd.calc_wastewater_water_demand(data=df_updated, level=level, regions=regions)
+    d5 = ws.calc_water_sector_water(data=df_updated, level=level, regions=regions)
+    d6 = wse.calc_water_sector_energy(data=df_updated, level=level, regions=regions)
 
     out_df = d1.copy()
     rem_list = [d2, d3, d4, d5, d6]

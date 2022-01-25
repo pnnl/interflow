@@ -5,7 +5,7 @@ import flow.clean as cl
 import flow.configure as conf
 import flow.construct as co
 
-def calc_collect_energy_use(data=None, output='l5', regions=3):
+def calc_collect_energy_use(data=None, level='l5', regions=3):
     """Calculates rejected energy (losses) and total generation from electricity generation
     by generating type for each region.
 
@@ -169,15 +169,15 @@ def calc_collect_energy_use(data=None, output='l5', regions=3):
         l4_df = pd.DataFrame.from_dict(l4_dict, orient='index').transpose()
         l5_df = pd.DataFrame.from_dict(l5_dict, orient='index').transpose()
 
-        if output == 'l1':
+        if level == 'l1':
             df = l1_df
-        elif output == 'l2':
+        elif level == 'l2':
             df = l2_df
-        elif output == 'l3':
+        elif level == 'l3':
             df = l3_df
-        elif output == 'l4':
+        elif level == 'l4':
             df = l4_df
-        elif output == 'l5':
+        elif level == 'l5':
             df = l5_df
         else:
             m = 'incorrect level of granularity specified. Must be one of the following: l1, l2, l3, l4, or l5'
