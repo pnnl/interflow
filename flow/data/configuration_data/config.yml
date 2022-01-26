@@ -1,3 +1,5 @@
+# YAML configuration file
+
 baseline:
   file1:
     path: 'data/configuration_data/baseline_data.csv'

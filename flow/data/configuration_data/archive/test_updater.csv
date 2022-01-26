@@ -1,0 +1,3 @@
+﻿set_number,T1,T2,T3,T4,T5,S1,S2,S3,S4,S5,units,calc_type
+set1,ES,natgas,unconventional,total,total,WS,fresh,surfacewater,total,total,mgd,keep
+set1,CI,fresh,surfacewater,total,total,WS,fresh,surfacewater,total,total,mgd,remove

@@ -1,0 +1,11 @@
+Target_L1,Target_L2,Target_L3,Target_L4,Target_L5
+EG,biomass,total,total,total
+EG,coal,total,total,total
+EG,geothermal,total,total,total
+EG,hydro,total,total,total
+EG,natgas,total,total,total
+EG,nuclear,total,total,total
+EG,oil,total,total,total
+EG,other,total,total,total
+EG,solar,total,total,total
+EG,wind,total,total,total

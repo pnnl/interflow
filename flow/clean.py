@@ -366,6 +366,15 @@ def prep_consumption_fraction() -> pd.DataFrame:
 
     df = df.drop(['mining_fresh_pws_consumption_fraction', 'mining_saline_pws_consumption_fraction'], axis=1)
 
+    #TODO
+    # calculate consumption fractions for residential, crop irrigation, golf irrigation,
+    res_ground_cf_name = 'RES_fresh_surfacewater_total_total_to_CONS_total_total_total_total_fraction'
+    res_surface_cf_name = 'RES_fresh_groundwater_total_total_to_CONS_total_total_total_total_fraction'
+    res_public_cf_name = 'RES_public_total_total_total_to_CONS_total_total_total_total_fraction'
+
+
+
+
     # merge with full list of counties from 2015 water data
     df = pd.merge(df_loc, df, how='left', on='FIPS')
 

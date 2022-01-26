@@ -1,0 +1,13 @@
+﻿fuel_type,sub_fuel,fuel_efficiency,parameter2
+biomass,OT,0.3,0.3
+biomass,PD,0.3,0.3
+coal,OT,0.3,0.3
+coal,PD,0.3,0.3
+natgas,OT,0.3,0.3
+natgas,PD,0.3,0.3
+hydro,OT,0.3,0.3
+hydro,PD,0.3,0.3
+petroleum,OT,0.3,0.3
+petroleum,PD,0.3,0.3
+solar,OT,0.3,0.3
+solar,PD,0.3,0.3

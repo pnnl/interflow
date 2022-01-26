@@ -1,0 +1,25 @@
+﻿sector_type,sub_sector type,fuel_type,parameter,value
+residential,total,solar,efficiency,0.65
+residential,total,geothermal,efficiency,0.65
+residential,total,solar,efficiency,0.65
+residential,total,natgas,efficiency,0.65
+residential,total,petroleum,efficiency,0.65
+residential,total,biomass,efficiency,0.65
+commercial,total,coal,efficiency,0.65
+commercial,total,geothermal,efficiency,0.65
+commercial,total,natgas,efficiency,0.65
+commercial,total,petroleum,efficiency,0.65
+commercial,total,solar,efficiency,0.65
+commercial,total,biomass,efficiency,0.65
+commercial,total,wind,efficiency,0.65
+industrial,total,natgas,efficiency,0.49
+industrial,total,coal,efficiency,0.49
+industrial,total,petroleum,efficiency,0.49
+industrial,total,biomass,efficiency,0.49
+transportation,total,biomass,efficiency,0.21
+transportation,total,natgas,efficiency,0.21
+transportation,total,petroleum,efficiency,0.21
+residential,total,electricity,efficiency,0.65
+commercial,total,electricity,efficiency,0.65
+industrial,total,electricity,efficiency,0.49
+transportation,total,electricity,efficiency,0.21
