@@ -34,7 +34,7 @@ def run(level=5, regions=3, output_file_path=None):
     # run calculations and updater
     output = up.calculate_flows_and_updates(level=level, regions=regions)
 
-    # save to csv if specified
+    # save output to .csv if specified
     if output_file_path:
         output.to_csv(output_file_path)
     else:

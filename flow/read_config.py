@@ -15,10 +15,13 @@ def read_config(name: str, file_number: str):
         :return:                        path to data as a string
 
         """
+
+    # open configuration file
     config_file = 'data/configuration_data/config.yml'
     with open(config_file) as file:
         config_dict = yaml.safe_load(file)
 
+    # determine file path
     file_path = config_dict[name][file_number]['path']
 
     return file_path
