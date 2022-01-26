@@ -1,5 +1,3 @@
-import numpy as np
-import pandas as pd
 from .reader import *
 import flow.construct as co
 import flow.collect_water as cw
