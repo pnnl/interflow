@@ -1,6 +1,10 @@
 import re
 from setuptools import setup, find_packages
 
+def readme():
+    """Return the contents of the project README file."""
+    with open('README.md') as readme:
+        return readme.read()
 
 # get version from __init__ of package
 version = re.search(r"__version__ = ['\"]([^'\"]*)['\"]", open('flow/__init__.py').read(), re.M).group(1)
@@ -14,13 +18,14 @@ setup(
     license='BSD2-Clause',
     author='Kendall Mongird',
     author_email='kendall.mongird@pnnl.gov',
-    description='Flow package',
+    description='An open-source Python package for calculating water and energy interdependencies across sectors',
+    long_description=readme(),
+    long_description_content_type="text/markdown",
     python_requires='>=3.7.*, <4',
     include_package_data=True,
     install_requires=[
-        'numpy>=1.21.3',
         'pandas>=1.3.4',
-        'openpyxl>=3.0.9',
+        'PyYAML>=5.4.1',
         'matplotlib>=3.3.3'
         'plotly-geo>=1.0'
     ]
