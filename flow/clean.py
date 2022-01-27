@@ -588,6 +588,8 @@ def prep_wastewater_data() -> pd.DataFrame:
                 'reuse: potable': 'wastewater_pws_discharge',
                 'reuse: groundwater recharge': 'wastewater_groundwater_discharge'}
 
+
+
     # wastewater facility treatment type dictionary
     treat_dict = {'raw discharge': 'wastewater_no_treatment',
                   'primary (45mg/l< bod)': 'wastewater_primary_treatment',

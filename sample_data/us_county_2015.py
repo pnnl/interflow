@@ -21,7 +21,6 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
     """
 
     # read in data
-
     df = pd.read_csv('input_data/usco2015v2.0.csv', skiprows=1, dtype={'FIPS': str})
 
     # replacing characters for missing USGS data with value of zero
@@ -150,5 +149,292 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
         df = df[variables]
 
     return df
+
+
+def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
+    """prepping 1995 water use data from USGS by replacing missing values, fixing FIPS codes,
+     and reducing to needed variables
+
+    :return:                DataFrame of a number of water values for 1995 at the county level
+
+    """
+    # read in data
+    data = 'input_data/usco1995.csv'
+    df = pd.read_csv(data, dtype={'StateCode': str, 'CountyCode': str})
+
+    # create a complete state + county FIPS code from the sum of the state and county level FIPS code strings
+    df["FIPS"] = df["StateCode"] + df["CountyCode"]
+
+    # address FIPS code changes between 1995 and 2015
+    df['FIPS'] = np.where(df['FIPS'] == "12025", "12086", df['FIPS'])  # Miami-Dade County, FL
+    df['FIPS'] = np.where(df['FIPS'] == "46113", "46102", df['FIPS'])  # Oglala Lakota County, SD
+    df['FIPS'] = np.where(df['FIPS'] == "02232", "02105", df['FIPS'])  # Hoonah-Angoon Census Area, AK
+    df['FIPS'] = np.where(df['FIPS'] == "02270", "02158", df['FIPS'])  # Kusilvak Census Area, AK
+    df['FIPS'] = np.where(df['FIPS'] == "02280", "02195", df['FIPS'])  # Petersburg Borough, AK
+    df['FIPS'] = np.where(df['FIPS'] == "02201", "02198", df['FIPS'])  # Wales-Hyder Census Area, AK
+
+    # Copy data from counties that split into multiple FIPS codes between 1995 and 2015 into new rows and assigns FIPS
+    wrangell_petersburg_index = df.index[df['FIPS'] == "02195"].tolist()  # Wrangell, AK from Wrangell-Petersburg, AK
+    df = df.append(df.loc[wrangell_petersburg_index * 1].assign(FIPS="02275"), ignore_index=True)
+    skagway_index = df.index[df['FIPS'] == "02105"].tolist()  # Hoonah-Angoon, AK from Skagway-Hoonah-Angoon, AK
+    df = df.append(df.loc[skagway_index * 1].assign(FIPS="02230"), ignore_index=True)
+    boulder_index = df.index[df['FIPS'] == "08013"].tolist()  # Broomfield County, CO from Boulder County, CO
+    df = df.append(df.loc[boulder_index * 1].assign(FIPS="08014"), ignore_index=True)
+
+    # return variables specified
+    if variables is None and all_variables is False:
+        variables = ['FIPS']
+        df = df[variables]
+    elif variables is None and all_variables is True:
+        df = df
+    else:
+        df = df[variables]
+    return df
+
+
+# READER
+
+
+def get_water_use_1995():
+    data = pkg_resources.resource_filename('flow', 'data/usco1995.csv')
+
+    return pd.read_csv(data,  dtype={'StateCode': str, 'CountyCode': str})
+
+
+def get_county_identifier_data():
+    data = pkg_resources.resource_filename('flow', 'data/county_interconnect_list.csv')
+
+    # read in county-interconnect crosswalk
+    return pd.read_csv(data, dtype={'FIPS': str,'STATEFIPS': str })
+
+
+def get_wastewater_flow_data():
+    data = pkg_resources.resource_filename('flow', 'data/WW_Facility_Flow.csv')
+
+    # read in wastewater treatment facility water flow data
+    return pd.read_csv(data, dtype={'CWNS_NUMBER': str})
+
+
+def get_wastewater_facility_type_data():
+    data = pkg_resources.resource_filename('flow', 'data/WW_Facility_Type.csv')
+
+    # read in wastewater treatment facility type data
+    return pd.read_csv(data, dtype={'CWNS_NUMBER': str})
+
+
+def get_wastewater_facility_loc_data():
+    data = pkg_resources.resource_filename('flow', 'data/WW_Facility_Loc.csv')
+
+    # read in wastewater treatment facility location data
+    return pd.read_csv(data, dtype={'CWNS_NUMBER': str})
+
+
+def get_wastewater_facility_discharge_data():
+    data = pkg_resources.resource_filename('flow', 'data/WW_Discharge.csv')
+
+    # read in wastewater treatment facility discharge data
+    return pd.read_csv(data, dtype={'CWNS_NUMBER': str})
+
+
+def get_electricity_generation_data():
+    data = pkg_resources.resource_filename('flow',
+                                           'data/EIA923_Schedules_2_3_4_5_M_12_2015_Final_Revision.csv')
+
+    # read in wastewater treatment facility discharge data
+    return pd.read_csv(data, skiprows=5)
+
+def get_power_plant_county_data():
+    data = pkg_resources.resource_filename('flow',
+                                           'data/EIA860_Generator_Y2015.csv')
+
+    # read in data
+    return pd.read_csv(data, skiprows=1, usecols= ['Plant Code', "State", 'County'])
+
+def get_powerplant_primary_data():
+    data = pkg_resources.resource_filename('flow',
+                                           'data/eia_powerplant_primary_2020.csv')
+
+    # read in data
+    return pd.read_csv(data, usecols=['Plant_Code', "StateName", 'County', 'PrimSource'])
+
+
+def get_powerplant_cooling_data():
+    data = pkg_resources.resource_filename('flow',
+                                           'data/2015_TE_Model_Estimates_USGS.csv')
+
+    # read in data
+    return pd.read_csv(data, usecols=['EIA_PLANT_ID', "COUNTY", 'STATE', 'NAME_OF_WATER_SOURCE','GENERATION_TYPE',
+                                      'COOLING_TYPE','WATER_SOURCE_CODE','WATER_TYPE_CODE', 'WITHDRAWAL',
+                                      'CONSUMPTION'])
+
+def get_irrigation_data():
+    data = pkg_resources.resource_filename('flow', 'data/FRIS2013tab8.csv')
+
+    # read in irrigation well depth, pressure, and pump fuel type data
+    return pd.read_csv(data, skiprows=3)
+
+
+def get_tx_inter_basin_transfer_data():
+    data = pkg_resources.resource_filename('flow', 'data/TX_IBT_2015.csv')
+
+    # read in Texas inter-basin transfer data by FIPS
+    return pd.read_csv(data, dtype={'Used_FIPS': str, 'Source_FIPS': str})
+
+
+def get_west_inter_basin_transfer_data():
+    data = pkg_resources.resource_filename('flow', 'data/West_IBT_county.csv')
+
+    # read in Texas inter-basin transfer data by FIPS
+    return pd.read_csv(data, dtype={'FIPS': str})
+
+
+def get_residential_electricity_demand_data():
+    data = pkg_resources.resource_filename('flow', 'data/EIA_table6_Res.csv')
+
+    # read in residential electricity sales data
+    return pd.read_csv(data, skiprows=2)
+
+
+def get_commercial_electricity_demand_data():
+    data = pkg_resources.resource_filename('flow', 'data/EIA_table7_Com.csv')
+
+    # read in commercial electricity sales data
+    return pd.read_csv(data, skiprows=2)
+
+
+def get_industrial_electricity_demand_data():
+    data = pkg_resources.resource_filename('flow', 'data/EIA_table8_Ind.csv')
+
+    # read in industrial electricity sales data
+    return pd.read_csv(data, skiprows=2)
+
+
+def get_transportation_electricity_demand_data():
+    data = pkg_resources.resource_filename('flow', 'data/EIA_table9_Trans.csv')
+
+    # read in transportation electricity sales data
+    return pd.read_csv(data, skiprows=2)
+
+def get_state_electricity_demand_data():
+    data = pkg_resources.resource_filename('flow', 'data/eia_861m_states.csv')
+
+    # read in transportation electricity sales data
+    return pd.read_csv(data, skipfooter=2, engine='python',
+                       dtype={'RESIDENTIAL': float, 'COMMERCIAL': float,
+                              'INDUSTRIAL': float, 'TRANSPORTATION': float})
+
+
+def get_fuel_demand_data():
+
+    data = pkg_resources.resource_filename('flow', 'data/use_all_btu.csv')
+
+    # read in energy production (fuel) data
+    return pd.read_csv(data)
+
+def get_energy_production_data():
+    data = pkg_resources.resource_filename('flow', 'data/eia_SEDS_Prod_dataset.csv')
+
+    # read in energy production (fuel) data
+    return pd.read_csv(data, skiprows=1)
+
+
+def get_corn_irrigation_data():
+
+    data = pkg_resources.resource_filename('flow', 'data/USDA_FRIS.csv')
+
+    # read in corn irrigation data
+    return pd.read_csv(data)
+
+
+def get_corn_production_data():
+
+    data = pkg_resources.resource_filename('flow', 'data/USDA_NASS_CornProd_2015.csv')
+
+    # read in corn irrigation data
+    return pd.read_csv(data, dtype={'State ANSI': str, 'County ANSI': str, 'Value': float})
+
+
+def get_county_oil_gas_production_data():
+
+    data = pkg_resources.resource_filename('flow', 'data/oilgascounty.csv')
+
+    # read in county level oil and gas production data
+    return pd.read_csv(data, dtype={'geoid': str})
+
+
+def get_state_petroleum_production_data():
+
+    data = pkg_resources.resource_filename('flow', 'data/petroleum_eia.csv')
+
+    # read in state level petroleum production data
+    return pd.read_csv(data, skiprows=4)
+
+
+def get_state_gas_production_data():
+
+    data = pkg_resources.resource_filename('flow', 'data/natgas_eia.csv')
+
+    # read in read in state level natural gas production data
+    return pd.read_csv(data, skiprows=4)
+
+
+def get_unconventional_oil_gas_production_data():
+
+    data = pkg_resources.resource_filename('flow', 'data/Unconventional_Oil_NG_State.csv')
+
+    # read in read in state level unconventional natural gas and oil production data
+    return pd.read_csv(data)
+
+
+def get_conventional_oil_water_intensity_data():
+
+    data = pkg_resources.resource_filename('flow', 'data/PADD_intensity.csv')
+
+    # read in read in state level water to oil intensity data
+    return pd.read_csv(data)
+
+
+def get_oil_gas_discharge_data():
+
+
+    data = pkg_resources.resource_filename('flow', 'data/Oil_NG_WOR_WGR.csv')
+
+    # read in read in state level water discharge data from oil and natural gas
+    return pd.read_csv(data)
+
+
+def get_coal_production_data():
+
+
+    data = pkg_resources.resource_filename('flow', 'data/coalpublic2015.csv')
+
+    # read in read in coal production data
+    return pd.read_csv(data, skiprows=3)
+
+
+def get_coal_mine_location_data():
+
+    data = pkg_resources.resource_filename('flow', 'data/Coal_Mine_Loc.csv')
+
+    # read in read in coal mine data
+    return pd.read_csv(data, dtype={'FIPS_CNTY_CD': str}, usecols=["MINE_ID", "STATE", "FIPS_CNTY_CD"])
+
+
+def get_state_fips_data():
+    data = pkg_resources.resource_filename('flow', 'data/State_FIPS_Code.csv')
+
+    # read in read in state fips code to state abbrev. data
+    return pd.read_csv(data, dtype={'State_FIPS': str})
+
+def get_ethanol_location_data():
+    data = pkg_resources.resource_filename('flow', 'data/eia819_ethanolcapacity_2015.csv')
+
+    # read in read in state fips code to state abbrev. data
+    return pd.read_csv(data, dtype={'FIPS': str}, skiprows=1)
+
+
+
+
+
 x = prep_water_use_2015(all_variables=True)
 x.to_csv('test_output.csv')
