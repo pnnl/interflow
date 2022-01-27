@@ -117,15 +117,7 @@ def calc_dictionary_levels(d:dict):
     return nest_count
 
 
-def convert_mwh_bbtu(x: float) -> float:
-    """converts MWh to billion btu.
 
-    :return:                Value in bbtu
-
-    """
-    bbtu = x * 0.003412
-
-    return bbtu
 
 
 def convert_kwh_bbtu(x: float) -> float:
