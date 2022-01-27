@@ -192,20 +192,101 @@ def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
     return df
 
 
+def prep_consumption_fraction() -> pd.DataFrame:
+    """prepping water consumption fractions by sector to apply to 2015 water values.
+
+    :return:                DataFrame of a number of consumption fractions by sector
+
+    """
+
+    # read in data
+    df = prep_water_use_1995(variables=['FIPS', 'DO-CUTot', 'DO-WDelv', 'CO-CUTot', 'CO-WDelv', 'IN-CUsFr',
+                                        'IN-WFrTo', 'IN-PSDel', 'IN-CUsSa', "IN-WSaTo", "MI-CUsFr",
+                                        "MI-WFrTo", "MI-CUsSa", "MI-WSaTo", "LV-CUTot", "LV-WTotl",
+                                        "LA-CUTot", "LA-WTotl"])
+
+    df_loc = prep_water_use_2015()  # prepared dataframe of 2015 FIPS codes, county names, and state names
+
+    # calculate water consumption fractions as consumptive use divided by delivered water
+    df["DO_CF_Fr"] = df["DO-CUTot"] / df["DO-WDelv"]  # residential (domestic) sector freshwater consumption fraction
+    df["CO_CF_Fr"] = df["CO-CUTot"] / df["CO-WDelv"]  # commercial sector freshwater consumption fraction
+    df["IN_CF_Fr"] = df["IN-CUsFr"] / (df["IN-WFrTo"] + df["IN-PSDel"])  # ind sector freshwater consumption fraction
+    df["IN_CF_Sa"] = df["IN-CUsSa"] / df["IN-WSaTo"]  # industrial sector saline water consumption fraction
+    df["MI_CF_Fr"] = df["MI-CUsFr"] / df["MI-WFrTo"]  # mining sector freshwater consumption fraction
+    df["MI_CF_Sa"] = df["MI-CUsSa"] / df["MI-WSaTo"]  # mining sector saline water consumption fraction
+    df["LV_CF_Fr"] = df["LV-CUTot"] / df["LV-WTotl"]  # livestock freshwater water consumption fraction
+    df['LV-CUsSa']
+    df["LA_CF_Fr"] = df["LA-CUTot"] / df["LA-WTotl"]  # aquaculture freshwater water consumption fraction
+    df['LA-CUsSa']
+
+    #TODO see what LS is in the dataset
+
+    # Replacing infinite (from divide by zero) with with 0
+    df.replace([np.inf, -np.inf], 0, inplace=True)
+    df.fillna(0, inplace=True)
+
+    # creating a dictionary of required variables from full dataset with descriptive naming
+    variables_list_1995 = {
+        # Retained and renamed 1995 variables
+        "FIPS": 'FIPS',
+        "DO_CF_Fr": "RES_fresh_surfacewater_total_total_to_CMP_total_total_total_total_fraction",
+        "CO_CF_Fr": "COM_fresh_surfacewater_total_total_to_CMP_total_total_total_total_fraction",
+        "IN_CF_Fr": "IND_fresh_surfacewater_total_total_to_CMP_total_total_total_total_fraction",
+        "IN_CF_Sa": "IND_saline_surfacewater_total_total_to_CMP_total_total_total_total_fraction",
+        "MI_CF_Fr": "MIN_fresh_surfacewater_total_total_to_CMP_total_total_total_total_fraction",
+        "MI_CF_Sa": "MIN_saline_surfacewater_total_total_to_CMP_total_total_total_total_fraction",
+        "LV_CF_Fr": "ALV_fresh_surfacewater_total_total_to_CMP_total_total_total_total_fraction",
+        "LA_CF_Fr": "AAQ_fresh_surfacewater_total_total_to_CMP_total_total_total_total_fraction",
+
+        # created variables
+
+    }
+
+    # reduce full dataframe to required variable list
+    df = df[variables_list_1995]
+
+    # rename columns to add descriptive language
+    df.rename(columns=variables_list_1995, inplace=True)
+
+    sector_list = ['residential', 'commercial', 'industrial', 'mining']
+    water_type_list = ['fresh', 'saline']
+    water_source_list = ['groundwater', 'pws']
+
+    for sector in sector_list:
+        for water_type in water_type_list:
+            for water_source in water_source_list:
+                water_consumption_name = f'{sector}_{water_type}_surfacewater_consumption_fraction'
+                if water_consumption_name in df.columns:
+                    df[f'{sector}_{water_type}_{water_source}_consumption_fraction'] = df[water_consumption_name]
+
+    df = df.drop(['mining_fresh_pws_consumption_fraction', 'mining_saline_pws_consumption_fraction'], axis=1)
+
+    # TODO
+    # calculate consumption fractions for residential, crop irrigation, golf irrigation,
+    res_ground_cf_name = 'RES_fresh_surfacewater_total_total_to_CONS_total_total_total_total_fraction'
+    res_surface_cf_name = 'RES_fresh_groundwater_total_total_to_CONS_total_total_total_total_fraction'
+    res_public_cf_name = 'RES_public_total_total_total_to_CONS_total_total_total_total_fraction'
+
+    # merge with full list of counties from 2015 water data
+    df = pd.merge(df_loc, df, how='left', on='FIPS')
+
+    return df
+
+
 # READER
 
 
 def get_water_use_1995():
     data = pkg_resources.resource_filename('flow', 'data/usco1995.csv')
 
-    return pd.read_csv(data,  dtype={'StateCode': str, 'CountyCode': str})
+    return pd.read_csv(data, dtype={'StateCode': str, 'CountyCode': str})
 
 
 def get_county_identifier_data():
     data = pkg_resources.resource_filename('flow', 'data/county_interconnect_list.csv')
 
     # read in county-interconnect crosswalk
-    return pd.read_csv(data, dtype={'FIPS': str,'STATEFIPS': str })
+    return pd.read_csv(data, dtype={'FIPS': str, 'STATEFIPS': str})
 
 
 def get_wastewater_flow_data():
@@ -243,12 +324,14 @@ def get_electricity_generation_data():
     # read in wastewater treatment facility discharge data
     return pd.read_csv(data, skiprows=5)
 
+
 def get_power_plant_county_data():
     data = pkg_resources.resource_filename('flow',
                                            'data/EIA860_Generator_Y2015.csv')
 
     # read in data
-    return pd.read_csv(data, skiprows=1, usecols= ['Plant Code', "State", 'County'])
+    return pd.read_csv(data, skiprows=1, usecols=['Plant Code', "State", 'County'])
+
 
 def get_powerplant_primary_data():
     data = pkg_resources.resource_filename('flow',
@@ -263,9 +346,10 @@ def get_powerplant_cooling_data():
                                            'data/2015_TE_Model_Estimates_USGS.csv')
 
     # read in data
-    return pd.read_csv(data, usecols=['EIA_PLANT_ID', "COUNTY", 'STATE', 'NAME_OF_WATER_SOURCE','GENERATION_TYPE',
-                                      'COOLING_TYPE','WATER_SOURCE_CODE','WATER_TYPE_CODE', 'WITHDRAWAL',
+    return pd.read_csv(data, usecols=['EIA_PLANT_ID', "COUNTY", 'STATE', 'NAME_OF_WATER_SOURCE', 'GENERATION_TYPE',
+                                      'COOLING_TYPE', 'WATER_SOURCE_CODE', 'WATER_TYPE_CODE', 'WITHDRAWAL',
                                       'CONSUMPTION'])
+
 
 def get_irrigation_data():
     data = pkg_resources.resource_filename('flow', 'data/FRIS2013tab8.csv')
@@ -315,6 +399,7 @@ def get_transportation_electricity_demand_data():
     # read in transportation electricity sales data
     return pd.read_csv(data, skiprows=2)
 
+
 def get_state_electricity_demand_data():
     data = pkg_resources.resource_filename('flow', 'data/eia_861m_states.csv')
 
@@ -325,11 +410,11 @@ def get_state_electricity_demand_data():
 
 
 def get_fuel_demand_data():
-
     data = pkg_resources.resource_filename('flow', 'data/use_all_btu.csv')
 
     # read in energy production (fuel) data
     return pd.read_csv(data)
+
 
 def get_energy_production_data():
     data = pkg_resources.resource_filename('flow', 'data/eia_SEDS_Prod_dataset.csv')
@@ -339,7 +424,6 @@ def get_energy_production_data():
 
 
 def get_corn_irrigation_data():
-
     data = pkg_resources.resource_filename('flow', 'data/USDA_FRIS.csv')
 
     # read in corn irrigation data
@@ -347,7 +431,6 @@ def get_corn_irrigation_data():
 
 
 def get_corn_production_data():
-
     data = pkg_resources.resource_filename('flow', 'data/USDA_NASS_CornProd_2015.csv')
 
     # read in corn irrigation data
@@ -355,7 +438,6 @@ def get_corn_production_data():
 
 
 def get_county_oil_gas_production_data():
-
     data = pkg_resources.resource_filename('flow', 'data/oilgascounty.csv')
 
     # read in county level oil and gas production data
@@ -363,7 +445,6 @@ def get_county_oil_gas_production_data():
 
 
 def get_state_petroleum_production_data():
-
     data = pkg_resources.resource_filename('flow', 'data/petroleum_eia.csv')
 
     # read in state level petroleum production data
@@ -371,7 +452,6 @@ def get_state_petroleum_production_data():
 
 
 def get_state_gas_production_data():
-
     data = pkg_resources.resource_filename('flow', 'data/natgas_eia.csv')
 
     # read in read in state level natural gas production data
@@ -379,7 +459,6 @@ def get_state_gas_production_data():
 
 
 def get_unconventional_oil_gas_production_data():
-
     data = pkg_resources.resource_filename('flow', 'data/Unconventional_Oil_NG_State.csv')
 
     # read in read in state level unconventional natural gas and oil production data
@@ -387,7 +466,6 @@ def get_unconventional_oil_gas_production_data():
 
 
 def get_conventional_oil_water_intensity_data():
-
     data = pkg_resources.resource_filename('flow', 'data/PADD_intensity.csv')
 
     # read in read in state level water to oil intensity data
@@ -395,8 +473,6 @@ def get_conventional_oil_water_intensity_data():
 
 
 def get_oil_gas_discharge_data():
-
-
     data = pkg_resources.resource_filename('flow', 'data/Oil_NG_WOR_WGR.csv')
 
     # read in read in state level water discharge data from oil and natural gas
@@ -404,8 +480,6 @@ def get_oil_gas_discharge_data():
 
 
 def get_coal_production_data():
-
-
     data = pkg_resources.resource_filename('flow', 'data/coalpublic2015.csv')
 
     # read in read in coal production data
@@ -413,7 +487,6 @@ def get_coal_production_data():
 
 
 def get_coal_mine_location_data():
-
     data = pkg_resources.resource_filename('flow', 'data/Coal_Mine_Loc.csv')
 
     # read in read in coal mine data
@@ -426,14 +499,12 @@ def get_state_fips_data():
     # read in read in state fips code to state abbrev. data
     return pd.read_csv(data, dtype={'State_FIPS': str})
 
+
 def get_ethanol_location_data():
     data = pkg_resources.resource_filename('flow', 'data/eia819_ethanolcapacity_2015.csv')
 
     # read in read in state fips code to state abbrev. data
     return pd.read_csv(data, dtype={'FIPS': str}, skiprows=1)
-
-
-
 
 
 x = prep_water_use_2015(all_variables=True)
