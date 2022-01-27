@@ -526,17 +526,39 @@ def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) ->
     # merge with full list of counties from 2015 water data
     df = pd.merge(df_loc, df, how='left', on='FIPS')
 
-    return df
+    return us_avg
 
 
 
-x = prep_hydroelectric_water_intensity(intensity_cap=False)
+x = calc_hydro_water_intensity(intensity_cap=False)
 print(x)
-x.to_csv('test_output.csv')
-import os
-os.startfile(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv")
+#x.to_csv('test_output.csv')
+#import os
+#os.startfile(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv")
 
+def prep_county_identifier() -> pd.DataFrame:
+    """preps a dataset of FIPS codes and associated county names so that datasets with just county names can be
+    mapped to appropriate FIPS codes.
 
+            :return:                DataFrame of FIPS code and county name identifier crosswalk
+
+            """
+    # read in data
+    data = 'input_data/county_FIPS_list.csv'
+    df = pd.read_csv(data, dtype={'FIPS': str, 'STATEFIPS': str})
+
+    # clean data
+    df["COUNTY_SHORT"] = df["COUNTY_SHORT"].str.replace(' ', '')  # remove spaces between words in county name
+    df['COUNTY_SHORT'] = df['COUNTY_SHORT'].str.lower()  # change county name to lowercase
+    df['FIPS'] = df['FIPS'].apply(lambda x: '{0:0>5}'.format(x))  # add leading zero to FIPS code
+
+    # create identifier column with state abbreviation and county name
+    df["county_identifier"] = df["STATE"] + df["COUNTY_SHORT"]  # create identifier
+
+    # reduce dataframe
+    df = df[["FIPS", 'county_identifier']]
+
+    return df
 
 def combine_data():
     x1 = prep_water_use_2015(all_variables=True)
@@ -558,19 +580,7 @@ def combine_data():
 # READER
 
 #def reader:
-    #def get_water_use_1995():
-    #    data = pkg_resources.resource_filename('flow', 'data/usco1995.csv')
-#
-    #    return pd.read_csv(data, dtype={'StateCode': str, 'CountyCode': str})
-#
-#
-    #def get_county_identifier_data():
-    #    data = pkg_resources.resource_filename('flow', 'data/county_interconnect_list.csv')
-#
-    #    # read in county-interconnect crosswalk
-    #    return pd.read_csv(data, dtype={'FIPS': str, 'STATEFIPS': str})
-#
-#
+
     #def get_wastewater_flow_data():
     #    data = pkg_resources.resource_filename('flow', 'data/WW_Facility_Flow.csv')
 #
