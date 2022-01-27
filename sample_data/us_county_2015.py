@@ -396,68 +396,162 @@ def calc_pws_deliveries() -> pd.DataFrame:
     df = df[["FIPS", 'State', 'County', com_pwd_name, ind_pwd_name]]
 
     return df
-#
-#
-#def prep_hydroelectric_water_intensity(intensity_cap=False, intensity_cap_amt=48000) -> pd.DataFrame:
-#    """calculating the water use required for a megawatt-hour of hydroelectric generation. Daily water use (mgd) is
-#    combined with annual generation from hydropower for each region.
-#
-#    :return:                DataFrame of water intensity of hydroelectric generation by county
-#
-#    """
-#
-#    # read in data
-#    df = prep_water_use_1995(variables=['FIPS', 'State', "HY-InUse", "HY-InPow"])  # 1995 hydropower data
-#    df_loc = prep_water_use_2015()  # prepared list of 2015 counties with FIPS codes
-#
-#    # convert from mwh of generation to bbtu
-#    df["HY-InPow"] = df["HY-InPow"].apply(convert_mwh_bbtu)
-#
-#    # get daily power generation from annual generation (annual bbtu generated)
-#    df["HY-InPow"] = df["HY-InPow"] / 365
-#
-#    # calculate water intensity fraction million gallons per bbtu
-#    water_intensity_name = 'WS_fresh_surfacewater_total_total_to_EGS_hydro_total_total_total_intensity'
-#    df[water_intensity_name] = np.where(df["HY-InPow"] > 0, (df["HY-InUse"] / df["HY-InPow"]), 0)
-#
-    # removing outlier intensities
-    #if intensity_cap:
-    #    df[water_intensity_name] = np.where(df['hydro_intensity_mg_per_bbtu'] >= intensity_cap_amt,
-    #                                                 intensity_cap_amt,
-    #                                                 df['hydro_intensity_mg_per_bbtu'])
-    #else:
-    #    df = df
+
+
+def calc_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.90) -> pd.DataFrame:
+    """
+    This function calculates the fraction of water lost during conveyance for irrigation (Crop and golf).
+     The fraction is calculated as water lost in conveyance of irrigation water divided by total water
+    withdrawn for irrigation.
+
+    :param loss_cap:                       If True, a cap is placed on the conveyance loss fraction
+    :type loss_cap:                        bool
+
+    :param loss_cap_amt:                   The amount at which irrigation losses are capped and values beyond are
+                                            replaced by the specified cap amount. The default value is .90.
+    :type loss_cap_amt:                    float
+
+    :return:                               DataFrame of conveyance loss fractions by row
+
+    """
+    # read in data
+    df = prep_water_use_1995(variables=['FIPS', 'State', 'IR-WTotl', 'IR-CLoss'])  # read in 1995 water values
+    df_loc = prep_water_use_2015()  # prepared list of 2015 counties with FIPS codes
+
+    # create extended variable names
+    crop_irr_sw_name = 'ACI_fresh_surfacewater_total_total_to_CVL_total_total_total_total_fraction'
+    crop_irr_gw_name = 'ACI_fresh_groundwater_total_total_to_CVL_total_total_total_total_fraction'
+
+    golf_irr_sw_name = 'AGI_fresh_surfacewater_total_total_to_CVL_total_total_total_total_fraction'
+    golf_irr_gw_name = 'AGI_fresh_groundwater_total_total_to_CVL_total_total_total_total_fraction'
+
+    # calculate conveyance loss fraction of total water withdrawn for irrigation if irrigation water > 0
+    df["loss_fraction"] = np.where(df['IR-WTotl'] > 0, df['IR-CLoss'] / df['IR-WTotl'], 0)
+
+    if loss_cap:
+        df["loss_fraction"] = np.where(df['loss_fraction'] > loss_cap_amt, loss_cap_amt, df["loss_fraction"])
+        df["loss_fraction"] = np.where(df['loss_fraction'] > loss_cap_amt, loss_cap_amt, df["loss_fraction"])
+
+    else:
+        df["loss_fraction"] = df["loss_fraction"]
+
+    # fill counties with 0 conveyance loss with state averages
+    df_mean = df.groupby('State', as_index=False).mean()
+    rename_list = df_mean.columns[1:].to_list()
+    for col in rename_list:
+        new_name = f"{col}_state"
+        df_mean = df_mean.rename(columns={col: new_name})
+    df_mean_all = pd.merge(df, df_mean, how='left', on=['State'])
+
+    df_mean_us_all = df_mean_all[df_mean_all.loss_fraction > 0]
+    us_average = df_mean_us_all['loss_fraction'].mean()
+
+    # replace counties with consumption fractions of zero with the state average to replace missing data
+    rep_list = df.columns[2:].to_list()
+    for col in rep_list:
+        mean_name = f"{col}_state"
+        df[col] = np.where(df[col] == 0, df_mean_all[mean_name], df[col])
+        df[col] = np.where(df[col] == 0, us_average, df[col])
+
+    # assign conveyance loss value to crop and golf irrigation loss names
+    df[crop_irr_sw_name] = df["loss_fraction"]
+    df[crop_irr_gw_name] = df["loss_fraction"]
+    df[golf_irr_sw_name] = df["loss_fraction"]
+    df[golf_irr_gw_name] = df["loss_fraction"]
+
+    # reduce dataframe
+    df = df[["FIPS", crop_irr_sw_name, crop_irr_gw_name, golf_irr_sw_name, golf_irr_gw_name]]
+
+    # merge with full list of counties from 2015 water data
+    df = pd.merge(df_loc, df, how='left', on='FIPS')
+
+    return df
+
+
+def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) -> pd.DataFrame:
+    """calculating the water use required for a megawatt-hour of hydroelectric generation. Daily water use (mgd) is
+    combined with annual generation from hydropower for each region.
+
+    :return:                DataFrame of water intensity of hydroelectric generation by county
+
+    """
+
+    # read in data
+    df = prep_water_use_1995(variables=['FIPS', 'State', "HY-InUse", "HY-InPow"])  # 1995 hydropower data
+    df_loc = prep_water_use_2015()  # prepared list of 2015 counties with FIPS codes
+
+    # convert from mwh of generation to bbtu
+    df["HY-InPow"] = df["HY-InPow"].apply(convert_mwh_bbtu)
+
+    # get daily power generation from annual generation (annual bbtu generated)
+    df["HY-InPow"] = df["HY-InPow"] / 365
+
+    # calculate water intensity fraction million gallons per bbtu
+    water_intensity_name = 'WS_fresh_surfacewater_total_total_to_EGS_hydro_total_total_total_intensity'
+    df[water_intensity_name] = np.where(df["HY-InPow"] > 0, (df["HY-InUse"] / df["HY-InPow"]), 0)
+
+    # cap outlier intensities
+    if intensity_cap:
+        df[water_intensity_name] = np.where(df[water_intensity_name] >= intensity_cap_amt,
+                                                     intensity_cap_amt,
+                                                     df[water_intensity_name])
+    else:
+        df[water_intensity_name] = df[water_intensity_name]
 
     # calculate state average
-    #state_avg = df.groupby("State", as_index=False).mean().drop(['HY-InUse', 'HY-InPow'], axis=1)
-    #state_avg = state_avg.rename(columns={water_intensity_name: 'state_avg'})
-#
+    state_avg = df[df.WS_fresh_surfacewater_total_total_to_EGS_hydro_total_total_total_intensity > 0]
+    state_avg = df.groupby("State", as_index=False).mean().drop(['HY-InUse', 'HY-InPow'], axis=1)
+    state_avg = state_avg.rename(columns={water_intensity_name: 'state_avg'})
+    us_avg = state_avg['state_avg'].mean()
+
     ## calculate country average for states with no hydro in 1995
-    #country_avg = df[water_intensity_name].mean()
-    #state_avg['state_avg'] = np.where(state_avg['state_avg'] == 0, country_avg, state_avg['state_avg'])
-#
-    ## merge with main dataframe and replace 0 values
-    #df = pd.merge(df, state_avg, how='left', on='State')
-    #df[water_intensity_name] = np.where(df[water_intensity_name] == 0, df['state_avg'],
-    #                                             df[water_intensity_name])
-#
-    ## simplify dataframe
-    #df = df[['FIPS', water_intensity_name]]
-#
-    ## merge with full list of counties from 2015 water data
-    #df = pd.merge(df_loc, df, how='left', on='FIPS')
+    country_avg = df[water_intensity_name].mean()
 
-    #return df
+    df_mean_all = pd.merge(df, state_avg, how='left', on=['State'])
+
+    # replace counties with consumption fractions of zero with the state average to replace missing data
+    rep_list = df.columns[2:].to_list()
+    for col in rep_list:
+        df[col] = np.where(df[col] == 0, df_mean_all['state_avg'], df[col])
+        df[col] = np.where(df[col] == 0, us_avg, df[col])
+
+    # merge with main dataframe and replace 0 values
+    df = pd.merge(df, state_avg, how='left', on='State')
+    df[water_intensity_name] = np.where(df[water_intensity_name] == 0, df['state_avg'],
+                                                 df[water_intensity_name])
+
+    # simplify dataframe
+    df = df[['FIPS', water_intensity_name]]
+
+    # merge with full list of counties from 2015 water data
+    df = pd.merge(df_loc, df, how='left', on='FIPS')
+
+    return df
 
 
 
-
-
-x = calc_pws_deliveries()
+x = prep_hydroelectric_water_intensity(intensity_cap=False)
 print(x)
 x.to_csv('test_output.csv')
 import os
 os.startfile(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv")
+
+
+
+def combine_data():
+    x1 = prep_water_use_2015(all_variables=True)
+    x2 = calc_pws_deliveries()
+    x3 = calc_conveyance_loss_fraction()
+
+    return x1
+
+
+
+
+
+
+
+
 
 
 
