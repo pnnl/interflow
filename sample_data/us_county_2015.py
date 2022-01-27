@@ -529,15 +529,8 @@ def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) ->
     return us_avg
 
 
-
-x = calc_hydro_water_intensity(intensity_cap=False)
-print(x)
-#x.to_csv('test_output.csv')
-#import os
-#os.startfile(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv")
-
 def prep_county_identifier() -> pd.DataFrame:
-    """preps a dataset of FIPS codes and associated county names so that datasets with just county names can be
+    """preps a dataset of FIPS codes and associated county name crosswalk so that datasets with just county names can be
     mapped to appropriate FIPS codes.
 
             :return:                DataFrame of FIPS code and county name identifier crosswalk
@@ -560,10 +553,23 @@ def prep_county_identifier() -> pd.DataFrame:
 
     return df
 
+
+
+
+x = calc_hydro_water_intensity(intensity_cap=False)
+print(x)
+#x.to_csv('test_output.csv')
+#import os
+#os.startfile(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv")
+
+
+
+
 def combine_data():
     x1 = prep_water_use_2015(all_variables=True)
     x2 = calc_pws_deliveries()
     x3 = calc_conveyance_loss_fraction()
+    x4 = calc_hydro_water_intensity()
 
     return x1
 
