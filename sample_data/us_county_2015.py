@@ -554,13 +554,303 @@ def prep_county_identifier() -> pd.DataFrame:
     return df
 
 
+def prep_wastewater_data() -> pd.DataFrame:
+    """preps each wastewater treatment facility data file (water flows, facility locations, facility types, and
+    facility discharge data), cleans input, and brings them together to produce a single wastewater treatment
+    datafile by FIPS county code.
+
+    :return:                DataFrame of wastewater treatment water flows for each county
+
+    """
+    # read in county identifier to FIPS crosswalk data
+    df_county = prep_county_identifier()
+
+    # read in list of full county list from 2015 USGS water data
+    df_county_list = prep_water_use_2015()
+
+    # read in public water supply withdrawal data from 2015 USGS water data
+    df_2015_pws = prep_water_use_2015(variables=['FIPS', 'State', 'total_pws_withdrawals_mgd'])  # pws data
+
+    # read in wastewater facility water flow data
+    ww_flow_data = 'input_data/WW_Facility_Flow.csv'
+    df_ww_flow = pd.read_csv(ww_flow_data, dtype={'CWNS_NUMBER': str})
+
+    # read in wastewater facility treatment type data
+    ww_type_data = 'input_data/WW_Facility_Type.csv'
+    df_ww_type = pd.read_csv(ww_type_data, dtype={'CWNS_NUMBER': str})
+
+    # read in wastewater facility location data
+    ww_loc_data = 'input_data/WW_Facility_Loc.csv'
+    df_ww_loc = pd.read_csv(ww_loc_data, dtype={'CWNS_NUMBER': str})
+
+    # read in wastewater facility discharge data
+    ww_dis_data = 'input_data/WW_Discharge.csv'
+    df_ww_dis = pd.read_csv(ww_dis_data, dtype={'CWNS_NUMBER': str})
+
+    # wastewater flow type dictionary
+    flow_dict = {'EXIST_INFILTRATION': 'infiltration_wastewater_mgd',
+                 'EXIST_TOTAL': 'total_wastewater_mgd',
+                 'EXIST_MUNI': 'municipal_wastewater_mgd'}
+
+    # wastewater discharge type dictionary
+    dis_dict = {'outfall to surface waters': 'wastewater_surface_discharge',
+                'ocean discharge': 'wastewater_ocean_discharge',
+                'deep well': 'wastewater_groundwater_discharge',
+                "reuse: industrial": 'wastewater_industrial_discharge',
+                'evaporation': 'wastewater_consumption',
+                'spray irrigation': 'wastewater_irrigation_discharge',
+                'overland flow no discharge': 'wastewater_wastewater_discharge',
+                'overland flow with discharge': 'wastewater_surface_discharge',
+                'discharge to another facility': 'wastewater_wastewater_discharge',
+                'combined sewer overflow (cso) discharge': 'wastewater_surface_discharge',
+                'other': 'wastewater_surface_discharge',
+                'discharge to groundwater': 'wastewater_groundwater_discharge',
+                'no discharge, unknown': 'wastewater_wastewater_discharge',
+                'reuse: irrigation': 'wastewater_irrigation_discharge',
+                'reuse: other non-potable': 'wastewater_surface_discharge',
+                'reuse: indirect potable': 'wastewater_surface_discharge',
+                'reuse: potable': 'wastewater_pws_discharge',
+                'reuse: groundwater recharge': 'wastewater_groundwater_discharge'}
+
+    # wastewater facility treatment type dictionary
+    treat_dict = {'raw discharge': 'wastewater_no_treatment',
+                  'primary (45mg/l< bod)': 'wastewater_primary_treatment',
+                  'advanced primary': 'wastewater_advanced_treatment',
+                  'secondary wastewater treatment': 'wastewater_secondary_treatment',
+                  'secondary': 'wastewater_secondary_treatment',
+                  'advanced treatment': 'wastewater_advanced_treatment'}
+
+    # correct naming in wastewater facility location data
+    df_ww_loc["PRIMARY_COUNTY"] = np.where(df_ww_loc["PRIMARY_COUNTY"] == "Bedford City", "Bedford",
+                                           df_ww_loc["PRIMARY_COUNTY"])
+
+    # reformat county identifier columns in wastewater facility location data
+    df_ww_loc['PRIMARY_COUNTY'] = df_ww_loc['PRIMARY_COUNTY'].str.lower()  # change to lowercase
+    df_ww_loc["PRIMARY_COUNTY"] = df_ww_loc["PRIMARY_COUNTY"].str.replace(' ', '')  # remove spaces between words
+
+    # create a state+county identifier column in wastewater facility location data
+    df_ww_loc['CWNS_NUMBER'] = df_ww_loc['CWNS_NUMBER'].apply(lambda x: '{0:0>11}'.format(x))  # add leading zero
+    df_ww_loc["county_identifier"] = df_ww_loc["STATE"] + df_ww_loc["PRIMARY_COUNTY"]  # add identifier
+
+    # combine wastewater facility location data and county to FIPS crosswalk data to get a FIPS code for each plant
+    df_ww_loc = pd.merge(df_ww_loc, df_county, how="left", on="county_identifier")  # merge dataframes
+    df_ww_loc = df_ww_loc[["CWNS_NUMBER", "FIPS", "STATE"]]  # reducing to required variables
 
 
-x = calc_hydro_water_intensity(intensity_cap=False)
+    # prepare wastewater treatment flow data
+    df_ww_flow = df_ww_flow[["CWNS_NUMBER", "EXIST_INFILTRATION", "EXIST_TOTAL"]]  # reducing to required variables
+    df_ww_flow = df_ww_flow.dropna(subset=["EXIST_TOTAL"])  # drop treatment plants with zero flows
+    df_ww_flow["EXIST_INFILTRATION"] = df_ww_flow["EXIST_INFILTRATION"].fillna(0)  # fill blank infiltration with zero
+
+    # calculate municipal water flows for each facility in wastewater treatment flow data
+    df_ww_flow['EXIST_MUNI'] = df_ww_flow["EXIST_TOTAL"] - df_ww_flow["EXIST_INFILTRATION"]  # subtract infiltration
+
+    # reformat and rename wastewater treatment facility flow data
+    df_ww_flow['CWNS_NUMBER'] = df_ww_flow['CWNS_NUMBER'].apply(lambda x: '{0:0>11}'.format(x))  # add leading zero
+    df_ww_flow.rename(columns=flow_dict, inplace=True)  # rename columns to add descriptive language
+
+    # combine wastewater treatment facility flow data and wastewater treatment facility location data
+    df_ww_flow = pd.merge(df_ww_flow, df_ww_loc, how="left", on='CWNS_NUMBER')  # merge dataframes
+
+    # remove wastewater treatment facility flow data rows for geographic areas not included in other datasets
+    df_ww_flow = df_ww_flow[df_ww_flow.STATE != "AS"]  # remove flow values for American Samoa
+    df_ww_flow = df_ww_flow[df_ww_flow.STATE != "GU"]  # remove flow values for Guam
+    df_ww_flow = df_ww_flow[df_ww_flow.STATE != "PR"]  # remove flow values for Guam
+    df_ww_flow = df_ww_flow[df_ww_flow.STATE != "VI"]  # remove flow values for Guam
+
+
+
+
+    # prep wastewater treatment facility discharge type data to remove naming and capitalization inconsistencies
+    df_ww_dis['DISCHARGE_METHOD'] = df_ww_dis['DISCHARGE_METHOD'].str.replace(',', '')  # remove commas
+    df_ww_dis['DISCHARGE_METHOD'] = df_ww_dis['DISCHARGE_METHOD'].str.lower()  # change to lowercase
+    df_ww_dis['DISCHARGE_METHOD'] = np.where(df_ww_dis['DISCHARGE_METHOD'] == "reuse: ground water recharge",  # rename
+                                             "reuse: groundwater recharge",
+                                             df_ww_dis['DISCHARGE_METHOD'])
+    df_ww_dis['DISCHARGE_METHOD'] = np.where(df_ww_dis['DISCHARGE_METHOD'] == "cso discharge",  # rename
+                                             "combined sewer overflow (cso) discharge",
+                                             df_ww_dis['DISCHARGE_METHOD'])
+
+    # rename wastewater treatment discharge types
+    df_ww_dis['DISCHARGE_METHOD_BIN'] = df_ww_dis['DISCHARGE_METHOD'].map(dis_dict)  # map to discharge dictionary
+
+    # reduce and reformat variables in wastewater treatment facility discharge data
+    df_ww_dis = df_ww_dis[["CWNS_NUMBER", 'DISCHARGE_METHOD_BIN', 'PRES_FLOW_PERCENTAGE']]  # keep required columns
+    df_ww_dis['CWNS_NUMBER'] = df_ww_dis['CWNS_NUMBER'].apply(lambda x: '{0:0>11}'.format(x))  # add leading zero
+    df_ww_dis['PRES_FLOW_PERCENTAGE'] = df_ww_dis['PRES_FLOW_PERCENTAGE'] / 100  # convert to fraction
+
+    # pivot wastewater treatment facility discharge dataframe to get discharge type as columns
+    df_ww_dis = pd.pivot_table(df_ww_dis, values='PRES_FLOW_PERCENTAGE', index=['CWNS_NUMBER'],
+                               columns=['DISCHARGE_METHOD_BIN'],
+                               aggfunc=np.sum)  # pivot to get discharge types as columns
+    df_ww_dis = df_ww_dis.reset_index()  # reset index to remove multi-index from pivot table
+    df_ww_dis = df_ww_dis.rename_axis(None, axis=1)  # drop index name
+
+    # fill nan discharge percentage values in wastewater facility discharge data with 0 percent
+    for col in df_ww_dis.columns[1:]:
+        df_ww_dis[col] = df_ww_dis[col].fillna(0)  # fill nan rows with 0
+
+    # calculate the sum of all discharge type percentages by plant in wastewater treatment facility discharge data
+    df_ww_dis['sum_pct'] = df_ww_dis.iloc[:, 1:].sum(axis=1)  # calculate sum of all flow percentages
+
+    # for treatment plants with no discharge data, assume 70% of discharge is to surface discharge
+    df_ww_dis['wastewater_surface_discharge'] = np.where(df_ww_dis['sum_pct'] == 0,  # fill blanks values
+                                                         .68,
+                                                         df_ww_dis['wastewater_surface_discharge'])
+    # for treatment plants with no discharge data, assume 18% of discharge is to groundwater
+    df_ww_dis['wastewater_groundwater_discharge'] = np.where(df_ww_dis['sum_pct'] == 0,  # fill blanks values
+                                                         .19,
+                                                         df_ww_dis['wastewater_groundwater_discharge'])
+
+    # for treatment plants with no discharge data, assume 8% of discharge is to irrigation
+    df_ww_dis['wastewater_irrigation_discharge'] = np.where(df_ww_dis['sum_pct'] == 0,  # fill blanks values
+                                                             .08,
+                                                             df_ww_dis['wastewater_irrigation_discharge'])
+
+    # for treatment plants with no discharge data, assume 5% of discharge is to consumption
+    df_ww_dis['wastewater_consumption'] = np.where(df_ww_dis['sum_pct'] == 0,  # fill blanks values
+                                                            .05,
+                                                            df_ww_dis['wastewater_consumption'])
+
+    # for treatment plants that discharge to another treatment plant, the values are redistributed
+    # for treatment plants with no discharge data, assume 70% of discharge is to surface discharge
+    df_ww_dis['wastewater_surface_discharge'] = np.where(df_ww_dis['wastewater_wastewater_discharge'] > 0,
+                                                         df_ww_dis['wastewater_surface_discharge']
+                                                         + (.68 * df_ww_dis['wastewater_wastewater_discharge']),
+                                                         df_ww_dis['wastewater_surface_discharge'])
+    # for treatment plants with no discharge data, assume 18% of discharge is to groundwater
+    df_ww_dis['wastewater_groundwater_discharge'] = np.where(df_ww_dis['wastewater_wastewater_discharge'] > 0,  # fill blanks values
+                                                         df_ww_dis['wastewater_groundwater_discharge']
+                                                         + (.19 * df_ww_dis['wastewater_wastewater_discharge']),
+                                                         df_ww_dis['wastewater_groundwater_discharge'])
+
+    # for treatment plants with no discharge data, assume 8% of discharge is to irrigation
+    df_ww_dis['wastewater_irrigation_discharge'] = np.where(df_ww_dis['wastewater_wastewater_discharge'] > 0,  # fill blanks values
+                                                         df_ww_dis['wastewater_irrigation_discharge']
+                                                         + (.08 * df_ww_dis['wastewater_wastewater_discharge']),
+                                                         df_ww_dis['wastewater_irrigation_discharge'])
+
+    # for treatment plants with no discharge data, assume 5% of discharge is to consumption
+    df_ww_dis['wastewater_consumption'] = np.where(df_ww_dis['wastewater_wastewater_discharge'] > 0,  # fill blanks values
+                                                         df_ww_dis['wastewater_consumption']
+                                                         + (.05 * df_ww_dis['wastewater_wastewater_discharge']),
+                                                         df_ww_dis['wastewater_consumption'])
+
+    # drop discharges to wastewater
+    df_ww_dis = df_ww_dis.drop(['wastewater_wastewater_discharge'], axis=1)
+
+    df_ww_dis['sum_pct'] = df_ww_dis.iloc[:, 1:-1].sum(axis=1)  # recalculate sum
+
+
+
+
+    # combine wastewater treatment facility flow data and wastewater treatment facility discharge data
+    df_ww_flow = pd.merge(df_ww_flow, df_ww_dis, how='left', on='CWNS_NUMBER')
+
+    # prep wastewater treatment facility treatment type data
+    df_ww_type = df_ww_type[['CWNS_NUMBER', 'PRES_EFFLUENT_TREATMENT_LEVEL']]  # reducing to required variables
+    df_ww_type['pct'] = 1  # add a percent column
+
+    # reduce and reformat variables in wastewater treatment facility treatment type data
+    df_ww_type['PRES_EFFLUENT_TREATMENT_LEVEL'] = df_ww_type['PRES_EFFLUENT_TREATMENT_LEVEL'].str.lower()  # lowercase
+    df_ww_type['PRES_EFFLUENT_TREATMENT_LEVEL'] = np.where(df_ww_type['PRES_EFFLUENT_TREATMENT_LEVEL'] ==  # rename
+                                                           "primary (45mg/l is less than bod)",
+                                                           "primary (45mg/l< bod)",
+                                                           df_ww_type['PRES_EFFLUENT_TREATMENT_LEVEL'])
+
+    # bin wastewater treatment facility treatment types
+    df_ww_type['TREATMENT_LEVEL_BIN'] = df_ww_type['PRES_EFFLUENT_TREATMENT_LEVEL'].map(treat_dict)
+
+    # pivot wastewater treatment facility treatment type dataframe to get treatment type as columns
+    df_ww_type = pd.pivot_table(df_ww_type, values='pct', index=['CWNS_NUMBER'],
+                                columns=['TREATMENT_LEVEL_BIN'],
+                                aggfunc=np.sum)  # pivot to get treatment types as columns
+    df_ww_type = df_ww_type.reset_index()  # reset index to remove multi-index from pivot table
+    df_ww_type = df_ww_type.rename_axis(None, axis=1)  # drop index name
+
+    # fill nan treatment type values with 0 percent
+    for col in df_ww_type.columns[1:]:  # fill nan rows with 0
+        df_ww_type[col] = df_ww_type[col].fillna(0)
+
+    df_ww_type['sum_type'] = df_ww_type.iloc[:, 1:].sum(axis=1)  # calculate sum
+    df_ww_type['CWNS_NUMBER'] = df_ww_type['CWNS_NUMBER'].apply(lambda x: '{0:0>11}'.format(x))  # add leading zero
+
+    # combine wastewater treatment facility flow data and wastewater treatment facility type data
+    df_ww_flow = pd.merge(df_ww_flow, df_ww_type, how='left', on='CWNS_NUMBER')
+
+    # fill nan with 0
+    for col in df_ww_type.columns:  # fill nan rows with 0
+        df_ww_flow[col] = df_ww_flow[col].fillna(0)
+
+    # for treatment plants with flow data but no treatment type data, assume 60% of treatment type is secondary
+    df_ww_flow['wastewater_secondary_treatment'] = np.where(df_ww_flow['sum_type'] < 1,
+                                                            .6,
+                                                            df_ww_flow['wastewater_secondary_treatment'])
+    # for treatment plants with flow data but no treatment type data, assume 40% of treatment type is secondary
+    df_ww_flow['wastewater_advanced_treatment'] = np.where(df_ww_flow['sum_type'] < 1,
+                                                          .4,
+                                                          df_ww_flow['wastewater_advanced_treatment'])
+    df_ww_flow['sum_type'] = df_ww_flow.iloc[:, 15:-1].sum(axis=1)  # recalculate sum
+
+    # creating new df and  reducing list of variables
+    df_ww_fractions = df_ww_flow.drop(['sum_type', 'sum_pct', 'infiltration_wastewater_mgd', 'total_wastewater_mgd',
+                                       'municipal_wastewater_mgd'], axis=1)
+    df_ww_flow = df_ww_flow[['FIPS', 'State', 'County','infiltration_wastewater_mgd', 'total_wastewater_mgd',
+                                       'municipal_wastewater_mgd' ]]
+
+    # group by FIPS code to get average wastewater discharge and treatment types by county
+    df_ww_fractions = df_ww_fractions.groupby("FIPS", as_index=False).mean()
+
+    # combine with full county list to get values for each county and fill counties with no plants with 0
+    df_ww_fractions = pd.merge(df_county_list, df_ww_fractions, how='left', on='FIPS')
+    df_ww_fractions.fillna(0, inplace=True)
+
+    # group by FIPS code to get average wastewater discharge and treatment types by county
+    df_ww_flow = df_ww_flow.groupby("FIPS", as_index=False).mean()
+
+    # combine with full county list to get values for each county and fill counties with no plants with 0
+    df_ww_flow = pd.merge(df_county_list, df_ww_flow, how='left', on='FIPS')
+    df_ww_flow.fillna(0, inplace=True)
+
+    return df_ww_flow
+
+    # create a dictionary of public water supply flows for south carolina by FIPS code
+    #df_2015_pws = df_2015_pws[df_2015_pws.State == "SC"]
+    #df_2015_pws = df_2015_pws.drop("State", axis=1)
+    ## sc_pws_dict = df_2015_pws.set_index('FIPS').to_dict()
+#
+    ## filling in estimates for south carolina from total public water supply flows given missing data
+    #df_ww = pd.merge(df_ww, df_2015_pws, how='left', on='FIPS')
+    #for row in df_ww.iterrows():
+    #    df_ww['total_wastewater_mgd'] = np.where(df_ww['State'] == "SC",  # fill total wastewater from public supply
+    #                                             df_ww['total_pws_withdrawals_mgd'],
+    #                                             df_ww['total_wastewater_mgd'])
+    #    df_ww['municipal_wastewater_mgd'] = np.where(df_ww['State'] == "SC",  # fill total wastewater from public supply
+    #                                                 df_ww['total_wastewater_mgd'],
+    #                                                 df_ww['municipal_wastewater_mgd'])
+    #    df_ww['wastewater_surface_discharge_mgd'] = np.where(df_ww['State'] == "SC",  # fill discharge with surface
+    #                                                         df_ww['total_wastewater_mgd'],
+    #                                                         df_ww['wastewater_surface_discharge_mgd'])
+    #    df_ww['wastewater_advanced_treatment_mgd'] = np.where(df_ww['State'] == "SC",  # fill treatment with advanced
+    #                                                          .8 * df_ww['total_wastewater_mgd'],
+    #                                                          df_ww['wastewater_advanced_treatment_mgd'])
+    #    df_ww['wastewater_secondary_treatment_mgd'] = np.where(df_ww['State'] == "SC",  # fill treatment with secondary
+    #                                                           .2 * df_ww['total_wastewater_mgd'],
+    #                                                           df_ww['wastewater_secondary_treatment_mgd'])
+#
+    ## add column indicating percentage of energy from electricity, assumed 100%
+    #df_ww['wastewater_electricity_fuel_pct'] = 1
+
+    # drop public water supply variable
+   # df_ww = df_ww.drop('total_pws_withdrawals_mgd', axis=1)
+
+
+
+x = prep_wastewater_data()
 print(x)
-#x.to_csv('test_output.csv')
-#import os
-#os.startfile(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv")
+x.to_csv('test_output.csv')
+import os
+os.startfile(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv")
 
 
 
@@ -587,32 +877,7 @@ def combine_data():
 
 #def reader:
 
-    #def get_wastewater_flow_data():
-    #    data = pkg_resources.resource_filename('flow', 'data/WW_Facility_Flow.csv')
-#
-    #    # read in wastewater treatment facility water flow data
-    #    return pd.read_csv(data, dtype={'CWNS_NUMBER': str})
-#
-#
-    #def get_wastewater_facility_type_data():
-    #    data = pkg_resources.resource_filename('flow', 'data/WW_Facility_Type.csv')
-#
-    #    # read in wastewater treatment facility type data
-    #    return pd.read_csv(data, dtype={'CWNS_NUMBER': str})
-#
-#
-    #def get_wastewater_facility_loc_data():
-    #    data = pkg_resources.resource_filename('flow', 'data/WW_Facility_Loc.csv')
-#
-    #    # read in wastewater treatment facility location data
-    #    return pd.read_csv(data, dtype={'CWNS_NUMBER': str})
-#
-#
-    #def get_wastewater_facility_discharge_data():
-    #    data = pkg_resources.resource_filename('flow', 'data/WW_Discharge.csv')
-#
-    #    # read in wastewater treatment facility discharge data
-    #    return pd.read_csv(data, dtype={'CWNS_NUMBER': str})
+
 #
 #
     #def get_electricity_generation_data():
