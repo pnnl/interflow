@@ -1,5 +1,5 @@
-﻿Region,T1,T2,T3,T4,T5,T_unit,Type,S1,S2,S3,S4,S5,S_units,Parameter,Value
-1,PWS,fresh,surfacewater,total,total,mgd,collect,WSW,fresh,surfacewater,total,total,mgd,flow_value,100
-1,PWS,fresh,surfacewater,pumping,total,bbtu,calculate,PWS,fresh,surfacewater,total,total,bbtu,intensity,3
-1,PWS,fresh,surfacewater,pumping,total,bbtu,discharge,REJ,total,total,total,total,bbtu,fraction,0.5
-2,PWS,fresh,surfacewater,pumping,total,bbtu,discharge,ESV,total,total,total,total,bbtu,fraction,0.5
+﻿Region,Type,T1,T2,T3,T4,T5,T_unit,S1,S2,S3,S4,S5,S_units,Parameter,Value
+1,A_collect,PWS,fresh,surfacewater,total,total,mgd,WSW,fresh,surfacewater,total,total,mgd,flow_value,100
+1,B_calculate,PWS,fresh,surfacewater,pumping,total,bbtu,PWS,fresh,surfacewater,total,total,mgd,intensity,3
+1,C_discharge,PWS,fresh,surfacewater,pumping,total,bbtu,REJ,total,total,total,total,bbtu,fraction,0.5
+1,C_discharge,PWS,fresh,surfacewater,pumping,total,bbtu,ESV,total,total,total,total,bbtu,fraction,0.5
