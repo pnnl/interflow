@@ -16,6 +16,7 @@ from .update import *
 from .read_config import *
 from .run import *
 from .calc_flow import *
+from .deconstruct import *
 
 
 

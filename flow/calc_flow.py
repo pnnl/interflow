@@ -1,5 +1,6 @@
 from .reader import *
 import flow.construct as co
+import flow.deconstruct as de
 
 
 def calculate(data=None, level=5):
@@ -26,7 +27,7 @@ def calculate(data=None, level=5):
 
     for r in f_dict:
         for type in f_dict[r]:
-            if type == 'collect':
+            if type == 'A_collect':
                 for t1 in f_dict[r][type]:
                     for t2 in f_dict[r][type][t1]:
                         for t3 in f_dict[r][type][t1][t2]:
@@ -68,7 +69,7 @@ def calculate(data=None, level=5):
                                                                     total_dict.update({l5_total_name: l5_total_value})
                                                                     print(l5_total_name)
                                     # calculate energy or water for water and energy sectors
-            elif type == 'calculate':
+            elif type == 'B_calculate':
                 print(l5_dict)
                 for t1 in f_dict[r][type]:
                     for t2 in f_dict[r][type][t1]:
@@ -93,7 +94,7 @@ def calculate(data=None, level=5):
 
 
                                     # split water and energy values into individual sources
-            elif type == 'source':
+            elif type == 'C_source':
                 for t1 in f_dict[r][type]:
                     for t2 in f_dict[r][type][t1]:
                         for t3 in f_dict[r][type][t1][t2]:
@@ -132,7 +133,7 @@ def calculate(data=None, level=5):
                                                                     l4_dict.update({l4_name: l4_value})
                                                                     l5_dict.update({l5_name: l5_value})
 
-            elif type == 'discharge':
+            elif type == 'D_discharge':
                 for t1 in f_dict[r][type]:
                     for t2 in f_dict[r][type][t1]:
                         for t3 in f_dict[r][type][t1][t2]:
@@ -174,24 +175,18 @@ def calculate(data=None, level=5):
 
                                 else:
                                     pass
-    # convert output dictionaries to dataframes
-    l1_df = pd.DataFrame.from_dict(l1_dict, orient='index').transpose()
-    l2_df = pd.DataFrame.from_dict(l2_dict, orient='index').transpose()
-    l3_df = pd.DataFrame.from_dict(l3_dict, orient='index').transpose()
-    l4_df = pd.DataFrame.from_dict(l4_dict, orient='index').transpose()
-    l5_df = pd.DataFrame.from_dict(l5_dict, orient='index').transpose()
 
     # return output at specified level of granularity
     if level == 1:
-        df = l1_df
+        df = de.deconstruct_nested_dictionary(l1_dict)
     elif level == 2:
-        df = l2_df
+        df = de.deconstruct_nested_dictionary(l2_dict)
     elif level == 3:
-        df = l3_df
+        df = de.deconstruct_nested_dictionary(l3_dict)
     elif level == 4:
-        df = l4_df
+        df = de.deconstruct_nested_dictionary(l4_dict)
     elif level == 5:
-        df = l5_df
+        df = de.deconstruct_nested_dictionary(l5_dict)
     else:
         m = 'incorrect level of granularity specified. Must be an integer between 1 and 5, inclusive.'
         raise ValueError(m)
