@@ -1,6 +1,6 @@
 import pkg_resources
 import pandas as pd
-import read_config as r
+from .read_config import *
 
 
 def read_baseline_data():
