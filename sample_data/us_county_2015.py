@@ -44,33 +44,33 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'TP-TotPop': 'population',
 
                       # direct use variables
-                      'PS-WGWFr': 'WSW_fresh_groundwater_total_total_to_PWS_fresh_groundwater_total_total_mgd',
-                      'PS-WSWFr': 'WSW_fresh_surfacewater_total_total_to_PWS_fresh_surfacewater_total_total_mgd',
-                      'PS-WGWSa': 'WSW_saline_groundwater_total_total_to_PWS_saline_groundwater_total_total_mgd',
-                      'PS-WSWSa': 'WSW_saline_surfacewater_total_total_to_PWS_saline_surfacewater_total_total_mgd',
-                      'DO-PSDel': 'PWD_total_total_total_total_to_RES_public_total_total_total_mgd',
-                      'DO-WGWFr': 'WSW_fresh_groundwater_total_total_to_RES_fresh_groundwater_total_total_mgd',
-                      'DO-WSWFr': 'WSW_fresh_surfacewater_total_total_to_RES_fresh_surfacewater_total_total_mgd',
-                      'IN-WGWFr': 'WSW_fresh_groundwater_total_total_to_IND_fresh_groundwater_total_total_mgd',
-                      'IN-WSWFr': 'WSW_fresh_surfacewater_total_total_to_IND_fresh_surfacewater_total_total_mgd',
-                      'IN-WGWSa': 'WSW_saline_groundwater_total_total_to_IND_saline_groundwater_total_total_mgd',
-                      'IN-WSWSa': 'WSW_saline_surfacewater_total_total_to_IND_saline_surfacewater_total_total_mgd',
-                      'MI-WGWFr': 'WSW_fresh_groundwater_total_total_to_MIN_fresh_groundwater_total_total_mgd',
-                      'MI-WSWFr': 'WSW_fresh_surfacewater_total_total_to_MIN_fresh_surfacewater_total_total_mgd',
-                      'MI-WGWSa': 'WSW_saline_groundwater_total_total_to_MIN_saline_groundwater_total_total_mgd',
-                      'MI-WSWSa': 'WSW_saline_surfacewater_total_total_to_MIN_saline_surfacewater_total_total_mgd',
-                      'IC-WGWFr': 'WSW_fresh_groundwater_total_total_to_ACI_fresh_groundwater_total_total_mgd',
-                      'IC-WSWFr': 'WSW_fresh_surfacewater_total_total_to_ACI_fresh_groundwater_total_total_mgd',
-                      'IC-RecWW': 'WSI_reclaimed_wastewater_total_total_to_ACI_reclaimed_wastewater_total_total_mgd',
-                      'IG-WGWFr': 'WSW_fresh_groundwater_total_total_to_AGI_fresh_groundwater_total_total_mgd',
-                      'IG-WSWFr': 'WSW_fresh_surfacewater_total_total_to_AGI_fresh_groundwater_total_total_mgd',
-                      'IG-RecWW': 'WSI_reclaimed_wastewater_total_total_to_AGI_reclaimed_wastewater_total_total_mgd',
-                      'LI-WGWFr': 'WSW_fresh_groundwater_total_total_to_ALV_fresh_groundwater_total_total_mgd',
-                      'LI-WSWFr': 'WSW_fresh_surfacewater_total_total_to_ALV_fresh_surfacewater_total_total_mgd',
-                      'AQ-WGWFr': 'WSW_fresh_groundwater_total_total_to_AAQ_fresh_groundwater_total_total_mgd',
-                      'AQ-WGWSa': 'WSW_saline_groundwater_total_total_to_AAQ_saline_groundwater_total_total_mgd',
-                      'AQ-WSWFr': 'WSW_fresh_surfacewater_total_total_to_AAQ_fresh_surfacewater_total_total_mgd',
-                      'AQ-WSWSa': 'WSW_saline_surfacewater_total_total_to_AAQ_saline_surfacewater_total_total_mgd',
+                      'PS-WGWFr': 'WSW_fresh_groundwater_total_total_mgd_to_PWS_fresh_groundwater_total_total_mgd',
+                      'PS-WSWFr': 'WSW_fresh_surfacewater_total_total_mgd_to_PWS_fresh_surfacewater_total_total_mgd',
+                      'PS-WGWSa': 'WSW_saline_groundwater_total_total_mgd_to_PWS_saline_groundwater_total_total_mgd',
+                      'PS-WSWSa': 'WSW_saline_surfacewater_total_total_mgd_to_PWS_saline_surfacewater_total_total_mgd',
+                      'DO-PSDel': 'PWD_total_total_total_total_mgd_to_RES_public_total_total_total_mgd',
+                      'DO-WGWFr': 'WSW_fresh_groundwater_total_total_mgd_to_RES_fresh_groundwater_total_total_mgd',
+                      'DO-WSWFr': 'WSW_fresh_surfacewater_total_total_mgd_to_RES_fresh_surfacewater_total_total_mgd',
+                      'IN-WGWFr': 'WSW_fresh_groundwater_total_total_mgd_to_IND_fresh_groundwater_total_total_mgd',
+                      'IN-WSWFr': 'WSW_fresh_surfacewater_total_total_mgd_to_IND_fresh_surfacewater_total_total_mgd',
+                      'IN-WGWSa': 'WSW_saline_groundwater_total_total_mgd_to_IND_saline_groundwater_total_total_mgd',
+                      'IN-WSWSa': 'WSW_saline_surfacewater_total_total_mgd_to_IND_saline_surfacewater_total_total_mgd',
+                      'MI-WGWFr': 'WSW_fresh_groundwater_total_total_mgd_to_MIN_fresh_groundwater_total_total_mgd',
+                      'MI-WSWFr': 'WSW_fresh_surfacewater_total_total_mgd_to_MIN_fresh_surfacewater_total_total_mgd',
+                      'MI-WGWSa': 'WSW_saline_groundwater_total_total_mgd_to_MIN_saline_groundwater_total_total_mgd',
+                      'MI-WSWSa': 'WSW_saline_surfacewater_total_total_mgd_to_MIN_saline_surfacewater_total_total_mgd',
+                      'IC-WGWFr': 'WSW_fresh_groundwater_total_total_mgd_to_ACI_fresh_groundwater_total_total_mgd',
+                      'IC-WSWFr': 'WSW_fresh_surfacewater_total_total_mgd_to_ACI_fresh_groundwater_total_total_mgd',
+                      'IC-RecWW': 'WSI_reclaimed_wastewater_total_total_mgd_to_ACI_reclaimed_wastewater_total_total_mgd',
+                      'IG-WGWFr': 'WSW_fresh_groundwater_total_total_mgd_to_AGI_fresh_groundwater_total_total_mgd',
+                      'IG-WSWFr': 'WSW_fresh_surfacewater_total_total_mgd_to_AGI_fresh_groundwater_total_total_mgd',
+                      'IG-RecWW': 'WSI_reclaimed_wastewater_total_total_mgd_to_AGI_reclaimed_wastewater_total_total_mgd',
+                      'LI-WGWFr': 'WSW_fresh_groundwater_total_total_mgd_to_ALV_fresh_groundwater_total_total_mgd',
+                      'LI-WSWFr': 'WSW_fresh_surfacewater_total_total_mgd_to_ALV_fresh_surfacewater_total_total_mgd',
+                      'AQ-WGWFr': 'WSW_fresh_groundwater_total_total_mgd_to_AAQ_fresh_groundwater_total_total_mgd',
+                      'AQ-WGWSa': 'WSW_saline_groundwater_total_total_mgd_to_AAQ_saline_groundwater_total_total_mgd',
+                      'AQ-WSWFr': 'WSW_fresh_surfacewater_total_total_mgd_to_AAQ_fresh_surfacewater_total_total_mgd',
+                      'AQ-WSWSa': 'WSW_saline_surfacewater_total_total_mgd_to_AAQ_saline_surfacewater_total_total_mgd',
 
                       # secondary use variables
                       'IR-WGWFr': 'fresh_groundwater_total_irrigation_mgd',
@@ -248,27 +248,27 @@ def prep_consumption_fraction() -> pd.DataFrame:
         # Retained and renamed 1995 variables
         "FIPS": 'FIPS',
         "State": 'State',
-        "DO_sCF_Fr": "RES_fresh_surfacewater_total_total_to_CMP_total_total_total_total_fraction",
-        "CO_sCF_Fr": "COM_public_total_total_total_to_CMP_total_total_total_total_fraction",
-        "IN_sCF_Fr": "IND_fresh_surfacewater_total_total_to_CMP_total_total_total_total_fraction",
-        "IN_sCF_Sa": "IND_saline_surfacewater_total_total_to_CMP_total_total_total_total_fraction",
-        "MI_sCF_Fr": "MIN_fresh_surfacewater_total_total_to_CMP_total_total_total_total_fraction",
-        "MI_sCF_Sa": "MIN_saline_surfacewater_total_total_to_CMP_total_total_total_total_fraction",
-        "LV_sCF_Fr": "ALV_fresh_surfacewater_total_total_to_CMP_total_total_total_total_fraction",
-        "LA_sCF_Fr": "AAQ_fresh_surfacewater_total_total_to_CMP_total_total_total_total_fraction",
-        "LA_sCF_Sa": "AAQ_saline_surfacewater_total_total_to_CMP_total_total_total_total_fraction",
+        "DO_sCF_Fr": "RES_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_fraction",
+        "CO_sCF_Fr": "COM_public_total_total_total_mgd_to_CMP_total_total_total_total_fraction",
+        "IN_sCF_Fr": "IND_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_fraction",
+        "IN_sCF_Sa": "IND_saline_surfacewater_total_total_mgd_to_CMP_total_total_total_total_fraction",
+        "MI_sCF_Fr": "MIN_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_fraction",
+        "MI_sCF_Sa": "MIN_saline_surfacewater_total_total_mgd_to_CMP_total_total_total_total_fraction",
+        "LV_sCF_Fr": "ALV_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_fraction",
+        "LA_sCF_Fr": "AAQ_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_fraction",
+        "LA_sCF_Sa": "AAQ_saline_surfacewater_total_total_mgd_to_CMP_total_total_total_total_fraction",
 
         # created groundwater variables
-        "DO_gCF_Fr": "RES_fresh_groundwater_total_total_to_CMP_total_total_total_total_fraction",
-        "DO_pCF_Fr": "RES_public_total_total_total_to_CMP_total_total_total_total_fraction",
-        "IN_gCF_Fr": "IND_fresh_groundwater_total_total_to_CMP_total_total_total_total_fraction",
-        "IN_gCF_Sa": "IND_saline_groundwater_total_total_to_CMP_total_total_total_total_fraction",
-        "IN_pCF_Fr": "IND_public_total_total_total_to_CMP_total_total_total_total_fraction",
-        "MI_gCF_Fr": "MIN_fresh_groundwater_total_total_to_CMP_total_total_total_total_fraction",
-        "MI_gCF_Sa": "MIN_saline_groundwater_total_total_to_CMP_total_total_total_total_fraction",
-        "LV_gCF_Fr": "ALV_fresh_groundwater_total_total_to_CMP_total_total_total_total_fraction",
-        "LA_gCF_Fr": "AAQ_fresh_groundwater_total_total_to_CMP_total_total_total_total_fraction",
-        "LA_gCF_Sa": "AAQ_saline_groundwater_total_total_to_CMP_total_total_total_total_fraction"
+        "DO_gCF_Fr": "RES_fresh_groundwater_total_total_mgd_to_CMP_total_total_total_total_fraction",
+        "DO_pCF_Fr": "RES_public_total_total_total_mgd_to_CMP_total_total_total_total_fraction",
+        "IN_gCF_Fr": "IND_fresh_groundwater_total_total_mgd_to_CMP_total_total_total_total_fraction",
+        "IN_gCF_Sa": "IND_saline_groundwater_total_total_mgd_to_CMP_total_total_total_total_fraction",
+        "IN_pCF_Fr": "IND_public_total_total_total_mgd_to_CMP_total_total_total_total_fraction",
+        "MI_gCF_Fr": "MIN_fresh_groundwater_total_total_mgd_to_CMP_total_total_total_total_fraction",
+        "MI_gCF_Sa": "MIN_saline_groundwater_total_total_mgd_to_CMP_total_total_total_total_fraction",
+        "LV_gCF_Fr": "ALV_fresh_groundwater_total_total_mgd_to_CMP_total_total_total_total_fraction",
+        "LA_gCF_Fr": "AAQ_fresh_groundwater_total_total_mgd_to_CMP_total_total_total_total_fraction",
+        "LA_gCF_Sa": "AAQ_saline_groundwater_total_total_mgd_to_CMP_total_total_total_total_fraction"
     }
 
     # Create groundwater consumption fractions for each sector from surface water consumption fractions
@@ -309,7 +309,7 @@ def prep_consumption_fraction() -> pd.DataFrame:
     # merge with full list of counties from 2015 USGS water data
     #df = pd.merge(df_loc, df, how='left', on=['FIPS', 'State'])
 
-    return df.mean()
+    return df
 
 
 def prep_public_water_supply_fraction() -> pd.DataFrame:
@@ -385,8 +385,8 @@ def calc_pws_deliveries() -> pd.DataFrame:
     df['total_delivery'] = df[res_pwd_name] + df['fresh_pws_thermoelectric_mgd']
 
     # create variables names as flows
-    com_pwd_name = 'PWD_total_total_total_total_to_COM_public_total_total_total_mgd'
-    ind_pwd_name = 'PWD_total_total_total_total_to_IND_public_total_total_total_mgd'
+    com_pwd_name = 'PWD_total_total_total_total_mgd_to_COM_public_total_total_total_mgd'
+    ind_pwd_name = 'PWD_total_total_total_total_mgd_to_IND_public_total_total_total_mgd'
 
     # calculate public water deliveries to the commercial and industrial sector
     df[com_pwd_name] = df["com_pws_fraction"] * df['total_delivery']
@@ -419,11 +419,11 @@ def calc_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.90) -> pd.DataFra
     df_loc = prep_water_use_2015()  # prepared list of 2015 counties with FIPS codes
 
     # create extended variable names
-    crop_irr_sw_name = 'ACI_fresh_surfacewater_total_total_to_CVL_total_total_total_total_fraction'
-    crop_irr_gw_name = 'ACI_fresh_groundwater_total_total_to_CVL_total_total_total_total_fraction'
+    crop_irr_sw_name = 'ACI_fresh_surfacewater_total_total_mgd_to_CVL_total_total_total_total_fraction'
+    crop_irr_gw_name = 'ACI_fresh_groundwater_total_total_mgd_to_CVL_total_total_total_total_fraction'
 
-    golf_irr_sw_name = 'AGI_fresh_surfacewater_total_total_to_CVL_total_total_total_total_fraction'
-    golf_irr_gw_name = 'AGI_fresh_groundwater_total_total_to_CVL_total_total_total_total_fraction'
+    golf_irr_sw_name = 'AGI_fresh_surfacewater_total_total_mgd_to_CVL_total_total_total_total_fraction'
+    golf_irr_gw_name = 'AGI_fresh_groundwater_total_total_mgd_to_CVL_total_total_total_total_fraction'
 
     # calculate conveyance loss fraction of total water withdrawn for irrigation if irrigation water > 0
     df["loss_fraction"] = np.where(df['IR-WTotl'] > 0, df['IR-CLoss'] / df['IR-WTotl'], 0)
@@ -466,6 +466,99 @@ def calc_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.90) -> pd.DataFra
     df = pd.merge(df_loc, df, how='left', on='FIPS')
 
     return df
+
+
+def calc_discharge_fractions():
+    """"""
+
+    cvl_df = calc_conveyance_loss_fraction()
+    cons_df = prep_consumption_fraction()
+    rem_df = prep_water_use_2015(
+        variables=['FIPS','State', 'ACI_fresh_groundwater_total_total_to_CMP_total_total_total_total_fraction',
+                   'ACI_fresh_surfacewater_total_total_to_CMP_total_total_total_total_fraction',
+                   'ACI_reclaimed_wastewater_total_total_to_CMP_total_total_total_total_fraction',
+                   'AGI_fresh_groundwater_total_total_to_CMP_total_total_total_total_fraction',
+                   'AGI_fresh_surfacewater_total_total_to_CMP_total_total_total_total_fraction',
+                   'AGI_reclaimed_wastewater_total_total_to_CMP_total_total_total_total_fraction'])
+
+    df1 = pd.merge(cons_df, rem_df, how='left', on=['FIPS', 'State'])
+    df = pd.merge(df1, cvl_df, how='left', on=['FIPS', 'State'])
+
+    res_total = df["RES_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_fraction"]\
+                + df["RES_fresh_groundwater_total_total_mgd_to_CMP_total_total_total_total_fraction"]
+    res_pub_total = df["RES_public_total_total_total_mgd_to_CMP_total_total_total_total_fraction"]
+    com_pub_total = df["COM_public_total_total_total_to_CMP_mgd_total_total_total_total_fraction"]
+    ind_total = df["IND_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_fraction"]\
+                   + df["IND_fresh_groundwater_total_total_mgd_to_CMP_total_total_total_total_fraction"]\
+                    +df["IND_saline_surfacewater_total_total_mgd_to_CMP_total_total_total_total_fraction"]\
+                   + df["IND_saline_groundwater_total_total_mgd_to_CMP_total_total_total_total_fraction"]
+    ind_pub_total = df["IND_public_total_total_total_mgd_to_CMP_total_total_total_total_fraction"]
+    min_total = df["MIN_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_fraction"]\
+                   + df["MIN_fresh_groundwater_total_total_mgd_to_CMP_total_total_total_total_fraction"]\
+                +df["MIN_saline_surfacewater_total_total_mgd_to_CMP_total_total_total_total_fraction"]\
+                   + df["MIN_saline_groundwater_total_total_mgd_to_CMP_total_total_total_total_fraction"]
+    alv_fr_total = df["ALV_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_fraction"]\
+                   + df["ALV_fresh_groundwater_total_total_mgd_to_CMP_total_total_total_total_fraction"]
+    aaq_fr_total = df["AAQ_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_fraction"]\
+                   + df["AAQ_fresh_groundwater_total_total_mgd_to_CMP_total_total_total_total_fraction"]
+    aaq_sa_total = df["AAQ_saline_surfacewater_total_total_mgd_to_CMP_total_total_total_total_fraction"] \
+                   + df["AAQ_saline_groundwater_total_total_mgd_to_CMP_total_total_total_total_fraction"]
+    ci_total = df['ACI_fresh_groundwater_total_total_to_CMP_total_total_total_total_fraction']\
+              + df['ACI_fresh_surfacewater_total_total_to_CMP_total_total_total_total_fraction'] \
+              + df['ACI_reclaimed_wastewater_total_total_to_CMP_total_total_total_total_fraction']
+    gi_total = df['AGI_fresh_groundwater_total_total_to_CMP_total_total_total_total_fraction']\
+               + df['AGI_fresh_surfacewater_total_total_to_CMP_total_total_total_total_fraction']\
+               + df['AGI_reclaimed_wastewater_total_total_to_CMP_total_total_total_total_fraction']
+
+    res_ww_dis = 1 - res_pub_total
+    com_ww_dis = 1 - com_pub_total
+    ind_ww_dis = 1 - ind_pub_total
+
+    res_sd = 1- res_total
+    ind_sd = 1-ind_total
+    min_sd = 1-min_total
+    alv_sd = 1-alv_fr_total
+    aaq_sd = 1-aaq_fr_total
+    aaq_od = 1-aaq_sa_total
+    ci_sd = 1-ci_total
+    gi_sd = 1-gi_total
+
+    df["RES_fresh_surfacewater_total_total_mgd_to_SD_total_total_total_total_fraction"]
+    df["RES_fresh_groundwater_total_total_mgd_to_SD_total_total_total_total_fraction"]
+    df["RES_public_total_total_total_mgd_to_WWS_total_total_total_total_fraction"]
+    df["COM_public_total_total_total_mgd_to_WWS_total_total_total_total_fraction"]
+    df["IND_fresh_surfacewater_total_total_mgd_to_SD_total_total_total_total_fraction"]
+    df["IND_fresh_groundwater_total_total_mgd_to_SD_total_total_total_total_fraction"]
+    df["IND_saline_surfacewater_total_total_mgd_to_SD_total_total_total_total_fraction"]
+    df["IND_saline_groundwater_total_total_mgd_to_SD_total_total_total_total_fraction"]
+    df["IND_public_total_total_total_mgd_to_WWS_total_total_total_total_fraction"]
+    df["MIN_fresh_surfacewater_total_total_mgd_to_SD_total_total_total_total_fraction"]
+    df["MIN_fresh_groundwater_total_total_mgd_to_SD_total_total_total_total_fraction"]
+    df["MIN_saline_surfacewater_total_total_mgd_to_SD_total_total_total_total_fraction"]
+    df["MIN_saline_groundwater_total_total_mgd_to_SD_total_total_total_total_fraction"]
+    df["ALV_fresh_surfacewater_total_total_mgd_to_SD_total_total_total_total_fraction"]
+    df["ALV_fresh_groundwater_total_total_mgd_to_SD_total_total_total_total_fraction"]
+    df["AAQ_fresh_surfacewater_total_total_mgd_to_SD_total_total_total_total_fraction"]
+    df["AAQ_fresh_groundwater_total_total_mgd_to_SD_total_total_total_total_fraction"]
+    df["AAQ_saline_surfacewater_total_total_mgd_to_OD_total_total_total_total_fraction"]
+    df["AAQ_saline_groundwater_total_total_mgd_to_OD_total_total_total_total_fraction"]
+    df['ACI_fresh_groundwater_total_total_to_SD_total_total_total_total_fraction']
+    df['ACI_fresh_surfacewater_total_total_to_SD_total_total_total_total_fraction']
+    df['ACI_reclaimed_wastewater_total_total_to_SD_total_total_total_total_fraction']
+    df['AGI_fresh_groundwater_total_total_to_SD_total_total_total_total_fraction']
+    df['AGI_fresh_surfacewater_total_total_to_SD_total_total_total_total_fraction']
+    df['AGI_reclaimed_wastewater_total_total_to_SD_total_total_total_total_fraction']              
+
+
+    return df
+
+
+x = calc_discharge_fractions()
+print(x)
+x.to_csv('test_output.csv')
+import os
+os.startfile(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv")
+
 
 
 def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) -> pd.DataFrame:
@@ -847,7 +940,7 @@ def prep_wastewater_data() -> pd.DataFrame:
 
     'advanced_infiltration_flows_mgd'
     'primary_infiltration_flows_mgd'
-    'secondary_infiltration_flows_mgd
+    'secondary_infiltration_flows_mgd'
     'advanced_municipal_flows_mgd'
     'primary_municipal_flows_mgd'
     'secondary_municipal_flows_mgd',
@@ -871,7 +964,7 @@ def prep_wastewater_data() -> pd.DataFrame:
 
     return df_ww
 
-def calc_sc_ww_values():
+#def calc_sc_ww_values():
 
     # TODO fix south carolina estimates by brining in residential pws deliveries, commercial pws deliveres, ind
 # pws deliveries, and their fresh consumption fractions.
@@ -915,11 +1008,11 @@ def calc_sc_ww_values():
 #                                                           df_ww['wastewater_secondary_treatment_mgd'])
 #
 
-x = prep_wastewater_data()
-print(x)
-x.to_csv('test_output.csv')
-import os
-os.startfile(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv")
+
+
+
+
+
 
 
 
