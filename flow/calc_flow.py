@@ -140,20 +140,20 @@ def calculate(data=None, level=5):
                                 for t5 in f_dict[r][type][t1][t2][t3][t4]:
                                     for u1 in f_dict[r][type][t1][t2][t3][t4][t5]:
                                         for s1 in f_dict[r][type][t1][t2][t3][t4][t5][u1]:
-                                            l1_name = f'{r}_{s1}_to_{t1}_{u1}'
+                                            l1_name = f'{r}_{t1}_to_{s1}_{u1}'
                                             dl1_value = 0
                                             for s2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1]:
-                                                l2_name = f'{r}_{s1}_{s2}_to_{t1}_{t2}_{u1}'
+                                                l2_name = f'{r}_{t1}_{t2}_to_{s1}_{s2}_{u1}'
                                                 dl2_value = 0
                                                 for s3 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2]:
-                                                    l3_name = f'{r}_{s1}_{s2}_{s3}_to_{t1}_{t2}_{t3}_{u1}'
+                                                    l3_name = f'{r}_{t1}_{t2}_{t3}_to_{s1}_{s2}_{s3}_{u1}'
                                                     dl3_value = 0
                                                     for s4 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
-                                                        l4_name = f'{r}_{s1}_{s2}_{s3}_{s4}_to_{t1}_{t2}_{t3}_{t4}_{u1}'
+                                                        l4_name = f'{r}_{t1}_{t2}_{t3}_{t4}_to_{s1}_{s2}_{s3}_{s4}_{u1}'
                                                         dl4_value = 0
                                                         for s5 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
                                                             l5t_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
-                                                            l5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
+                                                            l5_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_to_{s1}_{s2}_{s3}_{s4}_{s5}_{u1}'
                                                             for u2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5]:
                                                                 for p in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2]:
                                                                     l5t_value = total_dict[l5t_name]
