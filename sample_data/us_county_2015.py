@@ -2,6 +2,17 @@ import numpy as np
 import pandas as pd
 
 
+def convert_kwh_bbtu(x: float) -> float:
+    """converts kWh to billion btu.
+
+    :return:                Value in bbtu
+
+    """
+    bbtu = x * 0.000003412140
+
+    return bbtu
+
+
 def convert_mwh_bbtu(x: float) -> float:
     """converts MWh to billion btu.
 
@@ -608,7 +619,6 @@ def calc_discharge_fractions():
     return df
 
 
-
 def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) -> pd.DataFrame:
     """calculating the water use required for a megawatt-hour of hydroelectric generation. Daily water use (mgd) is
     combined with annual generation from hydropower for each region.
@@ -676,11 +686,11 @@ def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) ->
 
     return us_avg
 
-x = calc_discharge_fractions()
-print(x)
-x.to_csv('test_output2.csv')
-import os
-os.startfile(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output2.csv")
+
+
+
+
+
 
 
 
@@ -897,8 +907,6 @@ def prep_wastewater_data() -> pd.DataFrame:
     df_ww_dis['sum_pct'] = df_ww_dis.iloc[:, 1:-1].sum(axis=1)  # recalculate sum
 
 
-
-
     # combine wastewater treatment facility flow data and wastewater treatment facility discharge data
     df_ww_flow = pd.merge(df_ww_flow, df_ww_dis, how='left', on='CWNS_NUMBER')
 
@@ -970,10 +978,15 @@ def prep_wastewater_data() -> pd.DataFrame:
     # recombine flow and fraction dataframes
     df_ww = pd.merge(df_ww_flow, df_ww_fractions, how='left', on=['FIPS', 'State', 'County'])
 
+
+    # create output df
+    df_out = df_ww.copy()
+
     # add column indicating percentage of energy from electricity, assumed 100%
-    df_ww['EGS_total_total_total_total_to_wastewater_treatment_advanced_total_total'] = 1
-    df_ww['EGS_total_total_total_total_to_wastewater_treatment_primary_total_total'] = 1
-    df_ww['EGS_total_total_total_total_to_wastewater_treatment_secondary_total_total'] = 1
+    df_out['wastewater_treatment_advanced_total_total_bbtu_from_EGS_total_total_total_total_bbtu_fraction'] = 1
+    df_out['wastewater_treatment_primary_total_total_bbtu_from_EGS_total_total_total_total_bbtu_fraction'] = 1
+    df_out['wastewater_treatment_secondary_total_total_bbtu_from_EGS_total_total_total_total_bbtu_fraction'] = 1
+
 
     df_ww['advanced_infiltration_flows_mgd'] = df_ww['wastewater_advanced_treatment'] \
                                                * df_ww['infiltration_wastewater_mgd']
@@ -989,42 +1002,161 @@ def prep_wastewater_data() -> pd.DataFrame:
     df_ww['secondary_municipal_flows_mgd'] = df_ww['wastewater_secondary_treatment'] \
                                              * df_ww['municipal_wastewater_mgd']
 
+    # name water flows for output dictionary
+    advanced_infiltration_flows_mgd = 'WWD_advanced_infiltration_total_total_mgd_from_WWD_advanced_infiltration_total_total_mgd'
+    primary_infiltration_flows_mgd = 'WWD_primary_infiltration_total_total_mgd_from_WWD_primary_infiltration_total_total_mgd'
+    secondary_infiltration_flows_mgd = 'WWD_secondary_infiltration_total_total_mgd_from_WWD_secondary_infiltration_total_total_mgd'
+    advanced_municipal_flows_mgd = 'WWD_advanced_municipal_total_total_mgd_from_WWD_advanced_municipal_total_total_mgd'
+    primary_municipal_flows_mgd = 'WWD_primary_municipal_total_total_mgd_from_WWD_primary_municipal_total_total_mgd'
+    secondary_municipal_flows_mgd = 'WWD_secondary_municipal_total_total_mgd_from_WWD_secondary_municipal_total_total_mgd'
 
-    #TODO split flow naming for specificity by municipal and infiltration in and outflow
-    # create rename dictionary for full flow naming
-    rename_dict = {
-    'infiltration_advanced_flows_mgd'
-    'infiltration_primary_flows_mgd'
-    'infiltration_secondary_flows_mgd',
-    'municipal_advanced_flows_mgd'
-    'municipal_primary_flows_mgd'
-    'municipal_secondary_flows_mgd',
-
-    'advanced_infiltration_flows_mgd'
-    'primary_infiltration_flows_mgd'
-    'secondary_infiltration_flows_mgd'
-    'advanced_municipal_flows_mgd'
-    'primary_municipal_flows_mgd'
-    'secondary_municipal_flows_mgd',
-
-    'wastewater_consumption',
-    'wastewater_groundwater_discharge',
-    'wastewater_industrial_discharge',
-    'wastewater_irrigation_discharge',
-    'wastewater_ocean_discharge',
-    'wastewater_surface_discharge',
-
-    'wastewater_advanced_treatment',
-    'wastewater_no_treatment',
-    'wastewater_primary_treatment',
-    'wastewater_secondary_treatment'
-}
+    # save flows to output dictionary
+    df_out[advanced_infiltration_flows_mgd] = df_ww['advanced_infiltration_flows_mgd']
+    df_out[primary_infiltration_flows_mgd] = df_ww['primary_infiltration_flows_mgd']
+    df_out[secondary_infiltration_flows_mgd] = df_ww['secondary_infiltration_flows_mgd']
+    df_out[advanced_municipal_flows_mgd] = df_ww['advanced_municipal_flows_mgd']
+    df_out[primary_municipal_flows_mgd] = df_ww['primary_municipal_flows_mgd']
+    df_out[secondary_municipal_flows_mgd] = df_ww['secondary_municipal_flows_mgd']
 
 
-    # drop public water supply variable
-    #df_ww = df_ww.drop('total_pws_withdrawals_mgd', axis=1)
 
-    return df_ww
+    # name discharges for output
+    # consumption
+    advanced_infiltration_cons_mgd =  'WWD_advanced_infiltration_total_total_mgd_to_CMP_total_infiltration_total_total_mgd_fraction'
+    primary_infiltration_cons_mgd=   'WWD_primary_infiltration_total_total_mgd_to_CMP_total_infiltration_total_total_mgd_fraction'
+    secondary_infiltration_cons_mgd=  'WWD_secondary_infiltration_total_total_mgd_to_CMP_total_infiltration_total_total_mgd_fraction'
+    advanced_municipal_cons_mgd=    'WWD_advanced_municipal_total_total_mgd_to_CMP_total_infiltration_total_total_mgd_fraction'
+    primary_municipal_cons_mgd=    'WWD_primary_municipal_total_total_mgd_to_CMP_total_infiltration_total_total_mgd_fraction'
+    secondary_municipal_cons_mgd=   'WWD_secondary_municipal_total_total_mgd_to_CMP_total_infiltration_total_total_mgd_fraction'
+
+    # groundwater discharge
+    advanced_infiltration_gwd_mgd = 'WWD_advanced_infiltration_total_total_mgd_to_GWD_total_infiltration_total_total_mgd_fraction'
+    primary_infiltration_gwd_mgd = 'WWD_primary_infiltration_total_total_mgd_to_GWD_total_infiltration_total_total_mgd_fraction'
+    secondary_infiltration_gwd_mgd ='WWD_secondary_infiltration_total_total_mgd_to_GWD_total_infiltration_total_total_mgd_fraction'
+    advanced_municipal_gwd_mgd =  'WWD_advanced_municipal_total_total_mgd_to_GWD_total_infiltration_total_total_mgd_fraction'
+    primary_municipal_gwd_mgd =  'WWD_primary_municipal_total_total_mgd_to_GWD_total_infiltration_total_total_mgd_fraction'
+    secondary_municipal_gwd_mgd = 'WWD_secondary_municipal_total_total_mgd_to_GWD_total_infiltration_total_total_mgd_fraction'
+
+    # industrial discharge
+    advanced_infiltration_inx_mgd = 'WWD_advanced_infiltration_total_total_mgd_to_INX_total_total_total_total_mgd_fraction'
+    primary_infiltration_inx_mgd = 'WWD_primary_infiltration_total_total_mgd_to_INX_total_total_total_total_mgd_fraction'
+    secondary_infiltration_inx_mgd = 'WWD_secondary_infiltration_total_total_mgd_to_INX_total_total_total_total_mgd_fraction'
+    advanced_municipal_inx_mgd =  'WWD_advanced_municipal_total_total_mgd_to_INX_total_total_total_total_mgd_fraction'
+    primary_municipal_inx_mgd =  'WWD_primary_municipal_total_total_mgd_to_INX_total_total_total_total_mgd_fraction'
+    secondary_municipal_inx_mgd = 'WWD_secondary_municipal_total_total_mgd_to_INX_total_total_total_total_mgd_fraction'
+
+     # irrigation discharge
+    advanced_infiltration_irx_mgd = 'WWD_advanced_infiltration_total_total_mgd_to_IRX_total_total_total_total_mgd_fraction'
+    primary_infiltration_irx_mgd = 'WWD_primary_infiltration_total_total_mgd_to_IRX_total_total_total_total_mgd_fraction'
+    secondary_infiltration_irx_mgd ='WWD_secondary_infiltration_total_total_mgd_to_IRX_total_total_total_total_mgd_fraction'
+    advanced_municipal_irx_mgd =  'WWD_advanced_municipal_total_total_mgd_to_IRX_total_total_total_total_mgd_fraction'
+    primary_municipal_irx_mgd =  'WWD_primary_municipal_total_total_mgd_to_IRX_total_total_total_total_mgd_fraction'
+    secondary_municipal_irx_mgd = 'WWD_secondary_municipal_total_total_mgd_to_IRX_total_total_total_total_mgd_fraction'
+
+     # ocean discharge
+    advanced_infiltration_ocd_mgd = 'WWD_advanced_infiltration_total_total_mgd_to_OCD_total_total_total_total_mgd_fraction'
+    primary_infiltration_ocd_mgd = 'WWD_primary_infiltration_total_total_mgd_to_OCD_total_total_total_total_mgd_fraction'
+    secondary_infiltration_ocd_mgd ='WWD_secondary_infiltration_total_total_mgd_to_OCD_total_total_total_total_mgd_fraction'
+    advanced_municipal_ocd_mgd =  'WWD_advanced_municipal_total_total_mgd_to_OCD_total_total_total_total_mgd_fraction'
+    primary_municipal_ocd_mgd =  'WWD_primary_municipal_total_total_mgd_to_OCD_total_total_total_total_mgd_fraction'
+    secondary_municipal_ocd_mgd = 'WWD_secondary_municipal_total_total_mgd_to_OCD_total_total_total_total_mgd_fraction'
+
+    # surface discharge
+    advanced_infiltration_srd_mgd = 'WWD_advanced_infiltration_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
+    primary_infiltration_srd_mgd = 'WWD_primary_infiltration_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
+    secondary_infiltration_srd_mgd = 'WWD_secondary_infiltration_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
+    advanced_municipal_srd_mgd =  'WWD_advanced_municipal_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
+    primary_municipal_srd_mgd =  'WWD_primary_municipal_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
+    secondary_municipal_srd_mgd = 'WWD_secondary_municipal_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
+
+    # save discharges to output
+    df_out[advanced_infiltration_cons_mgd] = df_ww['wastewater_consumption']
+    df_out[primary_infiltration_cons_mgd] = df_ww['wastewater_consumption']
+    df_out[secondary_infiltration_cons_mgd] = df_ww['wastewater_consumption']
+    df_out[advanced_municipal_cons_mgd] = df_ww['wastewater_consumption']
+    df_out[primary_municipal_cons_mgd] = df_ww['wastewater_consumption']
+    df_out[secondary_municipal_cons_mgd] = df_ww['wastewater_consumption']
+
+    # groundwater discharge
+    df_out[advanced_infiltration_gwd_mgd] = df_ww['wastewater_groundwater_discharge']
+    df_out[primary_infiltration_gwd_mgd] = df_ww['wastewater_groundwater_discharge']
+    df_out[secondary_infiltration_gwd_mgd] = df_ww['wastewater_groundwater_discharge']
+    df_out[advanced_municipal_gwd_mgd] = df_ww['wastewater_groundwater_discharge']
+    df_out[primary_municipal_gwd_mgd] = df_ww['wastewater_groundwater_discharge']
+    df_out[secondary_municipal_gwd_mgd] = df_ww['wastewater_groundwater_discharge']
+
+    # industrial discharge
+    df_out[advanced_infiltration_inx_mgd] = df_ww['wastewater_industrial_discharge']
+    df_out[primary_infiltration_inx_mgd] = df_ww['wastewater_industrial_discharge']
+    df_out[secondary_infiltration_inx_mgd] = df_ww['wastewater_industrial_discharge']
+    df_out[advanced_municipal_inx_mgd] = df_ww['wastewater_industrial_discharge']
+    df_out[primary_municipal_inx_mgd] = df_ww['wastewater_industrial_discharge']
+    df_out[secondary_municipal_inx_mgd] = df_ww['wastewater_industrial_discharge']
+
+    # irrigation discharge
+    df_out[advanced_infiltration_irx_mgd] = df_ww['wastewater_irrigation_discharge']
+    df_out[primary_infiltration_irx_mgd] = df_ww['wastewater_irrigation_discharge']
+    df_out[secondary_infiltration_irx_mgd] = df_ww['wastewater_irrigation_discharge']
+    df_out[advanced_municipal_irx_mgd] = df_ww['wastewater_irrigation_discharge']
+    df_out[primary_municipal_irx_mgd] = df_ww['wastewater_irrigation_discharge']
+    df_out[secondary_municipal_irx_mgd] = df_ww['wastewater_irrigation_discharge']
+
+# ocean discharge
+    df_out[advanced_infiltration_ocd_mgd] = df_ww['wastewater_ocean_discharge']
+    df_out[primary_infiltration_ocd_mgd] = df_ww['wastewater_ocean_discharge']
+    df_out[secondary_infiltration_ocd_mgd] = df_ww['wastewater_ocean_discharge']
+    df_out[advanced_municipal_ocd_mgd] = df_ww['wastewater_ocean_discharge']
+    df_out[primary_municipal_ocd_mgd] = df_ww['wastewater_ocean_discharge']
+    df_out[secondary_municipal_ocd_mgd] = df_ww['wastewater_ocean_discharge']
+
+# surface discharge
+    df_out[advanced_infiltration_srd_mgd] = df_ww['wastewater_surface_discharge']
+    df_out[primary_infiltration_srd_mgd] = df_ww['wastewater_surface_discharge']
+    df_out[secondary_infiltration_srd_mgd] = df_ww['wastewater_surface_discharge']
+    df_out[advanced_municipal_srd_mgd] = df_ww['wastewater_surface_discharge']
+    df_out[primary_municipal_srd_mgd] = df_ww['wastewater_surface_discharge']
+    df_out[secondary_municipal_srd_mgd] = df_ww['wastewater_surface_discharge']
+
+
+
+     # name energy intensity for output
+    inf_adv_in = 'wastewater_treatment_advanced_total_total_bbtu_from_WWD_advanced_infiltration_total_total_mgd_intensity'
+    mun_adv_in = 'wastewater_treatment_advanced_total_total_bbtu_from_WWD_advanced_municipal_total_total_mgd_intensity'
+    inf_prim_in ='wastewater_treatment_primary_total_total_bbtu_from_WWD_primary_infiltration_total_total_mgd_intensity'
+    mun_prim_in ='wastewater_treatment_primary_total_total_bbtu_from_WWD_primary_municipal_total_total_mgd_intensity'
+    inf_sec_in ='wastewater_treatment_secondary_total_total_bbtu_from_WWD_secondary_infiltration_total_total_mgd_intensity'
+    mun_sec_in ='wastewater_treatment_secondary_total_total_bbtu_from_WWD_secondary_municipal_total_total_mgd_intensity'
+
+    adv_intensity_value = convert_kwh_bbtu(2690)
+    primary_intensity_value = convert_kwh_bbtu(2080)
+    secondary_intensity_value = convert_kwh_bbtu(750)
+
+     # save intensity to output
+    df_out[inf_adv_in] = adv_intensity_value
+    df_out[mun_adv_in] = adv_intensity_value
+    df_out[inf_prim_in] = primary_intensity_value
+    df_out[mun_prim_in] = primary_intensity_value
+    df_out[inf_sec_in] = secondary_intensity_value
+    df_out[mun_sec_in] = secondary_intensity_value
+
+    df_out['wastewater_treatment_advanced_total_total_bbtu_from_EGS_total_total_total_total_bbtu_fraction'] = 1
+    df_out['wastewater_treatment_primary_total_total_bbtu_from_EGS_total_total_total_total_bbtu_fraction'] = 1
+    df_out['wastewater_treatment_secondary_total_total_bbtu_from_EGS_total_total_total_total_bbtu_fraction'] = 1
+
+
+    df_out['wastewater_treatment_advanced_total_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction'] = .35
+    df_out['wastewater_treatment_primary_total_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction']  = .35
+    df_out['wastewater_treatment_secondary_total_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction'] = .35
+
+    df_out['wastewater_treatment_advanced_total_total_bbtu_to_ESV_total_total_total_total_bbtu_fraction'] = .65
+    df_out['wastewater_treatment_primary_total_total_bbtu_to_ESV_total_total_total_total_bbtu_fraction'] = .65
+    df_out['wastewater_treatment_secondary_total_total_bbtu_to_ESV_total_total_total_total_bbtu_fraction'] = .65
+
+    return df_out
+
+
+
+
 
 #def calc_sc_ww_values():
 
@@ -1071,6 +1203,10 @@ def prep_wastewater_data() -> pd.DataFrame:
 #
 
 
+# electricity generation
+# energy supply
+# cooling
+# electricity demand
 
 
 

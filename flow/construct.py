@@ -156,15 +156,7 @@ def calc_dictionary_levels(d:dict):
 
 
 
-def convert_kwh_bbtu(x: float) -> float:
-    """converts kWh to billion btu.
 
-    :return:                Value in bbtu
-
-    """
-    bbtu = x * 0.000003412140
-
-    return bbtu
 
 
 def calc_population_county_weight(df: pd.DataFrame) -> pd.DataFrame:
