@@ -1271,10 +1271,7 @@ def prep_power_plant_location() -> pd.DataFrame:
     return df_plant
 
 
-x = prep_wastewater_data()
-x.to_csv(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv")
 
-# TODO START HERE
 
 
 def prep_electricity_generation() -> pd.DataFrame:
@@ -1286,15 +1283,21 @@ def prep_electricity_generation() -> pd.DataFrame:
                             within each FIPS code
     """
 
+
+
     # read in electricity generation data by power plant id
-    df = get_electricity_generation_data()
+    data = 'input_data\EIA923_Schedules_2_3_4_5_M_12_2015_Final_Revision.csv'
+    df = pd.read_csv(data, skiprows=5)
 
     # read in power plant location data by power plant id
     df_gen_loc = prep_power_plant_location()
     df_loc = prep_water_use_2015()
 
     # read in power plant cooling type data
-    df_cooling = get_powerplant_cooling_data()
+    cooling_data = r'input_data\2015_TE_Model_Estimates_USGS.csv'
+    df_cooling = pd.read_csv(cooling_data, usecols=['EIA_PLANT_ID', "COUNTY", 'STATE', 'NAME_OF_WATER_SOURCE', 'GENERATION_TYPE',
+                                          'COOLING_TYPE', 'WATER_SOURCE_CODE', 'WATER_TYPE_CODE', 'WITHDRAWAL',
+                                          'CONSUMPTION'])
 
     # remove unnecessary variables
     df_gen_loc = df_gen_loc[['FIPS', 'plant_code']]
@@ -1401,8 +1404,7 @@ def prep_electricity_generation() -> pd.DataFrame:
 
 
     # COOLING WATER DATA
-#
-    ## need to merge with cooling type information by plant code
+
     # estimate discharge location from source information
     df_cooling['OCEAN_DISCHARGE_MGD'] = np.where(df_cooling['NAME_OF_WATER_SOURCE'].str.contains('Ocean', regex=False),
                                            df_cooling['WITHDRAWAL'] - df_cooling['CONSUMPTION'],
@@ -1471,10 +1473,11 @@ def prep_electricity_generation() -> pd.DataFrame:
     df_fuel = df[["FIPS", "fuel_amt", "fuel_type", 'prime_mover',"COOLING_TYPE"]].copy()  # create a copy of fuel type data
     df_fuel['COOLING_TYPE'].fillna('nocooling', inplace=True)
 
-    df_fuel["fuel_name"] = 'EC_' + df_fuel["fuel_type"] +'_total_total_total_to_EG_' \
-                           + df_fuel["fuel_type"] +'_' + df_fuel["prime_mover"] + '_'\
-                           + df_fuel['COOLING_TYPE'] + '_total_bbtu'  # add naming
-     #example: EC_Coal_total_total_total_to_EG_coal_combustionturbine_oncethrough_total_bbtu'
+    df_fuel["fuel_name"] = 'EGS_' + + df_fuel["fuel_type"] +'_' + df_fuel["prime_mover"] + '_'\
+                           + df_fuel['COOLING_TYPE'] + '_total_bbtu_from_EPD_' + df_fuel["fuel_type"] \
+                           +'_total_total_total_bbtu' \
+
+     #example: EGS_coal_stream_oncethrough_total_bbtu_from_EPD_coal_total_total_total_bbtu
 
     df_fuel = pd.pivot_table(df_fuel, values='fuel_amt', index=['FIPS'], columns=['fuel_name'], aggfunc=np.sum)  # pivot
     df_fuel = df_fuel.reset_index()  # reset index to remove multi-index from pivot table
@@ -1484,20 +1487,26 @@ def prep_electricity_generation() -> pd.DataFrame:
     ## splitting out generation data into a separate dataframe and pivoting to get generation (mwh) as columns by type
     df_gen = df[["FIPS", "generation_mwh", 'prime_mover', "fuel_type", 'COOLING_TYPE']].copy()  # create a copy of generation data
     df_gen['COOLING_TYPE'].fillna('nocooling', inplace=True)
-    df_gen['generation_mwh'] = df_gen['generation_mwh'].apply(co.convert_mwh_bbtu)  # convert to bbtu from mwh
+    df_gen['generation_mwh'] = df_gen['generation_mwh'].apply(convert_mwh_bbtu)  # convert to bbtu from mwh
 
-    df_gen["fuel_type_name"] = 'EG_' + df_gen["fuel_type"] + '_' + df_gen["prime_mover"] + '_'\
-                           + df_gen['COOLING_TYPE'] + "_total_to_ES_total_total_total_total_bbtu" # add naming
+    df_gen["fuel_type_name"] = 'EGS_' + df_gen["fuel_type"] + '_' + df_gen["prime_mover"] + '_'\
+                           + df_gen['COOLING_TYPE'] + "_total_to_ESV_total_total_total_total_bbtu_fraction" # add naming
 #
     df_gen = pd.pivot_table(df_gen, values='generation_mwh', index=['FIPS'], columns=['fuel_type_name'], aggfunc=np.sum)
     df_gen = df_gen.reset_index()  # reset index to remove multi-index from pivot table
     df_gen = df_gen.rename_axis(None, axis=1)  # drop index name
     df_gen.fillna(0, inplace=True)  # fill nan with zero
 
+
+
     df_cooling_w = df[["FIPS", 'plant_code','prime_mover', "fuel_type", 'COOLING_TYPE', 'WATER_TYPE_CODE','WATER_SOURCE_CODE', 'WITHDRAWAL']].copy()
-    df_cooling_w["water_withdrawal_name"] = 'WS_' + df_cooling_w["WATER_TYPE_CODE"] + '_' \
-                                            + df_cooling_w["WATER_SOURCE_CODE"] + '_total_total_to_' + df['fuel_type'] \
-                                            + '_' + df['prime_mover'] + '_' + df['COOLING_TYPE'] + '_total_total_mgd'
+    df_cooling_w["water_withdrawal_name"] = 'EGS_'+ df['fuel_type'] + '_' + df['prime_mover'] + '_' \
+                                            + df['COOLING_TYPE'] + '_total_mgd_from_WSW_' \
+                                            + df_cooling_w["WATER_TYPE_CODE"] + '_' + df_cooling_w["WATER_SOURCE_CODE"] \
+                                            + 'total_total_total_mgd_fraction'
+
+
+
     cooling_only = df_cooling_w[df_cooling_w.COOLING_TYPE != 'nocooling'].groupby('plant_code', as_index=False).count()
     cooling_only = cooling_only.rename(columns={'FIPS':'count'})
     cooling_only = cooling_only[['plant_code', 'count']]
@@ -1513,8 +1522,8 @@ def prep_electricity_generation() -> pd.DataFrame:
     df_cooling_c = df[
         ["FIPS", 'plant_code', 'prime_mover', "fuel_type", 'COOLING_TYPE', 'WATER_TYPE_CODE', 'WATER_SOURCE_CODE',
          'CONSUMPTION']].copy()
-    df_cooling_c["water_consumption_name"] = 'EG_' + df['fuel_type'] + '_' + df['prime_mover'] + '_' + df['COOLING_TYPE'] \
-                                            + '_total_to_WC_total_total_total_total_mgd'
+    df_cooling_c["water_consumption_name"] = 'EGS_'+ df['fuel_type'] + '_' + df['prime_mover'] + '_' \
+                                             + df['COOLING_TYPE'] + 'total_mgd_to_CMP_total_total_total_total_mgd_fraction'
 
     df_cooling_c = pd.merge(df_cooling_c, cooling_only, how='left', on='plant_code')
     df_cooling_c['count'].fillna(1, inplace=True)
@@ -1529,8 +1538,8 @@ def prep_electricity_generation() -> pd.DataFrame:
     df_cooling_sd = df[
         ["FIPS", 'plant_code', 'prime_mover', "fuel_type", 'COOLING_TYPE', 'WATER_TYPE_CODE', 'WATER_SOURCE_CODE',
          'SURFACE_DISCHARGE_MGD']].copy()
-    df_cooling_sd["sd_name"] = 'EG_' + df['fuel_type'] + '_' + df['prime_mover'] + '_' + df['COOLING_TYPE'] \
-                                            + '_total_to_SD_total_total_total_total_mgd'
+    df_cooling_sd["sd_name"] = 'EGS_' + df['fuel_type'] + '_' + df['prime_mover'] + '_' \
+                               + df['COOLING_TYPE'] + 'total_mgd_to_SRD_total_total_total_total_mgd_fraction'
 
     df_cooling_sd = pd.merge(df_cooling_sd, cooling_only, how='left', on='plant_code')
     df_cooling_sd['count'].fillna(1, inplace=True)
@@ -1545,8 +1554,8 @@ def prep_electricity_generation() -> pd.DataFrame:
     df_cooling_od = df[
         ["FIPS", 'plant_code', 'prime_mover', "fuel_type", 'COOLING_TYPE', 'WATER_TYPE_CODE', 'WATER_SOURCE_CODE',
          'OCEAN_DISCHARGE_MGD']].copy()
-    df_cooling_od["od_name"] = 'EG_' + df['fuel_type'] + '_' + df['prime_mover'] + '_' + df['COOLING_TYPE'] \
-                               + '_total_to_OD_total_total_total_total_mgd'
+    df_cooling_od["od_name"] = 'EGS_' + df['fuel_type'] + '_' + df['prime_mover'] + '_' \
+                               + df['COOLING_TYPE'] + 'total_mgd_to_OCD_total_total_total_total_mgd_fraction'
 
     df_cooling_od = pd.merge(df_cooling_od, cooling_only, how='left', on='plant_code')
     df_cooling_od['count'].fillna(1, inplace=True)
@@ -1576,6 +1585,26 @@ def prep_electricity_generation() -> pd.DataFrame:
     return out_df
 
 
+
+x = prep_electricity_generation()
+x.to_csv(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv")
+
+# TODO START HERE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def combine_data():
     x1 = prep_water_use_2015(all_variables=True)
     x2 = calc_pws_deliveries()
@@ -1601,14 +1630,7 @@ def combine_data():
 
 #
 #
-    #def get_electricity_generation_data():
-    #    data = pkg_resources.resource_filename('flow',
-    #                                           'data/EIA923_Schedules_2_3_4_5_M_12_2015_Final_Revision.csv')
-#
-    #    # read in wastewater treatment facility discharge data
-    #    return pd.read_csv(data, skiprows=5)
-#
-#
+
 
 
 
@@ -1625,15 +1647,7 @@ def combine_data():
     #    return pd.read_csv(data, usecols=['Plant_Code', "StateName", 'County', 'PrimSource'])
 #
 #
-    #def get_powerplant_cooling_data():
-    #    data = pkg_resources.resource_filename('flow',
-    #                                           'data/2015_TE_Model_Estimates_USGS.csv')
-#
-    #    # read in data
-    #    return pd.read_csv(data, usecols=['EIA_PLANT_ID', "COUNTY", 'STATE', 'NAME_OF_WATER_SOURCE', 'GENERATION_TYPE',
-    #                                      'COOLING_TYPE', 'WATER_SOURCE_CODE', 'WATER_TYPE_CODE', 'WITHDRAWAL',
-    #                                      'CONSUMPTION'])
-#
+
 #
     #def get_irrigation_data():
     #    data = pkg_resources.resource_filename('flow', 'data/FRIS2013tab8.csv')
