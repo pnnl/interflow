@@ -638,7 +638,7 @@ def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) ->
     df["HY-InPow"] = df["HY-InPow"] / 365
 
     # calculate water intensity fraction million gallons per bbtu
-    water_intensity_name = 'WSW_fresh_surfacewater_total_total_mgd_to_EGS_hydro_total_total_total_bbtu_intensity'
+    water_intensity_name = 'WSW_fresh_surfacewater_total_total_mgd_to_EGS_hydro_instream_nocooling_total_bbtu_intensity'
     df[water_intensity_name] = np.where(df["HY-InPow"] > 0, (df["HY-InUse"] / df["HY-InPow"]), 0)
 
     # cap outlier intensities
@@ -1324,7 +1324,7 @@ def prep_electricity_generation() -> pd.DataFrame:
                  'WOO': 'petroleum',  # waste oil
                  'WWW': 'biomass'}  # wood and wood waste
 
-    prime_mover_dict = {'HY':'hydro',
+    prime_mover_dict = {'HY':'instream',
                         'CA':'combinedcycle',
                     'CT':'combinedcycle',
                     'ST':'steam',
@@ -1489,12 +1489,13 @@ def prep_electricity_generation() -> pd.DataFrame:
     df_gen['COOLING_TYPE'].fillna('nocooling', inplace=True)
     df_gen['generation_mwh'] = df_gen['generation_mwh'].apply(convert_mwh_bbtu)  # convert to bbtu from mwh
 
+
     #calculate rejected energy fractions
     df_gen['rej_fraction'] = np.where(df_gen['fuel_amt'] > 0, df_gen['generation_mwh']/df_gen['fuel_amt'], 0)
 
 
     df_gen["fuel_type_name"] = 'EGS_' + df_gen["fuel_type"] + '_' + df_gen["prime_mover"] + '_'\
-                           + df_gen['COOLING_TYPE'] + "_total_to_REJ_total_total_total_total_bbtu_fraction" # add naming
+                           + df_gen['COOLING_TYPE'] + "_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction" # add naming
 #
     df_gen = pd.pivot_table(df_gen, values='rej_fraction', index=['FIPS'], columns=['fuel_type_name'], aggfunc=np.sum)
     df_gen = df_gen.reset_index()  # reset index to remove multi-index from pivot table
@@ -1503,11 +1504,40 @@ def prep_electricity_generation() -> pd.DataFrame:
 
     # create water intensity values
 
-    
+    # create water withdrawal source fractions
+    df_cooling_int = df[["FIPS", 'plant_code', 'prime_mover', "generation_mwh", "fuel_type", 'COOLING_TYPE',
+                       'WATER_TYPE_CODE', 'WATER_SOURCE_CODE', 'WITHDRAWAL']].copy()
+
+    df_cooling_int["water_intensity_name"] = 'EGS_' + df['fuel_type'] + '_' + df['prime_mover'] + '_' \
+                                            + df['COOLING_TYPE'] + '_total_mgd_from_EGS_' \
+                                            + df['fuel_type'] + '_' + df['prime_mover'] + '_' \
+                                            + df['COOLING_TYPE'] + '_total_bbtu_intensity'
+
+    cooling_only = df_cooling_int[df_cooling_int.COOLING_TYPE != 'nocooling'].groupby('plant_code', as_index=False).count()
+    cooling_only = cooling_only.rename(columns={'FIPS': 'count'})
+    cooling_only = cooling_only[['plant_code', 'count']]
+    df_cooling_int = pd.merge(df_cooling_int, cooling_only, how='left', on='plant_code')
+    df_cooling_int['count'].fillna(1, inplace=True)
+    df_cooling_int = df_cooling_int.dropna(subset=["WITHDRAWAL"])
+    df_cooling_int['WITHDRAWAL'] = df_cooling_int['WITHDRAWAL'] / df_cooling_int['count']
+
+    df_cooling_int['generation_mwh'] = df_cooling_int['generation_mwh'].apply(convert_mwh_bbtu)  # convert to bbtu from mwh
+    df_cooling_int['intensity'] = np.where(df_cooling_int['generation_mwh']>0,
+                                           df_cooling_int['WITHDRAWAL']/df_cooling_int['generation_mwh'],
+                                           0)
+
+    df_cooling_int = pd.pivot_table(df_cooling_int, values='intensity', index=['FIPS'],
+                                  columns=['water_intensity_name'], aggfunc=np.mean)
+    df_cooling_int = df_cooling_int.reset_index()  # reset index to remove multi-index from pivot table
+    df_cooling_int = df_cooling_int.rename_axis(None, axis=1)  # drop index name
+    df_cooling_int.fillna(0, inplace=True)  # fill nan with zero
+
+
+
 
 
     # create water withdrawal source fractions
-    df_cooling_w = df[["FIPS", 'plant_code','prime_mover', "generation_mwh", "fuel_type", 'COOLING_TYPE',
+    df_cooling_w = df[["FIPS", 'plant_code','prime_mover', "fuel_type", 'COOLING_TYPE',
                        'WATER_TYPE_CODE','WATER_SOURCE_CODE', 'WITHDRAWAL']].copy()
 
     df_cooling_w["water_withdrawal_name"] = 'EGS_'+ df['fuel_type'] + '_' + df['prime_mover'] + '_' \
@@ -1586,7 +1616,7 @@ def prep_electricity_generation() -> pd.DataFrame:
     df_cooling_od = df_cooling_od.dropna(subset=["OCEAN_DISCHARGE_MGD"])
     df_cooling_od['OCEAN_DISCHARGE_MGD'] = df_cooling_od['OCEAN_DISCHARGE_MGD'] / df_cooling_od['count']
 
-    df_cooling_od['od_fraction'] = df_cooling_od['OCEAN_DISCHARGE_MGD']/df_cooling_c['WITHDRAWAL']
+    df_cooling_od['od_fraction'] = df_cooling_od['OCEAN_DISCHARGE_MGD']/df_cooling_od['WITHDRAWAL']
 
     df_cooling_od = pd.pivot_table(df_cooling_od, values='OCEAN_DISCHARGE_MGD', index=['FIPS'], columns=['od_name'],
                                    aggfunc=np.sum)
@@ -1597,6 +1627,7 @@ def prep_electricity_generation() -> pd.DataFrame:
     # merge dataframes
     df_fuel = pd.merge(df_loc, df_fuel, how='left', on='FIPS').fillna(0)
     df_gen = pd.merge(df_loc, df_gen, how='left', on='FIPS').fillna(0)
+    df_cooling_int = pd.merge(df_loc, df_cooling_int, how='left', on='FIPS').fillna(0)
     df_cooling_w = pd.merge(df_loc, df_cooling_w, how='left', on='FIPS').fillna(0)
     df_cooling_c = pd.merge(df_loc, df_cooling_c, how='left', on='FIPS').fillna(0)
     df_cooling_sd = pd.merge(df_loc, df_cooling_sd, how='left', on='FIPS').fillna(0)
@@ -1604,6 +1635,7 @@ def prep_electricity_generation() -> pd.DataFrame:
 
     #rem_list = [df_cooling_w, df_cooling_c, df_cooling_sd, df_cooling_od]
     out_df = pd.merge(df_fuel, df_gen, how='left', on=['FIPS','State','County'])
+    out_df = pd.merge(out_df, df_cooling_int, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, df_cooling_w, how='left', on=['FIPS','State','County'])
     out_df = pd.merge(out_df, df_cooling_c, how='left', on=['FIPS','State','County'])
     out_df = pd.merge(out_df, df_cooling_sd, how='left', on=['FIPS','State','County'])
