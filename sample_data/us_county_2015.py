@@ -1475,7 +1475,7 @@ def prep_electricity_generation() -> pd.DataFrame:
 
     df_fuel["fuel_name"] = 'EGS_' + + df_fuel["fuel_type"] +'_' + df_fuel["prime_mover"] + '_'\
                            + df_fuel['COOLING_TYPE'] + '_total_bbtu_from_EPD_' + df_fuel["fuel_type"] \
-                           +'_total_total_total_bbtu' \
+                           +'_total_total_total_bbtu'
 
      #example: EGS_coal_stream_oncethrough_total_bbtu_from_EPD_coal_total_total_total_bbtu
 
@@ -1485,26 +1485,35 @@ def prep_electricity_generation() -> pd.DataFrame:
     df_fuel.fillna(0, inplace=True)  # fill nan with zero
 #
     ## splitting out generation data into a separate dataframe and pivoting to get generation (mwh) as columns by type
-    df_gen = df[["FIPS", "generation_mwh", 'prime_mover', "fuel_type", 'COOLING_TYPE']].copy()  # create a copy of generation data
+    df_gen = df[["FIPS", "generation_mwh", 'fuel_amt', 'prime_mover', "fuel_type", 'COOLING_TYPE']].copy()  # create a copy of generation data
     df_gen['COOLING_TYPE'].fillna('nocooling', inplace=True)
     df_gen['generation_mwh'] = df_gen['generation_mwh'].apply(convert_mwh_bbtu)  # convert to bbtu from mwh
 
+    #calculate rejected energy fractions
+    df_gen['rej_fraction'] = np.where(df_gen['fuel_amt'] > 0, df_gen['generation_mwh']/df_gen['fuel_amt'], 0)
+
+
     df_gen["fuel_type_name"] = 'EGS_' + df_gen["fuel_type"] + '_' + df_gen["prime_mover"] + '_'\
-                           + df_gen['COOLING_TYPE'] + "_total_to_ESV_total_total_total_total_bbtu_fraction" # add naming
+                           + df_gen['COOLING_TYPE'] + "_total_to_REJ_total_total_total_total_bbtu_fraction" # add naming
 #
-    df_gen = pd.pivot_table(df_gen, values='generation_mwh', index=['FIPS'], columns=['fuel_type_name'], aggfunc=np.sum)
+    df_gen = pd.pivot_table(df_gen, values='rej_fraction', index=['FIPS'], columns=['fuel_type_name'], aggfunc=np.sum)
     df_gen = df_gen.reset_index()  # reset index to remove multi-index from pivot table
     df_gen = df_gen.rename_axis(None, axis=1)  # drop index name
     df_gen.fillna(0, inplace=True)  # fill nan with zero
 
+    # create water intensity values
+
+    
 
 
-    df_cooling_w = df[["FIPS", 'plant_code','prime_mover', "fuel_type", 'COOLING_TYPE', 'WATER_TYPE_CODE','WATER_SOURCE_CODE', 'WITHDRAWAL']].copy()
+    # create water withdrawal source fractions
+    df_cooling_w = df[["FIPS", 'plant_code','prime_mover', "generation_mwh", "fuel_type", 'COOLING_TYPE',
+                       'WATER_TYPE_CODE','WATER_SOURCE_CODE', 'WITHDRAWAL']].copy()
+
     df_cooling_w["water_withdrawal_name"] = 'EGS_'+ df['fuel_type'] + '_' + df['prime_mover'] + '_' \
                                             + df['COOLING_TYPE'] + '_total_mgd_from_WSW_' \
                                             + df_cooling_w["WATER_TYPE_CODE"] + '_' + df_cooling_w["WATER_SOURCE_CODE"] \
-                                            + 'total_total_total_mgd_fraction'
-
+                                            + '_total_total_total_mgd_fraction'
 
 
     cooling_only = df_cooling_w[df_cooling_w.COOLING_TYPE != 'nocooling'].groupby('plant_code', as_index=False).count()
@@ -1514,14 +1523,21 @@ def prep_electricity_generation() -> pd.DataFrame:
     df_cooling_w['count'].fillna(1, inplace=True)
     df_cooling_w = df_cooling_w.dropna(subset=["WITHDRAWAL"])
     df_cooling_w['WITHDRAWAL'] = df_cooling_w['WITHDRAWAL']/df_cooling_w['count']
-    df_cooling_w = pd.pivot_table(df_cooling_w, values='WITHDRAWAL', index=['FIPS'], columns=['water_withdrawal_name'], aggfunc=np.sum)
+
+    # convert withdrawal to value of 1 to be 100% fraction of source
+    df_cooling_w['WITHDRAWAL'] = np.where(df_cooling_w['WITHDRAWAL']>0, 1, 0)
+
+    df_cooling_w = pd.pivot_table(df_cooling_w, values='WITHDRAWAL', index=['FIPS'],
+                                  columns=['water_withdrawal_name'], aggfunc=np.mean)
     df_cooling_w = df_cooling_w.reset_index()  # reset index to remove multi-index from pivot table
     df_cooling_w = df_cooling_w.rename_axis(None, axis=1)  # drop index name
     df_cooling_w.fillna(0, inplace=True)  # fill nan with zero
 
+
+    # create consumption fractions
     df_cooling_c = df[
         ["FIPS", 'plant_code', 'prime_mover', "fuel_type", 'COOLING_TYPE', 'WATER_TYPE_CODE', 'WATER_SOURCE_CODE',
-         'CONSUMPTION']].copy()
+         'CONSUMPTION', 'WITHDRAWAL']].copy()
     df_cooling_c["water_consumption_name"] = 'EGS_'+ df['fuel_type'] + '_' + df['prime_mover'] + '_' \
                                              + df['COOLING_TYPE'] + 'total_mgd_to_CMP_total_total_total_total_mgd_fraction'
 
@@ -1529,15 +1545,19 @@ def prep_electricity_generation() -> pd.DataFrame:
     df_cooling_c['count'].fillna(1, inplace=True)
     df_cooling_c = df_cooling_c.dropna(subset=["CONSUMPTION"])
     df_cooling_c['CONSUMPTION'] = df_cooling_c['CONSUMPTION'] / df_cooling_c['count']
-    df_cooling_c = pd.pivot_table(df_cooling_c, values='CONSUMPTION', index=['FIPS'], columns=['water_consumption_name'],
-                                  aggfunc=np.sum)
+
+    df_cooling_c['cons_fraction'] = df_cooling_c['CONSUMPTION']/df_cooling_c['WITHDRAWAL']
+
+    df_cooling_c = pd.pivot_table(df_cooling_c, values='cons_fraction', index=['FIPS'], columns=['water_consumption_name'],
+                                  aggfunc=np.mean)
     df_cooling_c = df_cooling_c.reset_index()  # reset index to remove multi-index from pivot table
     df_cooling_c = df_cooling_c.rename_axis(None, axis=1)  # drop index name
     df_cooling_c.fillna(0, inplace=True)  # fill nan with zero
 
+    # surface discharge fraction
     df_cooling_sd = df[
         ["FIPS", 'plant_code', 'prime_mover', "fuel_type", 'COOLING_TYPE', 'WATER_TYPE_CODE', 'WATER_SOURCE_CODE',
-         'SURFACE_DISCHARGE_MGD']].copy()
+         'SURFACE_DISCHARGE_MGD', 'WITHDRAWAL']].copy()
     df_cooling_sd["sd_name"] = 'EGS_' + df['fuel_type'] + '_' + df['prime_mover'] + '_' \
                                + df['COOLING_TYPE'] + 'total_mgd_to_SRD_total_total_total_total_mgd_fraction'
 
@@ -1545,15 +1565,19 @@ def prep_electricity_generation() -> pd.DataFrame:
     df_cooling_sd['count'].fillna(1, inplace=True)
     df_cooling_sd = df_cooling_sd.dropna(subset=["SURFACE_DISCHARGE_MGD"])
     df_cooling_sd['SURFACE_DISCHARGE_MGD'] = df_cooling_sd['SURFACE_DISCHARGE_MGD'] / df_cooling_sd['count']
-    df_cooling_sd = pd.pivot_table(df_cooling_sd, values='SURFACE_DISCHARGE_MGD', index=['FIPS'], columns=['sd_name'],
+
+    df_cooling_sd['sd_fraction'] = df_cooling_sd['SURFACE_DISCHARGE_MGD']/df_cooling_sd['WITHDRAWAL']
+
+    df_cooling_sd = pd.pivot_table(df_cooling_sd, values='sd_fraction', index=['FIPS'], columns=['sd_name'],
                       aggfunc=np.sum)
     df_cooling_sd = df_cooling_sd.reset_index()  # reset index to remove multi-index from pivot table
     df_cooling_sd = df_cooling_sd.rename_axis(None, axis=1)  # drop index name
     df_cooling_sd.fillna(0, inplace=True)  # fill nan with zero
 
+    # ocean discharge fractions
     df_cooling_od = df[
         ["FIPS", 'plant_code', 'prime_mover', "fuel_type", 'COOLING_TYPE', 'WATER_TYPE_CODE', 'WATER_SOURCE_CODE',
-         'OCEAN_DISCHARGE_MGD']].copy()
+         'OCEAN_DISCHARGE_MGD', 'WITHDRAWAL']].copy()
     df_cooling_od["od_name"] = 'EGS_' + df['fuel_type'] + '_' + df['prime_mover'] + '_' \
                                + df['COOLING_TYPE'] + 'total_mgd_to_OCD_total_total_total_total_mgd_fraction'
 
@@ -1561,6 +1585,9 @@ def prep_electricity_generation() -> pd.DataFrame:
     df_cooling_od['count'].fillna(1, inplace=True)
     df_cooling_od = df_cooling_od.dropna(subset=["OCEAN_DISCHARGE_MGD"])
     df_cooling_od['OCEAN_DISCHARGE_MGD'] = df_cooling_od['OCEAN_DISCHARGE_MGD'] / df_cooling_od['count']
+
+    df_cooling_od['od_fraction'] = df_cooling_od['OCEAN_DISCHARGE_MGD']/df_cooling_c['WITHDRAWAL']
+
     df_cooling_od = pd.pivot_table(df_cooling_od, values='OCEAN_DISCHARGE_MGD', index=['FIPS'], columns=['od_name'],
                                    aggfunc=np.sum)
     df_cooling_od = df_cooling_od.reset_index()  # reset index to remove multi-index from pivot table
@@ -1587,7 +1614,12 @@ def prep_electricity_generation() -> pd.DataFrame:
 
 
 x = prep_electricity_generation()
+
+print(x.mean())
 x.to_csv(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv")
+import os
+os.startfile(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv")
+
 
 # TODO START HERE
 
