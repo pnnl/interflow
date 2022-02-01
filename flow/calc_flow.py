@@ -3,7 +3,7 @@ import flow.construct as co
 import flow.deconstruct as de
 
 
-def calculate(data=None, level=5, region=None):
+def calculate(data=None, level=5, region_name=None):
     """Collects water demand data to water sectors (sectors whose energy demand is strictly dependent on their water
     demand) that directly withdraw their water from the water supply (e.g., public water supply) and aggregates the
     values.
@@ -15,10 +15,10 @@ def calculate(data=None, level=5, region=None):
         df = data
         #df = read_baseline_data()
 
-    if region is None:
+    if region_name is None:
         df = df
     else:
-        df = df[df.columns[0]==region]
+        df = df[df[df.columns[0]] == region_name]
 
 
     f_dict = co.construct_nested_dictionary(df)
