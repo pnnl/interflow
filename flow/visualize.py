@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import plotly.graph_objects as go
 
 from .calculate import *
@@ -54,7 +55,7 @@ def plot_sankey(data, region_name, unit_type, level=1):
 
         if level == 1:
 
-            sankey_number = pd.unique(df[['S1', 't1']].values.ravel('K'))
+            sankey_number = pd.unique(df[['S1', 'T1']].values.ravel('K'))
 
             var_dict = dict()
             for index, value in enumerate(sankey_number):
@@ -62,7 +63,7 @@ def plot_sankey(data, region_name, unit_type, level=1):
             var_dict = {y: x for x, y in var_dict.items()}
 
             df["source"] = df["S1"].apply(lambda x: var_dict.get(x))
-            df["target"] = df["t1"].apply(lambda x: var_dict.get(x))
+            df["target"] = df["T1"].apply(lambda x: var_dict.get(x))
 
         elif level == 2:
 
@@ -123,7 +124,7 @@ def plot_sankey(data, region_name, unit_type, level=1):
 
         source_list = df['source'].tolist()
         target_list = df['target'].tolist()
-        value_list = df['value'].tolist()
+
 
         # create the figure
         fig = go.Figure(data=[go.Sankey(

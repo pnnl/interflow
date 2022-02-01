@@ -31,3 +31,68 @@ def analyze_sector(df:pd.DataFrame, region_name:str, sector_name:str, unit_type:
             print(f'{name}        {dictionary[name]}  {unit_type}')
 
 
+def group_results(df, input_level, output_level=1):
+
+    reg_col_name = df.columns[0]
+
+    if input_level == 1:
+        if output_level == 1:
+            df = df.groupby([reg_col_name, 'S1', 'T1', 'units'], as_index=False).sum()
+        else:
+            m = 'Cannot create output level given number of input levels'
+            raise ValueError(m)
+
+    elif input_level == 2:
+        if output_level == 1:
+            df = df.groupby([reg_col_name, 'S1', 'T1', 'units'], as_index=False).sum()
+        elif output_level == 2:
+            df = df.groupby([reg_col_name, 'S1', 'S2', 'T1', 'T2','units'], as_index=False).sum()
+        else:
+            m = 'Cannot create output level given number of input levels'
+            raise ValueError(m)
+
+    elif input_level == 3:
+        if output_level == 1:
+            df = df.groupby([reg_col_name, 'S1', 'T1', 'units'], as_index=False).sum()
+        elif output_level == 2:
+            df = df.groupby([reg_col_name, 'S1', 'S2', 'T1', 'T2','units'], as_index=False).sum()
+        elif output_level == 3:
+            df = df.groupby([reg_col_name, 'S1', 'S2','S3', 'T1', 'T2', 'T3', 'units'], as_index=False).sum()
+        else:
+            m = 'Cannot create output level given number of input levels'
+            raise ValueError(m)
+
+    elif input_level == 4:
+        if output_level == 1:
+            df = df.groupby([reg_col_name, 'S1', 'T1', 'units'], as_index=False).sum()
+        elif output_level == 2:
+            df = df.groupby([reg_col_name, 'S1', 'S2', 'T1', 'T2','units'], as_index=False).sum()
+        elif output_level == 3:
+            df = df.groupby([reg_col_name, 'S1', 'S2','S3', 'T1', 'T2', 'T3', 'units'], as_index=False).sum()
+        elif output_level == 4:
+            df = df.groupby([reg_col_name, 'S1', 'S2', 'S3', 'S4', 'T1', 'T2', 'T3', 'T4','units'], as_index=False).sum()
+        else:
+            m = 'Cannot create output level given number of input levels'
+            raise ValueError(m)
+
+
+    elif input_level == 5:
+        if output_level == 1:
+            df = df.groupby([reg_col_name, 'S1', 'T1', 'units'], as_index=False).sum()
+        elif output_level == 2:
+            df = df.groupby([reg_col_name, 'S1', 'S2', 'T1', 'T2','units'], as_index=False).sum()
+        elif output_level == 3:
+            df = df.groupby([reg_col_name, 'S1', 'S2','S3', 'T1', 'T2', 'T3', 'units'], as_index=False).sum()
+        elif output_level == 4:
+            df = df.groupby([reg_col_name, 'S1', 'S2', 'S3', 'S4', 'T1', 'T2', 'T3', 'T4','units'], as_index=False).sum()
+        elif output_level == 5:
+            df = df.groupby([reg_col_name, 'S1', 'S2', 'S3', 'S4', 'S5', 'T1', 'T2', 'T3', 'T4', 'T5','units'], as_index=False).sum()
+        else:
+            m = 'Cannot create output level given number of input levels'
+            raise ValueError(m)
+    else:
+        m = 'Input level specified is not an integer between 1 and 5'
+        raise ValueError(m)
+    
+    return df
+

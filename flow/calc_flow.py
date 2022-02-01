@@ -18,7 +18,10 @@ def calculate(data=None, level=5, region_name=None):
     if region_name is None:
         df = df
     else:
-        df = df[df[df.columns[0]] == region_name]
+        df[df.columns[0]] = df[df.columns[0]].astype(str)
+        reg_col = df.columns[0]
+        df = df.loc[df[reg_col] == region_name]
+
 
 
     f_dict = co.construct_nested_dictionary(df)
