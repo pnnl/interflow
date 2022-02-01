@@ -369,6 +369,22 @@ def prep_public_water_supply_fraction() -> pd.DataFrame:
 
     return df
 
+def prep_pws_to_pwd():
+    '''preparing variables for connection'''
+
+    df = prep_water_use_2015()
+
+    df['PWD_total_total_total_total_mgd_from_PWS_fresh_surfacewater_withdrawal_total_mgd_intensity'] = 1
+    df['PWD_total_total_total_total_mgd_from_PWS_fresh_surfacewater_withdrawal_total_mgd_fraction'] = 1
+    df['PWD_total_total_total_total_mgd_from_PWS_fresh_groundwater_withdrawal_total_mgd_intensity'] = 1
+    df['PWD_total_total_total_total_mgd_from_PWS_fresh_groundwater_withdrawal_total_mgd_fraction'] = 1
+    df['PWD_total_total_total_total_mgd_from_PWS_saline_groundwater_withdrawal_total_mgd_intensity'] = 1
+    df['PWD_total_total_total_total_mgd_from_PWS_saline_groundwater_withdrawal_total_mgd_fraction'] = 1
+    df['PWD_total_total_total_total_mgd_from_PWS_saline_surfacewater_withdrawal_total_mgd_intensity'] = 1
+    df['PWD_total_total_total_total_mgd_from_PWS_saline_surfacewater_withdrawal_total_mgd_fraction'] = 1
+
+    return df
+
 
 def calc_pws_deliveries() -> pd.DataFrame:
     """calculating public water deliveries to the commercial and industrial sectors.
@@ -1835,7 +1851,7 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
 def combine_data():
     x1 = prep_water_use_2015(all_variables=True)
     x2 = calc_pws_deliveries()
-    #x3 = calc_conveyance_loss_fraction()
+    x3 = prep_pws_to_pwd()
     x4 = calc_discharge_fractions()
     x5 = calc_hydro_water_intensity()
     x6 = prep_wastewater_data()
@@ -1860,7 +1876,7 @@ def combine_data():
                   ], axis=1)
 
     out_df = pd.merge(x1, x2, how='left', on=['FIPS', 'State', 'County'])
-    #out_df = pd.merge(out_df, x3, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x3, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x4, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x5, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x6, how='left', on=['FIPS', 'State', 'County'])
