@@ -3,6 +3,7 @@ import numpy as np
 import plotly.graph_objects as go
 
 from .calculate import *
+from .analyze import *
 
 def plot_bar(data, x, y, region, y_axis="Value", x_axis_title="Region",  y_axis_title="Value"):
     """Plot the results of a cerf run on a map where each technology has its own color.
@@ -42,18 +43,22 @@ def plot_bar(data, x, y, region, y_axis="Value", x_axis_title="Region",  y_axis_
     plt.show()
 
 
-def plot_sankey(data, region_name, unit_type, level=1):
+def plot_sankey(data, region_name, unit_type, output_level, strip=None):
     """
+    Must give it dataframe, a region, a unit type, and a level of output
     """
     df = data
     df = df[df.units == unit_type]
     df = df[df.region == region_name]
 
+    group_results(df, output_level=output_level)
+
     available_levels = [1, 2, 3, 4, 5]
+    remove = f'-{strip}'
 
-    if level in available_levels:
+    if output_level in available_levels:
 
-        if level == 1:
+        if output_level == 1:
 
             sankey_number = pd.unique(df[['S1', 'T1']].values.ravel('K'))
 
@@ -65,10 +70,19 @@ def plot_sankey(data, region_name, unit_type, level=1):
             df["source"] = df["S1"].apply(lambda x: var_dict.get(x))
             df["target"] = df["T1"].apply(lambda x: var_dict.get(x))
 
-        elif level == 2:
+        elif output_level == 2:
 
             df['S12'] = df['S1'] + '-' + df['S2']
             df['T12'] = df['T1'] + '-' + df['T2']
+
+            if strip is None:
+                df['S12'] = df['S12']
+                df['T12'] = df['T12']
+            else:
+                df['S12'] = df['S12'].str.strip(remove)
+                df['T12'] = df['T12'].str.strip(remove)
+
+
             sankey_number = pd.unique(df[['S12', 'T12']].values.ravel('K'))
 
             var_dict = dict()
@@ -80,10 +94,18 @@ def plot_sankey(data, region_name, unit_type, level=1):
             df["target"] = df["T12"].apply(lambda x: var_dict.get(x))
 
 
-        elif level == 3:
+        elif output_level == 3:
 
             df['S123'] = df['S1'] + '-' + df['S2']+ '-' + df['S3']
             df['T123'] = df['T1'] + '-' + df['T2']+ '-' + df['T3']
+
+            if strip is None:
+                df['S123'] = df['S123']
+                df['T123'] = df['T123']
+            else:
+                df['S123'] = df['S123'].str.strip(remove)
+                df['T123'] = df['T123'].str.strip(remove)
+
             sankey_number = pd.unique(df[['S123', 'T123']].values.ravel('K'))
 
             var_dict = dict()
@@ -94,10 +116,18 @@ def plot_sankey(data, region_name, unit_type, level=1):
             df["source"] = df["S123"].apply(lambda x: var_dict.get(x))
             df["target"] = df["T123"].apply(lambda x: var_dict.get(x))
 
-        elif level == 4:
+        elif output_level == 4:
 
             df['S1234'] = df['S1'] + '-' + df['S2']+ '-' + df['S3']+ '-' + df['S4']
             df['T1234'] = df['T1'] + '-' + df['T2']+ '-' + df['T3']+ '-' + df['T4']
+
+            if strip is None:
+                df['S1234'] = df['S1234']
+                df['T1234'] = df['T1234']
+            else:
+                df['S1234'] = df['S1234'].str.strip(remove)
+                df['T1234'] = df['T1234'].str.strip(remove)
+
             sankey_number = pd.unique(df[['S1234', 'T1234']].values.ravel('K'))
 
             var_dict = dict()
@@ -112,7 +142,15 @@ def plot_sankey(data, region_name, unit_type, level=1):
 
             df['S12345'] = df['S1'] + '-' + df['S2']+ '-' + df['S3']+ '-' + df['S4']+ '-' + df['S5']
             df['T12345'] = df['T1'] + '-' + df['T2']+ '-' + df['T3']+ '-' + df['T4']+ '-' + df['T5']
-            sankey_number = pd.unique(df[['S1234', 'T1234']].values.ravel('K'))
+
+            if strip is None:
+                df['S12345'] = df['S12345']
+                df['T12345'] = df['T12345']
+            else:
+                df['S12345'] = df['S12345'].str.strip(remove)
+                df['T12345'] = df['T12345'].str.strip(remove)
+
+            sankey_number = pd.unique(df[['S12345', 'T12345']].values.ravel('K'))
 
             var_dict = dict()
             for index, value in enumerate(sankey_number):
@@ -122,9 +160,16 @@ def plot_sankey(data, region_name, unit_type, level=1):
             df["source"] = df["S12345"].apply(lambda x: var_dict.get(x))
             df["target"] = df["T12345"].apply(lambda x: var_dict.get(x))
 
-        source_list = df['source'].tolist()
-        target_list = df['target'].tolist()
+        if strip is None:
+            source_list = df['source'].tolist()
+            target_list = df['target'].tolist()
+            value_list = df['value'].to_list()
+        else:
 
+            source_list = df['source'].tolist()
+
+            target_list = df['target'].tolist()
+            value_list = df['value'].to_list()
 
         # create the figure
         fig = go.Figure(data=[go.Sankey(

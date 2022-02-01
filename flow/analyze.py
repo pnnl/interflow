@@ -31,9 +31,23 @@ def analyze_sector(df:pd.DataFrame, region_name:str, sector_name:str, unit_type:
             print(f'{name}        {dictionary[name]}  {unit_type}')
 
 
-def group_results(df, input_level, output_level=1):
+def group_results(df, output_level=1):
 
     reg_col_name = df.columns[0]
+
+    if 'S5' in df.columns:
+        input_level = 5
+    elif ('S5' not in df.columns) & ('S4' in df.columns):
+        input_level = 4
+    elif ('S5' not in df.columns) & ('S4' not in df.columns) & ('S3' in df.columns):
+        input_level = 3
+    elif ('S5' not in df.columns) & ('S4' not in df.columns) & ('S3' not in df.columns)& ('S2' in df.columns):
+        input_level = 2
+    elif ('S5' not in df.columns) & ('S4' not in df.columns) & ('S3' not in df.columns)& ('S2' not in df.columns) & ('S1' in df.columns):
+        input_level = 1
+    else:
+        m = 'input data not formatted corrected'
+        raise ValueError(m)
 
     if input_level == 1:
         if output_level == 1:
@@ -93,6 +107,6 @@ def group_results(df, input_level, output_level=1):
     else:
         m = 'Input level specified is not an integer between 1 and 5'
         raise ValueError(m)
-    
+
     return df
 
