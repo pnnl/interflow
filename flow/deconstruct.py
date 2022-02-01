@@ -16,19 +16,19 @@ def deconstruct_nested_dictionary(input_dict:dict):
     df = pd.concat([df.iloc[:, :i], df2, df.iloc[:, i+1:]], axis=1)
 
     if len(df.columns) == 6:
-        col = ['region', 'S1', 'to', 't1', 'units', 'value']
+        col = ['region', 'S1', 'to', 'T1', 'units', 'value']
         df.columns = col
     elif len(df.columns) == 8:
-        col = ['region', 'S1', 'S2', 'to', 't1', 't2', 'units', 'value']
+        col = ['region', 'S1', 'S2', 'to', 'T1', 'T2', 'units', 'value']
         df.columns = col
     elif len(df.columns) == 10:
-        col = ['region', 'S1', 'S2', 'S3', 'to', 't1', 't2', 't3', 'units', 'value']
+        col = ['region', 'S1', 'S2', 'S3', 'to', 'T1', 'T2', 'T3', 'units', 'value']
         df.columns = col
     elif len(df.columns) == 12:
-        col = ['region', 'S1', 'S2', 'S3', 'S4', 'to', 't1', 't2', 't3', 't4', 'units', 'value']
+        col = ['region', 'S1', 'S2', 'S3', 'S4', 'to', 'T1', 'T2', 'T3', 'T4', 'units', 'value']
         df.columns = col
     elif len(df.columns) == 14:
-        col = ['region', 'S1', 'S2', 'S3','S4', 'S5', 'to', 't1', 't2', 't3','t4', 't5', 'units', 'value']
+        col = ['region', 'S1', 'S2', 'S3','S4', 'S5', 'to', 'T1', 'T2', 'T3','T4', 'T5', 'units', 'value']
         df.columns = col
     else:
         pass

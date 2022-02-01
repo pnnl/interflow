@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 
 from .calculate import *
 
@@ -38,3 +39,111 @@ def plot_bar(data, x, y, region, y_axis="Value", x_axis_title="Region",  y_axis_
     plt.ylabel(f"{y_axis_title}")
     plt.title(f"Barchart of {y_axis_title} by {x_axis_title}, Averaged across {region}")
     plt.show()
+
+
+def plot_sankey(data, region_name, unit_type, level=1):
+    """
+    """
+    df = data
+    df = df[df.units == unit_type]
+    df = df[df.region == region_name]
+
+    available_levels = [1, 2, 3, 4, 5]
+
+    if level in available_levels:
+
+        if level == 1:
+
+            sankey_number = pd.unique(df[['S1', 't1']].values.ravel('K'))
+
+            var_dict = dict()
+            for index, value in enumerate(sankey_number):
+                var_dict[index] = value
+            var_dict = {y: x for x, y in var_dict.items()}
+
+            df["source"] = df["S1"].apply(lambda x: var_dict.get(x))
+            df["target"] = df["t1"].apply(lambda x: var_dict.get(x))
+
+        elif level == 2:
+
+            df['S12'] = df['S1'] + '-' + df['S2']
+            df['T12'] = df['T1'] + '-' + df['T2']
+            sankey_number = pd.unique(df[['S12', 'T12']].values.ravel('K'))
+
+            var_dict = dict()
+            for index, value in enumerate(sankey_number):
+                var_dict[index] = value
+            var_dict = {y: x for x, y in var_dict.items()}
+
+            df["source"] = df["S12"].apply(lambda x: var_dict.get(x))
+            df["target"] = df["T12"].apply(lambda x: var_dict.get(x))
+
+
+        elif level == 3:
+
+            df['S123'] = df['S1'] + '-' + df['S2']+ '-' + df['S3']
+            df['T123'] = df['T1'] + '-' + df['T2']+ '-' + df['T3']
+            sankey_number = pd.unique(df[['S123', 'T123']].values.ravel('K'))
+
+            var_dict = dict()
+            for index, value in enumerate(sankey_number):
+                var_dict[index] = value
+            var_dict = {y: x for x, y in var_dict.items()}
+
+            df["source"] = df["S123"].apply(lambda x: var_dict.get(x))
+            df["target"] = df["T123"].apply(lambda x: var_dict.get(x))
+
+        elif level == 4:
+
+            df['S1234'] = df['S1'] + '-' + df['S2']+ '-' + df['S3']+ '-' + df['S4']
+            df['T1234'] = df['T1'] + '-' + df['T2']+ '-' + df['T3']+ '-' + df['T4']
+            sankey_number = pd.unique(df[['S1234', 'T1234']].values.ravel('K'))
+
+            var_dict = dict()
+            for index, value in enumerate(sankey_number):
+                var_dict[index] = value
+            var_dict = {y: x for x, y in var_dict.items()}
+
+            df["source"] = df["S1234"].apply(lambda x: var_dict.get(x))
+            df["target"] = df["T1234"].apply(lambda x: var_dict.get(x))
+
+        else:
+
+            df['S12345'] = df['S1'] + '-' + df['S2']+ '-' + df['S3']+ '-' + df['S4']+ '-' + df['S5']
+            df['T12345'] = df['T1'] + '-' + df['T2']+ '-' + df['T3']+ '-' + df['T4']+ '-' + df['T5']
+            sankey_number = pd.unique(df[['S1234', 'T1234']].values.ravel('K'))
+
+            var_dict = dict()
+            for index, value in enumerate(sankey_number):
+                var_dict[index] = value
+            var_dict = {y: x for x, y in var_dict.items()}
+
+            df["source"] = df["S12345"].apply(lambda x: var_dict.get(x))
+            df["target"] = df["T12345"].apply(lambda x: var_dict.get(x))
+
+        source_list = df['source'].tolist()
+        target_list = df['target'].tolist()
+        value_list = df['value'].tolist()
+
+        # create the figure
+        fig = go.Figure(data=[go.Sankey(
+            node=dict(
+                pad=35,  # space between nodes (vertically)
+                thickness=40,  # node thickness
+                line=dict(color="black", width=1),  # node border color and thickness
+                label=sankey_number  # node label, refers to list of indexed names
+                # color = color_list                                 #color of nodes, refers to list of hex codes
+            ),
+            link=dict(
+                source=source_list,  # list of source node indices
+                target=target_list,  # list of target node indices
+                value=value_list,  # list of values between source and target at indices
+            ))])
+
+        # fig.update_layout(title_text="Interactive Sankey Diagram of Select Variables", font_size=12)  #title
+
+        fig.update_traces(valuesuffix=f'{unit_type}', selector=dict(type='sankey'))  # adds value suffix
+
+        fig.show()
+    else:
+        m = 'Incorrect level specified. Level must be an integer between 1 and 5, inclusive.'
