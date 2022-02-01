@@ -27,6 +27,6 @@ setup(
         'pandas>=1.3.4',
         'PyYAML>=5.4.1',
         'matplotlib>=3.3.3'
-        'plotly-geo>=1.0'
+        'plotly>=5.0'
     ]
 )
