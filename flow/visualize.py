@@ -43,20 +43,20 @@ def plot_bar(data, x, y, region, y_axis="Value", x_axis_title="Region",  y_axis_
     plt.show()
 
 
-def plot_sankey(data, unit_type, output_level, region_name=None, strip=None):
+def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=None, strip=None):
     """
     Must give it dataframe, a region, a unit type, and a level of output
     """
     df = data
-    df = df[df.units == unit_type]
+    df_1 = df[df.units == unit_type1]
 
     # TODO need to make sure this is unique if there's no region name specified
     if region_name is None:
-        df = df
+        df_1 = df_1
     else:
-        df = df[df.region == region_name]
+        df_1 = df_1[df_1.region == region_name]
 
-    group_results(df, output_level=output_level)
+    group_results(df_1, output_level=output_level)
 
     available_levels = [1, 2, 3, 4, 5]
     remove = f'-{strip}'
@@ -72,66 +72,66 @@ def plot_sankey(data, unit_type, output_level, region_name=None, strip=None):
                 var_dict[index] = value
             var_dict = {y: x for x, y in var_dict.items()}
 
-            df["source"] = df["S1"].apply(lambda x: var_dict.get(x))
-            df["target"] = df["T1"].apply(lambda x: var_dict.get(x))
+            df_1["source"] = df_1["S1"].apply(lambda x: var_dict.get(x))
+            df_1["target"] = df_1["T1"].apply(lambda x: var_dict.get(x))
 
         elif output_level == 2:
 
-            df['S12'] = df['S1'] + '-' + df['S2']
-            df['T12'] = df['T1'] + '-' + df['T2']
+            df_1['S12'] = df_1['S1'] + '-' + df_1['S2']
+            df_1['T12'] = df_1['T1'] + '-' + df_1['T2']
 
             if strip is None:
-                df['S12'] = df['S12']
-                df['T12'] = df['T12']
+                df_1['S12'] = df_1['S12']
+                df_1['T12'] = df_1['T12']
             else:
-                df['S12'] = df['S12'].str.strip(remove)
-                df['T12'] = df['T12'].str.strip(remove)
+                df_1['S12'] = df_1['S12'].str.strip(remove)
+                df_1['T12'] = df_1['T12'].str.strip(remove)
 
 
-            sankey_number = pd.unique(df[['S12', 'T12']].values.ravel('K'))
+            sankey_number = pd.unique(df_1[['S12', 'T12']].values.ravel('K'))
 
             var_dict = dict()
             for index, value in enumerate(sankey_number):
                 var_dict[index] = value
             var_dict = {y: x for x, y in var_dict.items()}
 
-            df["source"] = df["S12"].apply(lambda x: var_dict.get(x))
-            df["target"] = df["T12"].apply(lambda x: var_dict.get(x))
+            df_1["source"] = df_1["S12"].apply(lambda x: var_dict.get(x))
+            df_1["target"] = df_1["T12"].apply(lambda x: var_dict.get(x))
 
 
         elif output_level == 3:
 
-            df['S123'] = df['S1'] + '-' + df['S2']+ '-' + df['S3']
-            df['T123'] = df['T1'] + '-' + df['T2']+ '-' + df['T3']
+            df_1['S123'] = df_1['S1'] + '-' + df_1['S2']+ '-' + df_1['S3']
+            df_1['T123'] = df_1['T1'] + '-' + df_1['T2']+ '-' + df_1['T3']
 
             if strip is None:
-                df['S123'] = df['S123']
-                df['T123'] = df['T123']
+                df_1['S123'] = df_1['S123']
+                df_1['T123'] = df_1['T123']
             else:
-                df['S123'] = df['S123'].str.strip(remove)
-                df['T123'] = df['T123'].str.strip(remove)
+                df_1['S123'] = df_1['S123'].str.strip(remove)
+                df_1['T123'] = df_1['T123'].str.strip(remove)
 
-            sankey_number = pd.unique(df[['S123', 'T123']].values.ravel('K'))
+            sankey_number = pd.unique(df_1[['S123', 'T123']].values.ravel('K'))
 
             var_dict = dict()
             for index, value in enumerate(sankey_number):
                 var_dict[index] = value
             var_dict = {y: x for x, y in var_dict.items()}
 
-            df["source"] = df["S123"].apply(lambda x: var_dict.get(x))
-            df["target"] = df["T123"].apply(lambda x: var_dict.get(x))
+            df_1["source"] = df_1["S123"].apply(lambda x: var_dict.get(x))
+            df_1["target"] = df_1["T123"].apply(lambda x: var_dict.get(x))
 
         elif output_level == 4:
 
-            df['S1234'] = df['S1'] + '-' + df['S2']+ '-' + df['S3']+ '-' + df['S4']
-            df['T1234'] = df['T1'] + '-' + df['T2']+ '-' + df['T3']+ '-' + df['T4']
+            df_1['S1234'] = df_1['S1'] + '-' + df_1['S2']+ '-' + df_1['S3']+ '-' + df_1['S4']
+            df_1['T1234'] = df_1['T1'] + '-' + df_1['T2']+ '-' + df_1['T3']+ '-' + df_1['T4']
 
             if strip is None:
-                df['S1234'] = df['S1234']
-                df['T1234'] = df['T1234']
+                df_1['S1234'] = df_1['S1234']
+                df_1['T1234'] = df_1['T1234']
             else:
-                df['S1234'] = df['S1234'].str.strip(remove)
-                df['T1234'] = df['T1234'].str.strip(remove)
+                df_1['S1234'] = df_1['S1234'].str.strip(remove)
+                df_1['T1234'] = df_1['T1234'].str.strip(remove)
 
             sankey_number = pd.unique(df[['S1234', 'T1234']].values.ravel('K'))
 
@@ -140,61 +140,217 @@ def plot_sankey(data, unit_type, output_level, region_name=None, strip=None):
                 var_dict[index] = value
             var_dict = {y: x for x, y in var_dict.items()}
 
-            df["source"] = df["S1234"].apply(lambda x: var_dict.get(x))
-            df["target"] = df["T1234"].apply(lambda x: var_dict.get(x))
+            df_1["source"] = df_1["S1234"].apply(lambda x: var_dict.get(x))
+            df_1["target"] = df_1["T1234"].apply(lambda x: var_dict.get(x))
 
         else:
 
-            df['S12345'] = df['S1'] + '-' + df['S2']+ '-' + df['S3']+ '-' + df['S4']+ '-' + df['S5']
-            df['T12345'] = df['T1'] + '-' + df['T2']+ '-' + df['T3']+ '-' + df['T4']+ '-' + df['T5']
+            df_1['S12345'] = df_1['S1'] + '-' + df_1['S2']+ '-' + df_1['S3']+ '-' + df_1['S4']+ '-' + df_1['S5']
+            df_1['T12345'] = df_1['T1'] + '-' + df_1['T2']+ '-' + df_1['T3']+ '-' + df_1['T4']+ '-' + df_1['T5']
 
             if strip is None:
-                df['S12345'] = df['S12345']
-                df['T12345'] = df['T12345']
+                df_1['S12345'] = df_1['S12345']
+                df_1['T12345'] = df_1['T12345']
             else:
-                df['S12345'] = df['S12345'].str.strip(remove)
-                df['T12345'] = df['T12345'].str.strip(remove)
+                df_1['S12345'] = df_1['S12345'].str.strip(remove)
+                df_1['T12345'] = df_1['T12345'].str.strip(remove)
 
-            sankey_number = pd.unique(df[['S12345', 'T12345']].values.ravel('K'))
+            sankey_number = pd.unique(df_1[['S12345', 'T12345']].values.ravel('K'))
 
             var_dict = dict()
             for index, value in enumerate(sankey_number):
                 var_dict[index] = value
             var_dict = {y: x for x, y in var_dict.items()}
 
-            df["source"] = df["S12345"].apply(lambda x: var_dict.get(x))
-            df["target"] = df["T12345"].apply(lambda x: var_dict.get(x))
+            df_1["source"] = df_1["S12345"].apply(lambda x: var_dict.get(x))
+            df_1["target"] = df_1["T12345"].apply(lambda x: var_dict.get(x))
 
         if strip is None:
-            source_list = df['source'].tolist()
-            target_list = df['target'].tolist()
-            value_list = df['value'].to_list()
+            source_list = df_1['source'].tolist()
+            target_list = df_1['target'].tolist()
+            value_list = df_1['value'].to_list()
         else:
 
-            source_list = df['source'].tolist()
+            source_list = df_1['source'].tolist()
 
-            target_list = df['target'].tolist()
-            value_list = df['value'].to_list()
+            target_list = df_1['target'].tolist()
+            value_list = df_1['value'].to_list()
 
         # create the figure
         fig = go.Figure(data=[go.Sankey(
             node=dict(
-                pad=35,  # space between nodes (vertically)
-                thickness=40,  # node thickness
+                pad=20,  # space between nodes (vertically)
+                thickness=10,  # node thickness
                 line=dict(color="black", width=1),  # node border color and thickness
-                label=sankey_number  # node label, refers to list of indexed names
-                # color = color_list                                 #color of nodes, refers to list of hex codes
+                label=sankey_number,  # node label, refers to list of indexed names
+                color = 'rgba(63, 125, 152, 1)'                                 #color of nodes, refers to list of hex codes
             ),
             link=dict(
                 source=source_list,  # list of source node indices
                 target=target_list,  # list of target node indices
                 value=value_list,  # list of values between source and target at indices
+                color='rgba(102, 195, 216, 0.7)'
             ))])
 
         # fig.update_layout(title_text="Interactive Sankey Diagram of Select Variables", font_size=12)  #title
 
-        fig.update_traces(valuesuffix=f'{unit_type}', selector=dict(type='sankey'))  # adds value suffix
+        fig.update_traces(valuesuffix=f'{unit_type1}', selector=dict(type='sankey'))  # adds value suffix
 
         fig.show()
+
+        if unit_type2 is None:
+            pass
+        else:
+            df_2 = df[df.units == unit_type2]
+
+            # TODO need to make sure this is unique if there's no region name specified
+            if region_name is None:
+                df_2 = df_2
+            else:
+                df_2 = df_2[df_2.region == region_name]
+
+            group_results(df_2, output_level=output_level)
+
+            available_levels = [1, 2, 3, 4, 5]
+            remove = f'-{strip}'
+
+            if output_level in available_levels:
+
+                if output_level == 1:
+
+                    sankey_number = pd.unique(df[['S1', 'T1']].values.ravel('K'))
+
+                    var_dict = dict()
+                    for index, value in enumerate(sankey_number):
+                        var_dict[index] = value
+                    var_dict = {y: x for x, y in var_dict.items()}
+
+                    df_2["source"] = df_2["S1"].apply(lambda x: var_dict.get(x))
+                    df_2["target"] = df_2["T1"].apply(lambda x: var_dict.get(x))
+
+                elif output_level == 2:
+
+                    df_2['S12'] = df_2['S1'] + '-' + df_2['S2']
+                    df_2['T12'] = df_2['T1'] + '-' + df_2['T2']
+
+                    if strip is None:
+                        df_2['S12'] = df_2['S12']
+                        df_2['T12'] = df_2['T12']
+                    else:
+                        df_2['S12'] = df_2['S12'].str.strip(remove)
+                        df_2['T12'] = df_2['T12'].str.strip(remove)
+
+                    sankey_number = pd.unique(df_2[['S12', 'T12']].values.ravel('K'))
+
+                    var_dict = dict()
+                    for index, value in enumerate(sankey_number):
+                        var_dict[index] = value
+                    var_dict = {y: x for x, y in var_dict.items()}
+
+                    df_2["source"] = df_2["S12"].apply(lambda x: var_dict.get(x))
+                    df_2["target"] = df_2["T12"].apply(lambda x: var_dict.get(x))
+
+
+                elif output_level == 3:
+
+                    df_2['S123'] = df_2['S1'] + '-' + df_2['S2'] + '-' + df_2['S3']
+                    df_2['T123'] = df_2['T1'] + '-' + df_2['T2'] + '-' + df_2['T3']
+
+                    if strip is None:
+                        df_2['S123'] = df_2['S123']
+                        df_2['T123'] = df_2['T123']
+                    else:
+                        df_2['S123'] = df_2['S123'].str.strip(remove)
+                        df_2['T123'] = df_2['T123'].str.strip(remove)
+
+                    sankey_number = pd.unique(df_2[['S123', 'T123']].values.ravel('K'))
+
+                    var_dict = dict()
+                    for index, value in enumerate(sankey_number):
+                        var_dict[index] = value
+                    var_dict = {y: x for x, y in var_dict.items()}
+
+                    df_2["source"] = df_2["S123"].apply(lambda x: var_dict.get(x))
+                    df_2["target"] = df_2["T123"].apply(lambda x: var_dict.get(x))
+
+                elif output_level == 4:
+
+                    df_2['S1234'] = df_2['S1'] + '-' + df_2['S2'] + '-' + df_2['S3'] + '-' + df_2['S4']
+                    df_2['T1234'] = df_2['T1'] + '-' + df_2['T2'] + '-' + df_2['T3'] + '-' + df_2['T4']
+
+                    if strip is None:
+                        df_2['S1234'] = df_2['S1234']
+                        df_2['T1234'] = df_2['T1234']
+                    else:
+                        df_2['S1234'] = df_2['S1234'].str.strip(remove)
+                        df_2['T1234'] = df_2['T1234'].str.strip(remove)
+
+                    sankey_number = pd.unique(df[['S1234', 'T1234']].values.ravel('K'))
+
+                    var_dict = dict()
+                    for index, value in enumerate(sankey_number):
+                        var_dict[index] = value
+                    var_dict = {y: x for x, y in var_dict.items()}
+
+                    df_2["source"] = df_2["S1234"].apply(lambda x: var_dict.get(x))
+                    df_2["target"] = df_2["T1234"].apply(lambda x: var_dict.get(x))
+
+                else:
+
+                    df_2['S12345'] = df_2['S1'] + '-' + df_2['S2'] + '-' + df_2['S3'] + '-' + df_2['S4'] + '-' + df_2['S5']
+                    df_2['T12345'] = df_2['T1'] + '-' + df_2['T2'] + '-' + df_2['T3'] + '-' + df_2['T4'] + '-' + df_2['T5']
+
+                    if strip is None:
+                        df_2['S12345'] = df_2['S12345']
+                        df_2['T12345'] = df_2['T12345']
+                    else:
+                        df_2['S12345'] = df_2['S12345'].str.strip(remove)
+                        df_2['T12345'] = df_2['T12345'].str.strip(remove)
+
+                    sankey_number = pd.unique(df_2[['S12345', 'T12345']].values.ravel('K'))
+
+                    var_dict = dict()
+                    for index, value in enumerate(sankey_number):
+                        var_dict[index] = value
+                    var_dict = {y: x for x, y in var_dict.items()}
+
+                    df_2["source"] = df_2["S12345"].apply(lambda x: var_dict.get(x))
+                    df_2["target"] = df_2["T12345"].apply(lambda x: var_dict.get(x))
+
+                if strip is None:
+                    source_list = df_2['source'].tolist()
+                    target_list = df_2['target'].tolist()
+                    value_list = df_2['value'].to_list()
+                else:
+
+                    source_list = df_2['source'].tolist()
+
+                    target_list = df_2['target'].tolist()
+                    value_list = df_2['value'].to_list()
+
+                # create the figure
+                fig = go.Figure(data=[go.Sankey(
+                    node=dict(
+                        pad=20,  # space between nodes (vertically)
+                        thickness=10,  # node thickness
+                        line=dict(color="black", width=1),  # node border color and thickness
+                        label=sankey_number,  # node label, refers to list of indexed names
+                        color = 'rgba(209, 155, 30, 1)'
+                        #color of nodes, refers to list of hex codes
+                    ),
+                    link=dict(
+                        source=source_list,  # list of source node indices
+                        target=target_list,  # list of target node indices
+                        value=value_list,  # list of values between source and target at indices
+                        color='rgba(252, 230, 112, 1)'
+                    ))])
+
+                # fig.update_layout(title_text="Interactive Sankey Diagram of Select Variables", font_size=12)  #title
+
+                fig.update_traces(valuesuffix=f'{unit_type1}', selector=dict(type='sankey'))  # adds value suffix
+
+                fig.show()
+
+
     else:
         m = 'Incorrect level specified. Level must be an integer between 1 and 5, inclusive.'

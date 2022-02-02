@@ -34,12 +34,15 @@ def calculate(data=None, level=5, region_name=None):
     l2_dict = {}
     l1_dict = {}
 
+    fraction_dict = {}
+
     # initialize values
     for r in f_dict:
         for type in f_dict[r]:
             if type == 'A_collect':
                 for t1 in f_dict[r][type]:
                     l1_value = 0
+                    t1_value = 0
                     for t2 in f_dict[r][type][t1]:
                         l2_value = 0
                         for t3 in f_dict[r][type][t1][t2]:
@@ -48,7 +51,8 @@ def calculate(data=None, level=5, region_name=None):
                                 for t5 in f_dict[r][type][t1][t2][t3][t4]:
                                     l4_value = 0
                                     for u1 in f_dict[r][type][t1][t2][t3][t4][t5]:
-                                    # collect direct draw flows (water withdraws or energy demand)
+                                        t1_name = f'{r}_{t1}_{u1}'
+                                        # collect direct draw flows (water withdraws or energy demand)
                                         for s1 in f_dict[r][type][t1][t2][t3][t4][t5][u1]:
                                             l1_name = f'{r}_{s1}_to_{t1}_{u1}'
                                             for s2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1]:
@@ -77,7 +81,32 @@ def calculate(data=None, level=5, region_name=None):
                                                                     l5_total_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
                                                                     l5_total_value = l5_value
                                                                     total_dict.update({l5_total_name: l5_total_value})
-                                    # calculate energy or water for water and energy sectors
+
+                                                                    t1_value = t1_value + l5_total_value
+                                                                    total_dict.update({t1_name: t1_value})
+
+                # calculate the fraction of source location that feed into each target
+                for t1 in f_dict[r][type]:
+                    for t2 in f_dict[r][type][t1]:
+                        for t3 in f_dict[r][type][t1][t2]:
+                            for t4 in f_dict[r][type][t1][t2][t3]:
+                                for t5 in f_dict[r][type][t1][t2][t3][t4]:
+                                    for u1 in f_dict[r][type][t1][t2][t3][t4][t5]:
+                                        t1_name = f'{r}_{t1}_{u1}'
+                                        for s1 in f_dict[r][type][t1][t2][t3][t4][t5][u1]:
+                                            for s2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1]:
+                                                for s3 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2]:
+                                                    for s4 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
+                                                        for s5 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
+                                                            l5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
+                                                            if l5_name in l5_dict:
+                                                                l5_fraction_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{u1}_fraction'
+                                                                l5_fraction_value = l5_dict[l5_name]/total_dict[t1_name]
+                                                                fraction_dict.update({l5_fraction_name: l5_fraction_value})
+                                                            else:
+                                                                pass
+
+            # calculate energy or water for water and energy sectors
             elif type == 'B_calculate':
                 for t1 in f_dict[r][type]:
                     for t2 in f_dict[r][type][t1]:
@@ -101,10 +130,6 @@ def calculate(data=None, level=5, region_name=None):
                                                                         total_dict.update({l5t_name: l5t_value})
                                                                     else:
                                                                         pass
-
-
-
-
 
                                     # split water and energy values into individual sources
             elif type == 'C_source':
@@ -214,4 +239,4 @@ def calculate(data=None, level=5, region_name=None):
         m = 'incorrect level of granularity specified. Must be an integer between 1 and 5, inclusive.'
         raise ValueError(m)
 
-    return df
+    return fraction_dict

@@ -71,10 +71,10 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'MI-WGWSa': 'MIN_saline_groundwater_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd',
                       'MI-WSWSa': 'MIN_saline_surfacewater_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd',
                       'IC-WGWFr': 'ACI_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
-                      'IC-WSWFr': 'ACI_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
+                      'IC-WSWFr': 'ACI_fresh_surfacewater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
                       'IC-RecWW': 'ACI_reclaimed_wastewater_import_total_mgd_from_WSI_reclaimed_wastewater_total_total_mgd',
                       'IG-WGWFr': 'AGI_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
-                      'IG-WSWFr': 'AGI_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
+                      'IG-WSWFr': 'AGI_fresh_surfacewater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
                       'IG-RecWW': 'AGI_reclaimed_wastewater_import_total_mgd_from_WSI_reclaimed_wastewater_total_total_mgd',
                       'LI-WGWFr': 'ALV_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
                       'LI-WSWFr': 'ALV_fresh_surfacewater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
@@ -303,20 +303,24 @@ def prep_consumption_fraction() -> pd.DataFrame:
         df_mean = df_mean.rename(columns={col: new_name})
     df_mean_all = pd.merge(df, df_mean, how='left', on=['State'])
 
+    # add leading zeroes to FIPS Code
+    df['FIPS'] = df['FIPS'].apply(lambda x: '{0:0>5}'.format(x))
+
     # replace counties with consumption fractions of zero with the state average to replace missing data
     rep_list = df.columns[2:].to_list()
     for col in rep_list:
         mean_name = f"{col}_state"
         df[col] = np.where(df[col] == 0, df_mean_all[mean_name], df[col])
 
+    # merge with full list of counties from 2015 USGS water data
+    df = pd.merge(df_loc, df, how='left', on=['FIPS', 'State'])
+
+    for col in rep_list:
+        mean_name = f"{col}_state"
+        df[col] = np.where(df[col] == 0, 1, df[col])
+
     # rename columns to add descriptive language
     df.rename(columns=variables_list, inplace=True)
-
-    # add leading zeroes to FIPS Code
-    df['FIPS'] = df['FIPS'].apply(lambda x: '{0:0>5}'.format(x))
-
-    # merge with full list of counties from 2015 USGS water data
-    # df = pd.merge(df_loc, df, how='left', on=['FIPS', 'State'])
 
     return df
 
@@ -1867,6 +1871,7 @@ def combine_data():
     x8 = prep_irrigation_fuel_data()
     x9 = prep_pumping_intensity_data()
     x10 =recalc_irrigation_consumption()
+    x11 = prep_consumption_fraction()
 
     x1 = x1.drop(['population', 'fresh_groundwater_total_irrigation_mgd', 'fresh_surfacewater_total_irrigation_mgd',
                   'fresh_wastewater_total_irrigation_mgd', 'golf_irrigation_fresh_consumption_mgd',
@@ -1892,6 +1897,8 @@ def combine_data():
     out_df = pd.merge(out_df, x8, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x9, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x10, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x11, how='left', on=['FIPS', 'State', 'County'])
+
 
     out_df = out_df[out_df.State == 'CA']
 
