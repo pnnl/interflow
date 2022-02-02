@@ -383,6 +383,14 @@ def prep_pws_to_pwd():
     df['PWD_total_total_total_total_mgd_from_PWS_saline_surfacewater_withdrawal_total_mgd_intensity'] = 1
     df['PWD_total_total_total_total_mgd_from_PWS_saline_surfacewater_withdrawal_total_mgd_fraction'] = 1
 
+    df['WWD_advanced_municipal_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = 1
+    df['WWD_primary_municipal_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = 1
+    df['WWD_secondary_municipal_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = 1
+
+    df['WWD_advanced_infiltration_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = 1
+    df['WWD_primary_infiltration_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = 1
+    df['WWD_secondary_infiltration_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = 1
+
     return df
 
 

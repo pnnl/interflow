@@ -43,13 +43,18 @@ def plot_bar(data, x, y, region, y_axis="Value", x_axis_title="Region",  y_axis_
     plt.show()
 
 
-def plot_sankey(data, region_name, unit_type, output_level, strip=None):
+def plot_sankey(data, unit_type, output_level, region_name=None, strip=None):
     """
     Must give it dataframe, a region, a unit type, and a level of output
     """
     df = data
     df = df[df.units == unit_type]
-    df = df[df.region == region_name]
+
+    # TODO need to make sure this is unique if there's no region name specified
+    if region_name is None:
+        df = df
+    else:
+        df = df[df.region == region_name]
 
     group_results(df, output_level=output_level)
 
