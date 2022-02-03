@@ -179,7 +179,7 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
         # create the figure
         fig = go.Figure(data=[go.Sankey(
             node=dict(
-                pad=20,  # space between nodes (vertically)
+                pad=40,  # space between nodes (vertically)
                 thickness=10,  # node thickness
                 line=dict(color="black", width=1),  # node border color and thickness
                 label=sankey_number,  # node label, refers to list of indexed names

@@ -373,29 +373,7 @@ def prep_public_water_supply_fraction() -> pd.DataFrame:
 
     return df
 
-def prep_pws_to_pwd():
-    '''preparing variables for connection'''
 
-    df = prep_water_use_2015()
-
-    df['PWD_total_total_total_total_mgd_from_PWS_fresh_surfacewater_withdrawal_total_mgd_intensity'] = 1
-    df['PWD_total_total_total_total_mgd_from_PWS_fresh_surfacewater_withdrawal_total_mgd_fraction'] = 1
-    df['PWD_total_total_total_total_mgd_from_PWS_fresh_groundwater_withdrawal_total_mgd_intensity'] = 1
-    df['PWD_total_total_total_total_mgd_from_PWS_fresh_groundwater_withdrawal_total_mgd_fraction'] = 1
-    df['PWD_total_total_total_total_mgd_from_PWS_saline_groundwater_withdrawal_total_mgd_intensity'] = 1
-    df['PWD_total_total_total_total_mgd_from_PWS_saline_groundwater_withdrawal_total_mgd_fraction'] = 1
-    df['PWD_total_total_total_total_mgd_from_PWS_saline_surfacewater_withdrawal_total_mgd_intensity'] = 1
-    df['PWD_total_total_total_total_mgd_from_PWS_saline_surfacewater_withdrawal_total_mgd_fraction'] = 1
-
-    df['WWD_advanced_municipal_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = 1
-    df['WWD_primary_municipal_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = 1
-    df['WWD_secondary_municipal_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = 1
-
-    df['WWD_advanced_infiltration_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = 1
-    df['WWD_primary_infiltration_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = 1
-    df['WWD_secondary_infiltration_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = 1
-
-    return df
 
 
 def calc_pws_deliveries() -> pd.DataFrame:
@@ -423,7 +401,7 @@ def calc_pws_deliveries() -> pd.DataFrame:
 
     # create variables names as flows
     com_pwd_name = 'COM_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'
-    ind_pwd_name = 'COM_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'
+    ind_pwd_name = 'IND_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'
 
     # calculate public water deliveries to the commercial and industrial sector
     df[com_pwd_name] = df["com_pws_fraction"] * df['total_delivery']
@@ -433,6 +411,63 @@ def calc_pws_deliveries() -> pd.DataFrame:
     df = df[["FIPS", 'State', 'County', com_pwd_name, ind_pwd_name]]
 
     return df
+
+
+def prep_pws_to_pwd():
+    '''preparing variables for connection'''
+
+    df = prep_water_use_2015(variables=['FIPS', 'State', 'County',
+                                        'PWS_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
+                                        'PWS_fresh_surfacewater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
+                                        'PWS_saline_groundwater_withdrawal_total_mgd_from_WSW_saline_groundwater_total_total_mgd',
+                                        'PWS_saline_surfacewater_withdrawal_total_mgd_from_WSW_saline_surfacewater_total_total_mgd',
+                                        'RES_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'])
+
+    df2 = calc_pws_deliveries()
+
+    df = pd.merge(df, df2, how='left', on= ['FIPS', 'State', 'County'])
+
+    out_df = prep_water_use_2015()
+
+    #res, com, ind
+    res_flow = 'RES_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'
+    com_flow = 'COM_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'
+    ind_flow = 'IND_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'
+
+
+    # 2015 water flows
+    fgw_flow = 'PWS_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd'
+    fsw_flow = 'PWS_fresh_surfacewater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
+    sgw_flow = 'PWS_saline_groundwater_withdrawal_total_mgd_from_WSW_saline_groundwater_total_total_mgd'
+    ssw_flow = 'PWS_saline_surfacewater_withdrawal_total_mgd_from_WSW_saline_surfacewater_total_total_mgd'
+
+    df['total_pws'] = df[fgw_flow] + df[fsw_flow] + df[sgw_flow] + df[ssw_flow]
+
+    fsw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_fresh_surfacewater_withdrawal_total_mgd'
+    fgw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_fresh_groundwater_withdrawal_total_mgd'
+    sgw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_saline_groundwater_withdrawal_total_mgd'
+    ssw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_saline_surfacewater_withdrawal_total_mgd'
+
+    fsw_frac = df[fgw_flow] / df['total_pws']
+    fgw_frac = df[fsw_flow] / df['total_pws']
+    sgw_frac = df[sgw_flow] / df['total_pws']
+    ssw_frac = df[ssw_flow] / df['total_pws']
+
+    out_df[fsw_PWD] = fsw_frac * (df[res_flow] + df[com_flow] + df[ind_flow])
+    out_df[fgw_PWD] = fgw_frac * (df[res_flow] + df[com_flow] + df[ind_flow])
+    out_df[sgw_PWD] = sgw_frac * (df[res_flow] + df[com_flow] + df[ind_flow])
+    out_df[ssw_PWD] = ssw_frac * (df[res_flow] + df[com_flow] + df[ind_flow])
+
+
+    # out_df['WWD_advanced_municipal_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = np.nan
+    # out_df['WWD_primary_municipal_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = np.nan
+    # out_df['WWD_secondary_municipal_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = np.nan
+    #
+    # out_df['WWD_advanced_infiltration_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = np.nan
+    # out_df['WWD_primary_infiltration_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = np.nan
+    # out_df['WWD_secondary_infiltration_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = np.nan
+
+    return out_df
 
 
 def calc_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.90) -> pd.DataFrame:
@@ -1020,12 +1055,12 @@ def prep_wastewater_data() -> pd.DataFrame:
                                              * df_ww['municipal_wastewater_mgd']
 
     # name water flows for output dictionary
-    advanced_infiltration_flows_mgd = 'WWD_advanced_infiltration_total_total_mgd_from_WWD_advanced_infiltration_total_total_mgd'
-    primary_infiltration_flows_mgd = 'WWD_primary_infiltration_total_total_mgd_from_WWD_primary_infiltration_total_total_mgd'
-    secondary_infiltration_flows_mgd = 'WWD_secondary_infiltration_total_total_mgd_from_WWD_secondary_infiltration_total_total_mgd'
-    advanced_municipal_flows_mgd = 'WWD_advanced_municipal_total_total_mgd_from_WWD_advanced_municipal_total_total_mgd'
-    primary_municipal_flows_mgd = 'WWD_primary_municipal_total_total_mgd_from_WWD_primary_municipal_total_total_mgd'
-    secondary_municipal_flows_mgd = 'WWD_secondary_municipal_total_total_mgd_from_WWD_secondary_municipal_total_total_mgd'
+    advanced_infiltration_flows_mgd = 'WWD_advanced_infiltration_total_total_mgd_from_WWS_total_total_total_total_mgd'
+    primary_infiltration_flows_mgd = 'WWD_primary_infiltration_total_total_mgd_from_WWS_total_total_total_total_mgd'
+    secondary_infiltration_flows_mgd = 'WWD_secondary_infiltration_total_total_mgd_from_WWS_total_total_total_total_mgd'
+    advanced_municipal_flows_mgd = 'WWD_advanced_municipal_total_total_mgd_from_WWS_total_total_total_total_mgd'
+    primary_municipal_flows_mgd = 'WWD_primary_municipal_total_total_mgd_from_WWS_total_total_total_total_mgd'
+    secondary_municipal_flows_mgd = 'WWD_secondary_municipal_total_total_mgd_from_WWS_total_total_total_total_mgd'
 
     # save flows to output dictionary
     df_out[advanced_infiltration_flows_mgd] = df_ww['advanced_infiltration_flows_mgd']
@@ -1859,6 +1894,97 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
 
     return out_df
 
+def prep_interbasin_transfer_data() -> pd.DataFrame:
+    """Prepares interbasin water transfer data so that output is a dataframe of energy use (BBTU) and total
+        water transferred for irrigation and public water supply in total.
+
+    :return:                DataFrame of a number of water values for 2015 at the county level
+
+    """
+
+    # read in TX interbasin transfer
+    data_tx = 'input_data/TX_IBT_2015.csv'
+    df_tx = pd.read_csv(data_tx, dtype={'Used_FIPS': str, 'Source_FIPS': str})
+
+    # get_west_inter_basin_transfer_data
+    data_west = 'input_data/West_IBT_county.csv'
+    df_west = pd.read_csv(data_west, dtype={'FIPS': str})
+
+    df_loc = prep_water_use_2015()  # full county list
+
+    feet_meter_conversion = 1 / 3.281  # feet to meter conversion
+    af_mps_conversion = 1 / 25567  # acre-ft-year to meters per second^3 conversion
+    mps_mgd = 22.82 # cubic meters per second to million gallons per day
+
+
+    ag_pump_eff = .466  # assumed pump efficiency rate
+    acc_gravity = 9.81  # Acceleration of gravity  (m/s^2)
+    water_density = 997  # Water density (kg/m^3)
+
+    # calculate texas interbasin transfer energy
+    elevation_meters = df_tx["Elevation Difference (Feet)"] * feet_meter_conversion  # elevation in meters
+    mps_cubed = df_tx["Total_Intake__Gallons (Acre-Feet/Year)"] * af_mps_conversion  # meters per second cubed
+    mgd_tx = mps_cubed*mps_mgd
+    df_tx["water_interbasin_mgd"] = mgd_tx / 2  # dividing in half to split across source and target counties
+
+
+
+    interbasin_mwh = ((elevation_meters * mps_cubed * acc_gravity * water_density) / ag_pump_eff) / (10 ** 6)
+    interbasin_bbtu = convert_mwh_bbtu(interbasin_mwh)  # convert mwh to bbtu
+    df_tx["electricity_interbasin_bbtu"] = interbasin_bbtu / 2  # dividing in half to split across source and target counties
+
+
+
+    # split out target county data
+    df_tx_target = df_tx[["State", "Used_FIPS", "electricity_interbasin_bbtu", "water_interbasin_mgd"]].copy()
+    df_tx_target = df_tx_target.rename(columns={"Used_FIPS": "FIPS"})
+
+    # split out source county data
+    df_tx_source = df_tx[["State", "Source_FIPS", "electricity_interbasin_bbtu", "water_interbasin_mgd"]].copy()
+    df_tx_source = df_tx_source.rename(columns={"Source_FIPS": "FIPS"})
+
+    # stack source and target county interbasin transfer data
+    dataframe_list = [df_tx_target, df_tx_source]
+    df_tx = pd.concat(dataframe_list)
+
+    # group by state and county fips code
+    df_tx = df_tx.groupby(["State", "FIPS"], as_index=False).sum()
+
+    # calculate energy intensity per mgd
+    df_tx['ibt_energy_intensity_bbtu'] = df_tx["electricity_interbasin_bbtu"] / df_tx["water_interbasin_mgd"]
+
+    df_tx  = df_tx[["State", "FIPS", 'ibt_energy_intensity_bbtu',"water_interbasin_mgd" ]]
+
+
+    # prep western state interbasin transfer energy
+    df_west = df_west[['FIPS', 'Mwh/yr (Low)', 'Mwh/yr (High)', 'Water Delivery (AF/yr)', 'cfs' ]]
+    df_west['FIPS'] = df_west['FIPS'].apply(lambda x: '{0:0>5}'.format(x))  # add leading zero to fips
+
+    df_west["electricity_interbasin_bbtu"] = (df_west["Mwh/yr (Low)"] + df_west["Mwh/yr (High)"]) / 2  # average energy use by row
+    df_west = df_west.groupby(["FIPS"], as_index=False).sum()  # group by county fips code
+    df_west["electricity_interbasin_bbtu"] = convert_mwh_bbtu(df_west["electricity_interbasin_bbtu"])  # convert mwh values to bbtu
+
+    
+
+
+    ibt_dataframe_list = [df_tx, df_west]  # bring west IBT data together with TX data
+    df = pd.concat(ibt_dataframe_list)
+    df = df[["FIPS", "electricity_interbasin_bbtu"]]
+
+    # merge with county data to distribute value to each county in a state
+    df = pd.merge(df_loc, df, how='left', on='FIPS')
+
+    # filling counties that were not in the interbasin transfer datasets with 0
+    df['electricity_interbasin_bbtu'].fillna(0, inplace=True)
+
+    return df_tx
+
+
+
+
+
+
+
 
 def combine_data():
     x1 = prep_water_use_2015(all_variables=True)
@@ -1905,7 +2031,7 @@ def combine_data():
 
     value_columns = out_df.columns[3:].to_list()
     out_df = pd.melt(out_df, value_vars=value_columns, var_name='flow_name', value_name='value', id_vars=['FIPS'])
-    out_df = out_df[out_df.value > 0]
+    out_df = out_df[out_df.value != 0]
 
     i = out_df.columns.get_loc('flow_name')
     df2 = out_df['flow_name'].str.split("_", expand=True)
@@ -1927,7 +2053,7 @@ def combine_data():
     return out_df
 
 
-x = combine_data()
+x = prep_interbasin_transfer_data()
 # for col in x.columns:
 #    print(col)
 x.to_csv(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv", index=False)
@@ -1944,18 +2070,7 @@ os.startfile(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.c
 #
 #
 #
-# def get_tx_inter_basin_transfer_data():
-#    data = pkg_resources.resource_filename('flow', 'data/TX_IBT_2015.csv')
-#
-#    # read in Texas inter-basin transfer data by FIPS
-#    return pd.read_csv(data, dtype={'Used_FIPS': str, 'Source_FIPS': str})
-#
-#
-# def get_west_inter_basin_transfer_data():
-#    data = pkg_resources.resource_filename('flow', 'data/West_IBT_county.csv')
-#
-#    # read in Texas inter-basin transfer data by FIPS
-#    return pd.read_csv(data, dtype={'FIPS': str})
+
 #
 #
 # def get_residential_electricity_demand_data():
