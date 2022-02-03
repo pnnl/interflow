@@ -193,6 +193,9 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
         # fig.update_layout(title_text="Interactive Sankey Diagram of Select Variables", font_size=12)  #title
 
         fig.update_traces(valuesuffix=f'{unit_type1}', selector=dict(type='sankey'))  # adds value suffix
+        print('WSW = Water Supply Withdrawals')
+        print('WSI = Water Supply Imports')
+
 
         fig.show()
 
