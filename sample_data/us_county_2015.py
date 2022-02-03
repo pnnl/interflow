@@ -24,6 +24,8 @@ def convert_mwh_bbtu(x: float) -> float:
     return bbtu
 
 
+
+
 def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
     """prep 2015 water use data by replacing non-numeric values, reducing available variables in output dataframe,
      renaming variables appropriately, and returning a dataframe of specified variables.
@@ -171,6 +173,25 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
         df = df[variables]
 
     return df
+
+def calc_population_county_weight(df: pd.DataFrame) -> pd.DataFrame:
+
+    """calculates the percentage of state total population by county and merges to provided dataframe
+    by 'State'
+
+    :return:                DataFrame of water consumption fractions for various sectors by county
+
+    """
+    df_state = prep_water_use_2015(variables=["FIPS", "State", "County", "population"])
+    df_state_sum = df_state.groupby("State", as_index=False).sum()
+    df_state_sum = df_state_sum.rename(columns={"population": "state_pop_sum"})
+    df_state = pd.merge(df_state, df_state_sum, how='left', on='State')
+    df_state['pop_weight'] = df_state['population'] / df_state['state_pop_sum']
+    df_state = df_state[['FIPS', 'State', 'County', 'pop_weight']]
+
+    df_state = pd.merge(df, df_state, how="left", on="State")
+
+    return df_state
 
 
 def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
@@ -448,8 +469,8 @@ def prep_pws_to_pwd():
     sgw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_saline_groundwater_withdrawal_total_mgd'
     ssw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_saline_surfacewater_withdrawal_total_mgd'
 
-    fsw_frac = df[fgw_flow] / df['total_pws']
-    fgw_frac = df[fsw_flow] / df['total_pws']
+    fsw_frac = df[fsw_flow] / df['total_pws']
+    fgw_frac = df[fgw_flow] / df['total_pws']
     sgw_frac = df[sgw_flow] / df['total_pws']
     ssw_frac = df[ssw_flow] / df['total_pws']
 
@@ -1422,6 +1443,8 @@ def prep_electricity_generation() -> pd.DataFrame:
     df = df.rename(columns={"Total Fuel Consumption\nMMBtu": "fuel_amt"})
     df = df.rename(columns={"Net Generation\n(Megawatthours)": "generation_mwh"})
 
+
+
     # changing string columns to numeric
     string_col = df.columns[3:]  # create list of string columns
     for col in string_col:
@@ -1430,6 +1453,10 @@ def prep_electricity_generation() -> pd.DataFrame:
 
     # removing power plant generation rows that should not be included
     df = df[df.plant_code != 99999]  # removing state level estimated differences rows
+
+    # changing from annual values to daily
+    df['fuel_amt'] = df['fuel_amt'] / 365
+    df['generation_mwh'] = df['generation_mwh'] / 365
 
     # dropping power plants with zero fuel use and zero output
     index_list = df[(df['fuel_amt'] <= 0) & (df['generation_mwh'] <= 0)].index  # list of indices with both zero values
@@ -1770,7 +1797,21 @@ def prep_irrigation_fuel_data() -> pd.DataFrame:
     df_out['PWS_treatment_fresh_groundwater_total_bbtu_from_EGD_total_total_total_total_bbtu_fraction'] = 1
     df_out['PWS_distribution_fresh_surfacewater_total_bbtu_from_EGD_total_total_total_total_bbtu_fraction'] = 1
     df_out['PWS_distribution_fresh_groundwater_total_bbtu_from_EGD_total_total_total_total_bbtu_fraction'] = 1
-    df_out['PWS_ibt_fresh_surfacewater_total_bbtu_from_EGD_total_total_total_total_bbtu_fraction'] = 1
+
+    #rejected energy
+    df_out['PWS_pumping_fresh_surfacewater_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction'] = .35
+    df_out['PWS_pumping_fresh_groundwater_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction'] = .35
+    df_out['PWS_treatment_fresh_surfacewater_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction'] = .35
+    df_out['PWS_treatment_fresh_groundwater_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction'] = .35
+    df_out['PWS_distribution_fresh_surfacewater_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction'] = .35
+    df_out['PWS_distribution_fresh_groundwater_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction'] = .35
+
+    df_out['PWS_pumping_fresh_surfacewater_total_bbtu_to_ESV_total_total_total_total_bbtu_fraction'] = .65
+    df_out['PWS_pumping_fresh_groundwater_total_bbtu_to_ESV_total_total_total_total_bbtu_fraction'] = .65
+    df_out['PWS_treatment_fresh_surfacewater_total_bbtu_to_ESV_total_total_total_total_bbtu_fraction'] = .65
+    df_out['PWS_treatment_fresh_groundwater_total_bbtu_to_ESV_total_total_total_total_bbtu_fraction'] = .65
+    df_out['PWS_distribution_fresh_surfacewater_total_bbtu_to_ESV_total_total_total_total_bbtu_fraction'] = .65
+    df_out['PWS_distribution_fresh_groundwater_total_bbtu_to_ESV_total_total_total_total_bbtu_fraction'] = .65
 
     df_out = df_out.drop(["natural_gas_pumping", "petroleum_pumping", "electricity_pumping"], axis=1)
 
@@ -1894,6 +1935,39 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
 
     return out_df
 
+
+def prep_irrigation_pws_ratio() -> pd.DataFrame:
+    """prepping the ratio of water flows to irrigation vs. water flows to public water supply by county. Used to
+    determine the split of electricity in interbasin transfers between the two sectors.
+
+    :return:                DataFrame of percentages by county
+
+    """
+    # read data
+    df_irr_pws = prep_water_use_2015(variables=['FIPS', 'State', 'County',
+                                                'ACI_fresh_surfacewater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
+                                                'ACI_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
+                                                'total_pws_withdrawals_mgd'])
+
+    # calculate public water supply percent of combined flows
+    total_crop_irr = df_irr_pws['ACI_fresh_surfacewater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd'] \
+                     + df_irr_pws['ACI_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd']
+
+    df_irr_pws['pws_ibt_pct'] = df_irr_pws['total_pws_withdrawals_mgd'] \
+                                / (total_crop_irr + df_irr_pws['total_pws_withdrawals_mgd'])
+
+    # add in column for agriculture fraction (1-pws)
+    df_irr_pws['irrigation_ibt_pct'] = 1 - df_irr_pws['pws_ibt_pct']
+
+    # fill counties that have zero values with half each
+    df_irr_pws.fillna(.5, inplace=True)
+
+    # reduce dataframe variables
+    df_irr_pws = df_irr_pws[['FIPS', 'State', 'County', 'pws_ibt_pct', 'irrigation_ibt_pct']]
+
+    return df_irr_pws
+
+
 def prep_interbasin_transfer_data() -> pd.DataFrame:
     """Prepares interbasin water transfer data so that output is a dataframe of energy use (BBTU) and total
         water transferred for irrigation and public water supply in total.
@@ -1910,11 +1984,16 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     data_west = 'input_data/West_IBT_county.csv'
     df_west = pd.read_csv(data_west, dtype={'FIPS': str})
 
+    # read in pws to irr water ratio
+    df_ratio = prep_irrigation_pws_ratio()
+
     df_loc = prep_water_use_2015()  # full county list
 
     feet_meter_conversion = 1 / 3.281  # feet to meter conversion
     af_mps_conversion = 1 / 25567  # acre-ft-year to meters per second^3 conversion
     mps_mgd = 22.82 # cubic meters per second to million gallons per day
+    cfs_mgd = 0.646317 # cubic feet per second to million gallons per day
+    afy_mgd = 0.000892742 # acre foot per year to million gallons per day
 
 
     ag_pump_eff = .466  # assumed pump efficiency rate
@@ -1964,22 +2043,123 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     df_west = df_west.groupby(["FIPS"], as_index=False).sum()  # group by county fips code
     df_west["electricity_interbasin_bbtu"] = convert_mwh_bbtu(df_west["electricity_interbasin_bbtu"])  # convert mwh values to bbtu
 
-    
+    df_west['water_interbasin_mgd'] = np.where(df_west['cfs']>0, cfs_mgd*df_west['cfs'], 0)
+    df_west['water_interbasin_mgd'] = np.where((df_west['cfs']==0) & (df_west['Water Delivery (AF/yr)']>0),
+                                               afy_mgd*df_west['Water Delivery (AF/yr)'],
+                                               df_west['water_interbasin_mgd'])
+
+    df_west['ibt_energy_intensity_bbtu'] = df_west["electricity_interbasin_bbtu"] / df_west['water_interbasin_mgd']
+
 
 
     ibt_dataframe_list = [df_tx, df_west]  # bring west IBT data together with TX data
     df = pd.concat(ibt_dataframe_list)
-    df = df[["FIPS", "electricity_interbasin_bbtu"]]
+    df = df[["FIPS", 'ibt_energy_intensity_bbtu', 'water_interbasin_mgd']]
 
     # merge with county data to distribute value to each county in a state
     df = pd.merge(df_loc, df, how='left', on='FIPS')
 
     # filling counties that were not in the interbasin transfer datasets with 0
-    df['electricity_interbasin_bbtu'].fillna(0, inplace=True)
+    df['ibt_energy_intensity_bbtu'].fillna(0, inplace=True)
+    df['water_interbasin_mgd'].fillna(0, inplace=True)
 
-    return df_tx
+    df = pd.merge(df, df_ratio, how='left', on = ['FIPS', 'State', 'County'])
 
+    df_out = df_loc.copy()
+    df_out['aci_ibt_water'] = df['ibt_energy_intensity_bbtu'] * df['irrigation_ibt_pct']
+    df_out['pws_ibt_water'] = df['ibt_energy_intensity_bbtu'] * df['pws_ibt_pct']
 
+    aci_ibt_water_flow = 'ACI_fresh_surfacewater_import_total_mgd_from_WSI_ibt_total_total_total_mgd'
+    pws_ibt_water_flow = 'PWS_fresh_surfacewater_import_total_mgd_from_WSI_ibt_total_total_total_mgd'
+
+    df_out['aci_ibt_int'] = df['ibt_energy_intensity_bbtu']
+    df_out['pws_ibt_int'] = df['ibt_energy_intensity_bbtu']
+
+    aci_ibt_energy_int = 'ACI_ibt_fresh_surfacewater_import_bbtu_from_WSI_ibt_total_total_total_mgd_intensity'
+    pws_ibt_energy_int = 'PWS_ibt_fresh_surfacewater_import_bbtu_from_WSI_ibt_total_total_total_mgd_intensity'
+
+    # energy source is electricity
+    aci_ibt_energy_src = 'ACI_ibt_fresh_surfacewater_import_bbtu_from_EGD_total_total_total_total_mgd_fraction'
+    pws_ibt_energy_src = 'PWS_ibt_fresh_surfacewater_import_bbtu_from_EGD_total_total_total_total_mgd_fraction'
+
+    df_out['aci_ibt_src'] = 1
+    df_out['pws_ibt_src'] = 1
+
+    # efficiency fraction = .65
+    aci_ibt_energy_esv = 'ACI_ibt_fresh_surfacewater_import_bbtu_to_ESV_total_total_total_total_mgd_fraction'
+    pws_ibt_energy_esv = 'PWS_ibt_fresh_surfacewater_import_bbtu_to_ESV_total_total_total_total_mgd_fraction'
+
+    df_out['aci_ibt_esv'] = .65
+    df_out['pws_ibt_esv'] = .65
+
+    aci_ibt_energy_rej = 'ACI_ibt_fresh_surfacewater_import_bbtu_to_REJ_total_total_total_total_mgd_fraction'
+    pws_ibt_energy_rej = 'PWS_ibt_fresh_surfacewater_import_bbtu_to_REJ_total_total_total_total_mgd_fraction'
+
+    df_out['aci_ibt_rej'] = .35
+    df_out['pws_ibt_rej'] = .35
+
+    df_out = df_out.loc[(df_out.aci_ibt_water > 0) | (df_out.pws_ibt_water > 0)]
+
+    df_out = df_out.rename(columns={'FIPS':'FIPS', 'State':'State', 'County':'County',
+                                'aci_ibt_water':aci_ibt_water_flow,
+                            'pws_ibt_water':pws_ibt_water_flow,
+                            'aci_ibt_int': aci_ibt_energy_int,
+                            'pws_ibt_int': pws_ibt_energy_int,
+                            'aci_ibt_src': aci_ibt_energy_src,
+                            'pws_ibt_src':pws_ibt_energy_src,
+                            'aci_ibt_esv': aci_ibt_energy_esv,
+                            'pws_ibt_esv': pws_ibt_energy_esv,
+                            'aci_ibt_rej': aci_ibt_energy_rej,
+                            'pws_ibt_rej': pws_ibt_energy_rej
+                            })
+
+    return df_out
+
+def prep_electricity_demand_data() -> pd.DataFrame:
+    """prepping electricity demand data by sector. Produces a dataframe of demand data by county.
+
+    :return:                DataFrame of electricity demand data
+
+    """
+
+    #
+    data = 'input_data/eia_861m_states.csv'
+
+    # read in transportation electricity sales data
+    df =  pd.read_csv(data, skipfooter=2, engine='python',
+                       dtype={'RESIDENTIAL': float, 'COMMERCIAL': float,
+                              'INDUSTRIAL': float, 'TRANSPORTATION': float})
+
+    # build renaming dictionary
+    rename_dict = {"RESIDENTIAL": 'RES_total_total_total_total_bbtu_from_EGD_total_total_total_total_bbtu',
+                   "COMMERCIAL": 'COM_total_total_total_total_bbtu_from_EGD_total_total_total_total_bbtu',
+                   "INDUSTRIAL": 'IND_total_total_total_total_bbtu_from_EGD_total_total_total_total_bbtu',
+                   "TRANSPORTATION":'TRA_total_total_total_total_bbtu_from_EGD_total_total_total_total_bbtu'}
+
+    # prep dataframe
+    df = df.dropna(subset=["Month"])  # drop rows where month is blank
+    df = df.dropna(subset=["Ownership"])  # Drop state totals and state adjustments
+    df = df[df.Ownership != "Behind the Meter"]  # removing behind the meter generation
+    df = df.groupby("State", as_index=False).sum()  # get total by state
+    df = df[["State", "RESIDENTIAL", "COMMERCIAL", "INDUSTRIAL", "TRANSPORTATION"]]
+
+    # convert electricity demand values from mwh/year to bbtu/day
+    column_list = df.columns[1:]
+    for col in column_list:
+        df[col] = df[col].apply(convert_mwh_bbtu) / 365
+
+    # rename columns to add descriptive language
+    df.rename(columns=rename_dict, inplace=True)
+
+    # split out into county values based on percent of state population
+    df = calc_population_county_weight(df)
+    demand_columns = df.columns[1:5].to_list()
+    for d in demand_columns:
+        df[d] = df[d] * df['pop_weight']
+        df[d] = df[d].round(4)
+    df = df.drop(['pop_weight'], axis=1)
+
+    return df
 
 
 
@@ -1998,6 +2178,8 @@ def combine_data():
     x9 = prep_pumping_intensity_data()
     x10 =recalc_irrigation_consumption()
     x11 = prep_consumption_fraction()
+    x12 = prep_interbasin_transfer_data()
+    x13 = prep_electricity_demand_data()
 
     x1 = x1.drop(['population', 'fresh_groundwater_total_irrigation_mgd', 'fresh_surfacewater_total_irrigation_mgd',
                   'fresh_wastewater_total_irrigation_mgd', 'golf_irrigation_fresh_consumption_mgd',
@@ -2024,6 +2206,9 @@ def combine_data():
     out_df = pd.merge(out_df, x9, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x10, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x11, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x12, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x13, how='left', on=['FIPS', 'State', 'County'])
+
 
 
     out_df = out_df[out_df.State == 'CA']
@@ -2053,7 +2238,7 @@ def combine_data():
     return out_df
 
 
-x = prep_interbasin_transfer_data()
+x = combine_data()
 # for col in x.columns:
 #    print(col)
 x.to_csv(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv", index=False)
@@ -2072,33 +2257,7 @@ os.startfile(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.c
 #
 
 #
-#
-# def get_residential_electricity_demand_data():
-#    data = pkg_resources.resource_filename('flow', 'data/EIA_table6_Res.csv')
-#
-#    # read in residential electricity sales data
-#    return pd.read_csv(data, skiprows=2)
-#
-#
-# def get_commercial_electricity_demand_data():
-#    data = pkg_resources.resource_filename('flow', 'data/EIA_table7_Com.csv')
-#
-#    # read in commercial electricity sales data
-#    return pd.read_csv(data, skiprows=2)
-#
-#
-# def get_industrial_electricity_demand_data():
-#    data = pkg_resources.resource_filename('flow', 'data/EIA_table8_Ind.csv')
-#
-#    # read in industrial electricity sales data
-#    return pd.read_csv(data, skiprows=2)
-#
-#
-# def get_transportation_electricity_demand_data():
-#    data = pkg_resources.resource_filename('flow', 'data/EIA_table9_Trans.csv')
-#
-#    # read in transportation electricity sales data
-#    return pd.read_csv(data, skiprows=2)
+
 #
 #
 # def get_state_electricity_demand_data():

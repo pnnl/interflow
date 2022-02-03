@@ -159,21 +159,3 @@ def calc_dictionary_levels(d:dict):
 
 
 
-def calc_population_county_weight(df: pd.DataFrame) -> pd.DataFrame:
-
-    """calculates the percentage of state total population by county and merges to provided dataframe
-    by 'State'
-
-    :return:                DataFrame of water consumption fractions for various sectors by county
-
-    """
-    df_state = cl.prep_water_use_2015(variables=["FIPS", "State", "County", "population"])
-    df_state_sum = df_state.groupby("State", as_index=False).sum()
-    df_state_sum = df_state_sum.rename(columns={"population": "state_pop_sum"})
-    df_state = pd.merge(df_state, df_state_sum, how='left', on='State')
-    df_state['pop_weight'] = df_state['population'] / df_state['state_pop_sum']
-    df_state = df_state[['FIPS', 'State', 'County', 'pop_weight']]
-
-    df_state = pd.merge(df, df_state, how="left", on="State")
-
-    return df_state

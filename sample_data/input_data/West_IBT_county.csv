@@ -104,7 +104,7 @@ CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Westside Wat
 CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Westside Water District Lateral 5,38,51,0.34,0.59,0.263,0.4862528,640.7716003,2055.808779,18020104,CA,Colusa,6011
 CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Westside Water District Lateral 6,32,37,0.34,0.59,0.263,0.4862528,391.4724328,1255.973991,18020104,CA,Colusa,6011
 CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Westside Water District Lateral 7,24.5,48,0.34,0.59,0.263,0.4862528,388.8273488,1247.48768,18020104,CA,Colusa,6011
-CA,Central Valley Project - San Felipe Division Project,,"Irrigation water + 132,400 AFY for Municipal and Industrial",814000,Pacheco Pumping Plant,504,306,0.34,0.59,0.263,0.4862528,50991.92946,163599.0986,18060002,CA,Merced,6047
+CA,Central Valley Project - San Felipe Division Project,,,814000,Pacheco Pumping Plant,504,306,0.34,0.59,0.263,0.4862528,50991.92946,163599.0986,18060002,CA,Merced,6047
 CA,Central Valley Project - San Felipe Division Project,,,814000,Coyote Pumping Plant,342,230,0.34,0.59,0.263,0.4862528,26007.78848,83441.65045,18050003,CA,Santa Clara,6085
 CA,Central Valley Project - San Luis Unit Project,,,814000,Dos Amigos Pumping Plant,2200,235,0.34,0.59,0.263,0.4862528,170938.5538,548427.8322,18040001,CA,Merced,6047
 CA,Central Valley Project - San Luis Unit Project,,,814000,Pleasant Valley Pumping Plant,1185,180,0.34,0.59,0.263,0.4862528,70524.55229,226266.2604,18030009,CA,Fresno,6019
@@ -595,7 +595,7 @@ AZ,Yuma Auxilliary Project,,,,Lilley Pumping Plant,22.3,101,0.34,0.59,0.263,0.48
 AZ/CA,Yuma Project,,,,1,133.6,12,0.34,0.59,0.263,0.4862528,530.0748347,1700.656674,15030108,AZ,Yuma,4027
 AZ/CA,Yuma Project,,,,2,66.8,12,0.34,0.59,0.263,0.4862528,265.0374173,850.3283372,15030108,AZ,Yuma,4027
 AZ/CA,Yuma Project,,,,Gardenshire Drain,9,8,0.34,0.59,0.263,0.4862528,23.80575605,76.37679675,15030108,AZ,Yuma,4027
-CA,State Water Project,Current,"2,300,000 AFY",11299,Barker Slough Pumping Plant,154,120,0.34,0.59,0.263,0.4862528,6110.144052,19603.37783,18020163,CA,Solano,6095
+CA,State Water Project,Current,2300000,11299,Barker Slough Pumping Plant,154,120,0.34,0.59,0.263,0.4862528,6110.144052,19603.37783,18020163,CA,Solano,6095
 CA,State Water Project,,,10831,Cordelia Pumping Plant,140,140,0.34,0.59,0.263,0.4862528,6480.455813,20791.46134,18050001,CA,Solano,6095
 CA,State Water Project,,,892609,Banks Pumping Plant,10670,244,0.34,0.59,0.263,0.4862528,860802.9133,2761742.539,18040003,CA,Contra Costa,6013
 CA,State Water Project,,,100593,South Bay Pumping Plant,330,566,0.34,0.59,0.263,0.4862528,61756.09882,198134.1402,18040003,CA,Contra Costa,6013
@@ -615,7 +615,7 @@ CA,State Water Project,,,708440,Pearblossom Pumping Plant,2575,540,0.34,0.59,0.2
 CA,State Water Project,,,301,Cherry Valley Pumping Station,32,75,0.34,0.59,0.263,0.4862528,793.5252016,2545.893225,18070203,CA,Riverside,6065
 CA,State Water Project,,,3254,Greenspot Pumping Plant,200,382,0.34,0.59,0.263,0.4862528,25260.55225,81044.26766,18070203,CA,San Bernardino,6071
 CA,State Water Project,,,2638,Crafton Hills Pumping Plant,120,613,0.34,0.59,0.263,0.4862528,24321.54743,78031.62735,18070203,CA,San Bernardino,6071
-CA,Colorado River Aqueduct,Current,"1,200,000 AFY",2400000,"Hinds Pumping Plant, Hayfield Lake",225,441,0.34,0.59,0.263,0.4862528,32807.30755,105256.773,18100100,CA,Riverside,6065
+CA,Colorado River Aqueduct,Current,1200000,2400000,"Hinds Pumping Plant, Hayfield Lake",225,441,0.34,0.59,0.263,0.4862528,32807.30755,105256.773,18100100,CA,Riverside,6065
 CA,Colorado River Aqueduct,,,,Eagle Mountain Pumping Plant,225,438,0.34,0.59,0.263,0.4862528,32584.12859,104540.7406,18100100,CA,Riverside,6065
 CA,Colorado River Aqueduct,,,,Parker Dam (W.P. Whitsett) Intake Pumping Plant - Lake Havasu,225,291,0.34,0.59,0.263,0.4862528,21648.35941,69455.14954,15030104,CA,San Bernardino,6071
 CA,Colorado River Aqueduct,,,,Gene Pumping Plant,225,303,0.34,0.59,0.263,0.4862528,22541.07526,72319.27942,15030104,CA,San Bernardino,6071
