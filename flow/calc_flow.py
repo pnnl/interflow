@@ -90,34 +90,35 @@ def calculate(data=None, level=5, region_name=None):
                                                                     t1_value = t1_value + l5_value
                                                                     total_dict.update({t1_name: t1_value})
 
-                                                                    s1_value = s1_value + l5_value
-                                                                    total_dict.update({s1_name: s1_value})
+                                                                    #s1_value = s1_value + l5_value
+                                                                    #total_dict.update({s1_name: s1_value})
 
                 # calculate the fraction of source location that feed into each target
-                for t1 in f_dict[r][type]:
-                    for t2 in f_dict[r][type][t1]:
-                        for t3 in f_dict[r][type][t1][t2]:
-                            for t4 in f_dict[r][type][t1][t2][t3]:
-                                for t5 in f_dict[r][type][t1][t2][t3][t4]:
-                                    for u1 in f_dict[r][type][t1][t2][t3][t4][t5]:
-                                        t1_name = f'{r}_{t1}_{u1}'
-                                        for s1 in f_dict[r][type][t1][t2][t3][t4][t5][u1]:
-                                            for s2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1]:
-                                                for s3 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2]:
-                                                    for s4 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
-                                                        for s5 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
-                                                            l5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
-                                                            if l5_name in l5_dict:
-                                                                l5_fraction_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}_fraction'
-                                                                l5_fraction_value = l5_dict[l5_name]/total_dict[t1_name]
-                                                                fraction_dict.update({l5_fraction_name: l5_fraction_value})
-                                                            else:
-                                                                pass
+               #for t1 in f_dict[r][type]:
+               #    for t2 in f_dict[r][type][t1]:
+               #        for t3 in f_dict[r][type][t1][t2]:
+               #            for t4 in f_dict[r][type][t1][t2][t3]:
+               #                for t5 in f_dict[r][type][t1][t2][t3][t4]:
+               #                    for u1 in f_dict[r][type][t1][t2][t3][t4][t5]:
+               #                        t1_name = f'{r}_{t1}_{u1}'
+               #                        for s1 in f_dict[r][type][t1][t2][t3][t4][t5][u1]:
+               #                            for s2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1]:
+               #                                for s3 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2]:
+               #                                    for s4 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
+               #                                        for s5 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
+               #                                            l5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
+               #                                            if l5_name in l5_dict:
+               #                                                l5_fraction_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}_fraction'
+               #                                                l5_fraction_value = l5_dict[l5_name]/total_dict[t1_name]
+               #                                                fraction_dict.update({l5_fraction_name: l5_fraction_value})
+               #                                            else:
+               #                                                pass
 
             # calculate energy or water for water and energy sectors
             elif type == 'B_calculate':
-                l5t_value_total = 0
+
                 for t1 in f_dict[r][type]:
+                    l5t_value_total = 0
                     for t2 in f_dict[r][type][t1]:
                         for t3 in f_dict[r][type][t1][t2]:
                             for t4 in f_dict[r][type][t1][t2][t3]:
@@ -134,17 +135,14 @@ def calculate(data=None, level=5, region_name=None):
                                                                 for p in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2]:
                                                                     l5s_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_{u2}'
                                                                     intensity = f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2][p]
-                                                                    if intensity > 0:
-                                                                        if l5s_name in total_dict:
-                                                                            l5s_value = total_dict[l5s_name]
-                                                                            l5t_value = l5s_value * intensity
-                                                                            l5t_value_total = l5t_value_total + l5t_value
-                                                                            total_dict.update({l5t_name: l5t_value_total})
-                                                                        else:
-                                                                            pass
+                                                                    if l5s_name in total_dict:
+                                                                        l5s_value = total_dict[l5s_name]  # flow value it's based on
+                                                                        l5t_value = l5s_value * intensity  # calculated value
+                                                                        l5t_value_total = l5t_value_total + l5t_value  # calculated total
+                                                                        total_dict.update({l5t_name: l5t_value_total})
                                                                     else:
-                                                                        l5s_value = total_dict[l5s_name]
-                                                                        total_dict.update({l5t_name: l5s_value})
+                                                                        pass
+
 
                                     # split water and energy values into individual sources
             elif type == 'C_source':

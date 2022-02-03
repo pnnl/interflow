@@ -2159,6 +2159,25 @@ def prep_electricity_demand_data() -> pd.DataFrame:
         df[d] = df[d].round(4)
     df = df.drop(['pop_weight'], axis=1)
 
+    res_rej = 'RES_total_total_total_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction'
+    res_esv = 'RES_total_total_total_total_bbtu_to_ESV_total_total_total_total_bbtu_fraction'
+    com_rej = 'COM_total_total_total_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction'
+    com_esv = 'COM_total_total_total_total_bbtu_to_ESV_total_total_total_total_bbtu_fraction'
+    ind_rej = 'IND_total_total_total_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction'
+    ind_esv = 'IND_total_total_total_total_bbtu_to_ESV_total_total_total_total_bbtu_fraction'
+    tra_rej = 'TRA_total_total_total_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction'
+    tra_esv = 'TRA_total_total_total_total_bbtu_to_ESV_total_total_total_total_bbtu_fraction'
+
+    # create rejected energy and energy services columns for each sector
+    df[res_rej] = np.where(df['RES_total_total_total_total_bbtu_from_EGD_total_total_total_total_bbtu'] > 0, .35, 0)
+    df[res_esv] = np.where(df['RES_total_total_total_total_bbtu_from_EGD_total_total_total_total_bbtu'] > 0, .65, 0)
+    df[com_rej] = np.where(df['COM_total_total_total_total_bbtu_from_EGD_total_total_total_total_bbtu'] > 0, .35, 0)
+    df[com_esv] = np.where(df['COM_total_total_total_total_bbtu_from_EGD_total_total_total_total_bbtu'] > 0, .65, 0)
+    df[ind_rej] = np.where(df['IND_total_total_total_total_bbtu_from_EGD_total_total_total_total_bbtu'] > 0, .51, 0)
+    df[ind_esv] = np.where(df['IND_total_total_total_total_bbtu_from_EGD_total_total_total_total_bbtu'] > 0, .49, 0)
+    df[tra_rej] = np.where(df['TRA_total_total_total_total_bbtu_from_EGD_total_total_total_total_bbtu'] > 0, .79, 0)
+    df[tra_esv] = np.where(df['TRA_total_total_total_total_bbtu_from_EGD_total_total_total_total_bbtu'] > 0, .21, 0)
+
     return df
 
 
@@ -2211,7 +2230,7 @@ def combine_data():
 
 
 
-    out_df = out_df[out_df.State == 'CA']
+    out_df = out_df[out_df.State == 'OR']
 
 
     value_columns = out_df.columns[3:].to_list()
