@@ -454,7 +454,7 @@ def prep_pws_to_pwd():
     res_flow = 'RES_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'
     com_flow = 'COM_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'
     ind_flow = 'IND_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'
-
+    df['total_pwd'] = df[res_flow] + df[com_flow] + df[ind_flow]
 
     # 2015 water flows
     fgw_flow = 'PWS_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd'
@@ -464,29 +464,45 @@ def prep_pws_to_pwd():
 
     df['total_pws'] = df[fgw_flow] + df[fsw_flow] + df[sgw_flow] + df[ssw_flow]
 
-    fsw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_fresh_surfacewater_withdrawal_total_mgd'
-    fgw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_fresh_groundwater_withdrawal_total_mgd'
-    sgw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_saline_groundwater_withdrawal_total_mgd'
-    ssw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_saline_surfacewater_withdrawal_total_mgd'
 
     fsw_frac = df[fsw_flow] / df['total_pws']
     fgw_frac = df[fgw_flow] / df['total_pws']
     sgw_frac = df[sgw_flow] / df['total_pws']
     ssw_frac = df[ssw_flow] / df['total_pws']
 
-    out_df[fsw_PWD] = fsw_frac * (df[res_flow] + df[com_flow] + df[ind_flow])
-    out_df[fgw_PWD] = fgw_frac * (df[res_flow] + df[com_flow] + df[ind_flow])
-    out_df[sgw_PWD] = sgw_frac * (df[res_flow] + df[com_flow] + df[ind_flow])
-    out_df[ssw_PWD] = ssw_frac * (df[res_flow] + df[com_flow] + df[ind_flow])
+    # determine the total amount of public water demand that can be supplied by public water supply
+    df['net_supply'] = df['total_pws'] - df['total_pwd']
 
+    # if net supply is > 0, then calculate exports and demand
 
-    # out_df['WWD_advanced_municipal_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = np.nan
-    # out_df['WWD_primary_municipal_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = np.nan
-    # out_df['WWD_secondary_municipal_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = np.nan
-    #
-    # out_df['WWD_advanced_infiltration_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = np.nan
-    # out_df['WWD_primary_infiltration_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = np.nan
-    # out_df['WWD_secondary_infiltration_total_total_mgd_from_WWS_total_total_total_total_mgd_fraction'] = np.nan
+    pws_fsw_exports = 'PWS_fresh_groundwater_withdrawal_total_mgd_to_PWX_total_total_total_total_mgd'
+    pws_fgw_exports = 'PWS_fresh_surfacewater_withdrawal_total_mgd_to_PWX_total_total_total_total_mgd'
+    pws_sgw_exports = 'PWS_saline_groundwater_withdrawal_total_mgd_to_PWX_total_total_total_total_mgd'
+    pws_ssw_exports = 'PWS_saline_surfacewater_withdrawal_total_mgd_to_PWX_total_total_total_total_mgd'
+
+    out_df[pws_fsw_exports] = np.where(df['net_supply'] > 0, df['net_supply'] * fsw_frac, 0)
+    out_df[pws_fgw_exports] = np.where(df['net_supply'] > 0, df['net_supply'] * fgw_frac, 0)
+    out_df[pws_sgw_exports] = np.where(df['net_supply'] > 0, df['net_supply'] * sgw_frac, 0)
+    out_df[pws_ssw_exports] = np.where(df['net_supply'] > 0, df['net_supply'] * ssw_frac, 0)
+
+    # if net supply is <0, then calculate imports to demand
+
+    pws_imports = 'PWD_total_total_total_total_mgd_from_PWI_total_total_total_total_mgd'
+
+    out_df[pws_imports] = np.where(df['net_supply'] < 0, abs(df['net_supply']), 0)
+
+    # determine what goes to PWS from PWD
+
+    fsw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_fresh_surfacewater_withdrawal_total_mgd'
+    fgw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_fresh_groundwater_withdrawal_total_mgd'
+    sgw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_saline_groundwater_withdrawal_total_mgd'
+    ssw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_saline_surfacewater_withdrawal_total_mgd'
+
+    out_df[fsw_PWD] = np.where(out_df[pws_imports] > 0, df[fsw_flow],  fsw_frac * df['total_pwd'])
+    out_df[fgw_PWD] = np.where(out_df[pws_imports] > 0, df[fgw_flow],  fgw_frac * df['total_pwd'])
+    out_df[sgw_PWD] = np.where(out_df[pws_imports] > 0, df[sgw_flow],  sgw_frac * df['total_pwd'])
+    out_df[ssw_PWD] = np.where(out_df[pws_imports] > 0, df[ssw_flow],  ssw_frac * df['total_pwd'])
+
 
     return out_df
 
