@@ -133,7 +133,7 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
                 df_1['S1234'] = df_1['S1234'].str.strip(remove)
                 df_1['T1234'] = df_1['T1234'].str.strip(remove)
 
-            sankey_number = pd.unique(df[['S1234', 'T1234']].values.ravel('K'))
+            sankey_number = pd.unique(df_1[['S1234', 'T1234']].values.ravel('K'))
 
             var_dict = dict()
             for index, value in enumerate(sankey_number):
@@ -170,9 +170,7 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
             target_list = df_1['target'].tolist()
             value_list = df_1['value'].to_list()
         else:
-
             source_list = df_1['source'].tolist()
-
             target_list = df_1['target'].tolist()
             value_list = df_1['value'].to_list()
 
@@ -285,7 +283,7 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
                         df_2['S1234'] = df_2['S1234'].str.strip(remove)
                         df_2['T1234'] = df_2['T1234'].str.strip(remove)
 
-                    sankey_number = pd.unique(df[['S1234', 'T1234']].values.ravel('K'))
+                    sankey_number = pd.unique(df_2[['S1234', 'T1234']].values.ravel('K'))
 
                     var_dict = dict()
                     for index, value in enumerate(sankey_number):
