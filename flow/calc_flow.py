@@ -4,7 +4,7 @@ import flow.construct as co
 import flow.deconstruct as de
 
 
-def calculate(data=None, level=5, region_name=None):
+def calculate(data=None, update_data = None, level=5, region_name=None):
     """Collects water demand data to water sectors (sectors whose energy demand is strictly dependent on their water
     demand) that directly withdraw their water from the water supply (e.g., public water supply) and aggregates the
     values.
@@ -23,7 +23,7 @@ def calculate(data=None, level=5, region_name=None):
         reg_col = df.columns[0]
         df = df.loc[df[reg_col] == region_name]
 
-
+    c_dict = co.construct_nested_dictionary(update_data)
 
     f_dict = co.construct_nested_dictionary(df)
 
@@ -37,6 +37,7 @@ def calculate(data=None, level=5, region_name=None):
     l1_dict = {}
 
     fraction_dict = {}
+    sum_dict = {}
 
     # initialize values
     for r in f_dict:
@@ -93,26 +94,26 @@ def calculate(data=None, level=5, region_name=None):
                                                                     #s1_value = s1_value + l5_value
                                                                     #total_dict.update({s1_name: s1_value})
 
-                # calculate the fraction of source location that feed into each target
-               #for t1 in f_dict[r][type]:
-               #    for t2 in f_dict[r][type][t1]:
-               #        for t3 in f_dict[r][type][t1][t2]:
-               #            for t4 in f_dict[r][type][t1][t2][t3]:
-               #                for t5 in f_dict[r][type][t1][t2][t3][t4]:
-               #                    for u1 in f_dict[r][type][t1][t2][t3][t4][t5]:
-               #                        t1_name = f'{r}_{t1}_{u1}'
-               #                        for s1 in f_dict[r][type][t1][t2][t3][t4][t5][u1]:
-               #                            for s2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1]:
-               #                                for s3 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2]:
-               #                                    for s4 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
-               #                                        for s5 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
-               #                                            l5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
-               #                                            if l5_name in l5_dict:
-               #                                                l5_fraction_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}_fraction'
-               #                                                l5_fraction_value = l5_dict[l5_name]/total_dict[t1_name]
-               #                                                fraction_dict.update({l5_fraction_name: l5_fraction_value})
-               #                                            else:
-               #                                                pass
+                 # calculate the fraction of source location that feed into each target
+                for t1 in f_dict[r][type]:
+                    for t2 in f_dict[r][type][t1]:
+                        for t3 in f_dict[r][type][t1][t2]:
+                            for t4 in f_dict[r][type][t1][t2][t3]:
+                                for t5 in f_dict[r][type][t1][t2][t3][t4]:
+                                    for u1 in f_dict[r][type][t1][t2][t3][t4][t5]:
+                                        t1_name = f'{r}_{t1}_{u1}'
+                                        for s1 in f_dict[r][type][t1][t2][t3][t4][t5][u1]:
+                                            for s2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1]:
+                                                for s3 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2]:
+                                                    for s4 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
+                                                        for s5 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
+                                                            l5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
+                                                            if l5_name in l5_dict:
+                                                                l5_fraction_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}_fraction'
+                                                                l5_fraction_value = l5_dict[l5_name]/total_dict[t1_name]
+                                                                fraction_dict.update({l5_fraction_name: l5_fraction_value})
+                                                            else:
+                                                                pass
 
             # calculate energy or water for water and energy sectors
             elif type == 'B_calculate':
@@ -142,7 +143,6 @@ def calculate(data=None, level=5, region_name=None):
                                                                         total_dict.update({l5t_name: l5t_value_total})
                                                                     else:
                                                                         pass
-
 
                                     # split water and energy values into individual sources
             elif type == 'C_source':
@@ -232,10 +232,13 @@ def calculate(data=None, level=5, region_name=None):
                                                             l5t_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
                                                             l5_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_to_{s1}_{s2}_{s3}_{s4}_{s5}_{u1}'
                                                             for u2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5]:
+                                                                l5s_name = f'{s1}_{s2}_{s3}_{s4}_{s5}_{u1}'
                                                                 for p in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2]:
                                                                     if l5t_name in total_dict:
                                                                         l5t_value = total_dict[l5t_name]
                                                                         fraction = f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2][p]
+
+                                                                        # calculate split to discharge
                                                                         dl5_value = l5t_value * fraction
                                                                         dl4_value = dl4_value + dl5_value
                                                                         dl3_value = dl3_value + dl5_value
@@ -248,14 +251,103 @@ def calculate(data=None, level=5, region_name=None):
                                                                         l3_dict.update({l3_name: dl3_value})
                                                                         l4_dict.update({l4_name: dl4_value})
                                                                         l5_dict.update({l5_name: dl5_value})
+
                                                                     else:
                                                                         pass
+                                # calculate the fraction of source location that feed into each target
+               # for t1 in f_dict[r][type]:
+               #     for t2 in f_dict[r][type][t1]:
+               #         for t3 in f_dict[r][type][t1][t2]:
+               #             for t4 in f_dict[r][type][t1][t2][t3]:
+               #                 for t5 in f_dict[r][type][t1][t2][t3][t4]:
+               #                     for u1 in f_dict[r][type][t1][t2][t3][t4][t5]:
+               #                         t1_name = f'{r}_{t1}_{u1}'
+               #                         for s1 in f_dict[r][type][t1][t2][t3][t4][t5][u1]:
+               #                             for s2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1]:
+               #                                 for s3 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2]:
+               #                                     for s4 in \
+               #                                     f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
+               #                                         for s5 in \
+               #                                         f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][
+               #                                             s4]:
+               #                                             l5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
+               #                                             if l5_name in l5_dict:
+               #                                                 l5_fraction_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}_fraction'
+               #                                                 l5_fraction_value = l5_dict[l5_name] / \
+               #                                                                     total_dict[t1_name]
+               #                                                 fraction_dict.update(
+               #                                                     {l5_fraction_name: l5_fraction_value})
+               #                                             else:
+               #                                                 pass
 
 
-                                else:
-                                    pass
 
+            for t1 in f_dict[r][type]:
+                for t2 in f_dict[r][type][t1]:
+                    for t3 in f_dict[r][type][t1][t2]:
+                        for t4 in f_dict[r][type][t1][t2][t3]:
+                            for t5 in f_dict[r][type][t1][t2][t3][t4]:
+                                for u1 in f_dict[r][type][t1][t2][t3][t4][t5]:
+                                    for s1 in f_dict[r][type][t1][t2][t3][t4][t5][u1]:
+                                        for s2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1]:
+                                            for s3 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2]:
+                                                for s4 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
+                                                    for s5 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
+                                                        l5_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_to_{s1}_{s2}_{s3}_{s4}_{s5}_{u1}'
+                                                        if l5_name in l5_dict:
+                                                            sum_dict.update({l5_name: l5_dict[l5_name]})
+                                                        else:
+                                                            pass
 
+    # create a dataframe to sum values by target to link disconnected nodes
+    sum_df = de.deconstruct_nested_dictionary(sum_dict)
+    group_column_list = ['region', 'T1','T2','T3','T4','T5','units']
+    sum_df = sum_df.groupby(group_column_list, as_index=False).sum()
+    for col in group_column_list[:-1]:
+        sum_df[col] = sum_df[col] + '_'
+    sum_df['l5_sum_name'] = sum_df[group_column_list].sum(axis=1)
+    sum_dict = dict(zip(sum_df.l5_sum_name, sum_df.value))
+
+    for r in c_dict:
+        for set in c_dict[r]:
+            for type in c_dict[r][set]:
+                if type == 'match':
+                    for t1 in c_dict[r][set][type]:
+                        for t2 in c_dict[r][set][type][t1]:
+                            for t3 in c_dict[r][set][type][t1][t2]:
+                                for t4 in c_dict[r][set][type][t1][t2][t3]:
+                                    for t5 in c_dict[r][set][type][t1][t2][t3][t4]:
+                                        for u1 in c_dict[r][set][type][t1][t2][t3][t4][t5]:
+                                            t5_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
+                                            if t5_name in sum_dict:
+                                                for s1 in c_dict[r][set][type][t1][t2][t3][t4][t5][u1]:
+                                                    for s2 in c_dict[r][set][type][t1][t2][t3][t4][t5][u1][s1]:
+                                                        for s3 in c_dict[r][set][type][t1][t2][t3][t4][t5][u1][s1][s2]:
+                                                            for s4 in c_dict[r][set][type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
+                                                                for s5 in c_dict[r][set][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
+                                                                    s5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_{u1}'
+                                                                    t_s_5_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_to_{s1}_{s2}_{s3}_{s4}_{s5}_{u1}'
+                                                                    if s5_name in total_dict:
+                                                                        s5_fraction_name = s5_name + '_fraction'
+                                                                        t5_split_value = sum_dict[t5_name] * fraction_dict[s5_fraction_name]
+
+                                                                        # if the split source is equal to destination
+                                                                        if t5_split_value == total_dict[s5_name]:
+                                                                            l5_dict.update({t_s_5_name:t5_split_value})
+
+                                                                        # if the split source is greater than destination
+                                                                        elif t5_split_value > total_dict[s5_name]:
+                                                                            split_value = total_dict[s5_name]
+                                                                            l5_dict.update({t_s_5_name: split_value})
+
+                                                                        # if the split source is less than destination
+                                                                        elif t5_split_value < total_dict[s5_name]:
+                                                                            split_value = t5_split_value
+                                                                            l5_dict.update({t_s_5_name: split_value})
+                                                                        else:
+                                                                            pass
+                else:
+                    pass
     # TODO add updater that runs this, updates a copy of the data, reruns this
     # run.py function should run the updater and then deconstruct the output, take below
 
