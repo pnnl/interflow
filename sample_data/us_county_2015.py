@@ -24,8 +24,6 @@ def convert_mwh_bbtu(x: float) -> float:
     return bbtu
 
 
-
-
 def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
     """prep 2015 water use data by replacing non-numeric values, reducing available variables in output dataframe,
      renaming variables appropriately, and returning a dataframe of specified variables.
@@ -174,8 +172,8 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
 
     return df
 
-def calc_population_county_weight(df: pd.DataFrame) -> pd.DataFrame:
 
+def calc_population_county_weight(df: pd.DataFrame) -> pd.DataFrame:
     """calculates the percentage of state total population by county and merges to provided dataframe
     by 'State'
 
@@ -395,8 +393,6 @@ def prep_public_water_supply_fraction() -> pd.DataFrame:
     return df
 
 
-
-
 def calc_pws_deliveries() -> pd.DataFrame:
     """calculating public water deliveries to the commercial and industrial sectors.
 
@@ -446,11 +442,11 @@ def prep_pws_to_pwd():
 
     df2 = calc_pws_deliveries()
 
-    df = pd.merge(df, df2, how='left', on= ['FIPS', 'State', 'County'])
+    df = pd.merge(df, df2, how='left', on=['FIPS', 'State', 'County'])
 
     out_df = prep_water_use_2015()
 
-    #res, com, ind
+    # res, com, ind
     res_flow = 'RES_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'
     com_flow = 'COM_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'
     ind_flow = 'IND_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'
@@ -464,7 +460,6 @@ def prep_pws_to_pwd():
 
     df['total_pws'] = df[fgw_flow] + df[fsw_flow] + df[sgw_flow] + df[ssw_flow]
 
-
     fsw_frac = df[fsw_flow] / df['total_pws']
     fgw_frac = df[fgw_flow] / df['total_pws']
     sgw_frac = df[sgw_flow] / df['total_pws']
@@ -475,8 +470,8 @@ def prep_pws_to_pwd():
 
     # if net supply is > 0, then calculate exports and demand
 
-    pws_fsw_exports = 'PWX_total_total_total_total_mgd_from_PWS_fresh_groundwater_withdrawal_total_mgd'
-    pws_fgw_exports = 'PWX_total_total_total_total_mgd_from_PWS_fresh_surfacewater_withdrawal_total_mgd'
+    pws_fsw_exports = 'PWX_total_total_total_total_mgd_from_PWS_fresh_surfacewater_withdrawal_total_mgd'
+    pws_fgw_exports = 'PWX_total_total_total_total_mgd_from_PWS_fresh_groundwater_withdrawal_total_mgd'
     pws_sgw_exports = 'PWX_total_total_total_total_mgd_from_PWS_saline_groundwater_withdrawal_total_mgd'
     pws_ssw_exports = 'PWX_total_total_total_total_mgd_from_PWS_saline_surfacewater_withdrawal_total_mgd'
 
@@ -498,11 +493,10 @@ def prep_pws_to_pwd():
     sgw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_saline_groundwater_withdrawal_total_mgd'
     ssw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_saline_surfacewater_withdrawal_total_mgd'
 
-    out_df[fsw_PWD] = np.where(out_df[pws_imports] > 0, df[fsw_flow],  fsw_frac * df['total_pwd'])
-    out_df[fgw_PWD] = np.where(out_df[pws_imports] > 0, df[fgw_flow],  fgw_frac * df['total_pwd'])
-    out_df[sgw_PWD] = np.where(out_df[pws_imports] > 0, df[sgw_flow],  sgw_frac * df['total_pwd'])
-    out_df[ssw_PWD] = np.where(out_df[pws_imports] > 0, df[ssw_flow],  ssw_frac * df['total_pwd'])
-
+    out_df[fsw_PWD] = np.where(out_df[pws_imports] > 0, df[fsw_flow], fsw_frac * df['total_pwd'])
+    out_df[fgw_PWD] = np.where(out_df[pws_imports] > 0, df[fgw_flow], fgw_frac * df['total_pwd'])
+    out_df[sgw_PWD] = np.where(out_df[pws_imports] > 0, df[sgw_flow], sgw_frac * df['total_pwd'])
+    out_df[ssw_PWD] = np.where(out_df[pws_imports] > 0, df[ssw_flow], ssw_frac * df['total_pwd'])
 
     return out_df
 
@@ -1459,8 +1453,6 @@ def prep_electricity_generation() -> pd.DataFrame:
     df = df.rename(columns={"Total Fuel Consumption\nMMBtu": "fuel_amt"})
     df = df.rename(columns={"Net Generation\n(Megawatthours)": "generation_mwh"})
 
-
-
     # changing string columns to numeric
     string_col = df.columns[3:]  # create list of string columns
     for col in string_col:
@@ -1814,7 +1806,7 @@ def prep_irrigation_fuel_data() -> pd.DataFrame:
     df_out['PWS_distribution_fresh_surfacewater_total_bbtu_from_EGD_total_total_total_total_bbtu_fraction'] = 1
     df_out['PWS_distribution_fresh_groundwater_total_bbtu_from_EGD_total_total_total_total_bbtu_fraction'] = 1
 
-    #rejected energy
+    # rejected energy
     df_out['PWS_pumping_fresh_surfacewater_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction'] = .35
     df_out['PWS_pumping_fresh_groundwater_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction'] = .35
     df_out['PWS_treatment_fresh_surfacewater_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction'] = .35
@@ -1851,8 +1843,6 @@ def prep_irrigation_fuel_data() -> pd.DataFrame:
     df_out['ACI_pumping_fresh_groundwater_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction'] = .35
     df_out['ACI_pumping_fresh_surfacewater_total_bbtu_to_ESV_total_total_total_total_bbtu_fraction'] = .65
     df_out['ACI_pumping_fresh_groundwater_total_bbtu_to_ESV_total_total_total_total_bbtu_fraction'] = .65
-
-
 
     df_out = df_out.drop(["natural_gas_pumping", "petroleum_pumping", "electricity_pumping"], axis=1)
 
@@ -1991,8 +1981,10 @@ def prep_irrigation_pws_ratio() -> pd.DataFrame:
                                                 'total_pws_withdrawals_mgd'])
 
     # calculate public water supply percent of combined flows
-    total_crop_irr = df_irr_pws['ACI_fresh_surfacewater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd'] \
-                     + df_irr_pws['ACI_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd']
+    total_crop_irr = df_irr_pws[
+                         'ACI_fresh_surfacewater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd'] \
+                     + df_irr_pws[
+                         'ACI_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd']
 
     df_irr_pws['pws_ibt_pct'] = df_irr_pws['total_pws_withdrawals_mgd'] \
                                 / (total_crop_irr + df_irr_pws['total_pws_withdrawals_mgd'])
@@ -2032,10 +2024,9 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
 
     feet_meter_conversion = 1 / 3.281  # feet to meter conversion
     af_mps_conversion = 1 / 25567  # acre-ft-year to meters per second^3 conversion
-    mps_mgd = 22.82 # cubic meters per second to million gallons per day
-    cfs_mgd = 0.646317 # cubic feet per second to million gallons per day
-    afy_mgd = 0.000892742 # acre foot per year to million gallons per day
-
+    mps_mgd = 22.82  # cubic meters per second to million gallons per day
+    cfs_mgd = 0.646317  # cubic feet per second to million gallons per day
+    afy_mgd = 0.000892742  # acre foot per year to million gallons per day
 
     ag_pump_eff = .466  # assumed pump efficiency rate
     acc_gravity = 9.81  # Acceleration of gravity  (m/s^2)
@@ -2044,16 +2035,13 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     # calculate texas interbasin transfer energy
     elevation_meters = df_tx["Elevation Difference (Feet)"] * feet_meter_conversion  # elevation in meters
     mps_cubed = df_tx["Total_Intake__Gallons (Acre-Feet/Year)"] * af_mps_conversion  # meters per second cubed
-    mgd_tx = mps_cubed*mps_mgd
+    mgd_tx = mps_cubed * mps_mgd
     df_tx["water_interbasin_mgd"] = mgd_tx / 2  # dividing in half to split across source and target counties
-
-
 
     interbasin_mwh = ((elevation_meters * mps_cubed * acc_gravity * water_density) / ag_pump_eff) / (10 ** 6)
     interbasin_bbtu = convert_mwh_bbtu(interbasin_mwh)  # convert mwh to bbtu
-    df_tx["electricity_interbasin_bbtu"] = interbasin_bbtu / 2  # dividing in half to split across source and target counties
-
-
+    df_tx[
+        "electricity_interbasin_bbtu"] = interbasin_bbtu / 2  # dividing in half to split across source and target counties
 
     # split out target county data
     df_tx_target = df_tx[["State", "Used_FIPS", "electricity_interbasin_bbtu", "water_interbasin_mgd"]].copy()
@@ -2073,25 +2061,24 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     # calculate energy intensity per mgd
     df_tx['ibt_energy_intensity_bbtu'] = df_tx["electricity_interbasin_bbtu"] / df_tx["water_interbasin_mgd"]
 
-    df_tx  = df_tx[["State", "FIPS", 'ibt_energy_intensity_bbtu',"water_interbasin_mgd" ]]
-
+    df_tx = df_tx[["State", "FIPS", 'ibt_energy_intensity_bbtu', "water_interbasin_mgd"]]
 
     # prep western state interbasin transfer energy
-    df_west = df_west[['FIPS', 'Mwh/yr (Low)', 'Mwh/yr (High)', 'Water Delivery (AF/yr)', 'cfs' ]]
+    df_west = df_west[['FIPS', 'Mwh/yr (Low)', 'Mwh/yr (High)', 'Water Delivery (AF/yr)', 'cfs']]
     df_west['FIPS'] = df_west['FIPS'].apply(lambda x: '{0:0>5}'.format(x))  # add leading zero to fips
 
-    df_west["electricity_interbasin_bbtu"] = (df_west["Mwh/yr (Low)"] + df_west["Mwh/yr (High)"]) / 2  # average energy use by row
+    df_west["electricity_interbasin_bbtu"] = (df_west["Mwh/yr (Low)"] + df_west[
+        "Mwh/yr (High)"]) / 2  # average energy use by row
     df_west = df_west.groupby(["FIPS"], as_index=False).sum()  # group by county fips code
-    df_west["electricity_interbasin_bbtu"] = convert_mwh_bbtu(df_west["electricity_interbasin_bbtu"])  # convert mwh values to bbtu
+    df_west["electricity_interbasin_bbtu"] = convert_mwh_bbtu(
+        df_west["electricity_interbasin_bbtu"])  # convert mwh values to bbtu
 
-    df_west['water_interbasin_mgd'] = np.where(df_west['cfs']>0, cfs_mgd*df_west['cfs'], 0)
-    df_west['water_interbasin_mgd'] = np.where((df_west['cfs']==0) & (df_west['Water Delivery (AF/yr)']>0),
-                                               afy_mgd*df_west['Water Delivery (AF/yr)'],
+    df_west['water_interbasin_mgd'] = np.where(df_west['cfs'] > 0, cfs_mgd * df_west['cfs'], 0)
+    df_west['water_interbasin_mgd'] = np.where((df_west['cfs'] == 0) & (df_west['Water Delivery (AF/yr)'] > 0),
+                                               afy_mgd * df_west['Water Delivery (AF/yr)'],
                                                df_west['water_interbasin_mgd'])
 
     df_west['ibt_energy_intensity_bbtu'] = df_west["electricity_interbasin_bbtu"] / df_west['water_interbasin_mgd']
-
-
 
     ibt_dataframe_list = [df_tx, df_west]  # bring west IBT data together with TX data
     df = pd.concat(ibt_dataframe_list)
@@ -2104,7 +2091,7 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     df['ibt_energy_intensity_bbtu'].fillna(0, inplace=True)
     df['water_interbasin_mgd'].fillna(0, inplace=True)
 
-    df = pd.merge(df, df_ratio, how='left', on = ['FIPS', 'State', 'County'])
+    df = pd.merge(df, df_ratio, how='left', on=['FIPS', 'State', 'County'])
 
     df_out = df_loc.copy()
     df_out['aci_ibt_water'] = df['ibt_energy_intensity_bbtu'] * df['irrigation_ibt_pct']
@@ -2141,20 +2128,21 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
 
     df_out = df_out.loc[(df_out.aci_ibt_water > 0) | (df_out.pws_ibt_water > 0)]
 
-    df_out = df_out.rename(columns={'FIPS':'FIPS', 'State':'State', 'County':'County',
-                                'aci_ibt_water':aci_ibt_water_flow,
-                            'pws_ibt_water':pws_ibt_water_flow,
-                            'aci_ibt_int': aci_ibt_energy_int,
-                            'pws_ibt_int': pws_ibt_energy_int,
-                            'aci_ibt_src': aci_ibt_energy_src,
-                            'pws_ibt_src':pws_ibt_energy_src,
-                            'aci_ibt_esv': aci_ibt_energy_esv,
-                            'pws_ibt_esv': pws_ibt_energy_esv,
-                            'aci_ibt_rej': aci_ibt_energy_rej,
-                            'pws_ibt_rej': pws_ibt_energy_rej
-                            })
+    df_out = df_out.rename(columns={'FIPS': 'FIPS', 'State': 'State', 'County': 'County',
+                                    'aci_ibt_water': aci_ibt_water_flow,
+                                    'pws_ibt_water': pws_ibt_water_flow,
+                                    'aci_ibt_int': aci_ibt_energy_int,
+                                    'pws_ibt_int': pws_ibt_energy_int,
+                                    'aci_ibt_src': aci_ibt_energy_src,
+                                    'pws_ibt_src': pws_ibt_energy_src,
+                                    'aci_ibt_esv': aci_ibt_energy_esv,
+                                    'pws_ibt_esv': pws_ibt_energy_esv,
+                                    'aci_ibt_rej': aci_ibt_energy_rej,
+                                    'pws_ibt_rej': pws_ibt_energy_rej
+                                    })
 
     return df_out
+
 
 def prep_electricity_demand_data() -> pd.DataFrame:
     """prepping electricity demand data by sector. Produces a dataframe of demand data by county.
@@ -2167,15 +2155,15 @@ def prep_electricity_demand_data() -> pd.DataFrame:
     data = 'input_data/eia_861m_states.csv'
 
     # read in transportation electricity sales data
-    df =  pd.read_csv(data, skipfooter=2, engine='python',
-                       dtype={'RESIDENTIAL': float, 'COMMERCIAL': float,
-                              'INDUSTRIAL': float, 'TRANSPORTATION': float})
+    df = pd.read_csv(data, skipfooter=2, engine='python',
+                     dtype={'RESIDENTIAL': float, 'COMMERCIAL': float,
+                            'INDUSTRIAL': float, 'TRANSPORTATION': float})
 
     # build renaming dictionary
     rename_dict = {"RESIDENTIAL": 'RES_total_total_total_total_bbtu_from_EGD_total_total_total_total_bbtu',
                    "COMMERCIAL": 'COM_total_total_total_total_bbtu_from_EGD_total_total_total_total_bbtu',
                    "INDUSTRIAL": 'IND_total_total_total_total_bbtu_from_EGD_total_total_total_total_bbtu',
-                   "TRANSPORTATION":'TRA_total_total_total_total_bbtu_from_EGD_total_total_total_total_bbtu'}
+                   "TRANSPORTATION": 'TRA_total_total_total_total_bbtu_from_EGD_total_total_total_total_bbtu'}
 
     # prep dataframe
     df = df.dropna(subset=["Month"])  # drop rows where month is blank
@@ -2221,9 +2209,7 @@ def prep_electricity_demand_data() -> pd.DataFrame:
 
     # create a rejected energy and energy services fraction for transportation
 
-
     return df
-
 
 
 def prep_fuel_demand_data() -> pd.DataFrame:
@@ -2240,24 +2226,42 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     df = pd.read_csv(data)
 
     # dictionary of fuel demand codes that are relevant and descriptive names
-    msn_dict = {"CLCCB": "COM_total_total_total_total_bbtu_from_EPD_coal_total_total_total_bbtu",  # Coal, commercial sector (bbtu)
-                "CLICB": "IND_total_total_total_total_bbtu_from_EPD_coal_total_total_total_bbtu",  # Coal, industrial sector (bbtu)
-                "EMACB": "TRA_total_total_total_total_bbtu_from_EPD_biomass_total_total_total_bbtu",  # Fuel ethanol, transportation sector (bbtu)
-                "GECCB": "COM_total_total_total_total_bbtu_from_EPD_geothermal_total_total_total_bbtu",  # Geothermal, commercial sector (bbtu)
-                "GERCB": "RES_total_total_total_total_bbtu_from_EPD_geothermal_total_total_total_bbtu",  # Geothermal, residential sector (bbtu)
-                "NGACB": "TRA_total_total_total_total_bbtu_from_EPD_natgas_total_total_total_bbtu",  # Natural gas, transportation sector  (bbtu)
-                "NGCCB": "COM_total_total_total_total_bbtu_from_EPD_natgas_total_total_total_bbtu",  # Natural gas, commercial sector (bbtu)
-                "NGICB": "IND_total_total_total_total_bbtu_from_EPD_natgas_total_total_total_bbtu",  # Natural gas, industrial sector (bbtu)
-                "NGRCB": "RES_total_total_total_total_bbtu_from_EPD_natgas_total_total_total_bbtu",  # Natural gas, residential sector (bbtu
-                "PAACB": "TRA_total_total_total_total_bbtu_from_EPD_petroleum_total_total_total_bbtu",  # petroleum products, transportation sector (bbtu)
-                "PACCB": "COM_total_total_total_total_bbtu_from_EPD_petroleum_total_total_total_bbtu",  # petroleum products, commercial sector (bbtu)
-                "PAICB": "IND_total_total_total_total_bbtu_from_EPD_petroleum_total_total_total_bbtu",  # petroleum products, industrial sector (bbtu)
-                "PARCB": "RES_total_total_total_total_bbtu_from_EPD_petroleum_total_total_total_bbtu",  # petroleum products, residential sector (bbtu)
-                "SOCCB": "COM_total_total_total_total_bbtu_from_EPD_solar_total_total_total_bbtu",  # Solar, commercial sector (bbtu)
-                "SORCB": "RES_total_total_total_total_btu_from_EPD_solar_total_total_total_bbtu", # Solar, residential sector (bbtu)
-                "WDRCB": "RES_total_total_total_total_bbtu_from_EPD_biomass_total_total_total_bbtu",  # Wood energy, residential sector (bbtu)
-                "WWCCB": "COM_total_total_total_total_bbtu_from_EPD_biomass_total_total_total_bbtu",  # Wood and waste energy, commercial sector (bbtu)
-                "WWICB": "COM_total_total_total_total_bbtu_from_EPD_wind_total_total_total_bbtu"  # Wind energy, commercial sector (bbtu)
+    msn_dict = {"CLCCB": "COM_total_total_total_total_bbtu_from_EPD_coal_total_total_total_bbtu",
+                # Coal, commercial sector (bbtu)
+                "CLICB": "IND_total_total_total_total_bbtu_from_EPD_coal_total_total_total_bbtu",
+                # Coal, industrial sector (bbtu)
+                "EMACB": "TRA_total_total_total_total_bbtu_from_EPD_biomass_total_total_total_bbtu",
+                # Fuel ethanol, transportation sector (bbtu)
+                "GECCB": "COM_total_total_total_total_bbtu_from_EPD_geothermal_total_total_total_bbtu",
+                # Geothermal, commercial sector (bbtu)
+                "GERCB": "RES_total_total_total_total_bbtu_from_EPD_geothermal_total_total_total_bbtu",
+                # Geothermal, residential sector (bbtu)
+                "NGACB": "TRA_total_total_total_total_bbtu_from_EPD_natgas_total_total_total_bbtu",
+                # Natural gas, transportation sector  (bbtu)
+                "NGCCB": "COM_total_total_total_total_bbtu_from_EPD_natgas_total_total_total_bbtu",
+                # Natural gas, commercial sector (bbtu)
+                "NGICB": "IND_total_total_total_total_bbtu_from_EPD_natgas_total_total_total_bbtu",
+                # Natural gas, industrial sector (bbtu)
+                "NGRCB": "RES_total_total_total_total_bbtu_from_EPD_natgas_total_total_total_bbtu",
+                # Natural gas, residential sector (bbtu
+                "PAACB": "TRA_total_total_total_total_bbtu_from_EPD_petroleum_total_total_total_bbtu",
+                # petroleum products, transportation sector (bbtu)
+                "PACCB": "COM_total_total_total_total_bbtu_from_EPD_petroleum_total_total_total_bbtu",
+                # petroleum products, commercial sector (bbtu)
+                "PAICB": "IND_total_total_total_total_bbtu_from_EPD_petroleum_total_total_total_bbtu",
+                # petroleum products, industrial sector (bbtu)
+                "PARCB": "RES_total_total_total_total_bbtu_from_EPD_petroleum_total_total_total_bbtu",
+                # petroleum products, residential sector (bbtu)
+                "SOCCB": "COM_total_total_total_total_bbtu_from_EPD_solar_total_total_total_bbtu",
+                # Solar, commercial sector (bbtu)
+                "SORCB": "RES_total_total_total_total_btu_from_EPD_solar_total_total_total_bbtu",
+                # Solar, residential sector (bbtu)
+                "WDRCB": "RES_total_total_total_total_bbtu_from_EPD_biomass_total_total_total_bbtu",
+                # Wood energy, residential sector (bbtu)
+                "WWCCB": "COM_total_total_total_total_bbtu_from_EPD_biomass_total_total_total_bbtu",
+                # Wood and waste energy, commercial sector (bbtu)
+                "WWICB": "COM_total_total_total_total_bbtu_from_EPD_wind_total_total_total_bbtu"
+                # Wind energy, commercial sector (bbtu)
                 }
 
     # reduce dataframe
@@ -2272,20 +2276,21 @@ def prep_fuel_demand_data() -> pd.DataFrame:
 
     # split out data into county values and multiply by population weighting
     df = calc_population_county_weight(df)
-    df = df[['FIPS', 'State', 'County','pop_weight','CLCCB','CLICB','EMACB','GECCB','GERCB','NGACB','NGCCB','NGICB',
-             'NGRCB','PAACB','PACCB', 'PAICB','PARCB','SOCCB','SORCB','WDRCB','WWCCB','WWICB']]
+    df = df[['FIPS', 'State', 'County', 'pop_weight', 'CLCCB', 'CLICB', 'EMACB', 'GECCB', 'GERCB', 'NGACB', 'NGCCB',
+             'NGICB',
+             'NGRCB', 'PAACB', 'PACCB', 'PAICB', 'PARCB', 'SOCCB', 'SORCB', 'WDRCB', 'WWCCB', 'WWICB']]
 
     # multiply out by county weight and convert to daily bbtu from annual
     energy_columns = df.columns[4:].to_list()
     for d in energy_columns:
         df[d] = (df[d] * df['pop_weight']) / 365
-#
+    #
     # rename columns to add descriptive language
     df.rename(columns=msn_dict, inplace=True)
-#
+    #
     # remove unneeded columns
     df = df.drop(['pop_weight'], axis=1)
-#
+    #
     df.fillna(0, inplace=True)
 
     return df
@@ -2302,7 +2307,7 @@ def prep_state_fuel_production_data() -> pd.DataFrame:
     # read in energy production data
     data = 'input_data/eia_SEDS_Prod_dataset.csv'
     #
-    df =  pd.read_csv(data, skiprows=1)
+    df = pd.read_csv(data, skiprows=1)
 
     # list of fuel demand codes that are relevant from dataset
     msn_prod_dict = {"PAPRB": "petroleum_production_bbtu",  # crude oil production (including lease condensate) (BBTU)
@@ -2361,7 +2366,7 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
 
     # read in read in state level water to oil intensity data
     data_water_intensity = 'input_data/PADD_intensity.csv'
-    df_conventional_water =  pd.read_csv(data_water_intensity)
+    df_conventional_water = pd.read_csv(data_water_intensity)
 
     # read in read in state level unconventional natural gas and oil production data
     un_data = 'input_data/Unconventional_Oil_NG_State.csv'
@@ -2401,40 +2406,40 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     df['petroleum_conventional_production_bbtu'] = (1 - UNCONVENTIONAL_PETROLEUM_FRACTION) \
                                                    * df['petroleum_production_bbtu']
 
-    #---- calculate water intensities
+    # ---- calculate water intensities
 
     # unconventional water use
-    df_unconventional_water = df_unconventional_water[['State', 'FSW_Unconventional_Oil (MGD)', 'FGW_Unconventional_Oil (MGD)']]
+    df_unconventional_water = df_unconventional_water[
+        ['State', 'FSW_Unconventional_Oil (MGD)', 'FGW_Unconventional_Oil (MGD)']]
 
     # merge with county-level petroleum production percents
     df = pd.merge(df, df_unconventional_water, how='left', on='State')
     df['fresh_surfacewater_petroleum_unconventional_mgd'] = df['FSW_Unconventional_Oil (MGD)'] * df['oil_pct'] / 365
     df['fresh_groundwater_petroleum_unconventional_mgd'] = df['FGW_Unconventional_Oil (MGD)'] * df['oil_pct'] / 365
 
-
     # fill water values with average water intensity for locations where petroleum is produced, but no water estimates
-    df['total_water'] = df['fresh_surfacewater_petroleum_unconventional_mgd'] + df['fresh_groundwater_petroleum_unconventional_mgd']
+    df['total_water'] = df['fresh_surfacewater_petroleum_unconventional_mgd'] + df[
+        'fresh_groundwater_petroleum_unconventional_mgd']
     df['uncon_intensity_mg_per_bbtu'] = np.where(df['petroleum_unconventional_production_bbtu'] > 0,
-                                           df['total_water'] / (df['petroleum_unconventional_production_bbtu']),
-                                           np.nan)
+                                                 df['total_water'] / (df['petroleum_unconventional_production_bbtu']),
+                                                 np.nan)
     avg_intensity = df['uncon_intensity_mg_per_bbtu'].mean()
     df['uncon_intensity_mg_per_bbtu'].fillna(avg_intensity, inplace=True)
 
-
     # calculate mg/bbtu water intensity for conventional petroleum by county
     df_conventional_water['con_intensity_mg_per_bbtu'] = (df_conventional_water['GalWater_GalOil'] / MILLION_MULTIPLIER) \
-                                            / GALLON_OIL_TO_BBTU_CONVERSION
+                                                         / GALLON_OIL_TO_BBTU_CONVERSION
     avg_intensity = df_conventional_water['con_intensity_mg_per_bbtu'].mean()
     df = pd.merge(df, df_conventional_water, how='left', on='State')
     df['con_intensity_mg_per_bbtu'].fillna(avg_intensity, inplace=True)
 
-#
+    #
     # reduce dataframe
     df_out = df[['FIPS',
-             'petroleum_unconventional_production_bbtu',
-             'petroleum_conventional_production_bbtu',
-             'uncon_intensity_mg_per_bbtu',
-             'con_intensity_mg_per_bbtu']]
+                 'petroleum_unconventional_production_bbtu',
+                 'petroleum_conventional_production_bbtu',
+                 'uncon_intensity_mg_per_bbtu',
+                 'con_intensity_mg_per_bbtu']]
 
     # merge with county data to distribute value to each county in a state and include all FIPS
     df_out = pd.merge(df_loc, df_out, how='left', on='FIPS')
@@ -2442,23 +2447,23 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
 
     # create source fractions for water withdrawals for petroleum
 
-    df_out['uncon_fsw_frac'] = np.where(df_out['petroleum_unconventional_production_bbtu']>0,.8,0)
-    df_out['uncon_fgw_frac'] = np.where(df_out['petroleum_unconventional_production_bbtu']>0,.2,0)
-    df_out['con_fsw_frac'] = np.where(df_out['petroleum_conventional_production_bbtu']>0,.8,0)
-    df_out['con_fgw_frac'] = np.where(df_out['petroleum_conventional_production_bbtu']>0,.2,0)
+    df_out['uncon_fsw_frac'] = np.where(df_out['petroleum_unconventional_production_bbtu'] > 0, .8, 0)
+    df_out['uncon_fgw_frac'] = np.where(df_out['petroleum_unconventional_production_bbtu'] > 0, .2, 0)
+    df_out['con_fsw_frac'] = np.where(df_out['petroleum_conventional_production_bbtu'] > 0, .8, 0)
+    df_out['con_fgw_frac'] = np.where(df_out['petroleum_conventional_production_bbtu'] > 0, .2, 0)
 
-#
-    df_out = df_out.rename(columns={'FIPS':'FIPS',
-                 'State':'State',
-                 'County':'County',
-                 'petroleum_unconventional_production_bbtu': 'EPS_petroleum_unconventional_total_total_bbtu_from_EPS_petroleum_unconventional_total_total_bbtu',
-                 'petroleum_conventional_production_bbtu': 'EPS_petroleum_conventional_total_total_bbtu_from_EPS_petroleum_conventional_total_total_bbtu',
-                'con_intensity_mg_per_bbtu': 'EPS_petroleum_conventional_withdrawal_total_mgd_from_EPS_petroleum_conventional_total_total_bbtu_intensity',
-                'uncon_intensity_mg_per_bbtu': 'EPS_petroleum_unconventional_withdrawal_total_mgd_from_EPS_petroleum_unconventional_total_total_bbtu_intensity',
-                'uncon_fsw_frac':'EPS_petroleum_unconventional_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction',
-                'uncon_fgw_frac':'EPS_petroleum_unconventional_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction',
-                'con_fsw_frac': 'EPS_petroleum_conventional_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction',
-                'con_fgw_frac': 'EPS_petroleum_conventional_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction',
+    #
+    df_out = df_out.rename(columns={'FIPS': 'FIPS',
+                                    'State': 'State',
+                                    'County': 'County',
+                                    'petroleum_unconventional_production_bbtu': 'EPS_petroleum_unconventional_total_total_bbtu_from_EPS_petroleum_unconventional_total_total_bbtu',
+                                    'petroleum_conventional_production_bbtu': 'EPS_petroleum_conventional_total_total_bbtu_from_EPS_petroleum_conventional_total_total_bbtu',
+                                    'con_intensity_mg_per_bbtu': 'EPS_petroleum_conventional_withdrawal_total_mgd_from_EPS_petroleum_conventional_total_total_bbtu_intensity',
+                                    'uncon_intensity_mg_per_bbtu': 'EPS_petroleum_unconventional_withdrawal_total_mgd_from_EPS_petroleum_unconventional_total_total_bbtu_intensity',
+                                    'uncon_fsw_frac': 'EPS_petroleum_unconventional_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction',
+                                    'uncon_fgw_frac': 'EPS_petroleum_unconventional_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction',
+                                    'con_fsw_frac': 'EPS_petroleum_conventional_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction',
+                                    'con_fgw_frac': 'EPS_petroleum_conventional_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction',
                                     })
     return df_out
 
@@ -2496,7 +2501,6 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     df = df[["State", "natgas_production_bbtu"]]
     df_ng_loc = df_ng_loc[['FIPS', 'Stabr', 'gas2011']]
 
-
     # calculate percent of total 2011 state oil production by county
     df_ng_loc_sum = df_ng_loc[['Stabr', 'gas2011']].groupby("Stabr", as_index=False).sum()
     df_ng_loc_sum = df_ng_loc_sum.rename(columns={"gas2011": "state_total"})
@@ -2526,7 +2530,6 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     # calculate 2015 percent by county
     df['natgas_production_bbtu'] = df['natgas_production_bbtu'] * df['gas_pct']
 
-
     df_unconventional_water = df_unconventional_water[['State', 'FSW_Unconventional_NG (MGD)',
                                                        'FGW_Unconventional_NG (MGD)']]
 
@@ -2553,7 +2556,7 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
                                            np.nan)
     avg_intensity = df['intensity_mg_per_bbtu'].mean()
     df['intensity_mg_per_bbtu'].fillna(avg_intensity, inplace=True)
-    df = df[df.natgas_production_bbtu >0]
+    df = df[df.natgas_production_bbtu > 0]
 
     sw_source_name = 'EPS_natgas_unconventional_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
     gw_source_name = 'EPS_natgas_unconventional_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
@@ -2576,6 +2579,7 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
 
     return df
 
+
 def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
     """prepares a dataframe of produced water intensities, consumption fractions, and discharge fractions for
     unconventional petroleum and unconventional natural gas drilling.
@@ -2596,13 +2600,13 @@ def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
 
     # convert barrels of water per barrel of oil to million gallons per bbtu of oil
     df['petroleum_unconventional_produced_water_intensity'] = df['WOR (bbl/bbl)'] \
-                                                                          * (WATER_BARREL_TO_MG_CONVERSION
-                                                                             / OIL_BARREL_TO_BBTU_CONVERSION)
+                                                              * (WATER_BARREL_TO_MG_CONVERSION
+                                                                 / OIL_BARREL_TO_BBTU_CONVERSION)
 
     # convert barrels of water per mmcf of natural gas to million gallons per bbtu of natural gas
     df['natgas_unconventional_produced_water_intensity'] = df['WGR (bbl/Mmcf)'] \
-                                                                       * (WATER_BARREL_TO_MG_CONVERSION
-                                                                          / GAS_MMCF_TO_BBTU_CONVERSION)
+                                                           * (WATER_BARREL_TO_MG_CONVERSION
+                                                              / GAS_MMCF_TO_BBTU_CONVERSION)
 
     # drop unneeded variables
     df = df.drop(['WOR (bbl/bbl)', 'WGR (bbl/Mmcf)'], axis=1)
@@ -2617,7 +2621,7 @@ def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
     pet_prod_int = 'EPS_petroleum_unconventional_produced_total_mgd_from_EPS_petroleum_unconventional_total_total_bbtu_intensity'
     ng_prod_int = 'EPS_natgas_unconventional_produced_total_mgd_from_EPS_natgas_unconventional_total_total_bbtu_intensity'
 
-    #produced water sources
+    # produced water sources
     pet_un_prod = 'EPS_petroleum_unconventional_produced_total_mgd_from_PRD_total_total_total_total_mgd_fraction'
     ng_un_prod = 'EPS_natgas_unconventional_produced_total_mgd_from_PRD_total_total_total_total_mgd_fraction'
 
@@ -2629,7 +2633,7 @@ def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
     ng_sd = 'EPS_natgas_unconventional_produced_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
     ng_gd = 'EPS_natgas_unconventional_produced_total_mgd_to_GRD_total_total_total_total_mgd_fraction'
 
-    #withdrawn water discharge fractions
+    # withdrawn water discharge fractions
     pet_conv_cons = 'EPS_petroleum_conventional_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
     pet_conv_sd = 'EPS_petroleum_conventional_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
     pet_conv_gd = 'EPS_petroleum_conventional_withdrawal_total_mgd_to_GRD_total_total_total_total_mgd_fraction'
@@ -2666,7 +2670,7 @@ def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
     df_out[pet_unconv_with_cons] = df['Evaporation/ Consumption (%)']
     df_out[pet_unconv_with_sd] = df['Surface Discharge (%)']
     df_out[pet_unconv_with_gd] = df['Total injected (%)']
-    df_out[ng_unconv_with_cons]= df['Evaporation/ Consumption (%)']
+    df_out[ng_unconv_with_cons] = df['Evaporation/ Consumption (%)']
     df_out[ng_unconv_with_sd] = df['Surface Discharge (%)']
     df_out[ng_unconv_with_gd] = df['Total injected (%)']
 
@@ -2687,11 +2691,13 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     #
     # def get_coal_mine_location_data():
     loc_data = 'input_data/Coal_Mine_Loc.csv'
-    df_coal_loc =  pd.read_csv(loc_data, dtype={'FIPS_CNTY_CD': str}, usecols=["MINE_ID", "STATE", "FIPS_CNTY_CD"])
+    df_coal_loc = pd.read_csv(loc_data, dtype={'FIPS_CNTY_CD': str}, usecols=["MINE_ID", "STATE", "FIPS_CNTY_CD"])
 
     #    # read in read in state fips code to state abbrev. data
     fipsdata = 'input_data/State_FIPS_Code.csv'
-    df_fips =  pd.read_csv(fipsdata, dtype={'State_FIPS': str})
+    df_fips = pd.read_csv(fipsdata, dtype={'State_FIPS': str})
+
+    # consumption fraction data
 
     df_loc = prep_water_use_2015()  # read in FIPS codes and states from 2015 water dataset
 
@@ -2724,19 +2730,30 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     df_coal = df_coal.rename_axis(None, axis=1)  # drop index name
     df_coal.fillna(0, inplace=True)
 
-    # calculate coal production per county in billion btus
-    df_coal['Refuse'] = df_coal['Refuse'] * shortton_bbtu_conversion
-    df_coal['Surface'] = df_coal['Surface'] * shortton_bbtu_conversion
-    df_coal['Underground'] = df_coal['Underground'] * shortton_bbtu_conversion
+    # calculate coal production per county in billion btus per day
+    df_coal['Refuse'] = df_coal['Refuse'] * shortton_bbtu_conversion / 365
+    df_coal['Surface'] = df_coal['Surface'] * shortton_bbtu_conversion/ 365
+    df_coal['Underground'] = df_coal['Underground'] * shortton_bbtu_conversion/ 365
     df_coal['coal_production_bbtu'] = (df_coal['Refuse'] + df_coal['Surface']
                                        + df_coal['Underground'])
 
     # rename short ton production columns to add units
-    coal_prod_dict = {"Refuse": "EPS_coal_refuse_total_total_bbtu_from_EPS_coal_refuse_total_total_bbtu",  # refuse coal production
-                      "Surface": "EPS_coal_surface_total_total_bbtu_from_EPS_coal_surface_total_total_bbtu",  # coal production from surface mines
-                      "Underground": "EPS_coal_underground_total_total_bbtu_from_EPS_coal_surface_total_total_bbtu",  # coal production from underground mines
+    coal_prod_dict = {"Refuse": "EPS_coal_refuse_total_total_bbtu_from_EPS_coal_refuse_total_total_bbtu",
+                      # refuse coal production
+                      "Surface": "EPS_coal_surface_total_total_bbtu_from_EPS_coal_surface_total_total_bbtu",
+                      # coal production from surface mines
+                      "Underground": "EPS_coal_underground_total_total_bbtu_from_EPS_coal_surface_total_total_bbtu",
+                      # coal production from underground mines
                       }
     df_coal.rename(columns=coal_prod_dict, inplace=True)  # rename columns to add descriptive language
+
+    # water intensities
+    und = 0.00144
+    sur = 0.00034
+
+    df_coal['EPS_coal_underground_total_total_mgd_from_EPS_coal_underground_total_total_bbtu_intensity'] = und
+    df_coal['EPS_coal_surface_total_total_mgd_from_EPS_coal_surface_total_total_bbtu_intensity'] = sur
+
 
     # merge with full county data to distribute value to each county in a state and include all FIPS
     df_coal = pd.merge(df_loc, df_coal, how='left', on='FIPS')
@@ -2745,6 +2762,101 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     return df_coal
 
 
+def prep_county_coal_water_source_fractions() -> pd.DataFrame:
+    """prepares a dataframe of water type and water source fractions to coal mining by county
+
+    :return:                DataFrame of water types and water source fractions to coal production
+
+    """
+
+    # read in water use data for 2015 in million gallons per day by county
+    df = prep_water_use_2015(variables=['FIPS',
+                                        'MIN_fresh_groundwater_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
+                                        'MIN_fresh_surfacewater_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
+                                        'MIN_saline_groundwater_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd',
+                                        'MIN_saline_surfacewater_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd'])
+
+    # read in region identifier
+    df_loc = prep_water_use_2015()
+
+    # consumption fraction data
+    cons_df = prep_consumption_fraction()
+
+    cons_df = cons_df[['FIPS', 'MIN_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction',
+                      "MIN_saline_surfacewater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
+                      "MIN_fresh_groundwater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
+                      "MIN_saline_groundwater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction"]]
+
+    # create a list of mining water source names
+    source_list = ['MIN_fresh_groundwater_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
+                   'MIN_fresh_surfacewater_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
+                   'MIN_saline_groundwater_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd',
+                   'MIN_saline_surfacewater_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd']
+    # calculate total water flows to mining
+    df['total_mining_water'] = df[df.columns[1:].to_list()].sum(axis=1)
+
+    # calculate water fractions
+    for source in source_list:
+        fraction_name = source + '_fraction'
+        df[fraction_name] = np.where(df['total_mining_water'] > 0,
+                                     df[source] / df['total_mining_water'],
+                                     np.nan)
+
+        # fill blank water fractions
+        df[fraction_name].fillna(df[fraction_name].mean(), inplace=True)
+
+    df_out = df[['FIPS']].copy()
+
+    min_u_fgw = 'EPS_coal_underground_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
+    min_u_fsw = 'EPS_coal_underground_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
+    min_u_sgw = 'EPS_coal_underground_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction'
+    min_u_ssw = 'EPS_coal_underground_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction'
+    min_s_fgw = 'EPS_coal_surface_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
+    min_s_fsw = 'EPS_coal_surface_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
+    min_s_sgw = 'EPS_coal_surface_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction'
+    min_s_ssw = 'EPS_coal_surface_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction'
+
+    # source fractions
+    df_out[min_u_fgw] = df['MIN_fresh_groundwater_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction']
+    df_out[min_u_fsw] = df['MIN_fresh_surfacewater_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction']
+    df_out[min_u_sgw] = df['MIN_saline_groundwater_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction']
+    df_out[min_u_ssw] = df['MIN_saline_surfacewater_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction']
+    df_out[min_s_fgw] = df['MIN_fresh_groundwater_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction']
+    df_out[min_s_fsw] = df['MIN_fresh_surfacewater_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction']
+    df_out[min_s_sgw] = df['MIN_saline_groundwater_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction']
+    df_out[min_s_ssw] = df['MIN_saline_surfacewater_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction']
+
+    min_fsw_c = "MIN_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction"
+    min_ssw_c = "MIN_saline_surfacewater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction"
+    min_fgw_c = "MIN_fresh_groundwater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction"
+    min_sgw_c = "MIN_saline_groundwater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction"
+
+
+    # consumption fractions
+    df_out['EPS_coal_surface_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction']  = cons_df[min_fgw_c]
+    df_out['EPS_coal_surface_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction']  = cons_df[min_fsw_c]
+    df_out['EPS_coal_surface_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_sgw_c]
+    df_out['EPS_coal_surface_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_ssw_c]
+
+    df_out['EPS_coal_underground_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_fgw_c]
+    df_out['EPS_coal_underground_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_fsw_c]
+    df_out['EPS_coal_underground_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_sgw_c]
+    df_out['EPS_coal_underground_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_ssw_c]
+
+    # surface discharge fractions
+    df_out['EPS_coal_surface_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_fgw_c]
+    df_out['EPS_coal_surface_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_fsw_c]
+    df_out['EPS_coal_surface_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_sgw_c]
+    df_out['EPS_coal_surface_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_ssw_c]
+    df_out['EPS_coal_underground_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_fgw_c]
+    df_out['EPS_coal_underground_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_fsw_c]
+    df_out['EPS_coal_underground_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_sgw_c]
+    df_out['EPS_coal_underground_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_ssw_c]
+
+    # merge with county location data
+    df = pd.merge(df_loc, df_out, how='left', on='FIPS')
+
+    return df
 
 
 def combine_data():
@@ -2757,7 +2869,7 @@ def combine_data():
     x7 = prep_electricity_generation()
     x8 = prep_irrigation_fuel_data()
     x9 = prep_pumping_intensity_data()
-    x10 =recalc_irrigation_consumption()
+    x10 = recalc_irrigation_consumption()
     x11 = prep_consumption_fraction()
     x12 = prep_interbasin_transfer_data()
     x13 = prep_electricity_demand_data()
@@ -2766,6 +2878,7 @@ def combine_data():
     x16 = prep_county_natgas_production_data()
     x17 = prep_petroleum_gas_discharge_data()
     x18 = prep_county_coal_production_data()
+    x19 = prep_county_coal_water_source_fractions()
 
     x1 = x1.drop(['population', 'fresh_groundwater_total_irrigation_mgd', 'fresh_surfacewater_total_irrigation_mgd',
                   'fresh_wastewater_total_irrigation_mgd', 'golf_irrigation_fresh_consumption_mgd',
@@ -2799,15 +2912,10 @@ def combine_data():
     out_df = pd.merge(out_df, x16, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x17, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x18, how='left', on=['FIPS', 'State', 'County'])
-
-
-
-
-
+    out_df = pd.merge(out_df, x19, how='left', on=['FIPS', 'State', 'County'])
 
 
     out_df = out_df[out_df.State == 'AK']
-
 
     value_columns = out_df.columns[3:].to_list()
     out_df = pd.melt(out_df, value_vars=value_columns, var_name='flow_name', value_name='value', id_vars=['FIPS'])
@@ -2817,19 +2925,22 @@ def combine_data():
     df2 = out_df['flow_name'].str.split("_", expand=True)
     out_df = pd.concat([out_df.iloc[:, :i], df2, out_df.iloc[:, i + 1:]], axis=1)
 
-    col = ['FIPS', 't1', 't2', 't3', 't4', 't5', 'T_unit', 'to', 's1', 's2', 's3', 's4', 's5', 'S_unit', 'parameter', 'value']
+    col = ['FIPS', 't1', 't2', 't3', 't4', 't5', 'T_unit', 'to', 's1', 's2', 's3', 's4', 's5', 'S_unit', 'parameter',
+           'value']
     out_df.columns = col
 
     out_df['parameter'].fillna('flow_value', inplace=True)
     out_df['type'] = np.where(out_df['parameter'] == 'flow_value', 'A_collect', np.nan)
     out_df['type'] = np.where(out_df['parameter'] == 'intensity', 'B_calculate', out_df['type'])
-    out_df['type'] = np.where((out_df['to'] == 'from')& (out_df['parameter'] == 'fraction'), 'C_source', out_df['type'])
-    out_df['type'] = np.where((out_df['to'] == 'to') & (out_df['parameter'] == 'fraction'), 'D_discharge', out_df['type'])
+    out_df['type'] = np.where((out_df['to'] == 'from') & (out_df['parameter'] == 'fraction'), 'C_source',
+                              out_df['type'])
+    out_df['type'] = np.where((out_df['to'] == 'to') & (out_df['parameter'] == 'fraction'), 'D_discharge',
+                              out_df['type'])
 
     out_df = out_df.sort_values(by=['FIPS', 'type', 't1', 't2', 't3', 't4', 't5'])
 
-    out_df = out_df[['FIPS','type', 't1', 't2', 't3', 't4', 't5', 'T_unit',
-               's1', 's2', 's3', 's4', 's5', 'S_unit', 'parameter', 'value']]
+    out_df = out_df[['FIPS', 'type', 't1', 't2', 't3', 't4', 't5', 'T_unit',
+                     's1', 's2', 's3', 's4', 's5', 'S_unit', 'parameter', 'value']]
     return out_df
 
 
