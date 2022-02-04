@@ -84,8 +84,8 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
                 df_1['S12'] = df_1['S12']
                 df_1['T12'] = df_1['T12']
             else:
-                df_1['S12'] = df_1['S12'].str.strip(remove)
-                df_1['T12'] = df_1['T12'].str.strip(remove)
+                df_1['S12'] = df_1['S12'].str.replace(remove, "")
+                df_1['T12'] = df_1['T12'].str.replace(remove, "")
 
 
             sankey_number = pd.unique(df_1[['S12', 'T12']].values.ravel('K'))
@@ -108,8 +108,8 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
                 df_1['S123'] = df_1['S123']
                 df_1['T123'] = df_1['T123']
             else:
-                df_1['S123'] = df_1['S123'].str.strip(remove)
-                df_1['T123'] = df_1['T123'].str.strip(remove)
+                df_1['S123'] = df_1['S123'].str.replace(remove, "")
+                df_1['T123'] = df_1['T123'].str.replace(remove, "")
 
             sankey_number = pd.unique(df_1[['S123', 'T123']].values.ravel('K'))
 
@@ -130,8 +130,8 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
                 df_1['S1234'] = df_1['S1234']
                 df_1['T1234'] = df_1['T1234']
             else:
-                df_1['S1234'] = df_1['S1234'].str.strip(remove)
-                df_1['T1234'] = df_1['T1234'].str.strip(remove)
+                df_1['S1234'] = df_1['S1234'].str.replace(remove, "")
+                df_1['T1234'] = df_1['T1234'].str.replace(remove, "")
 
             sankey_number = pd.unique(df_1[['S1234', 'T1234']].values.ravel('K'))
 
@@ -152,8 +152,8 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
                 df_1['S12345'] = df_1['S12345']
                 df_1['T12345'] = df_1['T12345']
             else:
-                df_1['S12345'] = df_1['S12345'].str.strip(remove)
-                df_1['T12345'] = df_1['T12345'].str.strip(remove)
+                df_1['S12345'] = df_1['S12345'].str.replace(remove, "")
+                df_1['T12345'] = df_1['T12345'].str.replace(remove, "")
 
             sankey_number = pd.unique(df_1[['S12345', 'T12345']].values.ravel('K'))
 
@@ -238,8 +238,8 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
                         df_2['S12'] = df_2['S12']
                         df_2['T12'] = df_2['T12']
                     else:
-                        df_2['S12'] = df_2['S12'].str.strip(remove)
-                        df_2['T12'] = df_2['T12'].str.strip(remove)
+                        df_2['S12'] = df_2['S12'].str.replace(remove, "")
+                        df_2['T12'] = df_2['T12'].str.replace(remove, "")
 
                     sankey_number = pd.unique(df_2[['S12', 'T12']].values.ravel('K'))
 
@@ -261,8 +261,8 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
                         df_2['S123'] = df_2['S123']
                         df_2['T123'] = df_2['T123']
                     else:
-                        df_2['S123'] = df_2['S123'].str.strip(remove)
-                        df_2['T123'] = df_2['T123'].str.strip(remove)
+                        df_2['S123'] = df_2['S123'].str.replace(remove, "")
+                        df_2['T123'] = df_2['T123'].str.replace(remove, "")
 
                     sankey_number = pd.unique(df_2[['S123', 'T123']].values.ravel('K'))
 
@@ -283,8 +283,8 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
                         df_2['S1234'] = df_2['S1234']
                         df_2['T1234'] = df_2['T1234']
                     else:
-                        df_2['S1234'] = df_2['S1234'].str.strip(remove)
-                        df_2['T1234'] = df_2['T1234'].str.strip(remove)
+                        df_2['S1234'] = df_2['S1234'].str.replace(remove, "")
+                        df_2['T1234'] = df_2['T1234'].str.replace(remove, "")
 
                     sankey_number = pd.unique(df_2[['S1234', 'T1234']].values.ravel('K'))
 
@@ -305,8 +305,8 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
                         df_2['S12345'] = df_2['S12345']
                         df_2['T12345'] = df_2['T12345']
                     else:
-                        df_2['S12345'] = df_2['S12345'].str.strip(remove)
-                        df_2['T12345'] = df_2['T12345'].str.strip(remove)
+                        df_2['S12345'] = df_2['S12345'].str.replace(remove, "")
+                        df_2['T12345'] = df_2['T12345'].str.replace(remove, "")
 
                     sankey_number = pd.unique(df_2[['S12345', 'T12345']].values.ravel('K'))
 
