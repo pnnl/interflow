@@ -1086,12 +1086,12 @@ def prep_wastewater_data() -> pd.DataFrame:
                                              * df_ww['municipal_wastewater_mgd']
 
     # name water flows for output dictionary
-    advanced_infiltration_flows_mgd = 'WWD_advanced_infiltration_total_total_mgd_from_WWI_total_total_total_total_mgd'
-    primary_infiltration_flows_mgd = 'WWD_primary_infiltration_total_total_mgd_from_WWI_total_total_total_total_mgd'
-    secondary_infiltration_flows_mgd = 'WWD_secondary_infiltration_total_total_mgd_from_WWI_total_total_total_total_mgd'
-    advanced_municipal_flows_mgd = 'WWD_advanced_municipal_total_total_mgd_from_WWI_total_total_total_total_mgd'
-    primary_municipal_flows_mgd = 'WWD_primary_municipal_total_total_mgd_from_WWI_total_total_total_total_mgd'
-    secondary_municipal_flows_mgd = 'WWD_secondary_municipal_total_total_mgd_from_WWI_total_total_total_total_mgd'
+    advanced_infiltration_flows_mgd = 'WWD_advanced_infiltration_total_total_mgd_from_WWD_advanced_infiltration_total_total_mgd'
+    primary_infiltration_flows_mgd = 'WWD_primary_infiltration_total_total_mgd_from_WWD_primary_infiltration_total_total_mgd'
+    secondary_infiltration_flows_mgd = 'WWD_secondary_infiltration_total_total_mgd_from_WWD_secondary_infiltration_total_total_mgd'
+    advanced_municipal_flows_mgd = 'WWD_advanced_municipal_total_total_mgd_from_WWD_advanced_municipal_total_total_mgd'
+    primary_municipal_flows_mgd = 'WWD_primary_municipal_total_total_mgd_from_WWD_primary_municipal_total_total_mgd'
+    secondary_municipal_flows_mgd = 'WWD_secondary_municipal_total_total_mgd_from_WWD_secondary_municipal_total_total_mgd'
 
     # save flows to output dictionary
     df_out[advanced_infiltration_flows_mgd] = df_ww['advanced_infiltration_flows_mgd']
@@ -1557,9 +1557,23 @@ def prep_electricity_generation() -> pd.DataFrame:
         ["FIPS", "fuel_amt", "fuel_type", 'prime_mover', "COOLING_TYPE"]].copy()  # create a copy of fuel type data
     df_fuel['COOLING_TYPE'].fillna('nocooling', inplace=True)
 
-    df_fuel["fuel_name"] = 'EGS_' + + df_fuel["fuel_type"] + '_' + df_fuel["prime_mover"] + '_' \
+    df_fuel["fuel_name"] = 'EGS_' + df_fuel["fuel_type"] + '_' + df_fuel["prime_mover"] + '_' \
                            + df_fuel['COOLING_TYPE'] + '_total_bbtu_from_EPD_' + df_fuel["fuel_type"] \
                            + '_total_total_total_bbtu'
+
+    # create a copy of the fuel dataframe to get direct supply from direct demand
+    df_supply = df_fuel.copy()
+    df_supply = df_supply[df_supply.fuel_type != 'coal']
+    df_supply = df_supply[df_supply.fuel_type != 'petroleum']
+    df_supply = df_supply[df_supply.fuel_type != 'biomass']
+    df_supply = df_supply[df_supply.fuel_type != 'natgas']
+
+    df_supply["supply_name"] = 'EPD_' + df_supply["fuel_type"] + '_total_total_total_bbtu_from_EPS_' + df_supply["fuel_type"] + '_total_total_total_bbtu'
+    df_supply = pd.pivot_table(df_supply, values='fuel_amt', index=['FIPS'], columns=['supply_name'], aggfunc=np.sum)  # pivot
+    df_supply = df_supply.reset_index()  # reset index to remove multi-index from pivot table
+    df_supply = df_supply.rename_axis(None, axis=1)  # drop index name
+    df_supply.fillna(0, inplace=True)  # fill nan with zero
+
 
     # example: EGS_coal_stream_oncethrough_total_bbtu_from_EPD_coal_total_total_total_bbtu
 
@@ -1708,6 +1722,7 @@ def prep_electricity_generation() -> pd.DataFrame:
 
     # merge dataframes
     df_fuel = pd.merge(df_loc, df_fuel, how='left', on='FIPS').fillna(0)
+    df_supply = pd.merge(df_loc, df_supply, how='left', on='FIPS').fillna(0)
     df_gen = pd.merge(df_loc, df_gen, how='left', on='FIPS').fillna(0)
     df_cooling_int = pd.merge(df_loc, df_cooling_int, how='left', on='FIPS').fillna(0)
     df_cooling_w = pd.merge(df_loc, df_cooling_w, how='left', on='FIPS').fillna(0)
@@ -1717,6 +1732,7 @@ def prep_electricity_generation() -> pd.DataFrame:
 
     # rem_list = [df_cooling_w, df_cooling_c, df_cooling_sd, df_cooling_od]
     out_df = pd.merge(df_fuel, df_gen, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, df_supply, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, df_cooling_int, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, df_cooling_w, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, df_cooling_c, how='left', on=['FIPS', 'State', 'County'])
@@ -2225,6 +2241,12 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     #    # read in energy production (fuel) data
     df = pd.read_csv(data)
 
+    # electricity prod data
+    elec_df = prep_electricity_generation()
+    elec_df = elec_df[['FIPS', 'County', 'State',
+                       'EPD_solar_total_total_total_bbtu_from_EPS_solar_total_total_total_bbtu',
+                       'EPD_wind_total_total_total_bbtu_from_EPS_wind_total_total_total_bbtu']]
+
     # dictionary of fuel demand codes that are relevant and descriptive names
     msn_dict = {"CLCCB": "COM_total_total_total_total_bbtu_from_EPD_coal_total_total_total_bbtu",
                 # Coal, commercial sector (bbtu)
@@ -2287,7 +2309,29 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     #
     # rename columns to add descriptive language
     df.rename(columns=msn_dict, inplace=True)
-    #
+
+    df = pd.merge(df, elec_df, how='left', on=['FIPS', 'State', 'County'])
+#
+    # create supply variables
+#
+    df['total_geo'] = df["COM_total_total_total_total_bbtu_from_EPD_geothermal_total_total_total_bbtu"] + \
+                df["RES_total_total_total_total_bbtu_from_EPD_geothermal_total_total_total_bbtu"]
+#
+    df['total_solar'] = df["COM_total_total_total_total_bbtu_from_EPD_solar_total_total_total_bbtu"] \
+                  + df["RES_total_total_total_total_btu_from_EPD_solar_total_total_total_bbtu"]
+    df['total_wind'] = df["COM_total_total_total_total_bbtu_from_EPD_wind_total_total_total_bbtu"]
+#
+    solar_supply = 'EPD_solar_total_total_total_bbtu_from_EPS_solar_total_total_total_bbtu'
+    wind_supply = 'EPD_wind_total_total_total_bbtu_from_EPS_wind_total_total_total_bbtu'
+    geo_supply = 'EPD_geothermal_total_total_total_bbtu_from_EPS_geothermal_total_total_total_bbtu'
+#
+    df[solar_supply] = df[solar_supply] + df['total_solar']
+    df[wind_supply] = df[wind_supply] + df['total_wind']
+    df[geo_supply] =  df['total_geo'] # no geothermal in electricity generation
+#
+    df = df.drop(['total_solar','total_wind' ], axis=1)
+
+
     # remove unneeded columns
     df = df.drop(['pop_weight'], axis=1)
     #
@@ -3252,6 +3296,10 @@ def combine_data():
                   'MIN_saline_groundwater_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd',
                   'MIN_saline_surfacewater_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd'
 
+                  ], axis=1)
+
+    x7 = x7.drop(['EPD_solar_total_total_total_bbtu_from_EPS_solar_total_total_total_bbtu',
+                  'EPD_wind_total_total_total_bbtu_from_EPS_wind_total_total_total_bbtu'
                   ], axis=1)
 
     out_df = pd.merge(x1, x2, how='left', on=['FIPS', 'State', 'County'])
