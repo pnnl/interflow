@@ -249,7 +249,7 @@ def calculate(data=None, update_data = None, level=5, region_name=None):
                                                             l5t_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
                                                             l5_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_to_{s1}_{s2}_{s3}_{s4}_{s5}_{u1}'
                                                             for u2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5]:
-                                                                l5s_name = f'{s1}_{s2}_{s3}_{s4}_{s5}_{u1}'
+                                                                l5s_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_{u1}'
                                                                 for p in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2]:
                                                                     if l5t_name in total_dict:
                                                                         l5t_value = total_dict[l5t_name]
@@ -297,12 +297,15 @@ def calculate(data=None, update_data = None, level=5, region_name=None):
                                                                     pass
                                         else:
                                             pass
+
+    # TODO need to add different level updaters
     for r in c_dict:
         for set in c_dict[r]:
             for type in c_dict[r][set]:
                 #left split (need to add right split)
                 if type == 'match':
                     for t1 in c_dict[r][set][type]:
+
                         for t2 in c_dict[r][set][type][t1]:
                             for t3 in c_dict[r][set][type][t1][t2]:
                                 for t4 in c_dict[r][set][type][t1][t2][t3]:
@@ -323,10 +326,13 @@ def calculate(data=None, update_data = None, level=5, region_name=None):
                                                                 t_s_5_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_to_{s1}_{s2}_{s3}_{s4}_{s5}_{u1}'
                                                                 s5_total_name = f'{r}_{s1}_{u1}'
                                                                 s5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_{u1}'
-                                                                s5_frac_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_{u1}_fraction'
 
                                                                 # calculate s fraction ( don't need frac function anymore)
+                                                                #TODO next three lines need to be reworked to accomodate right split
                                                                 t5_value = total_dict[t5_name]
+                                                                t5_total_value = total_dict[t_total_name]
+                                                                t5_fraction = t5_value/t5_total_value
+
                                                                 s5_value = total_dict[s5_name]
                                                                 s5_total_value = total_dict[s5_total_name]
                                                                 s5_fraction = s5_value/s5_total_value
@@ -341,10 +347,11 @@ def calculate(data=None, update_data = None, level=5, region_name=None):
                                                                 # if the inflow is greater
                                                                 elif t5_split_value > s5_value:
                                                                     l5_dict.update({t_s_5_name: s5_value})
-                                                                    export_value = t5_split_value - s5_value
+                                                                    export_value = t5_value - s5_value
                                                                     export_dict.update({t5_name:export_value})
 
                                                                 # if the inflow is smaller
+                                                                #TODO check if correct
                                                                 else:
                                                                     l5_dict.update({t_s_5_name: t5_split_value})
                                                                     import_value = s5_value - t5_split_value
@@ -397,14 +404,17 @@ def calculate(data=None, update_data = None, level=5, region_name=None):
                                                                     pass
                 else:
                     pass
-                                                                
 
+#    #TODO see if adding fraction components on both sides will remove the need for left/right split
+#    # one of the split should be equal to one
 
-
-
-    #        for t1 in f_dict[r][type]:
-    #            for t2 in f_dict[r][type][t1]:
-    #                for t3 in f_dict[r][type][t1][t2]:
+    #TODO add a function to remove flows
+#
+#
+#
+#    #        for t1 in f_dict[r][type]:
+#    #            for t2 in f_dict[r][type][t1]:
+#    #                for t3 in f_dict[r][type][t1][t2]:
     #                    for t4 in f_dict[r][type][t1][t2][t3]:
     #                        for t5 in f_dict[r][type][t1][t2][t3][t4]:
     #                            for u1 in f_dict[r][type][t1][t2][t3][t4][t5]:
@@ -710,4 +720,4 @@ def calculate(data=None, update_data = None, level=5, region_name=None):
         m = 'incorrect level of granularity specified. Must be an integer between 1 and 5, inclusive.'
         raise ValueError(m)
 
-    return total_dict
+    return df
