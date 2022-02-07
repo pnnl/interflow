@@ -2,19 +2,28 @@ import pandas as pd
 
 
 def deconstruct_nested_dictionary(input_dict:dict):
+    """Takes in a nested dictionary of run values and returns a dataframe with flow information as columns.
 
-    # step
-    # convert output dictionaries to dataframes
+            :param input_dict:                        nested dictionary of values to unpack into a dataframe
+            :type input_dict:                         dict
+
+            :return:                                  Dataframe
+
+            """
+
+    # convert the dictionaries to a dataframe
     df = pd.DataFrame.from_dict(input_dict, orient='index').transpose()
 
-    # melt the dataframe
+    # melt the dataframe to get all columns as rows
     value_columns = df.columns[:].to_list()
     df = pd.melt(df, value_vars=value_columns, var_name='flow_name', value_name='value')
 
+    # split out underscore separated flow value names into separate columns
     i = df.columns.get_loc('flow_name')
     df2 = df['flow_name'].str.split("_", expand=True)
     df = pd.concat([df.iloc[:, :i], df2, df.iloc[:, i+1:]], axis=1)
 
+    # rename the columns depending on the number of columns
     if len(df.columns) == 6:
         col = ['region', 'S1', 'to', 'T1', 'units', 'value']
         df.columns = col
@@ -33,6 +42,7 @@ def deconstruct_nested_dictionary(input_dict:dict):
     else:
         pass
 
+    # drop 'to' column from output dataframe
     df = df.drop(['to'], axis=1)
 
     return df

@@ -66,10 +66,10 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
                       'IN-WSWFr': 'IND_fresh_surfacewater_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
                       'IN-WGWSa': 'IND_saline_groundwater_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd',
                       'IN-WSWSa': 'IND_saline_surfacewater_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd',
-                      'MI-WGWFr': 'MIN_fresh_groundwater_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
-                      'MI-WSWFr': 'MIN_fresh_surfacewater_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
-                      'MI-WGWSa': 'MIN_saline_groundwater_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd',
-                      'MI-WSWSa': 'MIN_saline_surfacewater_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd',
+                      'MI-WGWFr': 'MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd',
+                      'MI-WSWFr': 'MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
+                      'MI-WGWSa': 'MIN_other_total_saline_groundwater_mgd_from_WSW_saline_groundwater_total_total_mgd',
+                      'MI-WSWSa': 'MIN_other_total_saline_surfacewater_mgd_from_WSW_saline_surfacewater_total_total_mgd',
                       'IC-WGWFr': 'ACI_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
                       'IC-WSWFr': 'ACI_fresh_surfacewater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
                       'IC-RecWW': 'ACI_reclaimed_wastewater_import_total_mgd_from_WSI_reclaimed_wastewater_total_total_mgd',
@@ -280,8 +280,8 @@ def prep_consumption_fraction() -> pd.DataFrame:
         "CO_sCF_Fr": "COM_public_total_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
         "IN_sCF_Fr": "IND_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
         "IN_sCF_Sa": "IND_saline_surfacewater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "MI_sCF_Fr": "MIN_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "MI_sCF_Sa": "MIN_saline_surfacewater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
+        "MI_sCF_Fr": "MIN_other_total_fresh_surfacewater_mgd_to_CMP_total_total_total_total_mgd_fraction",
+        "MI_sCF_Sa": "MIN_other_total_saline_surfacewater_mgd_to_CMP_total_total_total_total_mgd_fraction",
         "LV_sCF_Fr": "ALV_fresh_surfacewater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
         "LA_sCF_Fr": "AAQ_fresh_surfacewater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
         "LA_sCF_Sa": "AAQ_saline_surfacewater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
@@ -292,8 +292,8 @@ def prep_consumption_fraction() -> pd.DataFrame:
         "IN_gCF_Fr": "IND_fresh_groundwater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
         "IN_gCF_Sa": "IND_saline_groundwater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
         "IN_pCF_Fr": "IND_public_total_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "MI_gCF_Fr": "MIN_fresh_groundwater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "MI_gCF_Sa": "MIN_saline_groundwater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
+        "MI_gCF_Fr": "MIN_other_total_fresh_groundwater_mgd_to_CMP_total_total_total_total_mgd_fraction",
+        "MI_gCF_Sa": "MIN_other_total_saline_groundwater_mgd_to_CMP_total_total_total_total_mgd_fraction",
         "LV_gCF_Fr": "ALV_fresh_groundwater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
         "LA_gCF_Fr": "AAQ_fresh_groundwater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
         "LA_gCF_Sa": "AAQ_saline_groundwater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction"
@@ -630,10 +630,11 @@ def calc_discharge_fractions():
     ind_ssw_total = df["IND_saline_surfacewater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction"]
     ind_sgw_total = df["IND_saline_groundwater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction"]
     ind_pub_total = df["IND_public_total_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction"]
-    min_fsw_total = df["MIN_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction"]
-    min_fgw_total = df["MIN_fresh_groundwater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction"]
-    min_ssw_total = df["MIN_saline_surfacewater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction"]
-    min_sgw_total = df["MIN_saline_groundwater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction"]
+
+    min_fsw_total = df["MIN_other_total_fresh_surfacewater_mgd_to_CMP_total_total_total_total_mgd_fraction"]
+    min_fgw_total = df["MIN_other_total_fresh_groundwater_mgd_to_CMP_total_total_total_total_mgd_fraction"]
+    min_ssw_total = df["MIN_other_total_saline_surfacewater_mgd_to_CMP_total_total_total_total_mgd_fraction"]
+    min_sgw_total = df["MIN_other_total_saline_groundwater_mgd_to_CMP_total_total_total_total_mgd_fraction"]
     alv_fsw_total = df["ALV_fresh_surfacewater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction"]
     alv_fgw_total = df["ALV_fresh_groundwater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction"]
     aaq_fsw_total = df["AAQ_fresh_surfacewater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction"]
@@ -691,10 +692,10 @@ def calc_discharge_fractions():
     df_out["IND_saline_surfacewater_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction"] = ind_ssw_sd
     df_out["IND_saline_groundwater_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction"] = ind_sgw_sd
     df_out["IND_public_total_total_total_mgd_to_WWS_total_total_total_total_mgd_fraction"] = ind_ww_dis
-    df_out["MIN_fresh_surfacewater_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction"] = min_fsw_sd
-    df_out["MIN_fresh_groundwater_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction"] = min_fgw_sd
-    df_out["MIN_saline_surfacewater_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction"] = min_ssw_sd
-    df_out["MIN_saline_groundwater_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction"] = min_sgw_sd
+    df_out["MIN_other_total_fresh_surfacewater_mgd_to_SRD_total_total_total_total_mgd_fraction"] = min_fsw_sd
+    df_out["MIN_other_total_fresh_groundwater_mgd_to_SRD_total_total_total_total_mgd_fraction"] = min_fgw_sd
+    df_out["MIN_other_total_saline_surfacewater_mgd_to_SRD_total_total_total_total_mgd_fraction"] = min_ssw_sd
+    df_out["MIN_other_total_saline_groundwater_mgd_to_SRD_total_total_total_total_mgd_fraction"] = min_sgw_sd
     df_out["ALV_fresh_surfacewater_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction"] = alv_fsw_sd
     df_out["ALV_fresh_groundwater_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction"] = alv_fgw_sd
     df_out["AAQ_fresh_surfacewater_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction"] = aaq_fsw_sd
@@ -1086,12 +1087,12 @@ def prep_wastewater_data() -> pd.DataFrame:
                                              * df_ww['municipal_wastewater_mgd']
 
     # name water flows for output dictionary
-    advanced_infiltration_flows_mgd = 'WWD_advanced_infiltration_total_total_mgd_from_WWD_advanced_infiltration_total_total_mgd'
-    primary_infiltration_flows_mgd = 'WWD_primary_infiltration_total_total_mgd_from_WWD_primary_infiltration_total_total_mgd'
-    secondary_infiltration_flows_mgd = 'WWD_secondary_infiltration_total_total_mgd_from_WWD_secondary_infiltration_total_total_mgd'
-    advanced_municipal_flows_mgd = 'WWD_advanced_municipal_total_total_mgd_from_WWD_advanced_municipal_total_total_mgd'
-    primary_municipal_flows_mgd = 'WWD_primary_municipal_total_total_mgd_from_WWD_primary_municipal_total_total_mgd'
-    secondary_municipal_flows_mgd = 'WWD_secondary_municipal_total_total_mgd_from_WWD_secondary_municipal_total_total_mgd'
+    advanced_infiltration_flows_mgd = 'WWD_advanced_infiltration_total_total_mgd_from_WWS_total_total_total_total_mgd'
+    primary_infiltration_flows_mgd = 'WWD_primary_infiltration_total_total_mgd_from_WWS_total_total_total_total_mgd'
+    secondary_infiltration_flows_mgd = 'WWD_secondary_infiltration_total_total_mgd_from_WWS_total_total_total_total_mgd'
+    advanced_municipal_flows_mgd = 'WWD_advanced_municipal_total_total_mgd_from_WWS_total_total_total_total_mgd'
+    primary_municipal_flows_mgd = 'WWD_primary_municipal_total_total_mgd_from_WWS_total_total_total_total_mgd'
+    secondary_municipal_flows_mgd = 'WWD_secondary_municipal_total_total_mgd_from_WWS_total_total_total_total_mgd'
 
     # save flows to output dictionary
     df_out[advanced_infiltration_flows_mgd] = df_ww['advanced_infiltration_flows_mgd']
@@ -1591,6 +1592,9 @@ def prep_electricity_generation() -> pd.DataFrame:
     # calculate rejected energy fractions
     df_gen['rej_fraction'] = np.where(df_gen['fuel_amt'] > 0, df_gen['generation_mwh'] / df_gen['fuel_amt'], 0)
 
+    df_demand = df_gen.copy()
+    df_demand['demand_fraction'] = 1 - df_demand['rej_fraction']
+
     df_gen["fuel_type_name"] = 'EGS_' + df_gen["fuel_type"] + '_' + df_gen["prime_mover"] + '_' \
                                + df_gen[
                                    'COOLING_TYPE'] + "_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction"  # add naming
@@ -1599,6 +1603,15 @@ def prep_electricity_generation() -> pd.DataFrame:
     df_gen = df_gen.reset_index()  # reset index to remove multi-index from pivot table
     df_gen = df_gen.rename_axis(None, axis=1)  # drop index name
     df_gen.fillna(0, inplace=True)  # fill nan with zero
+
+    # create electricity demand discharge fraction
+    df_demand["fuel_type_name"] = 'EGS_' + df_demand["fuel_type"] + '_' + df_demand["prime_mover"] + '_' \
+                               + df_demand[
+                                   'COOLING_TYPE'] + "_total_bbtu_to_EGD_total_total_total_total_bbtu_fraction"  # add naming
+    df_demand = pd.pivot_table(df_demand, values='demand_fraction', index=['FIPS'], columns=['fuel_type_name'], aggfunc=np.sum)
+    df_demand = df_demand.reset_index()  # reset index to remove multi-index from pivot table
+    df_demand = df_demand.rename_axis(None, axis=1)  # drop index name
+    df_demand.fillna(0, inplace=True)  # fill nan with zero
 
     # create water intensity values
 
@@ -1722,8 +1735,9 @@ def prep_electricity_generation() -> pd.DataFrame:
 
     # merge dataframes
     df_fuel = pd.merge(df_loc, df_fuel, how='left', on='FIPS').fillna(0)
-    df_supply = pd.merge(df_loc, df_supply, how='left', on='FIPS').fillna(0)
+    #df_supply = pd.merge(df_loc, df_supply, how='left', on='FIPS').fillna(0)
     df_gen = pd.merge(df_loc, df_gen, how='left', on='FIPS').fillna(0)
+    df_demand = pd.merge(df_loc, df_demand, how='left', on='FIPS').fillna(0)
     df_cooling_int = pd.merge(df_loc, df_cooling_int, how='left', on='FIPS').fillna(0)
     df_cooling_w = pd.merge(df_loc, df_cooling_w, how='left', on='FIPS').fillna(0)
     df_cooling_c = pd.merge(df_loc, df_cooling_c, how='left', on='FIPS').fillna(0)
@@ -1732,7 +1746,8 @@ def prep_electricity_generation() -> pd.DataFrame:
 
     # rem_list = [df_cooling_w, df_cooling_c, df_cooling_sd, df_cooling_od]
     out_df = pd.merge(df_fuel, df_gen, how='left', on=['FIPS', 'State', 'County'])
-    out_df = pd.merge(out_df, df_supply, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, df_demand, how='left', on=['FIPS', 'State', 'County'])
+    #out_df = pd.merge(out_df, df_supply, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, df_cooling_int, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, df_cooling_w, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, df_cooling_c, how='left', on=['FIPS', 'State', 'County'])
@@ -2242,10 +2257,10 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     df = pd.read_csv(data)
 
     # electricity prod data
-    elec_df = prep_electricity_generation()
-    elec_df = elec_df[['FIPS', 'County', 'State',
-                       'EPD_solar_total_total_total_bbtu_from_EPS_solar_total_total_total_bbtu',
-                       'EPD_wind_total_total_total_bbtu_from_EPS_wind_total_total_total_bbtu']]
+    #elec_df = prep_electricity_generation()
+    #elec_df = elec_df[['FIPS', 'County', 'State',
+    #                   'EPD_solar_total_total_total_bbtu_from_EPS_solar_total_total_total_bbtu',
+    #                   'EPD_wind_total_total_total_bbtu_from_EPS_wind_total_total_total_bbtu']]
 
     # dictionary of fuel demand codes that are relevant and descriptive names
     msn_dict = {"CLCCB": "COM_total_total_total_total_bbtu_from_EPD_coal_total_total_total_bbtu",
@@ -2310,26 +2325,26 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     # rename columns to add descriptive language
     df.rename(columns=msn_dict, inplace=True)
 
-    df = pd.merge(df, elec_df, how='left', on=['FIPS', 'State', 'County'])
+    #df = pd.merge(df, elec_df, how='left', on=['FIPS', 'State', 'County'])
 #
     # create supply variables
 #
-    df['total_geo'] = df["COM_total_total_total_total_bbtu_from_EPD_geothermal_total_total_total_bbtu"] + \
-                df["RES_total_total_total_total_bbtu_from_EPD_geothermal_total_total_total_bbtu"]
-#
-    df['total_solar'] = df["COM_total_total_total_total_bbtu_from_EPD_solar_total_total_total_bbtu"] \
-                  + df["RES_total_total_total_total_btu_from_EPD_solar_total_total_total_bbtu"]
-    df['total_wind'] = df["COM_total_total_total_total_bbtu_from_EPD_wind_total_total_total_bbtu"]
-#
-    solar_supply = 'EPD_solar_total_total_total_bbtu_from_EPS_solar_total_total_total_bbtu'
-    wind_supply = 'EPD_wind_total_total_total_bbtu_from_EPS_wind_total_total_total_bbtu'
-    geo_supply = 'EPD_geothermal_total_total_total_bbtu_from_EPS_geothermal_total_total_total_bbtu'
-#
-    df[solar_supply] = df[solar_supply] + df['total_solar']
-    df[wind_supply] = df[wind_supply] + df['total_wind']
-    df[geo_supply] =  df['total_geo'] # no geothermal in electricity generation
-#
-    df = df.drop(['total_solar','total_wind' ], axis=1)
+    #df['total_geo'] = df["COM_total_total_total_total_bbtu_from_EPD_geothermal_total_total_total_bbtu"] + \
+    #            df["RES_total_total_total_total_bbtu_from_EPD_geothermal_total_total_total_bbtu"]
+##
+    #df['total_solar'] = df["COM_total_total_total_total_bbtu_from_EPD_solar_total_total_total_bbtu"] \
+    #              + df["RES_total_total_total_total_btu_from_EPD_solar_total_total_total_bbtu"]
+    #df['total_wind'] = df["COM_total_total_total_total_bbtu_from_EPD_wind_total_total_total_bbtu"]
+##
+    #solar_supply = 'EPD_solar_total_total_total_bbtu_from_EPS_solar_total_total_total_bbtu'
+    #wind_supply = 'EPD_wind_total_total_total_bbtu_from_EPS_wind_total_total_total_bbtu'
+    #geo_supply = 'EPD_geothermal_total_total_total_bbtu_from_EPS_geothermal_total_total_total_bbtu'
+##
+    #df[solar_supply] = df[solar_supply] + df['total_solar']
+    #df[wind_supply] = df[wind_supply] + df['total_wind']
+    #df[geo_supply] =  df['total_geo'] # no geothermal in electricity generation
+##
+    #df = df.drop(['total_solar','total_wind' ], axis=1)
 
 
     # remove unneeded columns
@@ -2496,20 +2511,35 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     df_out['con_fsw_frac'] = np.where(df_out['petroleum_conventional_production_bbtu'] > 0, .8, 0)
     df_out['con_fgw_frac'] = np.where(df_out['petroleum_conventional_production_bbtu'] > 0, .2, 0)
 
+
+
     #
     df_out = df_out.rename(columns={'FIPS': 'FIPS',
                                     'State': 'State',
                                     'County': 'County',
-                                    'petroleum_unconventional_production_bbtu': 'EPS_petroleum_unconventional_total_total_bbtu_from_EPS_petroleum_unconventional_total_total_bbtu',
-                                    'petroleum_conventional_production_bbtu': 'EPS_petroleum_conventional_total_total_bbtu_from_EPS_petroleum_conventional_total_total_bbtu',
-                                    'con_intensity_mg_per_bbtu': 'EPS_petroleum_conventional_withdrawal_total_mgd_from_EPS_petroleum_conventional_total_total_bbtu_intensity',
-                                    'uncon_intensity_mg_per_bbtu': 'EPS_petroleum_unconventional_withdrawal_total_mgd_from_EPS_petroleum_unconventional_total_total_bbtu_intensity',
-                                    'uncon_fsw_frac': 'EPS_petroleum_unconventional_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction',
-                                    'uncon_fgw_frac': 'EPS_petroleum_unconventional_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction',
-                                    'con_fsw_frac': 'EPS_petroleum_conventional_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction',
-                                    'con_fgw_frac': 'EPS_petroleum_conventional_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction',
+                                    # 'petroleum_unconventional_production_bbtu': 'EPS_petroleum_unconventional_total_total_bbtu_to_EPD_petroleum_total_total_total_bbtu',
+
+                                    'petroleum_unconventional_production_bbtu': 'MIN_petroleum_unconventional_total_total_bbtu_from_MIN_petroleum_unconventional_total_total_bbtu',
+                                    'petroleum_conventional_production_bbtu': 'MIN_petroleum_conventional_total_total_bbtu_from_MIN_petroleum_conventional_total_total_bbtu',
+
+                                    'con_intensity_mg_per_bbtu': 'MIN_petroleum_conventional_withdrawal_total_mgd_from_MIN_petroleum_conventional_total_total_bbtu_intensity',
+                                    'uncon_intensity_mg_per_bbtu': 'MIN_petroleum_unconventional_withdrawal_total_mgd_from_MIN_petroleum_unconventional_total_total_bbtu_intensity',
+
+                                    'uncon_fsw_frac': 'MIN_petroleum_unconventional_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction',
+                                    'uncon_fgw_frac': 'MIN_petroleum_unconventional_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction',
+
+                                    'con_fsw_frac': 'MIN_petroleum_conventional_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction',
+                                    'con_fgw_frac': 'MIN_petroleum_conventional_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction',
                                     })
+
+    # discharge to EPD fraction
+    df_out['MIN_petroleum_unconventional_total_total_bbtu_to_EPD_petroleum_total_total_total_bbtu_fraction'] = 1
+    df_out['MIN_petroleum_conventional_total_total_bbtu_to_EPD_petroleum_total_total_total_bbtu_fraction'] = 1
+
+
     return df_out
+
+
 
 
 def prep_county_natgas_production_data() -> pd.DataFrame:
@@ -2602,8 +2632,8 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     df['intensity_mg_per_bbtu'].fillna(avg_intensity, inplace=True)
     df = df[df.natgas_production_bbtu > 0]
 
-    sw_source_name = 'EPS_natgas_unconventional_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
-    gw_source_name = 'EPS_natgas_unconventional_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
+    sw_source_name = 'MIN_natgas_unconventional_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
+    gw_source_name = 'MIN_natgas_unconventional_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
 
     df[sw_source_name] = .8
     df[gw_source_name] = .2
@@ -2613,9 +2643,12 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
                   'total_water'], axis=1)
 
     df = df.rename(columns={'natgas_production_bbtu':
-                                'EPS_natgas_unconventional_total_total_bbtu_from_EPS_natgas_unconventional_total_total_bbtu',
+                                'MIN_natgas_unconventional_total_total_bbtu_from_MIN_natgas_unconventional_total_total_bbtu',
                             'intensity_mg_per_bbtu':
-                                'EPS_natgas_unconventional_withdrawal_total_mgd_from_EPS_natgas_unconventional_total_total_bbtu_intensity'})
+                                'MIN_natgas_unconventional_withdrawal_total_mgd_from_MIN_natgas_unconventional_total_total_bbtu_intensity'})
+
+    # discharge to EPD fraction
+    df['MIN_natgas_unconventional_total_total_bbtu_to_EPD_natgas_total_total_total_bbtu_fraction'] = 1
 
     # merge with county data to distribute value to each county in a state and include all FIPS
     df = pd.merge(df_loc, df, how='left', on='FIPS')
@@ -2662,31 +2695,31 @@ def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
     df.fillna(0, inplace=True)
 
     # produced water intensities
-    pet_prod_int = 'EPS_petroleum_unconventional_produced_total_mgd_from_EPS_petroleum_unconventional_total_total_bbtu_intensity'
-    ng_prod_int = 'EPS_natgas_unconventional_produced_total_mgd_from_EPS_natgas_unconventional_total_total_bbtu_intensity'
+    pet_prod_int = 'MIN_petroleum_unconventional_produced_total_mgd_from_MIN_petroleum_unconventional_total_total_bbtu_intensity'
+    ng_prod_int = 'MIN_natgas_unconventional_produced_total_mgd_from_MIN_natgas_unconventional_total_total_bbtu_intensity'
 
     # produced water sources
-    pet_un_prod = 'EPS_petroleum_unconventional_produced_total_mgd_from_PRD_total_total_total_total_mgd_fraction'
-    ng_un_prod = 'EPS_natgas_unconventional_produced_total_mgd_from_PRD_total_total_total_total_mgd_fraction'
+    pet_un_prod = 'MIN_petroleum_unconventional_produced_total_mgd_from_PRD_total_total_total_total_mgd_fraction'
+    ng_un_prod = 'MIN_natgas_unconventional_produced_total_mgd_from_PRD_total_total_total_total_mgd_fraction'
 
     # produced water discharge fractions
-    pet_un_cons = 'EPS_petroleum_unconventional_produced_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
-    pet_un_sd = 'EPS_petroleum_unconventional_produced_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
-    pet_un_gd = 'EPS_petroleum_unconventional_produced_total_mgd_to_GRD_total_total_total_total_mgd_fraction'
-    ng_cons = 'EPS_natgas_unconventional_produced_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
-    ng_sd = 'EPS_natgas_unconventional_produced_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
-    ng_gd = 'EPS_natgas_unconventional_produced_total_mgd_to_GRD_total_total_total_total_mgd_fraction'
+    pet_un_cons = 'MIN_petroleum_unconventional_produced_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
+    pet_un_sd = 'MIN_petroleum_unconventional_produced_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
+    pet_un_gd = 'MIN_petroleum_unconventional_produced_total_mgd_to_GRD_total_total_total_total_mgd_fraction'
+    ng_cons = 'MIN_natgas_unconventional_produced_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
+    ng_sd = 'MIN_natgas_unconventional_produced_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
+    ng_gd = 'MIN_natgas_unconventional_produced_total_mgd_to_GRD_total_total_total_total_mgd_fraction'
 
     # withdrawn water discharge fractions
-    pet_conv_cons = 'EPS_petroleum_conventional_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
-    pet_conv_sd = 'EPS_petroleum_conventional_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
-    pet_conv_gd = 'EPS_petroleum_conventional_withdrawal_total_mgd_to_GRD_total_total_total_total_mgd_fraction'
-    pet_unconv_with_cons = 'EPS_petroleum_unconventional_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
-    pet_unconv_with_sd = 'EPS_petroleum_unconventional_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
-    pet_unconv_with_gd = 'EPS_petroleum_unconventional_withdrawal_total_mgd_to_GRD_total_total_total_total_mgd_fraction'
-    ng_unconv_with_cons = 'EPS_natgas_unconventional_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
-    ng_unconv_with_sd = 'EPS_natgas_unconventional_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
-    ng_unconv_with_gd = 'EPS_natgas_unconventional_withdrawal_total_mgd_to_GRD_total_total_total_total_mgd_fraction'
+    pet_conv_cons = 'MIN_petroleum_conventional_produced_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
+    pet_conv_sd = 'MIN_petroleum_conventional_produced_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
+    pet_conv_gd = 'MIN_petroleum_conventional_produced_total_mgd_to_GRD_total_total_total_total_mgd_fraction'
+    pet_unconv_with_cons = 'MIN_petroleum_unconventional_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
+    pet_unconv_with_sd = 'MIN_petroleum_unconventional_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
+    pet_unconv_with_gd = 'MIN_petroleum_unconventional_withdrawal_total_mgd_to_GRD_total_total_total_total_mgd_fraction'
+    ng_unconv_with_cons = 'MIN_natgas_unconventional_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
+    ng_unconv_with_sd = 'MIN_natgas_unconventional_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
+    ng_unconv_with_gd = 'MIN_natgas_unconventional_withdrawal_total_mgd_to_GRD_total_total_total_total_mgd_fraction'
 
     # merge to get values at county level
     df = pd.merge(df_loc, df, how='left', on='State')
@@ -2782,11 +2815,11 @@ def prep_county_coal_production_data() -> pd.DataFrame:
                                        + df_coal['Underground'])
 
     # rename short ton production columns to add units
-    coal_prod_dict = {"Refuse": "EPS_coal_refuse_total_total_bbtu_from_EPS_coal_refuse_total_total_bbtu",
+    coal_prod_dict = {"Refuse": "MIN_coal_refuse_total_total_bbtu_from_MIN_coal_refuse_total_total_bbtu",
                       # refuse coal production
-                      "Surface": "EPS_coal_surface_total_total_bbtu_from_EPS_coal_surface_total_total_bbtu",
+                      "Surface": "MIN_coal_surface_total_total_bbtu_from_MIN_coal_surface_total_total_bbtu",
                       # coal production from surface mines
-                      "Underground": "EPS_coal_underground_total_total_bbtu_from_EPS_coal_underground_total_total_bbtu",
+                      "Underground": "MIN_coal_underground_total_total_bbtu_from_MIN_coal_underground_total_total_bbtu",
                       # coal production from underground mines
                       }
     df_coal.rename(columns=coal_prod_dict, inplace=True)  # rename columns to add descriptive language
@@ -2795,9 +2828,12 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     und = 0.00144
     sur = 0.00034
 
-    df_coal['EPS_coal_underground_total_total_mgd_from_EPS_coal_underground_total_total_bbtu_intensity'] = und
-    df_coal['EPS_coal_surface_total_total_mgd_from_EPS_coal_surface_total_total_bbtu_intensity'] = sur
+    df_coal['MIN_coal_underground_withdrawal_total_mgd_from_MIN_coal_underground_total_total_bbtu_intensity'] = und
+    df_coal['MIN_coal_surface_withdrawal_total_mgd_from_MIN_coal_surface_total_total_bbtu_intensity'] = sur
 
+    # energy discharge to EPD
+    df_coal['MIN_coal_surface_total_total_bbtu_to_EPD_coal_total_total_total_bbtu_fraction'] = 1
+    df_coal['MIN_coal_underground_total_total_bbtu_to_EPD_coal_total_total_total_bbtu_fraction'] = 1
 
     # merge with full county data to distribute value to each county in a state and include all FIPS
     df_coal = pd.merge(df_loc, df_coal, how='left', on='FIPS')
@@ -2815,10 +2851,10 @@ def prep_county_coal_water_source_fractions() -> pd.DataFrame:
 
     # read in water use data for 2015 in million gallons per day by county
     df = prep_water_use_2015(variables=['FIPS',
-                                        'MIN_fresh_groundwater_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
-                                        'MIN_fresh_surfacewater_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
-                                        'MIN_saline_groundwater_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd',
-                                        'MIN_saline_surfacewater_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd'])
+                                        'MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd',
+                                        'MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
+                                        'MIN_other_total_saline_groundwater_mgd_from_WSW_saline_groundwater_total_total_mgd',
+                                        'MIN_other_total_saline_surfacewater_mgd_from_WSW_saline_surfacewater_total_total_mgd'])
 
     # read in region identifier
     df_loc = prep_water_use_2015()
@@ -2826,16 +2862,16 @@ def prep_county_coal_water_source_fractions() -> pd.DataFrame:
     # consumption fraction data
     cons_df = prep_consumption_fraction()
 
-    cons_df = cons_df[['FIPS', 'MIN_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction',
-                      "MIN_saline_surfacewater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-                      "MIN_fresh_groundwater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-                      "MIN_saline_groundwater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction"]]
+    cons_df = cons_df[['FIPS', 'MIN_other_total_fresh_surfacewater_mgd_to_CMP_total_total_total_total_mgd_fraction',
+                      "MIN_other_total_saline_surfacewater_mgd_to_CMP_total_total_total_total_mgd_fraction",
+                      "MIN_other_total_fresh_groundwater_mgd_to_CMP_total_total_total_total_mgd_fraction",
+                      "MIN_other_total_saline_groundwater_mgd_to_CMP_total_total_total_total_mgd_fraction"]]
 
     # create a list of mining water source names
-    source_list = ['MIN_fresh_groundwater_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
-                   'MIN_fresh_surfacewater_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
-                   'MIN_saline_groundwater_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd',
-                   'MIN_saline_surfacewater_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd']
+    source_list = ['MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd',
+                   'MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
+                   'MIN_other_total_saline_groundwater_mgd_from_WSW_saline_groundwater_total_total_mgd',
+                   'MIN_other_total_saline_surfacewater_mgd_from_WSW_saline_surfacewater_total_total_mgd']
     # calculate total water flows to mining
     df['total_mining_water'] = df[df.columns[1:].to_list()].sum(axis=1)
 
@@ -2851,51 +2887,52 @@ def prep_county_coal_water_source_fractions() -> pd.DataFrame:
 
     df_out = df[['FIPS']].copy()
 
-    min_u_fgw = 'EPS_coal_underground_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
-    min_u_fsw = 'EPS_coal_underground_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
-    min_u_sgw = 'EPS_coal_underground_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction'
-    min_u_ssw = 'EPS_coal_underground_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction'
-    min_s_fgw = 'EPS_coal_surface_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
-    min_s_fsw = 'EPS_coal_surface_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
-    min_s_sgw = 'EPS_coal_surface_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction'
-    min_s_ssw = 'EPS_coal_surface_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction'
+    min_u_fgw = 'MIN_coal_underground_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
+    min_u_fsw = 'MIN_coal_underground_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
+    min_u_sgw = 'MIN_coal_underground_withdrawal_total_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction'
+    min_u_ssw = 'MIN_coal_underground_withdrawal_total_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction'
+    min_s_fgw = 'MIN_coal_surface_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
+    min_s_fsw = 'MIN_coal_surface_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
+    min_s_sgw = 'MIN_coal_surface_withdrawal_total_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction'
+    min_s_ssw = 'MIN_coal_surface_withdrawal_total_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction'
 
-    # source fractions
-    df_out[min_u_fgw] = df['MIN_fresh_groundwater_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction']
-    df_out[min_u_fsw] = df['MIN_fresh_surfacewater_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction']
-    df_out[min_u_sgw] = df['MIN_saline_groundwater_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction']
-    df_out[min_u_ssw] = df['MIN_saline_surfacewater_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction']
-    df_out[min_s_fgw] = df['MIN_fresh_groundwater_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction']
-    df_out[min_s_fsw] = df['MIN_fresh_surfacewater_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction']
-    df_out[min_s_sgw] = df['MIN_saline_groundwater_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction']
-    df_out[min_s_ssw] = df['MIN_saline_surfacewater_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction']
-
-    min_fsw_c = "MIN_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction"
-    min_ssw_c = "MIN_saline_surfacewater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction"
-    min_fgw_c = "MIN_fresh_groundwater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction"
-    min_sgw_c = "MIN_saline_groundwater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction"
+    # source fractions are equal to general mining source fractions
+    df_out[min_u_fgw] = df['MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction']
+    df_out[min_u_fsw] = df['MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction']
+    df_out[min_u_sgw] = df['MIN_other_total_saline_groundwater_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction']
+    df_out[min_u_ssw] = df['MIN_other_total_saline_surfacewater_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction']
+    df_out[min_s_fgw] = df['MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction']
+    df_out[min_s_fsw] = df['MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction']
+    df_out[min_s_sgw] = df['MIN_other_total_saline_groundwater_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction']
+    df_out[min_s_ssw] = df['MIN_other_total_saline_surfacewater_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction']
 
 
-    # consumption fractions
-    df_out['EPS_coal_surface_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction']  = cons_df[min_fgw_c]
-    df_out['EPS_coal_surface_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction']  = cons_df[min_fsw_c]
-    df_out['EPS_coal_surface_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_sgw_c]
-    df_out['EPS_coal_surface_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_ssw_c]
 
-    df_out['EPS_coal_underground_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_fgw_c]
-    df_out['EPS_coal_underground_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_fsw_c]
-    df_out['EPS_coal_underground_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_sgw_c]
-    df_out['EPS_coal_underground_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_ssw_c]
+    min_fsw_c = "MIN_other_total_fresh_surfacewater_mgd_to_CMP_total_total_total_total_mgd_fraction"
+    min_ssw_c = "MIN_other_total_saline_surfacewater_mgd_to_CMP_total_total_total_total_mgd_fraction"
+    min_fgw_c = "MIN_other_total_fresh_groundwater_mgd_to_CMP_total_total_total_total_mgd_fraction"
+    min_sgw_c = "MIN_other_total_saline_groundwater_mgd_to_CMP_total_total_total_total_mgd_fraction"
+
+    # consumption fractions are equal to general mining consumption fractions
+    df_out['MIN_coal_surface_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction']  = cons_df[min_fgw_c]
+    df_out['MIN_coal_surface_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction']  = cons_df[min_fsw_c]
+    df_out['MIN_coal_surface_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_sgw_c]
+    df_out['MIN_coal_surface_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_ssw_c]
+
+    df_out['MIN_coal_underground_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_fgw_c]
+    df_out['MIN_coal_underground_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_fsw_c]
+    df_out['MIN_coal_underground_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_sgw_c]
+    df_out['MIN_coal_underground_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_ssw_c]
 
     # surface discharge fractions
-    df_out['EPS_coal_surface_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_fgw_c]
-    df_out['EPS_coal_surface_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_fsw_c]
-    df_out['EPS_coal_surface_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_sgw_c]
-    df_out['EPS_coal_surface_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_ssw_c]
-    df_out['EPS_coal_underground_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_fgw_c]
-    df_out['EPS_coal_underground_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_fsw_c]
-    df_out['EPS_coal_underground_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_sgw_c]
-    df_out['EPS_coal_underground_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_ssw_c]
+    df_out['MIN_coal_surface_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_fgw_c]
+    df_out['MIN_coal_surface_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_fsw_c]
+    df_out['MIN_coal_surface_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_sgw_c]
+    df_out['MIN_coal_surface_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_ssw_c]
+    df_out['MIN_coal_underground_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_fgw_c]
+    df_out['MIN_coal_underground_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_fsw_c]
+    df_out['MIN_coal_underground_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_sgw_c]
+    df_out['MIN_coal_underground_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_ssw_c]
 
     # merge with county location data
     df = pd.merge(df_loc, df_out, how='left', on='FIPS')
@@ -2959,14 +2996,16 @@ def prep_county_ethanol_production_data() -> pd.DataFrame:
     df_biomass = df_biomass[['FIPS', 'biomass_production_bbtu']]
     df_biomass = df_biomass.rename(columns=
                                    {'biomass_production_bbtu':
-                                        'EPS_biomass_ethanol_total_total_bbtu_from_EPS_biomass_ethanol_total_total_bbtu'})
+                                        'IND_biomass_ethanol_total_total_bbtu_from_IND_biomass_ethanol_total_total_bbtu'})
+
+    df_biomass['IND_biomass_ethanol_total_total_bbtu_to_EPD_biomass_total_total_total_bbtu_fraction'] = 1
 
     # create intensity variable
-    df_biomass['EPS_biomass_ethanol_total_total_mgd_from_EPS_biomass_ethanol_total_total_bbtu_intensity'] = ethanol_intensity
+    df_biomass['IND_biomass_ethanol_total_total_mgd_from_IND_biomass_ethanol_total_total_bbtu_intensity'] = ethanol_intensity
 
     # assume all ethanol production water comes from fresh surfacewater
-    df_biomass['EPS_biomass_ethanol_total_total_mgd_from_WSW_fresh_surfacewater_withdrawal_total_bbtu_fraction'] = 1
-    df_biomass['EPS_biomass_ethanol_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1
+    df_biomass['IND_biomass_ethanol_total_total_mgd_from_WSW_fresh_surfacewater_withdrawal_total_bbtu_fraction'] = 1
+    df_biomass['IND_biomass_ethanol_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1
 
     # merge with full county data to distribute value to each county in a state and include all FIPS
     df_biomass = pd.merge(df_loc, df_biomass, how='left', on='FIPS')
@@ -3094,10 +3133,10 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
 def remove_coal_double_counting_from_mining():
 
     df_mining = prep_water_use_2015(variables=['FIPS', 'County', 'State',
-                                               'MIN_fresh_groundwater_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
-                                               'MIN_fresh_surfacewater_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
-                                               'MIN_saline_groundwater_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd',
-                                               'MIN_saline_surfacewater_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd'])
+                                               'MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd',
+                                               'MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
+                                               'MIN_other_total_saline_groundwater_mgd_from_WSW_saline_groundwater_total_total_mgd',
+                                               'MIN_other_total_saline_surfacewater_mgd_from_WSW_saline_surfacewater_total_total_mgd'])
 
     df_coal_prod = prep_county_coal_production_data()
     df_coal_src = prep_county_coal_water_source_fractions()
@@ -3110,44 +3149,39 @@ def remove_coal_double_counting_from_mining():
     #df_coal["EPS_coal_surface_total_total_bbtu_from_EPS_coal_surface_total_total_bbtu"]
     #df_coal["EPS_coal_underground_total_total_bbtu_from_EPS_coal_underground_total_total_bbtu"]
 
-    df_recalc['surface_coal_mgd'] = df_recalc["EPS_coal_surface_total_total_bbtu_from_EPS_coal_surface_total_total_bbtu"] \
-                           * df_recalc['EPS_coal_surface_total_total_mgd_from_EPS_coal_surface_total_total_bbtu_intensity']
+    df_recalc['surface_coal_mgd'] = df_recalc["MIN_coal_surface_total_total_bbtu_from_MIN_coal_surface_total_total_bbtu"] \
+                           * df_recalc['MIN_coal_surface_withdrawal_total_mgd_from_MIN_coal_surface_total_total_bbtu_intensity']
 
-    df_recalc['under_coal_mgd'] = df_recalc["EPS_coal_underground_total_total_bbtu_from_EPS_coal_underground_total_total_bbtu"] \
-                             * df_recalc['EPS_coal_underground_total_total_mgd_from_EPS_coal_underground_total_total_bbtu_intensity']
+    df_recalc['under_coal_mgd'] = df_recalc["MIN_coal_underground_total_total_bbtu_from_MIN_coal_underground_total_total_bbtu"] \
+                             * df_recalc['MIN_coal_underground_withdrawal_total_mgd_from_MIN_coal_underground_total_total_bbtu_intensity']
 
-
-    #df_coal['EPS_coal_surface_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction']
-    #df_coal['EPS_coal_surface_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction']
-    #df_coal['EPS_coal_surface_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction']
-    #df_coal['EPS_coal_surface_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction']
 
     df_recalc['surface_coal_mgd_fgw'] = df_recalc['surface_coal_mgd'] \
-                                        * df_recalc['EPS_coal_surface_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction']
+                                        * df_recalc['MIN_coal_surface_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction']
     df_recalc['surface_coal_mgd_fsw'] = df_recalc['surface_coal_mgd'] \
-                                        * df_recalc['EPS_coal_surface_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction']
+                                        * df_recalc['MIN_coal_surface_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction']
     df_recalc['surface_coal_mgd_sgw'] = df_recalc['surface_coal_mgd'] \
-                                        * df_recalc['EPS_coal_surface_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction']
+                                        * df_recalc['MIN_coal_surface_withdrawal_total_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction']
     df_recalc['surface_coal_mgd_ssw'] = df_recalc['surface_coal_mgd'] \
-                                        * df_recalc['EPS_coal_surface_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction']
+                                        * df_recalc['MIN_coal_surface_withdrawal_total_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction']
     df_recalc['under_coal_mgd_fgw'] = df_recalc['under_coal_mgd'] \
-                                      * df_recalc['EPS_coal_surface_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction']
+                                      * df_recalc['MIN_coal_underground_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction']
     df_recalc['under_coal_mgd_fsw'] = df_recalc['under_coal_mgd'] \
-                                      * df_recalc['EPS_coal_surface_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction']
+                                      * df_recalc['MIN_coal_underground_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction']
     df_recalc['under_coal_mgd_sgw'] = df_recalc['under_coal_mgd'] \
-                                      * df_recalc['EPS_coal_surface_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction']
+                                      * df_recalc['MIN_coal_underground_withdrawal_total_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction']
     df_recalc['under_coal_mgd_ssw'] = df_recalc['under_coal_mgd'] \
-                                      * df_recalc['EPS_coal_surface_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction']
+                                      * df_recalc['MIN_coal_underground_withdrawal_total_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction']
 
     df_recalc['total_coal_mgd_fgw'] = df_recalc['surface_coal_mgd_fgw'] + df_recalc['under_coal_mgd_fgw']
     df_recalc['total_coal_mgd_fsw'] = df_recalc['surface_coal_mgd_fsw'] + df_recalc['under_coal_mgd_fsw']
     df_recalc['total_coal_mgd_sgw'] = df_recalc['surface_coal_mgd_sgw'] + df_recalc['under_coal_mgd_sgw']
     df_recalc['total_coal_mgd_ssw'] = df_recalc['surface_coal_mgd_ssw'] + df_recalc['under_coal_mgd_ssw']
 
-    fgw_mining_name = 'MIN_fresh_groundwater_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd'
-    fsw_mining_name = 'MIN_fresh_surfacewater_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
-    sgw_mining_name = 'MIN_saline_groundwater_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd'
-    ssw_mining_name = 'MIN_saline_surfacewater_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd'
+    fgw_mining_name = 'MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd'
+    fsw_mining_name = 'MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
+    sgw_mining_name = 'MIN_other_total_saline_groundwater_mgd_from_WSW_saline_groundwater_total_total_mgd'
+    ssw_mining_name = 'MIN_other_total_saline_surfacewater_mgd_from_WSW_saline_surfacewater_total_total_mgd'
 
     # calculate the difference between
     df_recalc['fgw_subtract'] = df_recalc['total_coal_mgd_fgw']
@@ -3169,30 +3203,27 @@ def remove_coal_double_counting_from_mining():
 
     return df_recalc
 
+
 def remove_natgas_double_counting_from_mining():
     df_recalc = remove_coal_double_counting_from_mining()
     df_natgas = prep_county_natgas_production_data()
 
     df_recalc = pd.merge(df_recalc, df_natgas, how='left', on=['FIPS', 'County', 'State'])
 
-    #'EPS_natgas_unconventional_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
-    #'EPS_natgas_unconventional_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
-    # 'EPS_natgas_unconventional_total_total_bbtu_from_EPS_natgas_unconventional_total_total_bbtu'
-    #EPS_natgas_unconventional_withdrawal_total_mgd_from_EPS_natgas_unconventional_total_total_bbtu_intensity
 
-    prod_name = 'EPS_natgas_unconventional_total_total_bbtu_from_EPS_natgas_unconventional_total_total_bbtu'
-    intensity_name = 'EPS_natgas_unconventional_withdrawal_total_mgd_from_EPS_natgas_unconventional_total_total_bbtu_intensity'
-    sw_frac = 'EPS_natgas_unconventional_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
-    gw_frac = 'EPS_natgas_unconventional_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
+    prod_name = 'MIN_natgas_unconventional_total_total_bbtu_from_MIN_natgas_unconventional_total_total_bbtu'
+    intensity_name = 'MIN_natgas_unconventional_withdrawal_total_mgd_from_MIN_natgas_unconventional_total_total_bbtu_intensity'
+    sw_frac = 'MIN_natgas_unconventional_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
+    gw_frac = 'MIN_natgas_unconventional_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
 
     df_recalc['total_water'] = df_recalc[prod_name] * df_recalc[intensity_name]
     df_recalc['total_fsw'] = df_recalc['total_water']*df_recalc[sw_frac]
     df_recalc['total_fgw'] = df_recalc['total_water'] * df_recalc[gw_frac]
 
-    fgw_mining_name = 'MIN_fresh_groundwater_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd'
-    fsw_mining_name = 'MIN_fresh_surfacewater_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
-    sgw_mining_name = 'MIN_saline_groundwater_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd'
-    ssw_mining_name = 'MIN_saline_surfacewater_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd'
+    fgw_mining_name = 'MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd'
+    fsw_mining_name = 'MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
+    sgw_mining_name = 'MIN_other_total_saline_groundwater_mgd_from_WSW_saline_groundwater_total_total_mgd'
+    ssw_mining_name = 'MIN_other_total_saline_surfacewater_mgd_from_WSW_saline_surfacewater_total_total_mgd'
 
     df_recalc[fgw_mining_name] = np.where((df_recalc[fgw_mining_name] - df_recalc['total_fgw']) > 0,
                                           (df_recalc[fgw_mining_name] - df_recalc['total_fgw']),
@@ -3206,27 +3237,25 @@ def remove_natgas_double_counting_from_mining():
 
     return df_recalc
 
+
 def remove_petroleum_double_counting_from_mining():
     df_recalc = remove_coal_double_counting_from_mining()
     df_pet = prep_county_petroleum_production_data()
 
-    #'EPS_petroleum_unconventional_total_total_bbtu_from_EPS_petroleum_unconventional_total_total_bbtu',
-    #'EPS_petroleum_conventional_total_total_bbtu_from_EPS_petroleum_conventional_total_total_bbtu',
-    #'EPS_petroleum_conventional_withdrawal_total_mgd_from_EPS_petroleum_conventional_total_total_bbtu_intensity',
-    #'EPS_petroleum_unconventional_withdrawal_total_mgd_from_EPS_petroleum_unconventional_total_total_bbtu_intensity',
-    #'EPS_petroleum_unconventional_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction',
-    #'EPS_petroleum_unconventional_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction',
-
     df_recalc = pd.merge(df_recalc, df_pet, how='left', on=['FIPS', 'County', 'State'])
 
-    un_prod_name = 'EPS_petroleum_unconventional_total_total_bbtu_from_EPS_petroleum_unconventional_total_total_bbtu'
-    con_prod_name = 'EPS_petroleum_conventional_total_total_bbtu_from_EPS_petroleum_conventional_total_total_bbtu'
-    un_intensity_name = 'EPS_petroleum_unconventional_withdrawal_total_mgd_from_EPS_petroleum_unconventional_total_total_bbtu_intensity'
-    con_intensity_name = 'EPS_petroleum_conventional_withdrawal_total_mgd_from_EPS_petroleum_conventional_total_total_bbtu_intensity'
-    un_sw_frac = 'EPS_petroleum_unconventional_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
-    un_gw_frac = 'EPS_petroleum_unconventional_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
-    con_sw_frac = 'EPS_petroleum_conventional_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
-    con_gw_frac = 'EPS_petroleum_conventional_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
+    un_prod_name = 'MIN_petroleum_unconventional_total_total_bbtu_from_MIN_petroleum_unconventional_total_total_bbtu'
+    con_prod_name = 'MIN_petroleum_conventional_total_total_bbtu_from_MIN_petroleum_conventional_total_total_bbtu'
+
+    # TODO DECIDE WHETHER MINING WATER SHOULD BE SPLIT BY ENERGY OR JUST PETROLEUM
+
+
+    un_intensity_name = 'MIN_petroleum_unconventional_withdrawal_total_mgd_from_MIN_petroleum_unconventional_total_total_bbtu_intensity'
+    con_intensity_name = 'MIN_petroleum_conventional_withdrawal_total_mgd_from_MIN_petroleum_conventional_total_total_bbtu_intensity'
+    un_sw_frac = 'MIN_petroleum_unconventional_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
+    un_gw_frac = 'MIN_petroleum_unconventional_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
+    con_sw_frac = 'MIN_petroleum_conventional_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
+    con_gw_frac = 'MIN_petroleum_conventional_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
 
     df_recalc['total_fsw'] = ((df_recalc[un_prod_name] * df_recalc[un_intensity_name])*df_recalc[un_sw_frac]) \
                              + ((df_recalc[con_prod_name] * df_recalc[con_intensity_name])*df_recalc[con_sw_frac])
@@ -3234,10 +3263,10 @@ def remove_petroleum_double_counting_from_mining():
     df_recalc['total_fgw'] = ((df_recalc[un_prod_name] * df_recalc[un_intensity_name]) * df_recalc[un_gw_frac]) \
                              + ((df_recalc[con_prod_name] * df_recalc[con_intensity_name]) * df_recalc[con_gw_frac])
 
-    fgw_mining_name = 'MIN_fresh_groundwater_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd'
-    fsw_mining_name = 'MIN_fresh_surfacewater_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
-    sgw_mining_name = 'MIN_saline_groundwater_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd'
-    ssw_mining_name = 'MIN_saline_surfacewater_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd'
+    fgw_mining_name = 'MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd'
+    fsw_mining_name = 'MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
+    sgw_mining_name = 'MIN_other_total_saline_groundwater_mgd_from_WSW_saline_groundwater_total_total_mgd'
+    ssw_mining_name = 'MIN_other_total_saline_surfacewater_mgd_from_WSW_saline_surfacewater_total_total_mgd'
 
     df_recalc[fgw_mining_name] = np.where((df_recalc[fgw_mining_name] - df_recalc['total_fgw']) > 0,
                                           (df_recalc[fgw_mining_name] - df_recalc['total_fgw']),
@@ -3291,17 +3320,17 @@ def combine_data():
                   'AGI_fresh_groundwater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction',
                   'AGI_fresh_surfacewater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction',
                   'AGI_reclaimed_wastewater_import_total_mgd_to_CMP_total_total_total_total_mgd_fraction',
-                  'MIN_fresh_groundwater_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
-                  'MIN_fresh_surfacewater_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
-                  'MIN_saline_groundwater_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd',
-                  'MIN_saline_surfacewater_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd'
+                  'MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd',
+                  'MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
+                  'MIN_other_total_saline_groundwater_mgd_from_WSW_saline_groundwater_total_total_mgd',
+                  'MIN_other_total_saline_surfacewater_mgd_from_WSW_saline_surfacewater_total_total_mgd'
 
                   ], axis=1)
 
-    x7 = x7.drop(['EPD_solar_total_total_total_bbtu_from_EPS_solar_total_total_total_bbtu',
-                  'EPD_wind_total_total_total_bbtu_from_EPS_wind_total_total_total_bbtu'
-                  ], axis=1)
-
+    #x7 = x7.drop(['EPD_solar_total_total_total_bbtu_from_EPS_solar_total_total_total_bbtu',
+    #              'EPD_wind_total_total_total_bbtu_from_EPS_wind_total_total_total_bbtu'
+    #              ], axis=1)
+#
     out_df = pd.merge(x1, x2, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x3, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x4, how='left', on=['FIPS', 'State', 'County'])
@@ -3324,7 +3353,7 @@ def combine_data():
     out_df = pd.merge(out_df, x21, how='left', on=['FIPS', 'State', 'County'])
 
 
-    out_df = out_df[out_df.State == 'PA']
+    out_df = out_df[out_df.State == 'IA']
 
     value_columns = out_df.columns[3:].to_list()
     out_df = pd.melt(out_df, value_vars=value_columns, var_name='flow_name', value_name='value', id_vars=['FIPS'])

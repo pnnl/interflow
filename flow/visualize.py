@@ -1,52 +1,34 @@
-import matplotlib.pyplot as plt
-import numpy as np
 import plotly.graph_objects as go
-
-from .calculate import *
 from .analyze import *
-
-def plot_bar(data, x, y, region, y_axis="Value", x_axis_title="Region",  y_axis_title="Value"):
-    """Plot the results of a cerf run on a map where each technology has its own color.
-    :param df:                       Result data frame from running 'cerf.run()'
-    :type df:                        DataFrame
-    :param boundary_shp:                    Full path to a boundary shapefile with file name and extension.  If no file
-                                            provided, the default boundary for the CONUS will be used.
-    :type boundary_shp:                     str
-    :param regions_shp:                     Full path to a regions shapefile with file name and extension.  If no file
-                                            provided, the default regions for the CONUS will be used.
-    :type regions_shp:                      str
-    :param column:                          Column to plot
-    :type column:                           str
-    :param markersize:                      Size of power plant marker
-    :type markersize:                       int
-    :param cmap:                            Custom matplotlib colormap object or name
-    :param save_figure:                     If True, figure is saved to file and 'output_file' must be set
-    :type save_figure:                      bool
-    :param output_file:                     If 'save_figure' is True, specify full path with file name and extension
-                                            for the file to be saved to
-    """
-
-    fig = plt.subplots(figsize=(20, 10))
-
-    df = data
-
-    df = df.groupby(region, as_index=False).mean()
-    df = df.sort_values(y, ascending=False)
-
-    x = df[x].tolist()
-    y = df[y].tolist()
-
-    plt.bar(x, y, align='center', alpha=0.5)
-    plt.xlabel(f"{x_axis_title}")
-    plt.ylabel(f"{y_axis_title}")
-    plt.title(f"Barchart of {y_axis_title} by {x_axis_title}, Averaged across {region}")
-    plt.show()
 
 
 def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=None, strip=None):
-    """
-    Must give it dataframe, a region, a unit type, and a level of output
-    """
+    """Plots interactive sankey diagram(s) for a given region at a given level of granularity. At least one unit type is
+    required. If no region name is specified, the flow data provided must be for a single region. Contains the option
+    to strip strings from node names to remove replicated placeholder names such as 'total'.
+
+            :param data:                        dataframe of flow values from source to target
+            :type data:                         DataFrame
+
+            :param unit_type1:                  units of the first set of flow values (e.g., mgd)
+            :type unit_type1:                   string
+
+            :param output_level:                level of granularity of values returned in the figure.
+            :type output_level:                 int
+
+            :param unit_type2:                  units of the second set of flow values (e.g., bbtu)
+            :type unit_type2:                   string
+
+            :param region_name:                 Name of region to display values for if input data includes multiple.
+                                                If none is specified, data must be for a single region.
+            :type region_name:                  string
+
+            :param strip:                       Optional parameter. Provides a string to remove from variable labels.
+            :type strip:                        string
+
+            :return:                            interactive sankey diagram of flow values
+
+            """
     df = data
     df_1 = df[df.units == unit_type1]
 
@@ -190,8 +172,7 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
                 color='rgba(102, 195, 216, 0.7)'
             ))])
 
-        # fig.update_layout(title_text="Interactive Sankey Diagram of Select Variables", font_size=12)  #title
-
+        fig.update_layout(title_text=f"{unit_type1} flows for {region_name}", font_size=12)  #title
         fig.update_traces(valuesuffix=f'{unit_type1}', selector=dict(type='sankey'))  # adds value suffix
         print('WSW = Water Supply Withdrawals')
         print('WSI = Water Supply Imports')
@@ -346,8 +327,7 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
                         color='rgba(252, 230, 112, 1)'
                     ))])
 
-                # fig.update_layout(title_text="Interactive Sankey Diagram of Select Variables", font_size=12)  #title
-
+                fig.update_layout(title_text=f"{unit_type2} flows for {region_name}", font_size=12)  # title
                 fig.update_traces(valuesuffix=f'{unit_type2}', selector=dict(type='sankey'))  # adds value suffix
 
                 fig.show()
