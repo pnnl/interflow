@@ -1,4 +1,5 @@
 import plotly.graph_objects as go
+import plotly.express as px
 from .analyze import *
 
 
@@ -335,3 +336,10 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
 
     else:
         m = 'Incorrect level specified. Level must be an integer between 1 and 5, inclusive.'
+
+
+#def plot_bar(data, region, sector ):
+
+ #   df = data
+ # include specified units only
+

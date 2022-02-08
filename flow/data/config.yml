@@ -2,7 +2,7 @@
 # YAML configuration file specifying paths to input data and path to save output data
 
 input_data:
-  path: 'data/configuration_data/test_data_01-28.csv'
+  path: 'data/test_output.csv'
 
 output_data:
   path: 'data/output/output.csv'
