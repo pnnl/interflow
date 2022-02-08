@@ -3382,7 +3382,7 @@ def combine_data():
     return out_df
 
 
-x = combine_data()
+x = prep_interbasin_transfer_data()
 # for col in x.columns:
 #    print(col)
 x.to_csv(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv", index=False)

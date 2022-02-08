@@ -36,10 +36,16 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
     # reduce data to appropriate units
     df_1 = df[df.units == unit_type1]
 
-    # TODO need to make sure this is unique if there's no region name specified
-    # specify region
+    # if no region name is provided
     if region_name is None:
-        df_1 = df_1
+        # check if region column has a single unique value
+        if len(df['region'].unique().tolist()) == 1:
+            df_1 = df_1
+        else:
+            m = 'More than one region included in dataset, reduce dataset to single region ' \
+                'or specify desired region.'
+            raise ValueError(m)
+    # reduce to specified region
     else:
         df_1 = df_1[df_1.region == region_name]
 
@@ -84,7 +90,6 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
 
             df_1["source"] = df_1["S12"].apply(lambda x: var_dict.get(x))
             df_1["target"] = df_1["T12"].apply(lambda x: var_dict.get(x))
-
 
         elif output_level == 3:
 
@@ -190,9 +195,16 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
         else:
             df_2 = df[df.units == unit_type2]
 
-            # TODO need to make sure this is unique if there's no region name specified
+            # if no region name is provided
             if region_name is None:
-                df_2 = df_2
+                # check if region column has a single unique value
+                if len(df['region'].unique().tolist()) == 1:
+                    df_2 = df_2
+                else:
+                    m = 'More than one region included in dataset, reduce dataset to single region ' \
+                        'or specify desired region.'
+                    raise ValueError(m)
+            # reduce to specified region
             else:
                 df_2 = df_2[df_2.region == region_name]
 
@@ -342,7 +354,7 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
         m = 'Incorrect level specified. Level must be an integer between 1 and 5, inclusive.'
 
 
-def plot_bar(data, unit_type, region_name, sector_list, inflow=True, strip=None ):
+def plot_sector_bar(data, unit_type, region_name, sector_list, inflow=True, strip=None ):
 
     # get data
     df = data
@@ -366,7 +378,7 @@ def plot_bar(data, unit_type, region_name, sector_list, inflow=True, strip=None 
     else:
         # reduce to specified sector outflow list
         df_1 = df_1[df_1['S1'].isin(sector_list)]
-        df_1['groupname'] = df_1['S2'] + '-' + df_1['S3'] + '-' + df_1['S4'] + '-' + df_1['S5']
+        df_1['groupname'] = df_1['T1'] + '-' + df_1['T2'] + '-' + df_1['T3'] + '-' + df_1['T4'] + '-' + df_1['T5']
 
     # remove stripped words
     df_1['groupname'] = df_1['groupname'].str.replace(remove, "")
@@ -374,9 +386,11 @@ def plot_bar(data, unit_type, region_name, sector_list, inflow=True, strip=None 
     if inflow:
         df_group = df_1.groupby(['T1', 'groupname'], as_index=False).sum()
         x_variable = 'T1'
+        flow_name = 'Inflows to'
     else:
         df_group = df_1.groupby(['S1', 'groupname'], as_index=False).sum()
         x_variable = 'S1'
+        flow_name = 'Outflows from'
 
 
     fig = px.bar(df_group, x=x_variable, y="value", color="groupname",
@@ -400,7 +414,7 @@ def plot_bar(data, unit_type, region_name, sector_list, inflow=True, strip=None 
             color="black"
         ),
         title={
-            'text': f"Subsector/Application Values by Sector in {region_name} region ({unit_type})",
+            'text': f"{flow_name} Subsector/Application Values for {region_name} region ({unit_type})",
             'xanchor': 'left',
             'yanchor': 'top'},
     )
