@@ -30,10 +30,14 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
             :return:                            interactive sankey diagram of flow values
 
             """
+    # get data
     df = data
+
+    # reduce data to appropriate units
     df_1 = df[df.units == unit_type1]
 
     # TODO need to make sure this is unique if there's no region name specified
+    # specify region
     if region_name is None:
         df_1 = df_1
     else:
@@ -338,8 +342,68 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
         m = 'Incorrect level specified. Level must be an integer between 1 and 5, inclusive.'
 
 
-#def plot_bar(data, region, sector ):
+def plot_bar(data, unit_type, region_name, sector_list, inflow=True, strip=None ):
 
- #   df = data
- # include specified units only
+    # get data
+    df = data
+
+    # reduce data to appropriate units
+    df_1 = df[df.units == unit_type]
+
+    # specify region
+    df_1 = df_1[df_1.region == region_name]
+
+    # create variable to remove stripped words
+    remove = f'-{strip}'
+
+    # reduce to inflows or outflows
+    if inflow:
+
+        # reduce to specified sector inflow list
+        df_1 = df_1[df_1['T1'].isin(sector_list)]
+        df_1['groupname'] = df_1['T2'] + '-' + df_1['T3'] + '-' + df_1['T4'] + '-' + df_1['T5']
+
+    else:
+        # reduce to specified sector outflow list
+        df_1 = df_1[df_1['S1'].isin(sector_list)]
+        df_1['groupname'] = df_1['S2'] + '-' + df_1['S3'] + '-' + df_1['S4'] + '-' + df_1['S5']
+
+    # remove stripped words
+    df_1['groupname'] = df_1['groupname'].str.replace(remove, "")
+
+    if inflow:
+        df_group = df_1.groupby(['T1', 'groupname'], as_index=False).sum()
+        x_variable = 'T1'
+    else:
+        df_group = df_1.groupby(['S1', 'groupname'], as_index=False).sum()
+        x_variable = 'S1'
+
+
+    fig = px.bar(df_group, x=x_variable, y="value", color="groupname",
+                 color_discrete_sequence=px.colors.qualitative.Prism,
+                 template="simple_white")
+    fig.update_layout(
+        # title_text = 'Expedited Process Availability by State', # Create a Title
+        legend_title_text='Subsector',
+        legend_title_font_size=15,
+        legend_font_size=15,
+        legend=dict(orientation="v",
+                    bordercolor='#000000',
+                    borderwidth=0,
+                    traceorder='normal'
+                    ),
+        xaxis_title="",
+        yaxis_title=f"{unit_type}",
+        font=dict(
+            family="Arial",
+            size=15,
+            color="black"
+        ),
+        title={
+            'text': f"Subsector/Application Values by Sector in {region_name} region ({unit_type})",
+            'xanchor': 'left',
+            'yanchor': 'top'},
+    )
+
+    fig.show()
 
