@@ -37,10 +37,11 @@ def deconstruct_dictionary(input_dict: dict):
         col = ['region', 'S1', 'S2', 'S3', 'S4', 'to', 'T1', 'T2', 'T3', 'T4', 'units', 'value']
         df.columns = col
     elif len(df.columns) == 14:
-        col = ['region', 'S1', 'S2', 'S3','S4', 'S5', 'to', 'T1', 'T2', 'T3','T4', 'T5', 'units', 'value']
+        col = ['region', 'S1', 'S2', 'S3','S4', 'S5', 'to', 'T1', 'T2', 'T3', 'T4', 'T5', 'units', 'value']
         df.columns = col
     else:
-        pass
+        m = 'Input dictionary keys do not have the correct number of levels to be able to deconstruct.'
+        raise ValueError(m)
 
     # drop 'to' column from output dataframe
     df = df.drop(['to'], axis=1)
