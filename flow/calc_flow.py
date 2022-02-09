@@ -14,14 +14,24 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True):
         df = read_data()
 
     else:
-        df = pd.read_csv(data)
+        df = data
 
     if region_name is None:
         df = df
     else:
+        # check that region_name is in the input data
+        region_column = df.columns[0]
+        if region_name in data[region_column].tolist():
+            pass
+        else:
+            m = 'Region specified is not in the input data.'
+            raise ValueError(m)
+
         df[df.columns[0]] = df[df.columns[0]].astype(str)
         reg_col = df.columns[0]
         df = df.loc[df[reg_col] == region_name]
+
+
 
     #c_dict = co.construct_nested_dictionary(update_data)
 
@@ -317,21 +327,48 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True):
                                                                     s4_name = f'{r}_{s1}_{s2}_{s3}_{s4}_to_{s1}_{s2}_{s3}_{s4}_{u2}'
                                                                     t5_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
                                                                     s5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_to_{s1}_{s2}_{s3}_{s4}_{s5}_{u2}'
-                                                                    if t5_name in l5_dict:
+                                                                    if t1_name in l1_dict:
                                                                         del l1_dict[t1_name]
+                                                                    else:
+                                                                        pass
+                                                                    if t2_name in l2_dict:
                                                                         del l2_dict[t2_name]
+                                                                    else:
+                                                                        pass
+                                                                    if t3_name in l3_dict:
                                                                         del l3_dict[t3_name]
+                                                                    else:
+                                                                        pass
+                                                                    if t4_name in l4_dict:
                                                                         del l4_dict[t4_name]
+                                                                    else:
+                                                                        pass
+                                                                    if t5_name in l5_dict:
                                                                         del l5_dict[t5_name]
                                                                     else:
                                                                         pass
-                                                                    if s5_name in l5_dict:
+
+                                                                    if s1_name in l1_dict:
                                                                         del l1_dict[s1_name]
+                                                                    else:
+                                                                        pass
+                                                                    if s2_name in l2_dict:
                                                                         del l2_dict[s2_name]
+                                                                    else:
+                                                                        pass
+                                                                    if s3_name in l3_dict:
                                                                         del l3_dict[s3_name]
+                                                                    else:
+                                                                        pass
+                                                                    if s4_name in l4_dict:
                                                                         del l4_dict[s4_name]
+                                                                    else:
+                                                                        pass
+                                                                    if s5_name in l5_dict:
                                                                         del l5_dict[s5_name]
-                                                                        del l5_dict[s5_name]
+
+                                                                    else:
+                                                                        pass
     else:
         pass
 

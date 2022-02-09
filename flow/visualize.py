@@ -173,7 +173,7 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
                 thickness=10,  # node thickness
                 line=dict(color="black", width=1),  # node border color and thickness
                 label=sankey_number,  # node label, refers to list of indexed names
-                color = 'rgba(63, 125, 152, 1)'                                 #color of nodes, refers to list of hex codes
+                color='rgba(63, 125, 152, 1)'
             ),
             link=dict(
                 source=source_list,  # list of source node indices
@@ -186,7 +186,6 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
         fig.update_traces(valuesuffix=f'{unit_type1}', selector=dict(type='sankey'))  # adds value suffix
         print('WSW = Water Supply Withdrawals')
         print('WSI = Water Supply Imports')
-
 
         fig.show()
 

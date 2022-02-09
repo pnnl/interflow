@@ -2172,6 +2172,9 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
                                     'pws_ibt_rej': pws_ibt_energy_rej
                                     })
 
+    df_out = pd.merge(df_out, df_loc, how='right', on=['FIPS', 'State', 'County'])
+    df_out.fillna(0, inplace=True)
+
     return df_out
 
 
@@ -3353,7 +3356,7 @@ def combine_data():
     out_df = pd.merge(out_df, x21, how='left', on=['FIPS', 'State', 'County'])
 
 
-    out_df = out_df[out_df.State == 'IA']
+    #out_df = out_df[out_df.State == 'CA']
 
     value_columns = out_df.columns[3:].to_list()
     out_df = pd.melt(out_df, value_vars=value_columns, var_name='flow_name', value_name='value', id_vars=['FIPS'])
@@ -3382,7 +3385,7 @@ def combine_data():
     return out_df
 
 
-x = prep_interbasin_transfer_data()
+x = combine_data()
 # for col in x.columns:
 #    print(col)
 x.to_csv(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv", index=False)
