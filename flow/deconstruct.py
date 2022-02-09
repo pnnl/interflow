@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def deconstruct_nested_dictionary(input_dict:dict):
+def deconstruct_dictionary(input_dict: dict):
     """Takes in a nested dictionary of run values and returns a dataframe with flow information as columns.
 
             :param input_dict:                        nested dictionary of values to unpack into a dataframe
