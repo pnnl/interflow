@@ -1,14 +1,41 @@
-import numpy as np
 from .reader import *
 import flow.construct as co
 import flow.deconstruct as de
 
 
-def calculate(data=None, level=5, region_name=None, remove_loops=True):
-    """Collects water demand data to water sectors (sectors whose energy demand is strictly dependent on their water
-    demand) that directly withdraw their water from the water supply (e.g., public water supply) and aggregates the
-    values.
+def calculate(data=None, level=5, region_name=None, remove_loops=True, output_file_name=None):
+    """Loops through input data for each region provided or specified and (1) collects flows for input data, (2)
+    calculates totals for input flows at level 1 through level 5 granularity (2) calculates any cross unit flows based
+    on input flow intensity values at level 1 through level 5 granularity (3) builds source flows for calculated
+    intensities based on source fraction assumptions at level 1 through level 5 granularity, and (4) builds discharge
+    flows for calculated intensities and input data based on discharge fractions at level 1 through level 5 granularity.
+    This function also removes all self-provided (i.e., looped) flows if remove_loops parameter is set to True.
+
+
+    :param data:                        Pandas DataFrame of input flow values, intensities, and fractions
+    :type data:                         DataFrame
+
+    :param level:                       Desired level of granularity of output data. Must be an integer between 1
+                                        and 5, inclusive.
+    :type level:                        int
+
+    :param region_name:                 Name of region to conduct analysis of. If none is specified, calculations are
+                                        run for all regions included in the input data.
+    :type region_name:                  str
+
+    :param remove_loops:                Boolean indicating whether looped values (i.e., nodes whose output is its own
+                                        input value) should be removed from output dataset. Default is True.
+    :type remove_loops:                 bool
+
+    :param output_file_name:            Desired name of output file (saved as a .csv) to output path specified in config
+                                        yaml file. Default is set to None (no output saved)
+    :type output_file_name:             str
+
+    :return:                            DataFrame of flow run output at specified level of granularity for specified
+                                        region(s)
+
     """
+
     # load baseline data
     if data is None:
         df = read_data()
@@ -32,8 +59,6 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True):
         df = df.loc[df[reg_col] == region_name]
 
 
-
-    #c_dict = co.construct_nested_dictionary(update_data)
 
     # construct nested dictionary from input data
     f_dict = co.construct_nested_dictionary(df)
@@ -374,15 +399,15 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True):
 
     # return output at specified level of granularity
     if level == 1:
-        df = de.deconstruct_nested_dictionary(l1_dict)
+        df = de.deconstruct_dictionary(l1_dict)
     elif level == 2:
-        df = de.deconstruct_nested_dictionary(l2_dict)
+        df = de.deconstruct_dictionary(l2_dict)
     elif level == 3:
-        df = de.deconstruct_nested_dictionary(l3_dict)
+        df = de.deconstruct_dictionary(l3_dict)
     elif level == 4:
-        df = de.deconstruct_nested_dictionary(l4_dict)
+        df = de.deconstruct_dictionary(l4_dict)
     elif level == 5:
-        df = de.deconstruct_nested_dictionary(l5_dict)
+        df = de.deconstruct_dictionary(l5_dict)
     else:
         m = 'incorrect level of granularity specified. Must be an integer between 1 and 5, inclusive.'
         raise ValueError(m)

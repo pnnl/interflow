@@ -8,27 +8,26 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
     required. If no region name is specified, the flow data provided must be for a single region. Contains the option
     to strip strings from node names to remove replicated placeholder names such as 'total'.
 
-            :param data:                        dataframe of flow values from source to target
-            :type data:                         DataFrame
+        :param data:                        dataframe of flow values from source to target
+        :type data:                         DataFrame
 
-            :param unit_type1:                  units of the first set of flow values (e.g., mgd)
-            :type unit_type1:                   string
+        :param unit_type1:                  units of the first set of flow values (e.g., mgd)
+        :type unit_type1:                   string
 
-            :param output_level:                level of granularity of values returned in the figure.
-            :type output_level:                 int
+        :param output_level:                level of granularity of values returned in the figure.
+        :type output_level:                 int
 
-            :param unit_type2:                  units of the second set of flow values (e.g., bbtu)
-            :type unit_type2:                   string
+        :param unit_type2:                  units of the second set of flow values (e.g., bbtu)
+        :type unit_type2:                   string
 
-            :param region_name:                 Name of region to display values for if input data includes multiple.
-                                                If none is specified, data must be for a single region.
-            :type region_name:                  string
+        :param region_name:                 Name of region to display values for if input data includes multiple.
+                                            If none is specified, data must be for a single region.
+        :type region_name:                  string
 
-            :param strip:                       Optional parameter. Provides a string to remove from variable labels.
-            :type strip:                        string
+        :param strip:                       Optional parameter. Provides a string to remove from variable labels.
+        :type strip:                        string
 
-            :return:                            interactive sankey diagram of flow values
-
+        :return:                            interactive sankey diagram of flow values
             """
     # get data
     df = data
