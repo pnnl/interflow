@@ -5,4 +5,4 @@ input_data:
   path: 'data/test_output.csv'
 
 output_data:
-  path: 'data/output/output.csv'
+  path: 'C:\Users\mong275\Local Files\Repos\flow\flow\data\output\'

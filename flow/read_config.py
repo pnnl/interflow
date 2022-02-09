@@ -2,7 +2,7 @@ import yaml
 import pkg_resources
 
 
-def read_config():
+def read_config(filetype: str):
     """Reads file path from configuration yaml file.
 
         :return:                        path to input data as a string
@@ -15,6 +15,6 @@ def read_config():
         config_dict = yaml.safe_load(file)
 
     # determine file path
-    file_path = config_dict['input_data']['path']
+    file_path = config_dict[filetype]['path']
 
     return file_path
