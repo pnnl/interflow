@@ -81,48 +81,44 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True, output_fi
     # construct nested dictionary from input data
     f_dict = co.construct_nested_dictionary(df)
 
-    total_dict = {}
-    l5_dict = {}
-    l4_dict = {}
-    l3_dict = {}
-    l2_dict = {}
-    l1_dict = {}
-
-    fraction_dict = {}
+    # establish empty dictionaries to add calculated values to
+    total_dict = {}  # dictionary of sector totals
+    l5_dict = {}  # dictionary of level 5 granularity flows
+    l4_dict = {}  # dictionary of level 4 granularity flows
+    l3_dict = {}  # dictionary of level 3 granularity flows
+    l2_dict = {}  # dictionary of level 2 granularity flows
+    l1_dict = {}  # dictionary of level 1 granularity flows
 
     # initialize values
     for r in f_dict:
-        for type in f_dict[r]:
-            if type == 'A_collect':
-                for t1 in f_dict[r][type]:
-                    s1_value = 0
+        for f_type in f_dict[r]:
+            if f_type == 'A_collect':
+                for t1 in f_dict[r][f_type]:
                     l1_value = 0
                     t1_value = 0
-                    for t2 in f_dict[r][type][t1]:
+                    for t2 in f_dict[r][f_type][t1]:
                         l2_value = 0
-                        for t3 in f_dict[r][type][t1][t2]:
+                        for t3 in f_dict[r][f_type][t1][t2]:
                             l3_value = 0
-                            for t4 in f_dict[r][type][t1][t2][t3]:
-                                for t5 in f_dict[r][type][t1][t2][t3][t4]:
+                            for t4 in f_dict[r][f_type][t1][t2][t3]:
+                                for t5 in f_dict[r][f_type][t1][t2][t3][t4]:
                                     l4_value = 0
                                     l5_total_value = 0
-                                    for u1 in f_dict[r][type][t1][t2][t3][t4][t5]:
+                                    for u1 in f_dict[r][f_type][t1][t2][t3][t4][t5]:
                                         t1_name = f'{r}_{t1}_{u1}'
-                                        # collect direct draw flows (water withdraws or energy demand)
-                                        for s1 in f_dict[r][type][t1][t2][t3][t4][t5][u1]:
+                                        for s1 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1]:
                                             l1_name = f'{r}_{s1}_to_{t1}_{u1}'
-                                            s1_name = f'{r}_{s1}_{u1}'
-                                            for s2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1]:
+                                            for s2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1]:
                                                 l2_name = f'{r}_{s1}_{s2}_to_{t1}_{t2}_{u1}'
-                                                for s3 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2]:
+                                                for s3 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2]:
                                                     l3_name = f'{r}_{s1}_{s2}_{s3}_to_{t1}_{t2}_{t3}_{u1}'
-                                                    for s4 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
+                                                    for s4 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
                                                         l4_name = f'{r}_{s1}_{s2}_{s3}_{s4}_to_{t1}_{t2}_{t3}_{t4}_{u1}'
-                                                        for s5 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
+                                                        for s5 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
                                                             l5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
-                                                            for u2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5]:
-                                                                for p in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2]:
-                                                                    l5_value = f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2][p]
+                                                            for u2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5]:
+                                                                for p in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2]:
+                                                                    l5_value = f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2][p]
                                                                     l4_value = l4_value + l5_value
                                                                     l3_value = l3_value + l5_value
                                                                     l2_value = l2_value + l5_value
@@ -142,160 +138,110 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True, output_fi
                                                                     t1_value = t1_value + l5_value
                                                                     total_dict.update({t1_name: t1_value})
 
-                                                                    #s1_value = s1_value + l5_value
-                                                                    #total_dict.update({s1_name: s1_value})
-
-                 # calculate the fraction of source location that feed into each target
-                for t1 in f_dict[r][type]:
-                    for t2 in f_dict[r][type][t1]:
-                        for t3 in f_dict[r][type][t1][t2]:
-                            for t4 in f_dict[r][type][t1][t2][t3]:
-                                for t5 in f_dict[r][type][t1][t2][t3][t4]:
-                                    for u1 in f_dict[r][type][t1][t2][t3][t4][t5]:
-                                        t1_name = f'{r}_{t1}_{u1}'
-                                        for s1 in f_dict[r][type][t1][t2][t3][t4][t5][u1]:
-                                            for s2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1]:
-                                                for s3 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2]:
-                                                    for s4 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
-                                                        for s5 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
-                                                            l5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
-                                                            if l5_name in l5_dict:
-                                                                l5_fraction_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}_fraction'
-                                                                l5_fraction_value = l5_dict[l5_name]/total_dict[t1_name]
-                                                                fraction_dict.update({l5_fraction_name: l5_fraction_value})
-                                                            else:
-                                                                pass
-
             # calculate energy or water for water and energy sectors
-            elif type == 'B_calculate':
-
-                for t1 in f_dict[r][type]:
+            elif f_type == 'B_calculate':
+                for t1 in f_dict[r][f_type]:
                     l5t_value_total = 0
-                    for t2 in f_dict[r][type][t1]:
-                        for t3 in f_dict[r][type][t1][t2]:
-                            for t4 in f_dict[r][type][t1][t2][t3]:
-                                for t5 in f_dict[r][type][t1][t2][t3][t4]:
-                                    for u1 in f_dict[r][type][t1][t2][t3][t4][t5]:
+                    for t2 in f_dict[r][f_type][t1]:
+                        for t3 in f_dict[r][f_type][t1][t2]:
+                            for t4 in f_dict[r][f_type][t1][t2][t3]:
+                                for t5 in f_dict[r][f_type][t1][t2][t3][t4]:
+                                    for u1 in f_dict[r][f_type][t1][t2][t3][t4][t5]:
                                         t1_name = f'{r}_{t1}_{u1}'
                                         l5t_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
-                                        for s1 in f_dict[r][type][t1][t2][t3][t4][t5][u1]:
-                                            for s2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1]:
-                                                for s3 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2]:
-                                                    for s4 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
-                                                        for s5 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
-                                                            for u2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5]:
-                                                                for p in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2]:
+                                        for s1 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1]:
+                                            for s2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1]:
+                                                for s3 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2]:
+                                                    for s4 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
+                                                        for s5 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
+                                                            for u2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5]:
+                                                                for p in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2]:
                                                                     l5s_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_{u2}'
-                                                                    intensity = f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2][p]
-                                                                    if l5s_name in total_dict:
+                                                                    intensity = f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2][p]
+                                                                    if l5s_name not in total_dict:
+                                                                        pass
+                                                                    else:
                                                                         l5s_value = total_dict[l5s_name]  # flow value it's based on
                                                                         l5t_value = l5s_value * intensity  # calculated value
                                                                         l5t_value_total = l5t_value_total + l5t_value  # calculated total
                                                                         total_dict.update({l5t_name: l5t_value_total})
-                                                                    else:
-                                                                        pass
 
                                     # split water and energy values into individual sources
-            elif type == 'C_source':
+            elif f_type == 'C_source':
                 l5_s_value = 0
-                for t1 in f_dict[r][type]:
-                    for t2 in f_dict[r][type][t1]:
-                        for t3 in f_dict[r][type][t1][t2]:
-                            for t4 in f_dict[r][type][t1][t2][t3]:
-                                for t5 in f_dict[r][type][t1][t2][t3][t4]:
-                                    for u1 in f_dict[r][type][t1][t2][t3][t4][t5]:
-                                        for s1 in f_dict[r][type][t1][t2][t3][t4][t5][u1]:
+                for t1 in f_dict[r][f_type]:
+                    for t2 in f_dict[r][f_type][t1]:
+                        for t3 in f_dict[r][f_type][t1][t2]:
+                            for t4 in f_dict[r][f_type][t1][t2][t3]:
+                                for t5 in f_dict[r][f_type][t1][t2][t3][t4]:
+                                    for u1 in f_dict[r][f_type][t1][t2][t3][t4][t5]:
+                                        for s1 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1]:
                                             l1_name = f'{r}_{s1}_to_{t1}_{u1}'
                                             sl1_value = 0
-                                            for s2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1]:
+                                            for s2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1]:
                                                 l2_name = f'{r}_{s1}_{s2}_to_{t1}_{t2}_{u1}'
                                                 sl2_value = 0
-                                                for s3 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2]:
+                                                for s3 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2]:
                                                     l3_name = f'{r}_{s1}_{s2}_{s3}_to_{t1}_{t2}_{t3}_{u1}'
                                                     sl3_value = 0
-                                                    for s4 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
+                                                    for s4 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
                                                         l4_name = f'{r}_{s1}_{s2}_{s3}_{s4}_to_{t1}_{t2}_{t3}_{t4}_{u1}'
                                                         sl4_value = 0
-                                                        for s5 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
+                                                        for s5 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
                                                             l5t_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
-
-                                                            # PWD_total_total_total_total_mgd
                                                             l5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
-                                                            for u2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5]:
+                                                            for u2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5]:
                                                                 l5s_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_{u2}'
-                                                                for p in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2]:
-                                                                    # if it's not blank
-                                                                    if f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2][p] > 0:
-                                                                        if l5t_name in total_dict:
-                                                                            l5t_value = total_dict[l5t_name]
-                                                                            fraction = f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2][p]
-                                                                            sl5_value = l5t_value * fraction
-                                                                            sl4_value = sl4_value + sl5_value
-                                                                            sl3_value = sl3_value + sl5_value
-                                                                            sl2_value = sl2_value + sl5_value
-                                                                            sl1_value = sl1_value + sl5_value
-                                                                            # update output dictionaries
-                                                                            l1_dict.update({l1_name: sl1_value})
-                                                                            l2_dict.update({l2_name: sl2_value})
-                                                                            l3_dict.update({l3_name: sl3_value})
-                                                                            l4_dict.update({l4_name: sl4_value})
-                                                                            l5_dict.update({l5_name: sl5_value})
-
-
-                                                                            l5_s_value = l5_s_value + sl5_value
-                                                                            total_dict.update({l5s_name: l5_s_value})
-
-                                                                        else:
-                                                                            pass
+                                                                for p in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2]:
+                                                                    if l5t_name not in total_dict:
+                                                                        pass
                                                                     else:
-                                                                        if l5t_name in total_dict:
-                                                                            l5t_value = total_dict[l5t_name]
-                                                                            l5_fraction_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_{u1}_fraction'
-
-                                                                            fraction = fraction_dict[l5_fraction_name]
-                                                                            sl5_value = l5t_value * fraction
-                                                                            sl4_value = sl4_value + sl5_value
-                                                                            sl3_value = sl3_value + sl5_value
-                                                                            sl2_value = sl2_value + sl5_value
-                                                                            sl1_value = sl1_value + sl5_value
-                                                                            # update output dictionaries
-                                                                            l1_dict.update({l1_name: sl1_value})
-                                                                            l2_dict.update({l2_name: sl2_value})
-                                                                            l3_dict.update({l3_name: sl3_value})
-                                                                            l4_dict.update({l4_name: sl4_value})
-                                                                            l5_dict.update({l5_name: sl5_value})
-
-
-            elif type == 'D_discharge':
-
-                for t1 in f_dict[r][type]:
+                                                                        l5t_value = total_dict[l5t_name]
+                                                                        fraction = f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2][p]
+                                                                        sl5_value = l5t_value * fraction
+                                                                        sl4_value = sl4_value + sl5_value
+                                                                        sl3_value = sl3_value + sl5_value
+                                                                        sl2_value = sl2_value + sl5_value
+                                                                        sl1_value = sl1_value + sl5_value
+                                                                        # update output dictionaries
+                                                                        l1_dict.update({l1_name: sl1_value})
+                                                                        l2_dict.update({l2_name: sl2_value})
+                                                                        l3_dict.update({l3_name: sl3_value})
+                                                                        l4_dict.update({l4_name: sl4_value})
+                                                                        l5_dict.update({l5_name: sl5_value})
+                                                                        l5_s_value = l5_s_value + sl5_value
+                                                                        total_dict.update({l5s_name: l5_s_value})
+            elif f_type == 'D_discharge':
+                for t1 in f_dict[r][f_type]:
                     l5_s_value = 0
-                    for t2 in f_dict[r][type][t1]:
-                        for t3 in f_dict[r][type][t1][t2]:
-                            for t4 in f_dict[r][type][t1][t2][t3]:
-                                for t5 in f_dict[r][type][t1][t2][t3][t4]:
-                                    for u1 in f_dict[r][type][t1][t2][t3][t4][t5]:
-                                        for s1 in f_dict[r][type][t1][t2][t3][t4][t5][u1]:
+                    for t2 in f_dict[r][f_type][t1]:
+                        for t3 in f_dict[r][f_type][t1][t2]:
+                            for t4 in f_dict[r][f_type][t1][t2][t3]:
+                                for t5 in f_dict[r][f_type][t1][t2][t3][t4]:
+                                    for u1 in f_dict[r][f_type][t1][t2][t3][t4][t5]:
+                                        for s1 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1]:
                                             l1_name = f'{r}_{t1}_to_{s1}_{u1}'
                                             dl1_value = 0
-                                            for s2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1]:
+                                            for s2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1]:
                                                 l2_name = f'{r}_{t1}_{t2}_to_{s1}_{s2}_{u1}'
                                                 dl2_value = 0
-                                                for s3 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2]:
+                                                for s3 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2]:
                                                     l3_name = f'{r}_{t1}_{t2}_{t3}_to_{s1}_{s2}_{s3}_{u1}'
                                                     dl3_value = 0
-                                                    for s4 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
+                                                    for s4 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
                                                         l4_name = f'{r}_{t1}_{t2}_{t3}_{t4}_to_{s1}_{s2}_{s3}_{s4}_{u1}'
                                                         dl4_value = 0
-                                                        for s5 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
+                                                        for s5 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
                                                             l5t_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
                                                             l5_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_to_{s1}_{s2}_{s3}_{s4}_{s5}_{u1}'
-                                                            for u2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5]:
+                                                            for u2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5]:
                                                                 l5s_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_{u1}'
-                                                                for p in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2]:
-                                                                    if l5t_name in total_dict:
+                                                                for p in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2]:
+                                                                    if l5t_name not in total_dict:
+                                                                        pass
+                                                                    else:
                                                                         l5t_value = total_dict[l5t_name]
-                                                                        fraction = f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2][p]
+                                                                        fraction = f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2][p]
 
                                                                         # calculate split to discharge
                                                                         dl5_value = l5t_value * fraction
@@ -304,7 +250,7 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True, output_fi
                                                                         dl2_value = dl2_value + dl5_value
                                                                         dl1_value = dl1_value + dl5_value
 
-                                                                    # update output dictionaries
+                                                                        # update output dictionaries
                                                                         l1_dict.update({l1_name: dl1_value})
                                                                         l2_dict.update({l2_name: dl2_value})
                                                                         l3_dict.update({l3_name: dl3_value})
@@ -312,102 +258,74 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True, output_fi
                                                                         l5_dict.update({l5_name: dl5_value})
 
                                                                         l5_s_value = l5_s_value + dl5_value
-                                                                        total_dict.update({l5s_name:l5_s_value})
-                                                                    else:
-                                                                        pass
-                                # calculate the fraction of source location that feed into each target
-                for t1 in f_dict[r][type]:
-                    for t2 in f_dict[r][type][t1]:
-                        for t3 in f_dict[r][type][t1][t2]:
-                            for t4 in f_dict[r][type][t1][t2][t3]:
-                                for t5 in f_dict[r][type][t1][t2][t3][t4]:
-                                    for u1 in f_dict[r][type][t1][t2][t3][t4][t5]:
-                                        t1_name = f'{r}_{t1}_{u1}'
-                                        if t1_name in total_dict:
-                                            for s1 in f_dict[r][type][t1][t2][t3][t4][t5][u1]:
-                                                for s2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1]:
-                                                    for s3 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2]:
-                                                        for s4 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
-                                                            for s5 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
-                                                                l5_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_to_{s1}_{s2}_{s3}_{s4}_{s5}_{u1}'
-                                                                if l5_name in l5_dict:
-                                                                    l5_fraction_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}_fraction'
-                                                                    l5_fraction_value = l5_dict[l5_name] / \
-                                                                                        total_dict[t1_name]
-                                                                    fraction_dict.update({l5_fraction_name: l5_fraction_value})
-                                                                else:
-                                                                    pass
-                                        else:
-                                            pass
+                                                                        total_dict.update({l5s_name: l5_s_value})
+
     # loop through and remove circular loops
     if remove_loops:
         for r in f_dict:
-            for type in f_dict[r]:
-                if type == 'A_collect':
-                    for t1 in f_dict[r][type]:
-                        for t2 in f_dict[r][type][t1]:
-                            for t3 in f_dict[r][type][t1][t2]:
-                                for t4 in f_dict[r][type][t1][t2][t3]:
-                                    for t5 in f_dict[r][type][t1][t2][t3][t4]:
-                                        for u1 in f_dict[r][type][t1][t2][t3][t4][t5]:
-                                            for s1 in f_dict[r][type][t1][t2][t3][t4][t5][u1]:
-                                                for s2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1]:
-                                                    for s3 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2]:
-                                                        for s4 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
-                                                            for s5 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
-                                                                for u2 in f_dict[r][type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5]:
-                                                                    t1_name = f'{r}_{t1}_to_{t1}_{u1}'
-                                                                    s1_name = f'{r}_{s1}_to_{s1}_{u2}'
-                                                                    t2_name = f'{r}_{t1}_{t2}_to_{t1}_{t2}_{u1}'
-                                                                    s2_name = f'{r}_{s1}_{s2}_to_{s1}_{s2}_{u2}'
-                                                                    t3_name = f'{r}_{t1}_{t2}_{t3}_to_{t1}_{t2}_{t3}_{u1}'
-                                                                    s3_name = f'{r}_{s1}_{s2}_{s3}_to_{s1}_{s2}_{s3}_{u2}'
-                                                                    t4_name = f'{r}_{t1}_{t2}_{t3}_{t4}_to_{t1}_{t2}_{t3}_{t4}_{u1}'
-                                                                    s4_name = f'{r}_{s1}_{s2}_{s3}_{s4}_to_{s1}_{s2}_{s3}_{s4}_{u2}'
-                                                                    t5_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
-                                                                    s5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_to_{s1}_{s2}_{s3}_{s4}_{s5}_{u2}'
-                                                                    if t1_name in l1_dict:
-                                                                        del l1_dict[t1_name]
-                                                                    else:
-                                                                        pass
-                                                                    if t2_name in l2_dict:
-                                                                        del l2_dict[t2_name]
-                                                                    else:
-                                                                        pass
-                                                                    if t3_name in l3_dict:
-                                                                        del l3_dict[t3_name]
-                                                                    else:
-                                                                        pass
-                                                                    if t4_name in l4_dict:
-                                                                        del l4_dict[t4_name]
-                                                                    else:
-                                                                        pass
-                                                                    if t5_name in l5_dict:
-                                                                        del l5_dict[t5_name]
-                                                                    else:
-                                                                        pass
-
-                                                                    if s1_name in l1_dict:
-                                                                        del l1_dict[s1_name]
-                                                                    else:
-                                                                        pass
-                                                                    if s2_name in l2_dict:
-                                                                        del l2_dict[s2_name]
-                                                                    else:
-                                                                        pass
-                                                                    if s3_name in l3_dict:
-                                                                        del l3_dict[s3_name]
-                                                                    else:
-                                                                        pass
-                                                                    if s4_name in l4_dict:
-                                                                        del l4_dict[s4_name]
-                                                                    else:
-                                                                        pass
-                                                                    if s5_name in l5_dict:
-                                                                        del l5_dict[s5_name]
-
-                                                                    else:
-                                                                        pass
+            for f_type in f_dict[r]:
+                for t1 in f_dict[r][f_type]:
+                    for t2 in f_dict[r][f_type][t1]:
+                        for t3 in f_dict[r][f_type][t1][t2]:
+                            for t4 in f_dict[r][f_type][t1][t2][t3]:
+                                for t5 in f_dict[r][f_type][t1][t2][t3][t4]:
+                                    for u1 in f_dict[r][f_type][t1][t2][t3][t4][t5]:
+                                        for s1 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1]:
+                                            for s2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1]:
+                                                for s3 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2]:
+                                                    for s4 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
+                                                        for s5 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
+                                                            for u2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5]:
+                                                                t1_name = f'{r}_{t1}_to_{t1}_{u1}'
+                                                                s1_name = f'{r}_{s1}_to_{s1}_{u2}'
+                                                                t2_name = f'{r}_{t1}_{t2}_to_{t1}_{t2}_{u1}'
+                                                                s2_name = f'{r}_{s1}_{s2}_to_{s1}_{s2}_{u2}'
+                                                                t3_name = f'{r}_{t1}_{t2}_{t3}_to_{t1}_{t2}_{t3}_{u1}'
+                                                                s3_name = f'{r}_{s1}_{s2}_{s3}_to_{s1}_{s2}_{s3}_{u2}'
+                                                                t4_name = f'{r}_{t1}_{t2}_{t3}_{t4}_to_{t1}_{t2}_{t3}_{t4}_{u1}'
+                                                                s4_name = f'{r}_{s1}_{s2}_{s3}_{s4}_to_{s1}_{s2}_{s3}_{s4}_{u2}'
+                                                                t5_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
+                                                                s5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_to_{s1}_{s2}_{s3}_{s4}_{s5}_{u2}'
+                                                                if t1_name in l1_dict:
+                                                                    del l1_dict[t1_name]
+                                                                else:
+                                                                    pass
+                                                                if t2_name in l2_dict:
+                                                                    del l2_dict[t2_name]
+                                                                else:
+                                                                    pass
+                                                                if t3_name in l3_dict:
+                                                                    del l3_dict[t3_name]
+                                                                else:
+                                                                    pass
+                                                                if t4_name in l4_dict:
+                                                                    del l4_dict[t4_name]
+                                                                else:
+                                                                    pass
+                                                                if t5_name in l5_dict:
+                                                                    del l5_dict[t5_name]
+                                                                else:
+                                                                    pass
+                                                                if s1_name in l1_dict:
+                                                                    del l1_dict[s1_name]
+                                                                else:
+                                                                    pass
+                                                                if s2_name in l2_dict:
+                                                                    del l2_dict[s2_name]
+                                                                else:
+                                                                    pass
+                                                                if s3_name in l3_dict:
+                                                                    del l3_dict[s3_name]
+                                                                else:
+                                                                    pass
+                                                                if s4_name in l4_dict:
+                                                                    del l4_dict[s4_name]
+                                                                else:
+                                                                    pass
+                                                                if s5_name in l5_dict:
+                                                                    del l5_dict[s5_name]
+                                                                else:
+                                                                    pass
     else:
         pass
 
