@@ -1,4 +1,5 @@
 from .reader import *
+import pandas as pd
 import flow.construct as co
 import flow.deconstruct as de
 
@@ -35,30 +36,47 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True, output_fi
                                         region(s)
 
     """
+    # check that the granularity level specified is within range
+    acceptable_values = [1, 2, 3, 4, 5]
+    if level in acceptable_values:
+        pass
+    else:
+        m = 'incorrect level of granularity specified. Must be an integer between 1 and 5, inclusive.'
+        raise ValueError(m)
 
     # load baseline data
     if data is None:
-        df = read_data()
-
+        df = read_data()  # read DataFrame from configuration file
     else:
-        df = data
+        df = data  # or read DataFrame from parameter input
 
+    # check to make sure data is a DataFrame and has correct number of columns
+    if type(df) == pd.DataFrame:
+        if len(df.columns.to_list()) == 16:
+            pass
+        else:
+            m = 'Input data does not have the correct number of columns. 16 required.'
+            raise ValueError(m)
+    else:
+        m = 'Input data not in DataFrame format'
+        raise TypeError(m)
+
+    # if no region is provided as a parameter
     if region_name is None:
         df = df
     else:
-        # check that region_name is in the input data
+        # check that provided region_name is in the input data
         region_column = df.columns[0]
         if region_name in data[region_column].tolist():
             pass
         else:
-            m = 'Region specified is not in the input data.'
+            m = 'Region provided is not in the input data.'
             raise ValueError(m)
 
+        # reduce input DataFrame to region specified
         df[df.columns[0]] = df[df.columns[0]].astype(str)
         reg_col = df.columns[0]
         df = df.loc[df[reg_col] == region_name]
-
-
 
     # construct nested dictionary from input data
     f_dict = co.construct_nested_dictionary(df)
@@ -247,8 +265,6 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True, output_fi
                                                                             l4_dict.update({l4_name: sl4_value})
                                                                             l5_dict.update({l5_name: sl5_value})
 
-                                                                            check_dict.update({l5t_name: l5t_value})
-                                                                            check_dict.update({l5_name: sl5_value})
 
             elif type == 'D_discharge':
 
@@ -258,9 +274,7 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True, output_fi
                         for t3 in f_dict[r][type][t1][t2]:
                             for t4 in f_dict[r][type][t1][t2][t3]:
                                 for t5 in f_dict[r][type][t1][t2][t3][t4]:
-
                                     for u1 in f_dict[r][type][t1][t2][t3][t4][t5]:
-
                                         for s1 in f_dict[r][type][t1][t2][t3][t4][t5][u1]:
                                             l1_name = f'{r}_{t1}_to_{s1}_{u1}'
                                             dl1_value = 0
