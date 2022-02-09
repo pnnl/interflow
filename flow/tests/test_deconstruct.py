@@ -20,6 +20,15 @@ class TestDeconstruct(unittest.TestCase):
         output_columns5 = output5.columns.to_list()
         self.assertEqual(col5, output_columns5)
 
+        # test that the 'to' column is not in the output DataFrame
+        output5_column_list = output5.columns.to_list()
+        not_in_list = "to" not in output5_column_list
+        self.assertTrue(not_in_list)
+
+        # no null data rows
+        rows_with_null = [index for index, row in output5.iterrows() if row.isnull().any()]
+        self.assertEqual(rows_with_null, [])
+
         # create a sample level4 dictionary to test with
         level4_dict = {'region1_T1_T2_T3_T4_to_S1_S2_S3_S4_units': 100}
 
@@ -28,6 +37,15 @@ class TestDeconstruct(unittest.TestCase):
         output4 = deconstruct_dictionary(level4_dict)
         output_columns4 = output4.columns.to_list()
         self.assertEqual(col4, output_columns4)
+
+        # test that the 'to' column is not in the output4 DataFrame
+        output4_column_list = output4.columns.to_list()
+        not_in_list = "to" not in output4_column_list
+        self.assertTrue(not_in_list)
+
+        # no null data rows
+        rows_with_null = [index for index, row in output4.iterrows() if row.isnull().any()]
+        self.assertEqual(rows_with_null, [])
 
         # create a sample level3 dictionary to test with
         level3_dict = {'region1_T1_T2_T3_to_S1_S2_S3_units': 100}
@@ -38,6 +56,15 @@ class TestDeconstruct(unittest.TestCase):
         output_columns3 = output3.columns.to_list()
         self.assertEqual(col3, output_columns3)
 
+        # test that the 'to' column is not in the output3 DataFrame
+        output3_column_list = output3.columns.to_list()
+        not_in_list = "to" not in output3_column_list
+        self.assertTrue(not_in_list)
+
+        # no null data rows
+        rows_with_null = [index for index, row in output3.iterrows() if row.isnull().any()]
+        self.assertEqual(rows_with_null, [])
+
         # create a sample level2 dictionary to test with
         level2_dict = {'region_T1_T2_to_S1_S2_units': 100}
 
@@ -47,6 +74,15 @@ class TestDeconstruct(unittest.TestCase):
         output_columns2 = output2.columns.to_list()
         self.assertEqual(col2, output_columns2)
 
+        # test that the 'to' column is not in the output2 DataFrame
+        output2_column_list = output2.columns.to_list()
+        not_in_list = "to" not in output2_column_list
+        self.assertTrue(not_in_list)
+
+        # no null data rows
+        rows_with_null = [index for index, row in output2.iterrows() if row.isnull().any()]
+        self.assertEqual(rows_with_null, [])
+
         # create a sample level1 dictionary to test with
         level1_dict = {'region_T1_to_S1_units': 100}
 
@@ -55,6 +91,15 @@ class TestDeconstruct(unittest.TestCase):
         output1 = deconstruct_dictionary(level1_dict)
         output_columns1 = output1.columns.to_list()
         self.assertEqual(col1, output_columns1)
+
+        # test that the 'to' column is not in the output1 DataFrame
+        output1_column_list = output1.columns.to_list()
+        not_in_list = "to" not in output1_column_list
+        self.assertTrue(not_in_list)
+
+        # no null data rows
+        rows_with_null = [index for index, row in output1.iterrows() if row.isnull().any()]
+        self.assertEqual(rows_with_null, [])
 
         # create a sample level dictionary with too many variable naming levels
         level6_dict = {'region1_T1_T2_T3_T4_T5_T6_to_S1_S2_S3_S4_S5_units': 100}
@@ -70,11 +115,7 @@ class TestDeconstruct(unittest.TestCase):
         with self.assertRaises(ValueError):
             deconstruct_dictionary(level0_dict)
 
-        # test that the 'to' column is not in the output DataFrame
-        output5_column_list = output5.columns.to_list()
 
-        not_in_list = "to" not in output5_column_list
-        self.assertTrue(not_in_list)
 
 if __name__ == '__main__':
     unittest.main()
