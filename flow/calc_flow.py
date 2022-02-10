@@ -51,16 +51,12 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True, output_fi
     else:
         df = data  # or read DataFrame from parameter input
 
-    # check to make sure data is a DataFrame and has correct number of columns
-    if type(df) == pd.DataFrame:
-        if len(df.columns.to_list()) == 16:
-            pass
-        else:
-            m = 'Input data does not have the correct number of columns. 16 required.'
-            raise ValueError(m)
+    # check to make sure data has correct number of columns
+    if len(df.columns.to_list()) == 16:
+        pass
     else:
-        m = 'Input data not in DataFrame format'
-        raise TypeError(m)
+        m = 'Input data does not have the correct number of columns. 16 required.'
+        raise ValueError(m)
 
     # if no region is provided as a parameter
     if region_name is None:
@@ -94,7 +90,6 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True, output_fi
     for r in f_dict:
         for f_type in f_dict[r]:
             if f_type == 'A_collect':
-
                 # collect input flow values
                 for t1 in f_dict[r][f_type]:
                     l1_value = 0

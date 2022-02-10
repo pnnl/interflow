@@ -1,5 +1,4 @@
 import unittest
-
 from flow.construct import *
 from flow.reader import *
 
@@ -10,7 +9,7 @@ class TestConstruct(unittest.TestCase):
     def test_construct_nested_dictionary(self):
 
         # load data
-        sample_data = read_data()
+        sample_data = read_input_data()
 
         # grab a subset of the sample
         first_region = sample_data[sample_data.columns[0]].iloc[0]

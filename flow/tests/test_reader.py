@@ -10,7 +10,7 @@ class TestReader(unittest.TestCase):
         """Ensure we get a dataframe as output."""
 
         # load the data
-        df = read_data()
+        df = read_input_data()
 
         # returns a str
         self.assertTrue(type(df) == pd.DataFrame)
