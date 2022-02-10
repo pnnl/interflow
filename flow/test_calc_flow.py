@@ -389,7 +389,7 @@ class TestCalcFlow(unittest.TestCase):
         # test that the value where the split occurs is calculated correctly
         self.assertEqual(df5.iloc[0]['value'], 10)
         self.assertEqual(df5.iloc[1]['value'], 50)
-        
+
 
 if __name__ == '__main__':
     unittest.main()
