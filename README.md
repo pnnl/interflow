@@ -1,21 +1,19 @@
 [![build](https://github.com/kmongird/flow/actions/workflows/build.yml/badge.svg)](https://github.com/kmongird/flow/actions/workflows/build.yml)
 
-# WPISF
+# flow
 
-Water & Power Interconnection Sankey Flows (WPISF) is an open-source Python-based Jupyter Notebook for compiling and computing flow data across and within the water and energy sectors at the U.S. Electricity Grid interconnection-level. The notebook was developed as part of the Integrated Water Power Resilience project at Pacific Northwest National Laboratory.
+flow is an open-source python package for compiling and computing multi-unit flow data across sectors. The package was developed as part of the Integrated Water Power Resilience project at Pacific Northwest National Laboratory.
 
 ## Purpose
-The dependencies of the water sector on energy and the energy sector on water can lead to multi-faceted and multi-scale vulnerabilities and risks that are further exacerbated in a changing climate. Whether it is threats to water availability for electricity generation or public water supply sources facing the impacts of a power disruption event, the crossovers and interconnections between water and energy are ubiquitous and can have large impacts. While previous research has explored energy-water interconnection visualizations and data at the country-, state-, or even application-level for the U.S., this notebook calculates flows at the U.S. electricity grid interconnection scale. Data output from this notebook provides water and energy flow values for the Western Interconnection, Eastern Interconnection, and the Electric Reliability Council of Texas (ERCOT). 
+The interdependencies between sectors such as water and energy are complex. ...
 
-The WPISF notebook was created to:
+The flow package was created to:
 
-* Reflect the flows between and within the water and energy sectors within the true decision and operational boundaries of the larger electricity sector, 
-* To provide informed high-level water-energy dependency insights,
-* Find similarities and differences between the structure of the three U.S. electricity interconnects, 
-* Identify the relative intensities between the water and energy sectors at the interconnect-level,
-* Provide data output that can be used to generate visualizations of the flows between and within the energy and water sectors.
+* Provide a framework to aggregate and track how energy, water, or alternative units flow through various sectors within a region
+* Build additional flows in alternative units based on the flows in another
+* Provide data output that can be used to generate visualizations and analysis between and within any number of sectors.
 
-The visualization of the flows and interconnections between water and energy has been done at various scales and levels and in a variety of ways. Sankey diagrams, which provide a proportional representation of processes and major transfers within a system, are one of the most popular visualization methods for this research area. Looking from a high-level perspective, very few diagrams are available that represent the water and energy sectors equally with most diagrams choosing one sector or the other to focus on. The figure below outlines the structure of flows and dependencies across and within the water and energy sectors that are calculated within the notebook.
+The visualization of the flows and interconnections between water and energy has been done at various scales and levels and in a variety of ways. Sankey diagrams, which provide a proportional representation of processes and major transfers within a system, are one of the most popular visualization methods for this research area but can be notoriously difficult to build data for.
 
 ![image](https://user-images.githubusercontent.com/74064300/135877886-91cac5ec-614a-4fee-b9d2-3561bb69d62c.png)
 
