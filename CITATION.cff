@@ -7,7 +7,7 @@ authors:
 - family-names: "Oikonomou"
   given-names: "Konstantinos"
 - family-names: "Homer"
-  given-names: "Juliet"'
+  given-names: "Juliet"
 - family-names: "Rice"
   given-names: "Jennie S."
 title: "flow: a python package for building sectoral interdepencency datasets"
