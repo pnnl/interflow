@@ -1,22 +1,19 @@
 from .calc_flow import *
 
 
-def analyze_region(data:pd.DataFrame, region_name:str, sector_name:str, unit_type:str):
+def analyze_region(data:pd.DataFrame, region_name:str):
     """Determines top flow values to a specified sector in a single region, in specified units.
     """
     # load data
     df = data
 
-    # get unit list
-    unit_list = df['units'].unique.list()
-
-
-
-
-
     df = df[df.region == region_name]
-    df = df[df.t1 == sector_name]
-    df = df[df.units == unit_type]
+
+    col_sort_list = df.columns[:-2]
+
+    df.sort_values(by=col_sort_list, inplace=True)
+
+    return df
 
 
 
