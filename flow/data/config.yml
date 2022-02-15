@@ -6,3 +6,6 @@ input_data:
 
 output_data:
   path: 'C:\Users\mong275\Local Files\Repos\flow\flow\data\output\'
+
+geospatial_data:
+  path: ''

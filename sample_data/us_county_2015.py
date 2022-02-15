@@ -432,6 +432,7 @@ def calc_pws_deliveries() -> pd.DataFrame:
 
 def prep_pws_to_pwd():
     '''preparing variables for connection'''
+    # TODO, need to add pws interbasin transfers to this total
 
     df = prep_water_use_2015(variables=['FIPS', 'State', 'County',
                                         'PWS_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
@@ -710,6 +711,8 @@ def calc_discharge_fractions():
     df_out['AGI_reclaimed_wastewater_import_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = gi_rww_sd
 
     df_out = pd.merge(df_loc, df_out, how='left', on=['FIPS', 'State'])
+
+    # TODO check that there are no inland aquaculture that are discharging to the ocean
 
     return df_out
 
@@ -1905,7 +1908,7 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
     # establish variables
     acc_gravity = 9.81  # Acceleration of gravity  (m/s^2)
     water_density = 997  # Water density (kg/m^3)
-    ag_pump_eff = .65  # assumed pump efficiency rate
+    ag_pump_eff = .465  # assumed pump efficiency rate
     psi_psf_conversion = 2.31  # conversion of pounds per square inch (psi) to pounds per square foot (psf)
     m3_mg_conversion = 3785.41178  # conversion factor for m^3 to million gallons
     joules_kwh_conversion = 1 / 3600000  # conversion factor from joules to kWh
@@ -1916,8 +1919,7 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
     head_ft = psi_psf_conversion * df["average_operating_pressure_psi"]  # conversion of psi to head (pounds per sqft)
     diff_height_gw = meter_ft_conversion * (df["average_well_depth_ft"] + head_ft)  # calc. differential height (m)
     pump_power_gw = (water_density * diff_height_gw * acc_gravity * m3_mg_conversion) / ag_pump_eff  # joules/MG
-    df[
-        'groundwater_pumping_bbtu_per_mg'] = pump_power_gw * joules_kwh_conversion * kwh_bbtu_conversion  # power intensity (bbtu/mg)
+    df['groundwater_pumping_bbtu_per_mg'] = pump_power_gw * joules_kwh_conversion * kwh_bbtu_conversion  # power intensity (bbtu/mg)
 
     # calculating average groundwater pumping to apply to regions without values
     groundwater_pumping_bbtu_per_mg_avg = df['groundwater_pumping_bbtu_per_mg'].mean()
@@ -1977,8 +1979,8 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
 
     fgw_treat = convert_kwh_bbtu(205)
     fsw_treat = convert_kwh_bbtu(405)
-    sgw_treat = convert_kwh_bbtu(13805)
-    ssw_treat = convert_kwh_bbtu(14005)
+    sgw_treat = convert_kwh_bbtu(12000)
+    ssw_treat = convert_kwh_bbtu(12000)
     dist = convert_kwh_bbtu(1040)
 
     out_df[
@@ -2101,8 +2103,10 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     df_west["electricity_interbasin_bbtu"] = (df_west["Mwh/yr (Low)"] + df_west[
         "Mwh/yr (High)"]) / 2  # average energy use by row
     df_west = df_west.groupby(["FIPS"], as_index=False).sum()  # group by county fips code
-    df_west["electricity_interbasin_bbtu"] = convert_mwh_bbtu(
-        df_west["electricity_interbasin_bbtu"])  # convert mwh values to bbtu
+    df_west["electricity_interbasin_bbtu"] = convert_mwh_bbtu(df_west["electricity_interbasin_bbtu"])  # convert mwh values to bbtu
+
+    # convert to bbtu per day rather than bbtu per year
+    df_west["electricity_interbasin_bbtu"] = df_west["electricity_interbasin_bbtu"]/ 365
 
     df_west['water_interbasin_mgd'] = np.where(df_west['cfs'] > 0, cfs_mgd * df_west['cfs'], 0)
     df_west['water_interbasin_mgd'] = np.where((df_west['cfs'] == 0) & (df_west['Water Delivery (AF/yr)'] > 0),
