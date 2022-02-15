@@ -1,23 +1,6 @@
 from .calc_flow import *
 
 
-def analyze_region(data:pd.DataFrame, region_name:str):
-    """Determines top flow values to a specified sector in a single region, in specified units.
-    """
-    # load data
-    df = data
-
-    df = df[df.region == region_name]
-
-    col_sort_list = df.columns[:-2]
-
-    df.sort_values(by=col_sort_list, inplace=True)
-
-    return df
-
-
-
-
 def group_results(df, output_level=1):
 
     reg_col_name = df.columns[0]

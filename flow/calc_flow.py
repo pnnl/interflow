@@ -86,6 +86,7 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True, output_fi
     l2_dict = {}  # dictionary of level 2 granularity flows
     l1_dict = {}  # dictionary of level 1 granularity flows
 
+
     # loop through data
     for r in f_dict:
         for f_type in f_dict[r]:

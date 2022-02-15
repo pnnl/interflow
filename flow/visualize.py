@@ -3,7 +3,7 @@ import plotly.express as px
 from .analyze import *
 
 
-def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=None, strip=None):
+def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=None, strip=None, remove_sectors=None):
     """Plots interactive sankey diagram(s) for a given region at a given level of granularity. At least one unit type is
     required. If no region name is specified, the flow data provided must be for a single region. Contains the option
     to strip strings from node names to remove replicated placeholder names such as 'total'.
@@ -27,10 +27,21 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
         :param strip:                       Optional parameter. Provides a string to remove from variable labels.
         :type strip:                        string
 
+        :param quantile_cap:                Optional parameter to remove all values greater than specified quantile.
+        :type quantile_cap:                 flt
+
         :return:                            interactive sankey diagram of flow values
             """
     # get data
     df = data
+
+    # remove sectors specified
+    if remove_sectors is None:
+        pass
+    else:
+        subset = remove_sectors
+        df = df[~df['S1'].isin(subset)]
+        df = df[~df['T1'].isin(subset)]
 
     # reduce data to appropriate units
     df_1 = df[df.units == unit_type1]
@@ -44,11 +55,15 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
             m = 'More than one region included in dataset, reduce dataset to single region ' \
                 'or specify desired region.'
             raise ValueError(m)
+
     # reduce to specified region
     else:
         df_1 = df_1[df_1.region == region_name]
 
     group_results(df_1, output_level=output_level)
+
+
+
 
     available_levels = [1, 2, 3, 4, 5]
     remove = f'-{strip}'

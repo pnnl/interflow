@@ -3389,7 +3389,7 @@ def combine_data():
     return out_df
 
 
-x = combine_data()
+x = prep_electricity_generation()
 # for col in x.columns:
 #    print(col)
 x.to_csv(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv", index=False)
