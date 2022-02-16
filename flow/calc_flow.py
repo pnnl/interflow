@@ -102,7 +102,6 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True, output_fi
                             for t4 in f_dict[r][f_type][t1][t2][t3]:
                                 for t5 in f_dict[r][f_type][t1][t2][t3][t4]:
                                     l4_value = 0
-                                    l5_total_value = 0
                                     for u1 in f_dict[r][f_type][t1][t2][t3][t4][t5]:
                                         t1_name = f'{r}_{t1}_{u1}'
                                         for s1 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1]:
@@ -116,6 +115,7 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True, output_fi
                                                         for s5 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
                                                             l5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
                                                             for u2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5]:
+                                                                l5_total_value = 0
                                                                 for p in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2]:
 
                                                                     # collect level 5 flow value
