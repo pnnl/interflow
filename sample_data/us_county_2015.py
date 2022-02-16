@@ -1364,6 +1364,8 @@ def prep_electricity_fuel() -> pd.DataFrame:
     Prepares fuel and generation data by power plant from EIA.
     :return:
     '''
+
+    # assumed efficiency level to fill missing values
     EFFICIENCY = .3
 
     # read in electricity generation data by power plant id
@@ -1508,7 +1510,7 @@ def prep_electricity_cooling() -> pd.DataFrame:
                          "-nr-": "surfacewater",  # all blanks assumed to be surface water
                          "GW & PD": "groundwater",  # all GW+PD are assumed to be groundwater only
                          "GW & SW": 'surfacewater',  # all GW+SW combinations are assumed to be SW
-                         "OT": "surfacewater"
+                         "OT": "surfacewater"  # all other assumed to be surface water
                          }
 
     water_type_dict = {'FR': 'fresh',
@@ -1545,12 +1547,14 @@ def prep_electricity_cooling() -> pd.DataFrame:
         df_cooling['WATER_TYPE_CODE'] == "SA",
         df_cooling['WITHDRAWAL'] - df_cooling['CONSUMPTION'],
         df_cooling['OCEAN_DISCHARGE_MGD'])
+
     # channels
     df_cooling['OCEAN_DISCHARGE_MGD'] = np.where(
         df_cooling['NAME_OF_WATER_SOURCE'].str.contains('Channel', regex=False) &
         df_cooling['WATER_TYPE_CODE'] == "SA",
         df_cooling['WITHDRAWAL'] - df_cooling['CONSUMPTION'],
         df_cooling['OCEAN_DISCHARGE_MGD'])
+
     # sounds
     df_cooling['OCEAN_DISCHARGE_MGD'] = np.where(df_cooling['NAME_OF_WATER_SOURCE'].str.contains('Sound', regex=False) &
                                                  df_cooling['WATER_TYPE_CODE'] == "SA",
@@ -1561,7 +1565,7 @@ def prep_electricity_cooling() -> pd.DataFrame:
     df_cooling['SURFACE_DISCHARGE_MGD'] = np.where(df_cooling['OCEAN_DISCHARGE_MGD'] == 0,
                                                    df_cooling['WITHDRAWAL'] - df_cooling['CONSUMPTION'],
                                                    0)
-    # Fix water source and type data
+
     # all surface water without a type is assumed to be fresh
     df_cooling['WATER_TYPE_CODE'] = np.where((df_cooling["WATER_SOURCE_CODE"] == "SW")
                                              & (df_cooling["WATER_TYPE_CODE"] == "-nr-"),
@@ -1579,8 +1583,11 @@ def prep_electricity_cooling() -> pd.DataFrame:
     df_cooling['WATER_TYPE_CODE'].fillna('fresh', inplace=True)
     df_cooling['WATER_SOURCE_CODE'].fillna('surfacewater', inplace=True)
 
+    # reduce dataset
     df_cooling = df_cooling[['EIA_PLANT_ID', 'COOLING_TYPE', 'WATER_SOURCE_CODE', 'WATER_TYPE_CODE', 'WITHDRAWAL',
                              'CONSUMPTION', 'SURFACE_DISCHARGE_MGD', 'OCEAN_DISCHARGE_MGD']]
+
+    # rename plant ID column
     df_cooling = df_cooling.rename(columns={'EIA_PLANT_ID': 'plant_code'})
 
     # merge cooling information by plant ID with generation data by plant ID
@@ -1589,6 +1596,7 @@ def prep_electricity_cooling() -> pd.DataFrame:
     # create a list of generation that does not require cooling
     no_cool_list = ['hydro', 'wind', 'solar', 'geothermal']
 
+    # fill values for power plants with no cooling (renewables)
     for item in no_cool_list:
         df_cooling["COOLING_TYPE"] = np.where(df_cooling['fuel_type'] == item, "NoCooling", df_cooling["COOLING_TYPE"])
         df_cooling["WATER_SOURCE_CODE"] = np.where(df_cooling['fuel_type'] == item, "NoCooling",
@@ -1615,8 +1623,7 @@ def prep_electricity_cooling() -> pd.DataFrame:
     df_cooling["SURFACE_DISCHARGE_MGD"].fillna(df_cooling["water_withdrawal_mgd"] - df_cooling["water_consumption_mgd"])
     df_cooling['OCEAN_DISCHARGE_MGD'].fillna(0, inplace=True)
 
-    # convert withdrawal,
-
+    # reduce output dataset
     df_cooling = df_cooling[['plant_code', 'fuel_type', 'prime_mover', 'fuel_amt', 'generation_bbtu', 'FIPS',
                              'COOLING_TYPE', 'WATER_SOURCE_CODE', 'WATER_TYPE_CODE', 'WITHDRAWAL', 'CONSUMPTION',
                              'SURFACE_DISCHARGE_MGD', 'OCEAN_DISCHARGE_MGD']]
