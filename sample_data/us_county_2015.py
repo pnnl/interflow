@@ -1620,7 +1620,8 @@ def prep_electricity_cooling() -> pd.DataFrame:
     df_cooling["CONSUMPTION"].fillna(df_cooling["water_consumption_mgd"], inplace=True)
 
     # all filled values are assumed to be discharged to the surface
-    df_cooling["SURFACE_DISCHARGE_MGD"].fillna(df_cooling["water_withdrawal_mgd"] - df_cooling["water_consumption_mgd"])
+    df_cooling["SURFACE_DISCHARGE_MGD"].fillna(df_cooling["water_withdrawal_mgd"] - df_cooling["water_consumption_mgd"],
+                                               inplace=True)
     df_cooling['OCEAN_DISCHARGE_MGD'].fillna(0, inplace=True)
 
     # reduce output dataset
@@ -1637,6 +1638,8 @@ def prep_generation_fuel_flows() -> pd.DataFrame:
     
     :return: 
     '''
+
+
     EFFICIENCY_ASSUMPTION = .30
 
     # load electricity generation and cooling data
@@ -1664,19 +1667,15 @@ def prep_generation_fuel_flows() -> pd.DataFrame:
     # split out a separate fuel amount dataframe
     df_fuel = df[['FIPS', 'fuel_amt', 'fuel_supply_name']]
 
-    #TODO build energy production demand to EGS flows
-
-
-
-    # split out a separate generation amount dataframe
-    df_gen = df[['FIPS', 'generation_bbtu', 'elec_demand_name']]
-
-    # TODO build electricity generation to electricity demand
-
-
+    # pivot to get fuel flows to electricity generation as columns
+    df_fuel = pd.pivot_table(df_fuel, values='fuel_amt', index=['FIPS'], columns=['fuel_supply_name'],
+                            aggfunc=np.sum)  # pivot
+    df_fuel = df_fuel.reset_index()  # reset index to remove multi-index from pivot table
+    df_fuel = df_fuel.rename_axis(None, axis=1)  # drop index name
+    df_fuel.fillna(0, inplace=True)  # fill nan with zero
 
     # split out a separate rejected energy amount dataframe
-    df_rej = df[['FIPS', 'fuel_amt', 'generation_bbtu', 'rej_energy_name']].copy()
+    df_rej = df[['FIPS', 'fuel_amt', 'generation_bbtu', 'rej_energy_name', 'elec_demand_name']].copy()
 
     # calculated rejected energy flows
     df_rej['rejected_energy_bbtu'] = np.where(df_rej['fuel_amt'] > 0,
@@ -1693,16 +1692,61 @@ def prep_generation_fuel_flows() -> pd.DataFrame:
                                               df_rej['rejected_energy_bbtu'] / df_rej['fuel_amt'],
                                               0)
 
-    # pivot the rejected energy dataframe to get a single row for each FIPS
+    # calculate the amount of discharge to electricity generation demand as 1 - loss fraction
+    df_rej['energy_service_frac'] = 1 - df_rej['rejected_energy_frac']
+
+    # create a copy of the rejected energy dataframe to use later for energy service discharge
+    df_esv = df_rej.copy()
+
+    # pivot rejected energy dataframe to get a single row for each FIPS and rejected energy fractions as columns
     df_rej = pd.pivot_table(df_rej, values='rejected_energy_frac', index=['FIPS'], columns=['rej_energy_name'],
                             aggfunc=np.mean)  # pivot
     df_rej = df_rej.reset_index()  # reset index to remove multi-index from pivot table
     df_rej = df_rej.rename_axis(None, axis=1)  # drop index name
     df_rej.fillna(0, inplace=True)  # fill nan with zero
 
-    return df_rej
+    # pivot energy service (discharge to demand) to get a single row for each FIPS
+    df_esv = pd.pivot_table(df_esv, values='energy_service_frac', index=['FIPS'], columns=['elec_demand_name'],
+                            aggfunc=np.mean)  # pivot
+    df_esv = df_esv.reset_index()  # reset index to remove multi-index from pivot table
+    df_esv = df_esv.rename_axis(None, axis=1)  # drop index name
+    df_esv.fillna(0, inplace=True)  # fill nan with zero
+
+    return df_esv
 
 #TODO create an additional function for water flows in electricity generation
+
+def prep_electricity_cooling_flows() -> pd.DataFrame:
+
+    # read in prepared cooling water data
+    df = prep_electricity_cooling()
+
+    # remove rows with no cooling water withdrawals
+    df = df[df.WITHDRAWAL > 0]
+
+    # create a cooling water withdrawal name
+    df['withdrawal_name'] = 'WSW_' + df['WATER_TYPE_CODE'] + "_" + df['WATER_SOURCE_CODE'] + "_total_total_mgd"
+
+    # create a generation target name
+    df['generation_target_name'] = "EGS_" + df['fuel_type'] + "_" + df['prime_mover'] + "_" + df['COOLING_TYPE'] + "_total_mgd"
+
+    # create a consumption fraction discharge name
+    df['consumption_name'] = "CMP_total_total_total_total_mgd_fraction"
+
+    # create a surface discharge name
+    df['sd_name'] = "SRD_total_total_total_total_mgd_fraction"
+
+    # create an ocean discharge name
+    df['od_name'] = "OCD_total_total_total_total_mgd_fraction"
+
+    # create a copy of the dataframe to split out withdrawal flows
+    df_withdrawal = df.copy()
+
+
+
+
+
+    return df
 
 
 
@@ -3752,7 +3796,7 @@ def remove_petroleum_double_counting_from_mining():
 #    return out_df
 
 
-x = prep_generation_fuel_flows()
+x = prep_electricity_cooling_flows()
 # for col in x.columns:
 #    print(col)
 x.to_csv(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv", index=False)
