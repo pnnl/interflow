@@ -210,18 +210,14 @@ def calc_population_county_weight(df: pd.DataFrame) -> pd.DataFrame:
     return df_state
 
 
-
-
-
-# TODO start here
 def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
     """prepping 1995 water use data from USGS by replacing missing values, fixing FIPS codes,
      and reducing to needed variables
 
-    :return:                DataFrame of a number of water values for 1995 at the county level
+    :return:                DataFrame of water values for 1995 at the county level
 
     """
-    # read in data
+    # read in 1995 water data
     data = 'input_data/usco1995.csv'
     df = pd.read_csv(data, dtype={'StateCode': str, 'CountyCode': str})
 
@@ -239,16 +235,19 @@ def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
     # Copy data from counties that split into multiple FIPS codes between 1995 and 2015 into new rows and assigns FIPS
     wrangell_petersburg_index = df.index[df['FIPS'] == "02195"].tolist()  # Wrangell, AK from Wrangell-Petersburg, AK
     df = df.append(df.loc[wrangell_petersburg_index * 1].assign(FIPS="02275"), ignore_index=True)
+
     skagway_index = df.index[df['FIPS'] == "02105"].tolist()  # Hoonah-Angoon, AK from Skagway-Hoonah-Angoon, AK
     df = df.append(df.loc[skagway_index * 1].assign(FIPS="02230"), ignore_index=True)
+
     boulder_index = df.index[df['FIPS'] == "08013"].tolist()  # Broomfield County, CO from Boulder County, CO
     df = df.append(df.loc[boulder_index * 1].assign(FIPS="08014"), ignore_index=True)
 
+    # remove puerto rico and virgin islands values
     state_remove_list = ['PR', 'VI']
     for state in state_remove_list:
         df = df[df.State != state]
 
-    # return variables specified
+    # return variables specified in parameters
     if variables is None and all_variables is False:
         variables = ['FIPS']
         df = df[variables]
@@ -256,23 +255,109 @@ def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
         df = df
     else:
         df = df[variables]
+
     return df
 
 
+def calc_irrigation_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.90) -> pd.DataFrame:
+    """
+    This function calculates the fraction of water lost during conveyance for irrigation (Crop and golf).
+     The fraction is calculated as water lost in conveyance of irrigation water divided by total water
+    withdrawn for irrigation.
+
+    :param loss_cap:                       If True, a cap is placed on the conveyance loss fraction
+    :type loss_cap:                        bool
+
+    :param loss_cap_amt:                   The amount at which irrigation losses are capped and values beyond are
+                                            replaced by the specified cap amount. The default value is .90.
+    :type loss_cap_amt:                    float
+
+    :return:                               DataFrame of conveyance loss fractions by row
+
+    """
+    # read in data
+    df = prep_water_use_1995(variables=['FIPS', 'State', 'IR-WTotl', 'IR-CLoss'])  # read in 1995 water values
+    df_loc = prep_water_use_2015()  # prepared list of 2015 counties with FIPS codes
+
+    # create extended variable names
+    #crop_irr_sw_name = 'ACI_fresh_surfacewater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
+    #crop_irr_gw_name = 'ACI_fresh_groundwater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
+    #crop_irr_rw_name = 'ACI_reclaimed_wastewater_import_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
+#
+    #golf_irr_sw_name = 'AGI_fresh_surfacewater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
+    #golf_irr_gw_name = 'AGI_fresh_groundwater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
+    #golf_irr_rw_name = 'AGI_reclaimed_wastewater_import_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
+
+    # calculate conveyance loss fraction of total water withdrawn for irrigation if irrigation water > 0
+    df["loss_fraction"] = np.where(df['IR-WTotl'] > 0, df['IR-CLoss'] / df['IR-WTotl'], np.nan)
+
+    # places a cap on the conveyance loss fraction
+    if loss_cap:
+        df["loss_fraction"] = np.where(df['loss_fraction'] > loss_cap_amt, loss_cap_amt, df["loss_fraction"])
+    else:
+        df["loss_fraction"] = df["loss_fraction"]
+
+    # calculate state averages
+    df_mean = df.groupby('State', as_index=False).mean()
+    rename_list = df_mean.columns[1:].to_list()
+    for col in rename_list:
+        new_name = f"{col}_state"
+        df_mean = df_mean.rename(columns={col: new_name})
+
+    # fill states with 0 values with US average
+    fill_list = df_mean.columns[1:].to_list()
+    for col in fill_list:
+        df_mean[col].replace(0, np.nan, inplace=True)  # replace 0 values with blanks so they are not included in avg
+        df_mean[col].fillna(df_mean[col].mean(), inplace=True)  # fill blank values with average
+
+    # fill counties with missing conveyance loss with state averages
+    df_mean_all = pd.merge(df, df_mean, how='left', on=['State'])
+
+    # replace counties with fractions of zero with the state average to replace missing data
+    rep_list = df.columns[2:].to_list()  # county values to replace
+    for col in rep_list:
+        mean_name = f"{col}_state"
+        df_mean_all[col].fillna(df_mean_all[mean_name], inplace=True)
+
+    # reduce to required variables
+    df_output = df_mean_all[['FIPS', 'State', 'loss_fraction']]
+#
+    # assign conveyance loss value to crop and golf irrigation from surface, ground, and reuse
+    created_variable_list = ['crop_irr_sw_loss', 'crop_irr_gw_loss', 'golf_irr_sw_loss', 'golf_irr_gw_loss',
+                             'crop_irr_rw_loss', 'golf_irr_rw_loss']
+
+    for var in created_variable_list:
+        df[var] = df["loss_fraction"]
+
+
+    # reduce dataframe
+    #df = df[["FIPS", crop_irr_sw_name, crop_irr_gw_name, golf_irr_sw_name, golf_irr_gw_name,
+    #         crop_irr_rw_name, golf_irr_rw_name]]
+#
+    ## merge with full list of counties from 2015 water data
+    #df = pd.merge(df_loc, df, how='left', on='FIPS')
+
+    return df_mean_all
+
+
 def prep_consumption_fraction() -> pd.DataFrame:
-    """prepping water consumption fractions by sector to apply to 2015 water values.
+    """prepping water consumption fractions for sectors not included in the 2015 USGS water datset by using the
+    consumptive use estimates in the 1995 USGS dataset. For Residential and Commercial sectors it is assumed that
+    all water consumed is fresh water. For the Industrial and Mining sectors, separate fresh and saline consumption
+    fractions are  calculated.
 
     :return:                DataFrame of consumption fractions for residential, commercial, industrial, mining,
                             livestock, and aquaculture sectors.
 
     """
 
-    # read in data
+    # read in 1995 water use data variables
     df = prep_water_use_1995(variables=['FIPS', 'State', 'DO-CUTot', 'DO-WDelv', 'CO-CUTot', 'CO-WDelv', 'IN-CUsFr',
                                         'IN-WFrTo', 'IN-PSDel', 'IN-CUsSa', "IN-WSaTo", "MI-CUsFr",
                                         "MI-WFrTo", "MI-CUsSa", "MI-WSaTo", "LV-CUsFr", "LV-WFrTo",
                                         "LA-CUsFr", "LA-WFrTo", "LA-CUsSa", "LA-WSaTo"])
 
+    # read in full 2015 county list
     df_loc = prep_water_use_2015()  # prepared dataframe of 2015 FIPS codes, county names, and state names
 
     # calculate water consumption fractions as consumptive use divided by delivered water
@@ -286,40 +371,8 @@ def prep_consumption_fraction() -> pd.DataFrame:
     df["LA_sCF_Fr"] = df["LA-CUsFr"] / df["LA-WFrTo"]  # aquaculture fresh water consumption fraction
     df['LA_sCF_Sa'] = df["LA-CUsSa"] / df["LA-WSaTo"]  # aquaculture saline water consumption fraction
 
-    consumptive_use_list = ["DO-CUTot", "CO-CUTot", "IN-CUsFr", "IN-CUsSa",
-                            "MI-CUsFr", "MI-CUsSa", "LV-CUsFr", "LA-CUsFr", "LA-CUsSa"]
-
-    # Replacing infinite (from divide by zero) with with 0
-    df.replace([np.inf, -np.inf], 0, inplace=True)
-    df.fillna(0, inplace=True)
-
-    # creating a dictionary of required variables from full dataset with descriptive naming
-    variables_list = {
-        # Retained and renamed 1995 variables
-        "FIPS": 'FIPS',
-        "State": 'State',
-        "DO_sCF_Fr": "RES_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "CO_sCF_Fr": "COM_public_total_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "IN_sCF_Fr": "IND_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "IN_sCF_Sa": "IND_saline_surfacewater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "MI_sCF_Fr": "MIN_other_total_fresh_surfacewater_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "MI_sCF_Sa": "MIN_other_total_saline_surfacewater_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "LV_sCF_Fr": "ALV_fresh_surfacewater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "LA_sCF_Fr": "AAQ_fresh_surfacewater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "LA_sCF_Sa": "AAQ_saline_surfacewater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-
-        # created groundwater variables
-        "DO_gCF_Fr": "RES_fresh_groundwater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "DO_pCF_Fr": "RES_public_total_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "IN_gCF_Fr": "IND_fresh_groundwater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "IN_gCF_Sa": "IND_saline_groundwater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "IN_pCF_Fr": "IND_public_total_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "MI_gCF_Fr": "MIN_other_total_fresh_groundwater_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "MI_gCF_Sa": "MIN_other_total_saline_groundwater_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "LV_gCF_Fr": "ALV_fresh_groundwater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "LA_gCF_Fr": "AAQ_fresh_groundwater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction",
-        "LA_gCF_Sa": "AAQ_saline_groundwater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction"
-    }
+    # Replacing infinite (from divide by zero) with with null
+    df.replace([np.inf, -np.inf], np.nan, inplace=True)
 
     # Create groundwater consumption fractions for each sector from surface water consumption fractions
     df["DO_gCF_Fr"] = df["DO_sCF_Fr"]
@@ -333,37 +386,50 @@ def prep_consumption_fraction() -> pd.DataFrame:
     df["LA_gCF_Fr"] = df["LA_sCF_Fr"]
     df["LA_gCF_Sa"] = df["LA_sCF_Sa"]
 
+    # creating a list of required variables
+    variables_list = ['FIPS','State','DO_sCF_Fr','CO_sCF_Fr','IN_sCF_Fr','IN_sCF_Sa','MI_sCF_Fr','MI_sCF_Sa',
+                      'LV_sCF_Fr','LA_sCF_Fr','LA_sCF_Sa','DO_gCF_Fr','DO_pCF_Fr','IN_gCF_Fr','IN_gCF_Sa','IN_pCF_Fr',
+                      'MI_gCF_Fr','MI_gCF_Sa','LV_gCF_Fr','LA_gCF_Fr','LA_gCF_Sa']
+
     # reduce full dataframe to required variable list
     df = df[variables_list]
 
-    # calculate the mean consumption fraction in each state
+    # replace consumption fractions greater than 1 with 1
+    column_list = variables_list[2:]
+    for col in column_list:
+        df[col] = np.where(df[col] > 1, 1, df[col])
+
+    # calculate the mean consumption fraction in each state for each sector
     df_mean = df.groupby('State', as_index=False).mean()
     rename_list = df_mean.columns[1:].to_list()
     for col in rename_list:
         new_name = f"{col}_state"
         df_mean = df_mean.rename(columns={col: new_name})
-    df_mean_all = pd.merge(df, df_mean, how='left', on=['State'])
 
-    # add leading zeroes to FIPS Code
-    df['FIPS'] = df['FIPS'].apply(lambda x: '{0:0>5}'.format(x))
+    # fill blank values in state averages with total US averages
+    fill_list = df_mean.columns[1:].to_list()
+    for col in fill_list:
+        df_mean.fillna(df_mean[col].mean(), inplace=True)
 
-    # replace counties with consumption fractions of zero with the state average to replace missing data
+    # merge state averages back to main county level dataframe
+    df_all = pd.merge(df, df_mean, how='left', on=['State'])
+
+    # replace counties with missing consumption fractions with the state average
     rep_list = df.columns[2:].to_list()
     for col in rep_list:
         mean_name = f"{col}_state"
-        df[col] = np.where(df[col] == 0, df_mean_all[mean_name], df[col])
+        df_all[col].fillna(df_all[mean_name], inplace=True)
+
+    # rename columns to add descriptive language
+    #df.rename(columns=variables_list, inplace=True)
 
     # merge with full list of counties from 2015 USGS water data
     df = pd.merge(df_loc, df, how='left', on=['FIPS', 'State'])
 
-    for col in rep_list:
-        mean_name = f"{col}_state"
-        df[col] = np.where(df[col] == 0, 1, df[col])
+    # add leading zeroes to FIPS Code
+    df['FIPS'] = df['FIPS'].apply(lambda x: '{0:0>5}'.format(x))
 
-    # rename columns to add descriptive language
-    df.rename(columns=variables_list, inplace=True)
-
-    return df
+    return df_all
 
 
 def prep_public_water_supply_fraction() -> pd.DataFrame:
@@ -524,78 +590,7 @@ def prep_pws_to_pwd():
     return out_df
 
 
-def calc_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.90) -> pd.DataFrame:
-    """
-    This function calculates the fraction of water lost during conveyance for irrigation (Crop and golf).
-     The fraction is calculated as water lost in conveyance of irrigation water divided by total water
-    withdrawn for irrigation.
 
-    :param loss_cap:                       If True, a cap is placed on the conveyance loss fraction
-    :type loss_cap:                        bool
-
-    :param loss_cap_amt:                   The amount at which irrigation losses are capped and values beyond are
-                                            replaced by the specified cap amount. The default value is .90.
-    :type loss_cap_amt:                    float
-
-    :return:                               DataFrame of conveyance loss fractions by row
-
-    """
-    # read in data
-    df = prep_water_use_1995(variables=['FIPS', 'State', 'IR-WTotl', 'IR-CLoss'])  # read in 1995 water values
-    df_loc = prep_water_use_2015()  # prepared list of 2015 counties with FIPS codes
-
-    # create extended variable names
-    crop_irr_sw_name = 'ACI_fresh_surfacewater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
-    crop_irr_gw_name = 'ACI_fresh_groundwater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
-    crop_irr_rw_name = 'ACI_reclaimed_wastewater_import_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
-
-    golf_irr_sw_name = 'AGI_fresh_surfacewater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
-    golf_irr_gw_name = 'AGI_fresh_groundwater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
-    golf_irr_rw_name = 'AGI_reclaimed_wastewater_import_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
-
-    # calculate conveyance loss fraction of total water withdrawn for irrigation if irrigation water > 0
-    df["loss_fraction"] = np.where(df['IR-WTotl'] > 0, df['IR-CLoss'] / df['IR-WTotl'], 0)
-
-    if loss_cap:
-        df["loss_fraction"] = np.where(df['loss_fraction'] > loss_cap_amt, loss_cap_amt, df["loss_fraction"])
-        df["loss_fraction"] = np.where(df['loss_fraction'] > loss_cap_amt, loss_cap_amt, df["loss_fraction"])
-
-    else:
-        df["loss_fraction"] = df["loss_fraction"]
-
-    # fill counties with 0 conveyance loss with state averages
-    df_mean = df.groupby('State', as_index=False).mean()
-    rename_list = df_mean.columns[1:].to_list()
-    for col in rename_list:
-        new_name = f"{col}_state"
-        df_mean = df_mean.rename(columns={col: new_name})
-    df_mean_all = pd.merge(df, df_mean, how='left', on=['State'])
-
-    df_mean_us_all = df_mean_all[df_mean_all.loss_fraction > 0]
-    us_average = df_mean_us_all['loss_fraction'].mean()
-
-    # replace counties with consumption fractions of zero with the state average to replace missing data
-    rep_list = df.columns[2:].to_list()
-    for col in rep_list:
-        mean_name = f"{col}_state"
-        df[col] = np.where(df[col] == 0, df_mean_all[mean_name], df[col])
-        df[col] = np.where(df[col] == 0, us_average, df[col])
-
-    # assign conveyance loss value to crop and golf irrigation loss names
-    df[crop_irr_sw_name] = df["loss_fraction"]
-    df[crop_irr_gw_name] = df["loss_fraction"]
-    df[golf_irr_sw_name] = df["loss_fraction"]
-    df[golf_irr_gw_name] = df["loss_fraction"]
-    df[crop_irr_rw_name] = df["loss_fraction"]
-    df[golf_irr_rw_name] = df["loss_fraction"]
-    # reduce dataframe
-    df = df[["FIPS", crop_irr_sw_name, crop_irr_gw_name, golf_irr_sw_name, golf_irr_gw_name,
-             crop_irr_rw_name, golf_irr_rw_name]]
-
-    # merge with full list of counties from 2015 water data
-    df = pd.merge(df_loc, df, how='left', on='FIPS')
-
-    return df
 
 
 def recalc_irrigation_consumption():
@@ -3511,7 +3506,7 @@ def remove_petroleum_double_counting_from_mining():
 #   return out_df
 
 
-x = rename_water_data_2015()
+x = calc_irrigation_conveyance_loss_fraction()
 #print(x)
 # for col in x.columns:
 #    print(col)
