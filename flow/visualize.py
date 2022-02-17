@@ -1,3 +1,5 @@
+import json
+import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
 from .analyze import *
@@ -434,3 +436,138 @@ def plot_sector_bar(data, unit_type, region_name, sector_list, inflow=True, stri
 
     fig.show()
 
+
+def plot_map(jsonfile: str, data:pd.DataFrame, level=1, region_col=None, strip="total", center=None):
+    '''
+
+    :param jsonfile:
+    :param data:
+    :param level:
+    :param region_col:
+    :param strip:
+    :param center:
+    :return:
+    '''
+
+    # collect flow data
+    df = data
+
+    # collect geojson file
+    f = open(jsonfile)
+    geo_id = json.load(f)
+
+    # set center coordinates for map
+    if center is None:
+        center = {"lat": 37.0902, "lon": -95.7129}
+    else:
+        center = center
+
+    if level == 1:
+        # create a flow name
+        df['SOURCE'] = df['S1']
+        df['TARGET'] = df['T1']
+
+    elif level == 2:
+        df['SOURCE'] = df['S1']+'-'+ df['S2']
+        df['TARGET'] = df['T1']+'-'+ df['T2']
+
+    elif level == 3:
+        df['SOURCE'] = df['S1']+'-'+ df['S2']+'-'+ df['S3']
+        df['TARGET'] = df['T1']+'-'+ df['T2']+'-'+ df['T3']
+
+    elif level == 4:
+        df['SOURCE'] = df['S1']+'-'+ df['S2']+'-'+ df['S3']+'-'+ df['S4']
+        df['TARGET'] = df['T1']+'-'+ df['T2']+'-'+ df['T3']+'-'+ df['T4']
+
+    elif level == 5:
+        df['SOURCE'] = df['S1']+'-'+ df['S2']+'-'+ df['S3']+'-'+ df['S4']+'-'+ df['S5']
+        df['TARGET'] = df['T1']+'-'+ df['T2']+'-'+ df['T3']+'-'+ df['T4']+'-'+ df['T5']
+    else:
+        m = 'incorrect level specified. Must be an integer between 1 and 5 inclusive'
+
+    # strip extra word from from names
+    remove = "-" + strip
+    df['SOURCE'] = df['SOURCE'].str.replace(remove, "")
+    df['TARGET'] = df['TARGET'].str.replace(remove, "")
+
+    # build a single link name
+    df['Link'] = df['SOURCE'] + ' to ' + df['TARGET'] + ', ' + df['units']
+
+    # pivot values for each link to obtain them as columns
+    df = pd.pivot_table(df, values='value', index=['region', 'countyname'],
+                        columns=['Link'], aggfunc=np.sum)
+    df = df.reset_index()  # reset index to remove multi-index from pivot table
+    df = df.rename_axis(None, axis=1)  # drop index name
+    df.fillna(0, inplace=True)
+
+    # create drop-down buttons based on columns created starting at one past indicated region column
+    if region_col is None:
+        button_columns = 1
+        starting_column = 1
+    else:
+        button_columns = region_col + 1
+        starting_column = region_col + 1
+
+
+    # create a list of variable columns
+    cols = df.columns[button_columns:].to_list()
+
+    if region_col is None:
+        my_buttons = [dict(method='update',
+                           label=c,
+                           args=[{
+                               "z": [df[c]],
+                               "hovertemplate": 'Value: %{z}<extra></extra>'
+                               # %<extra></extra> gets rid of trace box
+                           }]) for c in cols]
+
+        # create figure
+        fig = go.Figure(go.Choroplethmapbox(
+            geojson=geo_id,
+            locations=df['region'],
+            z=df[df.columns[starting_column]],
+            hovertemplate='Value: %{z}<extra></extra>',
+            coloraxis="coloraxis",
+            marker_opacity=0.75,
+            marker_line_width=0.1))
+
+    else:
+        mycustomdata = df[df.columns[region_col]].to_list()
+        # loop through columns and create buttons
+        my_buttons = [dict(method='update',
+                           label=c,
+                           args=[{
+                               "z": [df[c]],
+                               "hovertemplate": "Region: %{customdata}" + \
+                                                '<br>Value: %{z}<extra></extra>' # %<extra></extra> gets rid of trace box
+                           }]) for c in cols]
+
+        # create figure
+        fig = go.Figure(go.Choroplethmapbox(
+            geojson=geo_id,
+            locations=df['region'],
+            z=df[df.columns[starting_column]],
+            customdata=mycustomdata,
+            hovertemplate="Region: %{customdata}" + \
+                          '<br>Value: %{z}<extra></extra>',
+            coloraxis="coloraxis",
+            marker_opacity=0.75,
+            marker_line_width=0.1))
+
+    # update map layout
+    fig.update_layout(coloraxis_colorscale='viridis',
+                      mapbox=dict(style='carto-positron',
+                                  zoom=3,
+                                  center=center))
+    # update title
+    fig.update_layout(title_text="Map of Selected Flow Value in Each Region", title_x=0.5,
+                      margin={"r": 10, "t": 60, "l": 0, "b": 0})
+    # update dropdown list
+    fig.update_layout(updatemenus=[dict(active=0,
+                                        buttons=my_buttons,
+                                        x=0,
+                                        xanchor="left",
+                                        y=1.12,
+                                        yanchor="top")]
+                      )
+    fig.show()

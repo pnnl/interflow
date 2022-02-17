@@ -736,7 +736,7 @@ def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) ->
     df["HY-InPow"] = df["HY-InPow"] / 365
 
     # calculate water intensity fraction million gallons per bbtu
-    water_intensity_name = 'WSW_fresh_surfacewater_total_total_mgd_to_EGS_hydro_instream_nocooling_total_bbtu_intensity'
+    water_intensity_name = 'EGS_hydro_instream_nocooling_total_mgd_from_EGS_hydro_instream_nocooling_total_bbtu_intensity'
     df[water_intensity_name] = np.where(df["HY-InPow"] > 0, (df["HY-InUse"] / df["HY-InPow"]), 0)
 
     # cap outlier intensities
@@ -748,7 +748,7 @@ def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) ->
         df[water_intensity_name] = df[water_intensity_name]
 
     # calculate state average
-    state_avg = df[df.WSW_fresh_surfacewater_total_total_mgd_to_EGS_hydro_instream_nocooling_total_bbtu_intensity > 0]
+    state_avg = df[df.EGS_hydro_instream_nocooling_total_mgd_from_EGS_hydro_instream_nocooling_total_bbtu_intensity > 0]
     state_avg = df.groupby("State", as_index=False).mean().drop(['HY-InUse', 'HY-InPow'], axis=1)
     state_avg = state_avg.rename(columns={water_intensity_name: 'state_avg'})
     us_avg = state_avg['state_avg'].mean()
@@ -765,10 +765,10 @@ def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) ->
         df[col] = np.where(df[col] == 0, us_avg, df[col])
 
     # create discharge fraction
-    hydro_discharge_name = 'EGS_hydro_total_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
+    hydro_discharge_name = 'EGS_hydro_instream_nocooling_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
     df[hydro_discharge_name] = 1
     # create source fraction
-    hydro_source_name = 'EGS_hydro_total_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
+    hydro_source_name = 'EGS_hydro_instream_nocooling_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
     df[hydro_source_name] = 1
 
     # merge with main dataframe and replace 0 values
@@ -1598,10 +1598,10 @@ def prep_electricity_cooling() -> pd.DataFrame:
 
     # fill values for power plants with no cooling (renewables)
     for item in no_cool_list:
-        df_cooling["COOLING_TYPE"] = np.where(df_cooling['fuel_type'] == item, "NoCooling", df_cooling["COOLING_TYPE"])
-        df_cooling["WATER_SOURCE_CODE"] = np.where(df_cooling['fuel_type'] == item, "NoCooling",
+        df_cooling["COOLING_TYPE"] = np.where(df_cooling['fuel_type'] == item, "nocooling", df_cooling["COOLING_TYPE"])
+        df_cooling["WATER_SOURCE_CODE"] = np.where(df_cooling['fuel_type'] == item, "nocooling",
                                                    df_cooling["WATER_SOURCE_CODE"])
-        df_cooling["WATER_TYPE_CODE"] = np.where(df_cooling['fuel_type'] == item, "NoCooling",
+        df_cooling["WATER_TYPE_CODE"] = np.where(df_cooling['fuel_type'] == item, "nocooling",
                                                  df_cooling["WATER_TYPE_CODE"])
         df_cooling["WITHDRAWAL"] = np.where(df_cooling['fuel_type'] == item, 0, df_cooling["WITHDRAWAL"])
         df_cooling["CONSUMPTION"] = np.where(df_cooling['fuel_type'] == item, 0, df_cooling["CONSUMPTION"])
