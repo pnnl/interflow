@@ -209,7 +209,7 @@ def calc_population_county_weight(df: pd.DataFrame) -> pd.DataFrame:
 
     return df_state
 
-
+# BELOW IS COMPLETE AND WORKING
 def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
     """prepping 1995 water use data from USGS by replacing missing values, fixing FIPS codes,
      and reducing to needed variables
@@ -258,12 +258,13 @@ def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
 
     return df
 
-
+# BELOW IS COMPLETE AND WORKING
 def calc_irrigation_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.90) -> pd.DataFrame:
     """
-    This function calculates the fraction of water lost during conveyance for irrigation (Crop and golf).
-     The fraction is calculated as water lost in conveyance of irrigation water divided by total water
-    withdrawn for irrigation.
+    This function calculates the fraction of water lost during conveyance for irrigation (Crop and golf) for surface
+    water, groundwater, and reused wastewater. The fraction is calculated as water lost in conveyance of irrigation
+    water divided by total water withdrawn for irrigation. States with no conveyance losses were replaced with the
+    country average. Counties with missing values were replaced with the state average.
 
     :param loss_cap:                       If True, a cap is placed on the conveyance loss fraction
     :type loss_cap:                        bool
@@ -278,15 +279,6 @@ def calc_irrigation_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.90) ->
     # read in data
     df = prep_water_use_1995(variables=['FIPS', 'State', 'IR-WTotl', 'IR-CLoss'])  # read in 1995 water values
     df_loc = prep_water_use_2015()  # prepared list of 2015 counties with FIPS codes
-
-    # create extended variable names
-    #crop_irr_sw_name = 'ACI_fresh_surfacewater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
-    #crop_irr_gw_name = 'ACI_fresh_groundwater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
-    #crop_irr_rw_name = 'ACI_reclaimed_wastewater_import_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
-#
-    #golf_irr_sw_name = 'AGI_fresh_surfacewater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
-    #golf_irr_gw_name = 'AGI_fresh_groundwater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
-    #golf_irr_rw_name = 'AGI_reclaimed_wastewater_import_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
 
     # calculate conveyance loss fraction of total water withdrawn for irrigation if irrigation water > 0
     df["loss_fraction"] = np.where(df['IR-WTotl'] > 0, df['IR-CLoss'] / df['IR-WTotl'], np.nan)
@@ -320,26 +312,65 @@ def calc_irrigation_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.90) ->
         df_mean_all[col].fillna(df_mean_all[mean_name], inplace=True)
 
     # reduce to required variables
-    df_output = df_mean_all[['FIPS', 'State', 'loss_fraction']]
+    df_output = df_mean_all[['FIPS', 'State', 'loss_fraction']].copy()
 #
     # assign conveyance loss value to crop and golf irrigation from surface, ground, and reuse
-    created_variable_list = ['crop_irr_sw_loss', 'crop_irr_gw_loss', 'golf_irr_sw_loss', 'golf_irr_gw_loss',
-                             'crop_irr_rw_loss', 'golf_irr_rw_loss']
+    created_variable_list = ['AGR_crop_fresh_surfacewater_withdrawal_mgd',
+                             'AGR_crop_fresh_groundwater_withdrawal_mgd',
+                             'AGR_crop_reclaimed_wastewater_import_mgd'
+                             'AGR_golf_fresh_surfacewater_withdrawal_mgd',
+                             'AGR_golf_fresh_groundwater_withdrawal_mgd',
+                             'AGR_golf_reclaimed_wastewater_import_mgd']
 
+    # assign loss fraction to each variable name and add flow name information to discharge
     for var in created_variable_list:
-        df[var] = df["loss_fraction"]
+        df_output[var] = df_output["loss_fraction"]
+        df_output = df_output.rename(columns={var: var + "_to_CVL_total_total_total_total_mgd_fraction"})
+
+    df_output = df_output.drop(['loss_fraction'], axis=1)
+
+    # merge with full list of counties from 2015 water data
+    df_output = pd.merge(df_loc, df_output, how='left', on=['FIPS', 'State'])
+
+    return df_output
 
 
-    # reduce dataframe
-    #df = df[["FIPS", crop_irr_sw_name, crop_irr_gw_name, golf_irr_sw_name, golf_irr_gw_name,
-    #         crop_irr_rw_name, golf_irr_rw_name]]
+def recalc_irrigation_consumption():
+    """ Recalculates the consumption fractions for crop and golf irrigation given the calculated conveyance loss
+        fractions.
+
+    :return:                                        Dataframe of recalculated irrgiation consumption fractions
+    """
+    cons_df = calc_irrigation_consumption()
+
+    loss_df = calc_irrigation_conveyance_loss_fraction()
+
+    #df = pd.merge(cons_df, loss_df, how='left', on=['FIPS', 'State'])
 #
-    ## merge with full list of counties from 2015 water data
-    #df = pd.merge(df_loc, df, how='left', on='FIPS')
+    #aci_gw_loss = 'ACI_fresh_surfacewater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
+    #aci_sw_loss = 'ACI_fresh_groundwater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
+    #aci_rw_loss = 'AGI_reclaimed_wastewater_import_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
+    #agi_rw_loss = 'AGI_reclaimed_wastewater_import_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
+    #agi_gw_loss = 'AGI_fresh_surfacewater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
+    #agi_sw_loss = 'AGI_fresh_groundwater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
+#
+    #aci_gw_con = 'ACI_fresh_groundwater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
+    #aci_sw_con = 'ACI_fresh_surfacewater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
+    #aci_rw_con = 'ACI_reclaimed_wastewater_import_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
+    #agi_gw_con = 'AGI_fresh_groundwater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
+    #agi_sw_con = 'AGI_fresh_surfacewater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
+    #agi_rw_con = 'AGI_reclaimed_wastewater_import_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
+#
+    #df[aci_gw_con] = (1 - df[aci_gw_loss]) * df[aci_gw_con]
+    #df[aci_sw_con] = (1 - df[aci_sw_loss]) * df[aci_sw_con]
+    #df[aci_rw_con] = (1 - df[aci_rw_loss]) * df[aci_rw_con]
+    #df[agi_gw_con] = (1 - df[agi_gw_loss]) * df[agi_gw_con]
+    #df[agi_sw_con] = (1 - df[agi_sw_loss]) * df[agi_sw_con]
+    #df[agi_rw_con] = (1 - df[agi_rw_loss]) * df[agi_rw_con]
 
-    return df_mean_all
+    return cons_df
 
-
+# BELOW IS COMPLETE AND WORKING
 def prep_consumption_fraction() -> pd.DataFrame:
     """prepping water consumption fractions for sectors not included in the 2015 USGS water datset by using the
     consumptive use estimates in the 1995 USGS dataset. For Residential and Commercial sectors it is assumed that
@@ -593,42 +624,7 @@ def prep_pws_to_pwd():
 
 
 
-def recalc_irrigation_consumption():
-    cons_df = prep_water_use_2015(
-        variables=['FIPS', 'State',
-                   'ACI_fresh_groundwater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction',
-                   'ACI_fresh_surfacewater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction',
-                   'ACI_reclaimed_wastewater_import_total_mgd_to_CMP_total_total_total_total_mgd_fraction',
-                   'AGI_fresh_groundwater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction',
-                   'AGI_fresh_surfacewater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction',
-                   'AGI_reclaimed_wastewater_import_total_mgd_to_CMP_total_total_total_total_mgd_fraction'])
 
-    loss_df = calc_conveyance_loss_fraction()
-
-    df = pd.merge(cons_df, loss_df, how='left', on=['FIPS', 'State'])
-
-    aci_gw_loss = 'ACI_fresh_surfacewater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
-    aci_sw_loss = 'ACI_fresh_groundwater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
-    aci_rw_loss = 'AGI_reclaimed_wastewater_import_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
-    agi_rw_loss = 'AGI_reclaimed_wastewater_import_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
-    agi_gw_loss = 'AGI_fresh_surfacewater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
-    agi_sw_loss = 'AGI_fresh_groundwater_withdrawal_total_mgd_to_CVL_total_total_total_total_mgd_fraction'
-
-    aci_gw_con = 'ACI_fresh_groundwater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
-    aci_sw_con = 'ACI_fresh_surfacewater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
-    aci_rw_con = 'ACI_reclaimed_wastewater_import_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
-    agi_gw_con = 'AGI_fresh_groundwater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
-    agi_sw_con = 'AGI_fresh_surfacewater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
-    agi_rw_con = 'AGI_reclaimed_wastewater_import_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
-
-    df[aci_gw_con] = (1 - df[aci_gw_loss]) * df[aci_gw_con]
-    df[aci_sw_con] = (1 - df[aci_sw_loss]) * df[aci_sw_con]
-    df[aci_rw_con] = (1 - df[aci_rw_loss]) * df[aci_rw_con]
-    df[agi_gw_con] = (1 - df[agi_gw_loss]) * df[agi_gw_con]
-    df[agi_sw_con] = (1 - df[agi_sw_loss]) * df[agi_sw_con]
-    df[agi_rw_con] = (1 - df[agi_rw_loss]) * df[agi_rw_con]
-
-    return df
 
 
 def calc_discharge_fractions():
