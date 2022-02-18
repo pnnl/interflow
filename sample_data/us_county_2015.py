@@ -92,7 +92,6 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
     return df
 
 
-
 def calc_irrigation_consumption() -> pd.DataFrame:
     '''
     Takes 2015 USGS water flow data and calculates consumption fractions for crop irrigation and golf irrigation based
@@ -105,8 +104,8 @@ def calc_irrigation_consumption() -> pd.DataFrame:
 
     # read in prepared 2015 USGS water data
     df = prep_water_use_2015(variables=['FIPS', 'State', 'County', 'IR-WGWFr', 'IR-WSWFr', 'IR-RecWW', 'IR-CUsFr',
-                                           'IC-WGWFr', 'IC-WSWFr', 'IC-RecWW', 'IC-CUsFr',
-                                           'IG-WGWFr', 'IG-WSWFr', 'IG-RecWW', 'IG-CUsFr'])
+                                        'IC-WGWFr', 'IC-WSWFr', 'IC-RecWW', 'IC-CUsFr',
+                                        'IG-WGWFr', 'IG-WSWFr', 'IG-RecWW', 'IG-CUsFr'])
 
     # calculate fresh surface water consumption fractions for all irrigation to fill missing crop irrigation cells
     df['IR_CU_FSW_frac'] = np.where((df['IR-WGWFr'] + df['IR-WSWFr'] + df['IR-RecWW']) > 0,
@@ -157,9 +156,9 @@ def calc_irrigation_consumption() -> pd.DataFrame:
         df['IC_CU_RWW_frac'] = np.where(df['State'] == state, df['IR_CU_RWW_frac'], df['IC_CU_FGW_frac'])  # reclaimed
 
     # rename variables
-    variable_dict = {'FIPS':'FIPS',
-                     'State':'State',
-                     'County':'County',
+    variable_dict = {'FIPS': 'FIPS',
+                     'State': 'State',
+                     'County': 'County',
                      'IC_CU_FSW_frac': 'AGR_crop_fresh_surfacewater_withdrawal_mgd',
                      'IC_CU_FGW_frac': 'AGR_crop_fresh_groundwater_withdrawal_mgd',
                      'IC_CU_RWW_frac': 'AGR_crop_reclaimed_wastewater_import_mgd',
@@ -169,8 +168,8 @@ def calc_irrigation_consumption() -> pd.DataFrame:
     df = df[variable_dict]
     df = df.rename(columns=variable_dict)
 
-    flow_list = ['AGR_crop_fresh_surfacewater_withdrawal_mgd','AGR_crop_fresh_groundwater_withdrawal_mgd',
-                 'AGR_crop_reclaimed_wastewater_import_mgd','AGR_golf_fresh_surfacewater_withdrawal_mgd',
+    flow_list = ['AGR_crop_fresh_surfacewater_withdrawal_mgd', 'AGR_crop_fresh_groundwater_withdrawal_mgd',
+                 'AGR_crop_reclaimed_wastewater_import_mgd', 'AGR_golf_fresh_surfacewater_withdrawal_mgd',
                  'AGR_golf_fresh_groundwater_withdrawal_mgd', 'AGR_golf_reclaimed_wastewater_import_mgd']
 
     ## consumption name adder
@@ -181,7 +180,8 @@ def calc_irrigation_consumption() -> pd.DataFrame:
 
     return df
 
-#below is correct and ready
+
+# below is correct and ready
 def rename_water_data_2015(variables=None, all_variables=False) -> pd.DataFrame:
     '''
     Takes USGS 2015 flow values and calculated consumption fractions and renames them for higher description.
@@ -372,6 +372,7 @@ def calc_irrigation_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.90) ->
 
     return df_output
 
+
 # Below is correct and should be included in output (Includes all discharges from crop and golf irrigation
 def calc_irrigation_discharge_flows():
     """ Recalculates the consumption fractions for crop and golf irrigation given the calculated conveyance loss
@@ -522,6 +523,7 @@ def prep_consumption_fraction() -> pd.DataFrame:
 
     return df_all
 
+
 # below is complete, do not include in output
 def prep_public_water_supply_fraction() -> pd.DataFrame:
     """calculates public water supply deliveries for the commercial and industrial sectors individually
@@ -569,6 +571,7 @@ def prep_public_water_supply_fraction() -> pd.DataFrame:
 
     return df_output
 
+
 # BELOW IS COMPLETE AND READY
 def calc_pws_commercial_industrial_flows() -> pd.DataFrame:
     """calculates public water deliveries to the commercial and industrial sectors based on ratios determined
@@ -612,6 +615,7 @@ def calc_pws_commercial_industrial_flows() -> pd.DataFrame:
 
     return df
 
+
 # BELOW IS COMPLETE AND READy
 def calc_discharge_fractions():
     """ Takes water flows to residential, commercial, industrial, mining, and nonirrigation agriculture sectors
@@ -630,7 +634,7 @@ def calc_discharge_fractions():
     ocd_fraction_flow_adder = "_total_total_mgd_to_OCD_total_total_total_total_mgd_fraction"
     wws_fraction_flow_adder = "_total_total_mgd_to_WWS_total_total_total_total_mgd_fraction"
 
-    public_water_list = ['RES_public_total', "COM_public_total","IND_public_total"]
+    public_water_list = ['RES_public_total', "COM_public_total", "IND_public_total"]
 
     fresh_water_list = ['RES_fresh_surfacewater', 'RES_fresh_groundwater', "IND_fresh_surfacewater",
                         "IND_fresh_groundwater"]
@@ -656,7 +660,6 @@ def calc_discharge_fractions():
         ocd_flow_name = item + ocd_fraction_flow_adder
         output_df[ocd_flow_name] = 1 - output_df[consumption_name]  # all saline water not consumed sent to ocean
         output_variable_list.append(ocd_flow_name)
-
 
     # mining sector
     mining_freshwater_list = ["MIN_other_total_fresh_surfacewater", "MIN_other_total_fresh_groundwater"]
@@ -703,6 +706,7 @@ def calc_discharge_fractions():
         output_variable_list.append(ocd_flow_name)
 
     return output_df
+
 
 # TODO, need to add pws interbasin transfers to this total
 def prep_pws_to_pwd():
@@ -775,7 +779,8 @@ def prep_pws_to_pwd():
 
     return out_df
 
-#BELOW IS READY TO GO
+
+# BELOW IS READY TO GO
 def prep_county_identifier() -> pd.DataFrame:
     """preps a dataset of FIPS codes and associated county name crosswalk so that datasets with just county names can be
     mapped to appropriate FIPS codes.
@@ -1854,6 +1859,7 @@ def prep_electricity_cooling_flows() -> pd.DataFrame:
 
     return output_df
 
+
 # FUNCTION BELOW IS COMPLETE AND READY
 def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) -> pd.DataFrame:
     """calculating the water use required for a bbtu of hydroelectric generation. Daily water use (mgd) is
@@ -1919,7 +1925,7 @@ def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) ->
     output_df = df_mean_all[['FIPS', 'State', water_intensity_name, hydro_source_name, hydro_discharge_name]]
 
     # merge with hydro generation data
-    output_df = pd.merge(output_df, df_hydro, how='right', on = ['FIPS', 'State'])
+    output_df = pd.merge(output_df, df_hydro, how='right', on=['FIPS', 'State'])
 
     # only keep counties with hydro generation
     output_df = output_df[output_df.EGS_hydro_instream_nocooling_total_bbtu_from_EPD_hydro_total_total_total_bbtu > 0]
@@ -1928,8 +1934,8 @@ def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) ->
     output_df = pd.merge(df_loc, output_df, how='left', on=['FIPS', 'State'])
     output_df.fillna(0, inplace=True)
 
-
     return output_df
+
 
 # BELOW IS READY TO GO
 def prep_pumping_energy_fuel_data() -> pd.DataFrame:
@@ -1988,9 +1994,9 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
     fuel_flow_name = '_total_total_total_bbtu_fraction'
 
     irr_sector_list = ['AGR_crop_pumping_fresh_surfacewater_bbtu',
-                   'AGR_golf_pumping_fresh_surfacewater_bbtu',
-                   'AGR_crop_pumping_fresh_groundwater_bbtu',
-                   'AGR_golf_pumping_fresh_groundwater_bbtu']
+                       'AGR_golf_pumping_fresh_surfacewater_bbtu',
+                       'AGR_crop_pumping_fresh_groundwater_bbtu',
+                       'AGR_golf_pumping_fresh_groundwater_bbtu']
 
     rejected_energy_flow = '_to_REJ_total_total_total_total_bbtu_fraction'
     energy_services_flow = '_to_ESV_total_total_total_total_bbtu_fraction'
@@ -2013,11 +2019,11 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
     egd_name = '_from_EGD_total_total_total_total_bbtu_fraction'
 
     non_irr_sector_list = ['AGR_aquaculture_pumping_fresh_surfacewater_bbtu',
-                       'AGR_aquaculture_pumping_fresh_surfacewater_bbtu',
-                       'AGR_aquaculture_pumping_saline_surfacewater_bbtu',
-                       'AGR_aquaculture_pumping_saline_surfacewater_bbtu',
-                       'AGR_livestock_pumping_fresh_groundwater_bbtu',
-                       'AGR_livestock_pumping_fresh_groundwater_bbtu']
+                           'AGR_aquaculture_pumping_fresh_surfacewater_bbtu',
+                           'AGR_aquaculture_pumping_saline_surfacewater_bbtu',
+                           'AGR_aquaculture_pumping_saline_surfacewater_bbtu',
+                           'AGR_livestock_pumping_fresh_groundwater_bbtu',
+                           'AGR_livestock_pumping_fresh_groundwater_bbtu']
 
     for sector in non_irr_sector_list:
         sector_source_name = sector + egd_name
@@ -2052,9 +2058,10 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
         esv_flow_name = sector + energy_services_flow
         output_df[energy_services_flow] = EFFICIENCY
 
-    #df_out = df_out.drop(["natural_gas_pumping", "petroleum_pumping", "electricity_pumping"], axis=1)
+    # df_out = df_out.drop(["natural_gas_pumping", "petroleum_pumping", "electricity_pumping"], axis=1)
 
     return output_df
+
 
 # BELOW IS READY TO GO
 def prep_pumping_intensity_data() -> pd.DataFrame:
@@ -2152,6 +2159,7 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
     df.rename(columns=name_dict, inplace=True)
 
     return df
+
 
 # BELOW IS GOOD TO GO
 def prep_pws_treatment_dist_intensity_values():
@@ -2383,6 +2391,7 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
 
     return df_out
 
+
 # BELOW IS WORKING
 def prep_electricity_demand_data() -> pd.DataFrame:
     """prepping electricity demand data by sector from EIA electricity sales data.
@@ -2482,8 +2491,7 @@ def prep_electricity_demand_data() -> pd.DataFrame:
     return df
 
 
-
- # BELOW IS GOOD TO GO
+# BELOW IS GOOD TO GO
 def prep_fuel_demand_data() -> pd.DataFrame:
     """prepares fuel demand data to the residential, commercial, industrial, and transportation sectors. Returns a
     dataframe of fuel demand by fuel type and sector in bbtu per day for each county.
@@ -2503,7 +2511,7 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     # convert to dictionary
     df_names = dict(zip(df_names.original_name, df_names.new_name))
 
-    msn_list = ["CLCCB", # Coal, commercial sector (bbtu)
+    msn_list = ["CLCCB",  # Coal, commercial sector (bbtu)
                 "CLICB",  # Coal, industrial sector (bbtu)
                 "EMACB",  # Fuel ethanol, transportation sector (bbtu)
                 "GECCB",  # Geothermal, commercial sector (bbtu)
@@ -2550,6 +2558,7 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     return df
 
 
+# BELOW IS GOOD TO GO
 def prep_state_fuel_production_data() -> pd.DataFrame:
     """preps state-level fuel production data for petroleum, biomass, natural gas, and coal. Outputs are used
     to determine county-level fuel production for each fuel type.
@@ -2590,9 +2599,9 @@ def prep_state_fuel_production_data() -> pd.DataFrame:
 
     return df
 
-
+# BELOW IS GOOD TO GO
 def prep_county_petroleum_production_data() -> pd.DataFrame:
-    """prepares a dataframe of oil production by county for the year 2015. The dataframe uses 2011 crude oil production
+    """prepares a dataframe of oil production by county. The dataframe uses 2011 crude oil production
     (barrels per year) by county in the US to determine which counties in a given state contribute the most to the
     state total. These percent of state total values from 2011 are mapped to 2015 state total oil production to get
     2015 values on a county level.
@@ -2600,33 +2609,23 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     :return:                DataFrame of a oil production (bbtu) by county
 
     """
+
+    # establish unconventional to conventional petroleum ratio
     UNCONVENTIONAL_PETROLEUM_FRACTION = .63  # fraction of all petroleum production that is unconventional
-    GALLON_OIL_TO_BBTU_CONVERSION = 0.0001355  # gallon of oil to billion btu conversion
-    MILLION_MULTIPLIER = 1000000  # a million
-    SURFACEWATER_PCT = .8  # assumed percent of withdrawals for unconventional petroleum from surface water
 
-    # read in data
+    # read in state level fuel production data
     df = prep_state_fuel_production_data()  # read in 2015 state level petroleum production data
+    df = df[["State", "petroleum_production_bbtu"]]  # reduce dataframe to required variables
 
-    # read in county level oil and gas production data
+    # read in county level oil and gas production data for 2011
     data_prod = 'input_data/oilgascounty.csv'
     df_petroleum_loc = pd.read_csv(data_prod, dtype={'geoid': str})
+    df_petroleum_loc = df_petroleum_loc[['FIPS', 'Stabr', 'oil2011']]  # reduce dataframe to required variables
 
-    df_loc = prep_water_use_2015()  # read in FIPS codes and states from 2015 water dataset
+    # read in FIPS codes and states from 2015 water dataset
+    df_loc = prep_water_use_2015()
 
-    # read in read in state level water to oil intensity data
-    data_water_intensity = 'input_data/PADD_intensity.csv'
-    df_conventional_water = pd.read_csv(data_water_intensity)
-
-    # read in read in state level unconventional natural gas and oil production data
-    un_data = 'input_data/Unconventional_Oil_NG_State.csv'
-    df_unconventional_water = pd.read_csv(un_data)
-
-    # reduce dataframes to required variables
-    df = df[["State", "petroleum_production_bbtu"]]
-    df_petroleum_loc = df_petroleum_loc[['FIPS', 'Stabr', 'oil2011']]
-
-    # calculate percent of total 2011 state oil production by county
+    # calculate percent of state total petroleum production for each county in 2011
     df_petroleum_loc_sum = df_petroleum_loc[['Stabr', 'oil2011']].groupby("Stabr", as_index=False).sum()
     df_petroleum_loc_sum = df_petroleum_loc_sum.rename(columns={"oil2011": "state_total"})  # rename column
     df_petroleum_loc = pd.merge(df_petroleum_loc, df_petroleum_loc_sum, how='left', on='Stabr')  # merge dataframes
@@ -2639,23 +2638,51 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     # add missing states (Idaho, and Alaska) that have 2015 oil production data
     idaho_df = {'State': 'ID', 'FIPS': '16075', 'oil_pct': 1}  # Idaho
     ak_arctic_df = {'State': 'AK', 'FIPS': '02185', 'oil_pct': .9738}  # Alaska, arctic slope region
-    ak_cook_df = {'State': 'AK', 'FIPS': '02122', 'oil_pct': .0262}  # Alaska, cook inlet basin (kenai peninsula)
+    ak_cook_df = {'State': 'AK', 'FIPS': '02122', 'oil_pct': .0262}  # Alaska, cook inlet basin (Kenai peninsula)
     oil_list = [idaho_df, ak_arctic_df, ak_cook_df]
     for oil_county in oil_list:
         df_petroleum_loc = df_petroleum_loc.append(oil_county, ignore_index=True)
 
-    # merge 2015 state-level production data with 2011 county level percent data
+    # merge county level percent data with 2015 state-level production data
     df = pd.merge(df_petroleum_loc, df, how='left', on="State")
 
-    # calculate 2015 percent by county and convert to daily production
-    df['petroleum_production_bbtu'] = (df['petroleum_production_bbtu'] * df['oil_pct']) / 365
+    # calculate 2015 percent by county
+    df['petroleum_production_bbtu'] = (df['petroleum_production_bbtu'] * df['oil_pct'])
+
+    # convert to daily production from annual
+    df['petroleum_production_bbtu'] = df['petroleum_production_bbtu'] / 365
 
     # split into unconventional and conventional
-    df['petroleum_unconventional_production_bbtu'] = UNCONVENTIONAL_PETROLEUM_FRACTION \
-                                                     * df['petroleum_production_bbtu']
+    df['petroleum_unconventional_production_bbtu'] = UNCONVENTIONAL_PETROLEUM_FRACTION * df['petroleum_production_bbtu']
     df['petroleum_conventional_production_bbtu'] = (1 - UNCONVENTIONAL_PETROLEUM_FRACTION) \
                                                    * df['petroleum_production_bbtu']
 
+    # reduce dataframe
+    df = df[['FIPS', 'State', 'petroleum_unconventional_production_bbtu', 'petroleum_conventional_production_bbtu']]
+
+    return df
+
+
+def prep_petroleum_water_intensity():
+    """ Takes county level petroleum-production values and determines the water intensity for the given county for
+    both unconventional and conventional petroleum production.
+
+    :return:                                        Dataframe of county-level petroleum water intensity values
+    """
+
+    # create variables
+    GALLON_OIL_TO_BBTU_CONVERSION = 0.0001355  # gallon of oil to billion btu conversion
+    MILLION_MULTIPLIER = 1000000
+
+    # read in county-level petroleum production
+
+    # read in state-level water to oil intensity data
+    data_water_intensity = 'input_data/PADD_intensity.csv'
+    df_conventional_water = pd.read_csv(data_water_intensity)
+
+    # read in read in state level unconventional natural gas and oil production data
+    un_data = 'input_data/Unconventional_Oil_NG_State.csv'
+    df_unconventional_water = pd.read_csv(un_data)
     # ---- calculate water intensities
 
     # unconventional water use
@@ -3572,8 +3599,8 @@ def remove_petroleum_double_counting_from_mining():
 #   return out_df
 
 
-x = prep_fuel_demand_data()
-#print(x)
+x = prep_county_petroleum_production_data()
+# print(x)
 # for col in x.columns:
 #    print(col)
 x.to_csv(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv", index=False)
