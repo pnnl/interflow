@@ -2483,67 +2483,47 @@ def prep_electricity_demand_data() -> pd.DataFrame:
 
 
 
-# TODO Start HERE
+ # BELOW IS GOOD TO GO
 def prep_fuel_demand_data() -> pd.DataFrame:
-    """prepping fuel demand data. Returns a dataframe of fuel demand by fuel type and sector in bbtu for each county.
+    """prepares fuel demand data to the residential, commercial, industrial, and transportation sectors. Returns a
+    dataframe of fuel demand by fuel type and sector in bbtu per day for each county.
 
     :return:                DataFrame of a fuel demand values by sector
 
     """
 
-    # read get_fuel_demand_data():
+    # read in fuel data
     data = 'input_data/use_all_btu.csv'
-    #
-    #    # read in energy production (fuel) data
     df = pd.read_csv(data)
 
-    # electricity prod data
-    # elec_df = prep_electricity_generation()
-    # elec_df = elec_df[['FIPS', 'County', 'State',
-    #                   'EPD_solar_total_total_total_bbtu_from_EPS_solar_total_total_total_bbtu',
-    #                   'EPD_wind_total_total_total_bbtu_from_EPS_wind_total_total_total_bbtu']]
+    # read in variable renaming key
+    # read in renaming data
+    df_names = pd.read_csv('input_data/variable_rename_key_fuel_demand.csv')
 
-    # dictionary of fuel demand codes that are relevant and descriptive names
-    msn_dict = {"CLCCB": "COM_total_total_total_total_bbtu_from_EPD_coal_total_total_total_bbtu",
-                # Coal, commercial sector (bbtu)
-                "CLICB": "IND_total_total_total_total_bbtu_from_EPD_coal_total_total_total_bbtu",
-                # Coal, industrial sector (bbtu)
-                "EMACB": "TRA_total_total_total_total_bbtu_from_EPD_biomass_total_total_total_bbtu",
-                # Fuel ethanol, transportation sector (bbtu)
-                "GECCB": "COM_total_total_total_total_bbtu_from_EPD_geothermal_total_total_total_bbtu",
-                # Geothermal, commercial sector (bbtu)
-                "GERCB": "RES_total_total_total_total_bbtu_from_EPD_geothermal_total_total_total_bbtu",
-                # Geothermal, residential sector (bbtu)
-                "NGACB": "TRA_total_total_total_total_bbtu_from_EPD_natgas_total_total_total_bbtu",
-                # Natural gas, transportation sector  (bbtu)
-                "NGCCB": "COM_total_total_total_total_bbtu_from_EPD_natgas_total_total_total_bbtu",
-                # Natural gas, commercial sector (bbtu)
-                "NGICB": "IND_total_total_total_total_bbtu_from_EPD_natgas_total_total_total_bbtu",
-                # Natural gas, industrial sector (bbtu)
-                "NGRCB": "RES_total_total_total_total_bbtu_from_EPD_natgas_total_total_total_bbtu",
-                # Natural gas, residential sector (bbtu
-                "PAACB": "TRA_total_total_total_total_bbtu_from_EPD_petroleum_total_total_total_bbtu",
-                # petroleum products, transportation sector (bbtu)
-                "PACCB": "COM_total_total_total_total_bbtu_from_EPD_petroleum_total_total_total_bbtu",
-                # petroleum products, commercial sector (bbtu)
-                "PAICB": "IND_total_total_total_total_bbtu_from_EPD_petroleum_total_total_total_bbtu",
-                # petroleum products, industrial sector (bbtu)
-                "PARCB": "RES_total_total_total_total_bbtu_from_EPD_petroleum_total_total_total_bbtu",
-                # petroleum products, residential sector (bbtu)
-                "SOCCB": "COM_total_total_total_total_bbtu_from_EPD_solar_total_total_total_bbtu",
-                # Solar, commercial sector (bbtu)
-                "SORCB": "RES_total_total_total_total_btu_from_EPD_solar_total_total_total_bbtu",
-                # Solar, residential sector (bbtu)
-                "WDRCB": "RES_total_total_total_total_bbtu_from_EPD_biomass_total_total_total_bbtu",
-                # Wood energy, residential sector (bbtu)
-                "WWCCB": "COM_total_total_total_total_bbtu_from_EPD_biomass_total_total_total_bbtu",
-                # Wood and waste energy, commercial sector (bbtu)
-                "WWICB": "COM_total_total_total_total_bbtu_from_EPD_wind_total_total_total_bbtu"
-                # Wind energy, commercial sector (bbtu)
-                }
+    # convert to dictionary
+    df_names = dict(zip(df_names.original_name, df_names.new_name))
+
+    msn_list = ["CLCCB", # Coal, commercial sector (bbtu)
+                "CLICB",  # Coal, industrial sector (bbtu)
+                "EMACB",  # Fuel ethanol, transportation sector (bbtu)
+                "GECCB",  # Geothermal, commercial sector (bbtu)
+                "GERCB",  # Geothermal, residential sector (bbtu)
+                "NGACB",  # Natural gas, transportation sector  (bbtu)
+                "NGCCB",  # Natural gas, commercial sector (bbtu)
+                "NGICB",  # Natural gas, industrial sector (bbtu)
+                "NGRCB",  # Natural gas, residential sector (bbtu
+                "PAACB",  # petroleum products, transportation sector (bbtu)
+                "PACCB",  # petroleum products, commercial sector (bbtu)
+                "PAICB",  # petroleum products, industrial sector (bbtu)
+                "PARCB",  # petroleum products, residential sector (bbtu)
+                "SOCCB",  # Solar, commercial sector (bbtu)
+                "SORCB",  # Solar, residential sector (bbtu)
+                "WDRCB",  # Wood energy, residential sector (bbtu)
+                "WWCCB",  # Wood and waste energy, commercial sector (bbtu)
+                "WWICB"]  # Wind energy, commercial sector (bbtu)
 
     # reduce dataframe
-    df = df[df['MSN'].isin(msn_dict)]  # using MSN codes that are relevant
+    df = df[df['MSN'].isin(msn_list)]  # using MSN codes that are relevant
 
     # pivoting dataframe to get fuel codes as columns
     df = pd.pivot_table(df, values='2015', index=['State'],  # pivot
@@ -2552,51 +2532,26 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     df = df.rename_axis(None, axis=1)  # drop index name
     df.fillna(0, inplace=True)  # filling blanks with zero
 
-    # split out data into county values and multiply by population weighting
+    # split out data into county values by using state population percent
     df = calc_population_county_weight(df)
-    df = df[['FIPS', 'State', 'County', 'pop_weight', 'CLCCB', 'CLICB', 'EMACB', 'GECCB', 'GERCB', 'NGACB', 'NGCCB',
-             'NGICB',
-             'NGRCB', 'PAACB', 'PACCB', 'PAICB', 'PARCB', 'SOCCB', 'SORCB', 'WDRCB', 'WWCCB', 'WWICB']]
 
     # multiply out by county weight and convert to daily bbtu from annual
-    energy_columns = df.columns[4:].to_list()
+    energy_columns = df.columns[1:-3].to_list()
     for d in energy_columns:
-        df[d] = (df[d] * df['pop_weight']) / 365
-    #
+        df[d] = (df[d] * df['pop_weight'])  # multiply out each county by population percentage of state
+        df[d] = df[d] / 365  # change from annual values to daily values
+
     # rename columns to add descriptive language
-    df.rename(columns=msn_dict, inplace=True)
+    df.rename(columns=df_names, inplace=True)
 
-    # df = pd.merge(df, elec_df, how='left', on=['FIPS', 'State', 'County'])
-    #
-    # create supply variables
-    #
-    # df['total_geo'] = df["COM_total_total_total_total_bbtu_from_EPD_geothermal_total_total_total_bbtu"] + \
-    #            df["RES_total_total_total_total_bbtu_from_EPD_geothermal_total_total_total_bbtu"]
-    ##
-    # df['total_solar'] = df["COM_total_total_total_total_bbtu_from_EPD_solar_total_total_total_bbtu"] \
-    #              + df["RES_total_total_total_total_btu_from_EPD_solar_total_total_total_bbtu"]
-    # df['total_wind'] = df["COM_total_total_total_total_bbtu_from_EPD_wind_total_total_total_bbtu"]
-    ##
-    # solar_supply = 'EPD_solar_total_total_total_bbtu_from_EPS_solar_total_total_total_bbtu'
-    # wind_supply = 'EPD_wind_total_total_total_bbtu_from_EPS_wind_total_total_total_bbtu'
-    # geo_supply = 'EPD_geothermal_total_total_total_bbtu_from_EPS_geothermal_total_total_total_bbtu'
-    ##
-    # df[solar_supply] = df[solar_supply] + df['total_solar']
-    # df[wind_supply] = df[wind_supply] + df['total_wind']
-    # df[geo_supply] =  df['total_geo'] # no geothermal in electricity generation
-    ##
-    # df = df.drop(['total_solar','total_wind' ], axis=1)
-
-    # remove unneeded columns
+    # drop county population variable
     df = df.drop(['pop_weight'], axis=1)
-    #
-    df.fillna(0, inplace=True)
 
     return df
 
 
 def prep_state_fuel_production_data() -> pd.DataFrame:
-    """prepping state-level fuel production data for petroleum, biomass, natural gas, and coal. Outputs can be used
+    """preps state-level fuel production data for petroleum, biomass, natural gas, and coal. Outputs are used
     to determine county-level fuel production for each fuel type.
 
     :return:                DataFrame of fuel production data by fuel type and state
@@ -2605,7 +2560,6 @@ def prep_state_fuel_production_data() -> pd.DataFrame:
 
     # read in energy production data
     data = 'input_data/eia_SEDS_Prod_dataset.csv'
-    #
     df = pd.read_csv(data, skiprows=1)
 
     # list of fuel demand codes that are relevant from dataset
@@ -2614,28 +2568,25 @@ def prep_state_fuel_production_data() -> pd.DataFrame:
                      "NGMPB": "natgas_production_bbtu",  # natural gas marketed production (BBTU)
                      "CLPRB": "coal_production_bbtu",  # coal production (BBTU)
                      }
-    df = df[df['MSN'].isin(msn_prod_dict)]  # grabbing MSN codes that are relevant
+
+    # reduce dataset to relevant variables
+    df = df[df['MSN'].isin(msn_prod_dict)]
 
     # prepping data
-    df = pd.pivot_table(df, values='2015', index=['StateCode'],  # pivoting to get fuel codes as columns
+    df = pd.pivot_table(df, values='2015', index=['StateCode'],  # pivoting to get fuel codes as columns for 2015
                         columns=['MSN'], aggfunc=np.sum)
     df = df.reset_index()  # reset index to remove multi-index
     df = df.rename_axis(None, axis=1)  # drop index name
     df = df.rename(columns={"StateCode": "State"})  # rename state column
+
+    # remove unneeded values
     df = df[df.State != "X3"]  # drop offshore (gulf of mexico) values
     df = df[df.State != "X5"]  # drop offshore (pacific) values
     df = df[df.State != "US"]  # drop total US values
     df.fillna(0, inplace=True)  # filling blanks with zero
 
+    # rename columns to dictionary values
     df.rename(columns=msn_prod_dict, inplace=True)  # rename columns to add descriptive language
-
-    # add rows for puerto rico and virgin islands
-    pr_df = {'State': 'PR', 'petroleum_production_bbtu': 0, 'biomass_production_bbtu': 0,
-             'natgas_production_bbtu': 0, 'coal_production_bbtu': 0}
-    vi_df = {'State': 'VI', 'petroleum_production_bbtu': 0, 'biomass_production_bbtu': 0,
-             'natgas_production_bbtu': 0, 'coal_production_bbtu': 0}
-    df = df.append(pr_df, ignore_index=True)
-    df = df.append(vi_df, ignore_index=True)
 
     return df
 
@@ -3621,7 +3572,7 @@ def remove_petroleum_double_counting_from_mining():
 #   return out_df
 
 
-x = prep_electricity_demand_data()
+x = prep_fuel_demand_data()
 #print(x)
 # for col in x.columns:
 #    print(col)
