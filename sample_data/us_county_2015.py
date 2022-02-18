@@ -2932,12 +2932,12 @@ def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
     df_ng['NG_uncon_prod_SD'] = df_ng['NG_uncon_withdrawal_SD']
     df_ng['NG_uncon_prod_CMP'] = df_ng['NG_uncon_withdrawal_CMP']
 
+    # create variable for source fraction for produced water (set equal to 100%)
+    df_ng['NG_uncon_prod_source'] = 1
+
     # merge natural gas data frame with full county list
     df_ng = pd.merge(df_loc, df_ng, how='left', on=['FIPS', 'State'])
     df_ng.fillna(0, inplace=True)
-
-    # create variable for source fraction for produced water (set equal to 100%)
-    df_ng['NG_uncon_prod_source'] = 1
 
      # combine with petroleum production data
     df_pet = pd.merge(df_pet, df, how='left', on='State')
@@ -2963,7 +2963,6 @@ def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
     # create variable for source fraction for produced water (set equal to 100%)
     df_pet['PET_uncon_prod_source'] = 1
 
-
     # merge natural gas data frame with full county list
     df_pet = pd.merge(df_loc, df_pet, how='left', on=['FIPS', 'State'])
     df_pet.fillna(0, inplace=True)
@@ -2973,7 +2972,7 @@ def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
 
     return output_df
 
-
+# BELOW IS READY TO GO
 def rename_natgas_petroleum_data():
     """ Takes county level natural gas and petroleum production, water intensity, water source, and water discharge
     data and renames into required variable name structure.
@@ -2999,39 +2998,40 @@ def rename_natgas_petroleum_data():
 
     # merge natural gas and petroleum dataframes
     df = pd.merge(df_pet_water, df_ng_water, how='left', on = ['FIPS', 'State', 'County'])
-    #df = pd.merge(df, df_prod, how='left', on = ['FIPS', 'State', 'County'])
-
-    # reduce dataset to required columns
-    #df = df[name_dict]
+    df = pd.merge(df, df_prod, how='left', on = ['FIPS', 'State', 'County'])
 
     # rename columns based on dictionary
-    #df.rename(columns=df_names, inplace=True)
+    df.rename(columns=name_dict, inplace=True)
 
-    return df_pet_water
+    return df
 
+# BELOW IS GOOD TO GO
 def prep_county_coal_production_data() -> pd.DataFrame:
-    """prepares a dataframe of coal production by county from surface and underground mines in bbtu. Dataframe can be
-    used to determine water in coal mining.
+    """prepares a dataframe of coal production by county from surface and underground mines in bbtu. Also creates a
+    surface and underground water intensity per bbtu variable.
 
     :return:                DataFrame of coal production values in bbtu by county
 
     """
-    # read in data
-    #    # read in read in coal production data
+    # TODO make sure below intensities are correct
+    # create water intensity variables by mine type (million gallon per bbtu)
+    UNDERGROUND_INTENSITY = 0.00144
+    SURFACE_INTENSITY = 0.00034
+
+    # read in coal production data
     data_prod = 'input_data/coalpublic2015.csv'
     df_coal = pd.read_csv(data_prod, skiprows=3)
-    #
-    # def get_coal_mine_location_data():
+
+    # read in coal mine location data
     loc_data = 'input_data/Coal_Mine_Loc.csv'
     df_coal_loc = pd.read_csv(loc_data, dtype={'FIPS_CNTY_CD': str}, usecols=["MINE_ID", "STATE", "FIPS_CNTY_CD"])
 
-    #    # read in read in state fips code to state abbrev. data
+    # read in state fips code to state abbrev. data
     fipsdata = 'input_data/State_FIPS_Code.csv'
     df_fips = pd.read_csv(fipsdata, dtype={'State_FIPS': str})
 
-    # consumption fraction data
-
-    df_loc = prep_water_use_2015()  # read in FIPS codes and states from 2015 water dataset
+    # read in full list of FIPS codes and states from 2015 water dataset
+    df_loc = prep_water_use_2015()
 
     # establish unit conversions
     shortton_bbtu_conversion = 0.02009  # one short ton is equal to 0.02009 bbtu
@@ -3055,6 +3055,9 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     df_coal['FIPS'] = np.where(df_coal['MINE_ID'] == 3609086, "42051", df_coal['FIPS'])
     df_coal['FIPS'] = np.where(df_coal['MINE_ID'] == 3607079, "42079", df_coal['FIPS'])
 
+    # remove rows with Refuse Coal
+    df_coal = df_coal.loc[df_coal['Mine Type'] != 'Refuse']
+
     # reorganize dataframe to get mine type as a column and individual row for each FIPS code
     df_coal = pd.pivot_table(df_coal, values='Production (short tons)',  # pivot dataframe
                              index=['FIPS'], columns=['Mine Type'], aggfunc=np.sum)
@@ -3063,36 +3066,15 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     df_coal.fillna(0, inplace=True)
 
     # calculate coal production per county in billion btus per day
-    df_coal['Refuse'] = df_coal['Refuse'] * shortton_bbtu_conversion / 365
     df_coal['Surface'] = df_coal['Surface'] * shortton_bbtu_conversion / 365
     df_coal['Underground'] = df_coal['Underground'] * shortton_bbtu_conversion / 365
-    df_coal['coal_production_bbtu'] = (df_coal['Refuse'] + df_coal['Surface']
-                                       + df_coal['Underground'])
 
-    # rename short ton production columns to add units
-    coal_prod_dict = {"Refuse": "MIN_coal_refuse_total_total_bbtu_from_MIN_coal_refuse_total_total_bbtu",
-                      # refuse coal production
-                      "Surface": "MIN_coal_surface_total_total_bbtu_from_MIN_coal_surface_total_total_bbtu",
-                      # coal production from surface mines
-                      "Underground": "MIN_coal_underground_total_total_bbtu_from_MIN_coal_underground_total_total_bbtu",
-                      # coal production from underground mines
-                      }
-    df_coal.rename(columns=coal_prod_dict, inplace=True)  # rename columns to add descriptive language
+    # calculate total coal production per county
+    df_coal['coal_production_bbtu'] = (df_coal['Surface'] + df_coal['Underground'])
 
-    # water intensities
-    und = 0.00144
-    sur = 0.00034
-
-    df_coal['MIN_coal_underground_withdrawal_total_mgd_from_MIN_coal_underground_total_total_bbtu_intensity'] = und
-    df_coal['MIN_coal_surface_withdrawal_total_mgd_from_MIN_coal_surface_total_total_bbtu_intensity'] = sur
-
-    # energy discharge to EPD
-    df_coal['MIN_coal_surface_total_total_bbtu_to_EPD_coal_total_total_total_bbtu_fraction'] = 1
-    df_coal['MIN_coal_underground_total_total_bbtu_to_EPD_coal_total_total_total_bbtu_fraction'] = 1
-
-    # merge with full county data to distribute value to each county in a state and include all FIPS
-    df_coal = pd.merge(df_loc, df_coal, how='left', on='FIPS')
-    df_coal.fillna(0, inplace=True)
+    # create water intensity variables by mine type
+    df_coal['under_water_int'] = UNDERGROUND_INTENSITY
+    df_coal['surface_water_int'] = SURFACE_INTENSITY
 
     return df_coal
 
@@ -3105,102 +3087,99 @@ def prep_county_coal_water_source_fractions() -> pd.DataFrame:
     """
 
     # read in water use data for 2015 in million gallons per day by county
-    df = prep_water_use_2015(variables=['FIPS',
-                                        'MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd',
-                                        'MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
-                                        'MIN_other_total_saline_groundwater_mgd_from_WSW_saline_groundwater_total_total_mgd',
-                                        'MIN_other_total_saline_surfacewater_mgd_from_WSW_saline_surfacewater_total_total_mgd'])
-
-    # read in region identifier
-    df_loc = prep_water_use_2015()
+    df = prep_water_use_2015(variables=['FIPS', 'MI-WGWFr', 'MI-WSWFr', 'MI-WGWSa', 'MI-WSWSa'])
 
     # consumption fraction data
     cons_df = prep_consumption_fraction()
 
-    cons_df = cons_df[['FIPS', 'MIN_other_total_fresh_surfacewater_mgd_to_CMP_total_total_total_total_mgd_fraction',
-                       "MIN_other_total_saline_surfacewater_mgd_to_CMP_total_total_total_total_mgd_fraction",
-                       "MIN_other_total_fresh_groundwater_mgd_to_CMP_total_total_total_total_mgd_fraction",
-                       "MIN_other_total_saline_groundwater_mgd_to_CMP_total_total_total_total_mgd_fraction"]]
+    # create mining consumption fraction names
+    water_types = ['fresh_surfacewater', 'saline_surfacewater', 'fresh_groundwater', 'saline_groundwater']
+    cons_variable_list = []
+    for type in water_types:
+        prefix = 'MIN_other_total_'
+        suffix = '_mgd_to_CMP_total_total_total_total_mgd_fraction'
+        full_name = prefix + type + suffix
+        cons_variable_list.append(full_name)
 
-    # create a list of mining water source names
-    source_list = ['MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd',
-                   'MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
-                   'MIN_other_total_saline_groundwater_mgd_from_WSW_saline_groundwater_total_total_mgd',
-                   'MIN_other_total_saline_surfacewater_mgd_from_WSW_saline_surfacewater_total_total_mgd']
-    # calculate total water flows to mining
-    df['total_mining_water'] = df[df.columns[1:].to_list()].sum(axis=1)
+    # reduce consumption dataframe to required variables
+    cons_df = cons_df[['FIPS'], cons_variable_list]
 
-    # calculate water fractions
-    for source in source_list:
-        fraction_name = source + '_fraction'
-        df[fraction_name] = np.where(df['total_mining_water'] > 0,
-                                     df[source] / df['total_mining_water'],
-                                     np.nan)
+   ## create a list of mining water source names
+   #source_list = ['MI-WGWFr', 'MI-WSWFr', 'MI-WGWSa', 'MI-WSWSa']
+   ## calculate total water flows to mining
+   #df['total_mining_water'] = df[df.columns[1:].to_list()].sum(axis=1)
 
-        # fill blank water fractions
-        df[fraction_name].fillna(df[fraction_name].mean(), inplace=True)
+   ## calculate water fractions
+   #for source in source_list:
+   #    fraction_name = source + '_fraction'
+   #    df[fraction_name] = np.where(df['total_mining_water'] > 0,
+   #                                 df[source] / df['total_mining_water'],
+   #                                 np.nan)
 
-    df_out = df[['FIPS']].copy()
+   #    # fill blank water fractions
+   #    df[fraction_name].fillna(df[fraction_name].mean(), inplace=True)
 
-    min_u_fgw = 'MIN_coal_underground_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
-    min_u_fsw = 'MIN_coal_underground_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
-    min_u_sgw = 'MIN_coal_underground_withdrawal_total_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction'
-    min_u_ssw = 'MIN_coal_underground_withdrawal_total_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction'
-    min_s_fgw = 'MIN_coal_surface_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
-    min_s_fsw = 'MIN_coal_surface_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
-    min_s_sgw = 'MIN_coal_surface_withdrawal_total_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction'
-    min_s_ssw = 'MIN_coal_surface_withdrawal_total_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction'
+   #df_out = df[['FIPS']].copy()
 
-    # source fractions are equal to general mining source fractions
-    df_out[min_u_fgw] = df['MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction']
-    df_out[min_u_fsw] = df[
-        'MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction']
-    df_out[min_u_sgw] = df[
-        'MIN_other_total_saline_groundwater_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction']
-    df_out[min_u_ssw] = df[
-        'MIN_other_total_saline_surfacewater_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction']
-    df_out[min_s_fgw] = df['MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction']
-    df_out[min_s_fsw] = df[
-        'MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction']
-    df_out[min_s_sgw] = df[
-        'MIN_other_total_saline_groundwater_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction']
-    df_out[min_s_ssw] = df[
-        'MIN_other_total_saline_surfacewater_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction']
+   #min_u_fgw = 'MIN_coal_underground_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
+   #min_u_fsw = 'MIN_coal_underground_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
+   #min_u_sgw = 'MIN_coal_underground_withdrawal_total_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction'
+   #min_u_ssw = 'MIN_coal_underground_withdrawal_total_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction'
+   #min_s_fgw = 'MIN_coal_surface_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction'
+   #min_s_fsw = 'MIN_coal_surface_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
+   #min_s_sgw = 'MIN_coal_surface_withdrawal_total_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction'
+   #min_s_ssw = 'MIN_coal_surface_withdrawal_total_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction'
 
-    min_fsw_c = "MIN_other_total_fresh_surfacewater_mgd_to_CMP_total_total_total_total_mgd_fraction"
-    min_ssw_c = "MIN_other_total_saline_surfacewater_mgd_to_CMP_total_total_total_total_mgd_fraction"
-    min_fgw_c = "MIN_other_total_fresh_groundwater_mgd_to_CMP_total_total_total_total_mgd_fraction"
-    min_sgw_c = "MIN_other_total_saline_groundwater_mgd_to_CMP_total_total_total_total_mgd_fraction"
+   ## source fractions are equal to general mining source fractions
+   #df_out[min_u_fgw] = df['MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction']
+   #df_out[min_u_fsw] = df[
+   #    'MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction']
+   #df_out[min_u_sgw] = df[
+   #    'MIN_other_total_saline_groundwater_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction']
+   #df_out[min_u_ssw] = df[
+   #    'MIN_other_total_saline_surfacewater_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction']
+   #df_out[min_s_fgw] = df['MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd_fraction']
+   #df_out[min_s_fsw] = df[
+   #    'MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd_fraction']
+   #df_out[min_s_sgw] = df[
+   #    'MIN_other_total_saline_groundwater_mgd_from_WSW_saline_groundwater_total_total_mgd_fraction']
+   #df_out[min_s_ssw] = df[
+   #    'MIN_other_total_saline_surfacewater_mgd_from_WSW_saline_surfacewater_total_total_mgd_fraction']
 
-    # consumption fractions are equal to general mining consumption fractions
-    df_out['MIN_coal_surface_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_fgw_c]
-    df_out['MIN_coal_surface_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_fsw_c]
-    df_out['MIN_coal_surface_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_sgw_c]
-    df_out['MIN_coal_surface_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_ssw_c]
+   #min_fsw_c = "MIN_other_total_fresh_surfacewater_mgd_to_CMP_total_total_total_total_mgd_fraction"
+   #min_ssw_c = "MIN_other_total_saline_surfacewater_mgd_to_CMP_total_total_total_total_mgd_fraction"
+   #min_fgw_c = "MIN_other_total_fresh_groundwater_mgd_to_CMP_total_total_total_total_mgd_fraction"
+   #min_sgw_c = "MIN_other_total_saline_groundwater_mgd_to_CMP_total_total_total_total_mgd_fraction"
 
-    df_out['MIN_coal_underground_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_fgw_c]
-    df_out['MIN_coal_underground_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_fsw_c]
-    df_out['MIN_coal_underground_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_sgw_c]
-    df_out['MIN_coal_underground_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_ssw_c]
+   ## consumption fractions are equal to general mining consumption fractions
+   #df_out['MIN_coal_surface_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_fgw_c]
+   #df_out['MIN_coal_surface_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_fsw_c]
+   #df_out['MIN_coal_surface_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_sgw_c]
+   #df_out['MIN_coal_surface_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_ssw_c]
 
-    # surface discharge fractions
-    df_out['MIN_coal_surface_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_fgw_c]
-    df_out['MIN_coal_surface_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_fsw_c]
-    df_out['MIN_coal_surface_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_sgw_c]
-    df_out['MIN_coal_surface_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_ssw_c]
-    df_out['MIN_coal_underground_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[
-        min_fgw_c]
-    df_out['MIN_coal_underground_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[
-        min_fsw_c]
-    df_out['MIN_coal_underground_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[
-        min_sgw_c]
-    df_out['MIN_coal_underground_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[
-        min_ssw_c]
+   #df_out['MIN_coal_underground_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_fgw_c]
+   #df_out['MIN_coal_underground_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_fsw_c]
+   #df_out['MIN_coal_underground_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_sgw_c]
+   #df_out['MIN_coal_underground_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction'] = cons_df[min_ssw_c]
 
-    # merge with county location data
-    df = pd.merge(df_loc, df_out, how='left', on='FIPS')
+   ## surface discharge fractions
+   #df_out['MIN_coal_surface_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_fgw_c]
+   #df_out['MIN_coal_surface_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_fsw_c]
+   #df_out['MIN_coal_surface_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_sgw_c]
+   #df_out['MIN_coal_surface_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[min_ssw_c]
+   #df_out['MIN_coal_underground_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[
+   #    min_fgw_c]
+   #df_out['MIN_coal_underground_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[
+   #    min_fsw_c]
+   #df_out['MIN_coal_underground_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[
+   #    min_sgw_c]
+   #df_out['MIN_coal_underground_withdrawal_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1 - cons_df[
+   #    min_ssw_c]
 
-    return df
+   ## merge with county location data
+   #df = pd.merge(df_loc, df_out, how='left', on='FIPS')
+
+    return cons_df
 
 
 def prep_county_ethanol_production_data() -> pd.DataFrame:
@@ -3641,7 +3620,7 @@ def remove_petroleum_double_counting_from_mining():
 #   return out_df
 
 
-x = rename_natgas_petroleum_data()
+x = prep_consumption_fraction()
 # print(x)
 # for col in x.columns:
 #    print(col)
