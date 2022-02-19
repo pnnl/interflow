@@ -891,76 +891,114 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     return df
 
 
-# TODO, need to add pws interbasin transfers to this total
 def prep_pws_to_pwd():
     '''preparing variables for connection'''
 
-    df = prep_water_use_2015(variables=['FIPS', 'State', 'County',
-                                        'PWS_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
-                                        'PWS_fresh_surfacewater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
-                                        'PWS_saline_groundwater_withdrawal_total_mgd_from_WSW_saline_groundwater_total_total_mgd',
-                                        'PWS_saline_surfacewater_withdrawal_total_mgd_from_WSW_saline_surfacewater_total_total_mgd',
-                                        'RES_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'])
+    df = rename_water_data_2015(all_variables=True)
+    df_com_ind = calc_pws_commercial_industrial_flows()
+    df_ibt = prep_interbasin_transfer_data()
+    df = pd.merge(df, df_com_ind, how='left', on=['FIPS', 'State', 'County'])
+    df = pd.merge(df, df_ibt, how='left', on=['FIPS', 'State', 'County'])
 
-    df2 = calc_pws_deliveries()
+    sectors = ['RES', 'COM', 'IND']
+    adder = '_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'
 
-    df = pd.merge(df, df2, how='left', on=['FIPS', 'State', 'County'])
+    # calculate total public water demand (res, com, ind)
+    df['total_demand'] = 0
+    for sector in sectors:
+        df['total_demand'] = df['total_demand'] + df[sector + adder]
 
-    out_df = prep_water_use_2015()
+    # calculate total public water supply (withdrawals and imports from ibts)
+    pws_variables = ['fresh_groundwater_withdrawal', 'fresh_surfacewater_withdrawal', 'saline_groundwater_withdrawal',
+                     'saline_surfacewater_withdrawal', 'fresh_surfacewater_import_total_mgd']
 
-    # res, com, ind
-    res_flow = 'RES_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'
-    com_flow = 'COM_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'
-    ind_flow = 'IND_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'
-    df['total_pwd'] = df[res_flow] + df[com_flow] + df[ind_flow]
+    water_sources = ['WSW_fresh_groundwater_total_total_mgd','WSW_fresh_surfacewater_total_total_mgd',
+                     'WSW_saline_groundwater_total_total_mgd', 'WSW_saline_surfacewater_total_total_mgd',
+                     'WSI_fresh_surfacewater_import_total_mgd']
 
-    # 2015 water flows
-    fgw_flow = 'PWS_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd'
-    fsw_flow = 'PWS_fresh_surfacewater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
-    sgw_flow = 'PWS_saline_groundwater_withdrawal_total_mgd_from_WSW_saline_groundwater_total_total_mgd'
-    ssw_flow = 'PWS_saline_surfacewater_withdrawal_total_mgd_from_WSW_saline_surfacewater_total_total_mgd'
+    # TODO BELOW ISN'T WORKING
 
-    df['total_pws'] = df[fgw_flow] + df[fsw_flow] + df[sgw_flow] + df[ssw_flow]
+    # START HERE
 
-    fsw_frac = df[fsw_flow] / df['total_pws']
-    fgw_frac = df[fgw_flow] / df['total_pws']
-    sgw_frac = df[sgw_flow] / df['total_pws']
-    ssw_frac = df[ssw_flow] / df['total_pws']
+    col_list = df.columns.to_list()
+    var_list = []
+    for p in pws_variables:
+        df[p + 'total_supply'] = 0
+    for p in pws_variables:
+        for w in water_sources:
+            prefix = 'PWS_'
+            suffix = '_total_mgd'
+            adder = '_from_' + w
+            if prefix + p + suffix + adder in col_list:
+                df[p + '_total_supply'] = df[p + '_total_supply'] + df[prefix + p + suffix + adder]
+                var_list.append(p + '_total_supply')
+            else:
+                pass
 
-    # determine the total amount of public water demand that can be supplied by public water supply
-    df['net_supply'] = df['total_pws'] - df['total_pwd']
+    var_list.append('total_demand')
+    var_list.append('FIPS')
 
-    # if net supply is > 0, then calculate exports and demand
+    import_name = 'PWI_total_total_total_total_mgd'
+    export_name = 'to_PWX_'
 
-    pws_fsw_exports = 'PWX_total_total_total_total_mgd_from_PWS_fresh_surfacewater_withdrawal_total_mgd'
-    pws_fgw_exports = 'PWX_total_total_total_total_mgd_from_PWS_fresh_groundwater_withdrawal_total_mgd'
-    pws_sgw_exports = 'PWX_total_total_total_total_mgd_from_PWS_saline_groundwater_withdrawal_total_mgd'
-    pws_ssw_exports = 'PWX_total_total_total_total_mgd_from_PWS_saline_surfacewater_withdrawal_total_mgd'
+    # calculate total public water supply (withdrawals and imports)
+  #
+#TODO see if below works before rewriting
+  #out_df = prep_water_use_2015()
 
-    out_df[pws_fsw_exports] = np.where(df['net_supply'] > 0, df['net_supply'] * fsw_frac, 0)
-    out_df[pws_fgw_exports] = np.where(df['net_supply'] > 0, df['net_supply'] * fgw_frac, 0)
-    out_df[pws_sgw_exports] = np.where(df['net_supply'] > 0, df['net_supply'] * sgw_frac, 0)
-    out_df[pws_ssw_exports] = np.where(df['net_supply'] > 0, df['net_supply'] * ssw_frac, 0)
+  ## res, com, ind
+  #res_flow = 'RES_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'
+  #com_flow = 'COM_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'
+  #ind_flow = 'IND_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd'
+  #df['total_pwd'] = df[res_flow] + df[com_flow] + df[ind_flow]
 
-    # if net supply is <0, then calculate imports to demand
+  ## 2015 water flows
+  #fgw_flow = 'PWS_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd'
+  #fsw_flow = 'PWS_fresh_surfacewater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
+  #sgw_flow = 'PWS_saline_groundwater_withdrawal_total_mgd_from_WSW_saline_groundwater_total_total_mgd'
+  #ssw_flow = 'PWS_saline_surfacewater_withdrawal_total_mgd_from_WSW_saline_surfacewater_total_total_mgd'
 
-    pws_imports = 'PWD_total_total_total_total_mgd_from_PWI_total_total_total_total_mgd'
+  #df['total_pws'] = df[fgw_flow] + df[fsw_flow] + df[sgw_flow] + df[ssw_flow]
 
-    out_df[pws_imports] = np.where(df['net_supply'] < 0, abs(df['net_supply']), 0)
+  #fsw_frac = df[fsw_flow] / df['total_pws']
+  #fgw_frac = df[fgw_flow] / df['total_pws']
+  #sgw_frac = df[sgw_flow] / df['total_pws']
+  #ssw_frac = df[ssw_flow] / df['total_pws']
 
-    # determine what goes to PWS from PWD
+  ## determine the total amount of public water demand that can be supplied by public water supply
+  #df['net_supply'] = df['total_pws'] - df['total_pwd']
 
-    fsw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_fresh_surfacewater_withdrawal_total_mgd'
-    fgw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_fresh_groundwater_withdrawal_total_mgd'
-    sgw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_saline_groundwater_withdrawal_total_mgd'
-    ssw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_saline_surfacewater_withdrawal_total_mgd'
+  ## if net supply is > 0, then calculate exports and demand
 
-    out_df[fsw_PWD] = np.where(out_df[pws_imports] > 0, df[fsw_flow], fsw_frac * df['total_pwd'])
-    out_df[fgw_PWD] = np.where(out_df[pws_imports] > 0, df[fgw_flow], fgw_frac * df['total_pwd'])
-    out_df[sgw_PWD] = np.where(out_df[pws_imports] > 0, df[sgw_flow], sgw_frac * df['total_pwd'])
-    out_df[ssw_PWD] = np.where(out_df[pws_imports] > 0, df[ssw_flow], ssw_frac * df['total_pwd'])
+  #pws_fsw_exports = 'PWX_total_total_total_total_mgd_from_PWS_fresh_surfacewater_withdrawal_total_mgd'
+  #pws_fgw_exports = 'PWX_total_total_total_total_mgd_from_PWS_fresh_groundwater_withdrawal_total_mgd'
+  #pws_sgw_exports = 'PWX_total_total_total_total_mgd_from_PWS_saline_groundwater_withdrawal_total_mgd'
+  #pws_ssw_exports = 'PWX_total_total_total_total_mgd_from_PWS_saline_surfacewater_withdrawal_total_mgd'
 
-    return out_df
+  #out_df[pws_fsw_exports] = np.where(df['net_supply'] > 0, df['net_supply'] * fsw_frac, 0)
+  #out_df[pws_fgw_exports] = np.where(df['net_supply'] > 0, df['net_supply'] * fgw_frac, 0)
+  #out_df[pws_sgw_exports] = np.where(df['net_supply'] > 0, df['net_supply'] * sgw_frac, 0)
+  #out_df[pws_ssw_exports] = np.where(df['net_supply'] > 0, df['net_supply'] * ssw_frac, 0)
+
+  ## if net supply is <0, then calculate imports to demand
+
+  #pws_imports = 'PWD_total_total_total_total_mgd_from_PWI_total_total_total_total_mgd'
+
+  #out_df[pws_imports] = np.where(df['net_supply'] < 0, abs(df['net_supply']), 0)
+
+  ## determine what goes to PWS from PWD
+
+  #fsw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_fresh_surfacewater_withdrawal_total_mgd'
+  #fgw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_fresh_groundwater_withdrawal_total_mgd'
+  #sgw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_saline_groundwater_withdrawal_total_mgd'
+  #ssw_PWD = 'PWD_total_total_total_total_mgd_from_PWS_saline_surfacewater_withdrawal_total_mgd'
+
+  #out_df[fsw_PWD] = np.where(out_df[pws_imports] > 0, df[fsw_flow], fsw_frac * df['total_pwd'])
+  #out_df[fgw_PWD] = np.where(out_df[pws_imports] > 0, df[fgw_flow], fgw_frac * df['total_pwd'])
+  #out_df[sgw_PWD] = np.where(out_df[pws_imports] > 0, df[sgw_flow], sgw_frac * df['total_pwd'])
+  #out_df[ssw_PWD] = np.where(out_df[pws_imports] > 0, df[ssw_flow], ssw_frac * df['total_pwd'])
+
+    return df
 
 
 # BELOW IS READY TO GO
@@ -3615,7 +3653,7 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
 #   return out_df
 
 
-x = prep_interbasin_transfer_data()
+x = prep_pws_to_pwd()
 # print(x)
 # for col in x.columns:
 #    print(col)
