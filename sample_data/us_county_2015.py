@@ -2986,7 +2986,8 @@ def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
 # BELOW IS READY TO GO
 def rename_natgas_petroleum_data():
     """ Takes county level natural gas and petroleum production, water intensity, water source, and water discharge
-    data and renames into required variable name structure.
+    data and renames into required variable name structure. Also adds a flow connection between energy production of
+    natural gas and petroleum to energy demand of natural gas and petroleum.
 
     :return:
     """
@@ -3008,8 +3009,13 @@ def rename_natgas_petroleum_data():
     name_dict = dict(zip(df_names.original_name, df_names.new_name))
 
     # merge natural gas and petroleum dataframes
-    df = pd.merge(df_pet_water, df_ng_water, how='left', on = ['FIPS', 'State', 'County'])
-    df = pd.merge(df, df_prod, how='left', on = ['FIPS', 'State', 'County'])
+    df = pd.merge(df_pet_water, df_ng_water, how='left', on=['FIPS', 'State', 'County'])
+    df = pd.merge(df, df_prod, how='left', on=['FIPS', 'State', 'County'])
+
+    # add energy production discharge to energy demand as 100%
+    df['PET_con_EGD_fraction'] = 1
+    df['PET_uncon_EGD_fraction'] = 1
+    df['NG_uncon_EGD_fraction'] = 1
 
     # rename columns based on dictionary
     df.rename(columns=name_dict, inplace=True)
@@ -3343,30 +3349,35 @@ def remove_double_counting_from_mining():
 
     return df
 
-
+# BELOW IS GOOD TO GO
 def prep_county_ethanol_production_data() -> pd.DataFrame:
     """ Takes 2015 eia data on ethanol plant capacity with locational data and combines with state level biomass
-     (ethanol) production from prep_state_fuel_production_data() to split out state total by county. Returns a
-     dataframe of ethanol production (bbtu) by county FIPS for each county in the US for 2015.
+     (ethanol) production data to split out state total by county. Returns a dataframe of ethanol production (bbtu) by
+     county FIPS for each county in the US for 2015.
 
-    :return:                DataFrame of a number of water values for 2015 at the county level
+    :return:                DataFrame of county-level ethanol production values
 
     """
-    # get data
-    ethanol_data = 'input_data/eia819_ethanolcapacity_2015.csv'  # ethanol location data
+    # ethanol plant location data
+    ethanol_data = 'input_data/eia819_ethanolcapacity_2015.csv'
     df_ethanol_loc = pd.read_csv(ethanol_data, dtype={'FIPS': str}, skiprows=1)
-    df_ethanol_production = prep_state_fuel_production_data()  # ethnaol production data
-    df_loc = prep_water_use_2015()  # read in FIPS codes and states from 2015 water dataset
 
-    # gallons per bbtu for ethanol production
+    # ethanol production data
+    df_ethanol_production = prep_state_fuel_production_data()
+    df_ethanol_production = df_ethanol_production[['State', 'biomass_production_bbtu']]  # reduce dataset
+
+    # read in FIPS codes and states from 2015 water dataset
+    df_loc = prep_water_use_2015()
+
+    # bbtus per gallon of ethanol
     btu_per_gal = 80430
     bbtu_per_gal_ethanol = btu_per_gal / 1000000000
 
-    # gallon of water per gallon of ethanol
+    # million gallons of water required per gallon of ethanol
     gal_per_gal = 3
     mg_per_gal = gal_per_gal / 1000000
 
-    # water intensity
+    # water intensity (mg/bbtu)
     ethanol_intensity = mg_per_gal / bbtu_per_gal_ethanol
 
     # calculate percentage of state total ethanol production for each county in ethanol plant location data
@@ -3383,11 +3394,12 @@ def prep_county_ethanol_production_data() -> pd.DataFrame:
     wy_df = {'State': 'WY', 'FIPS': '56015', 'ethanol_pct': 1}  # Goshen County, Wyoming
     df_ethanol_loc = df_ethanol_loc.append(wy_df, ignore_index=True)
 
-    df_ethanol_loc['FIPS'] = df_ethanol_loc['FIPS'].apply(lambda x: '{0:0>5}'.format(x))  # add leading zero
+    # add leading zero to FIPS code
+    df_ethanol_loc['FIPS'] = df_ethanol_loc['FIPS'].apply(lambda x: '{0:0>5}'.format(x))
 
     # merge ethanol location data with ethanol production data
-    df_ethanol_production = df_ethanol_production[['State', 'biomass_production_bbtu']]
-    df_biomass = pd.merge(df_ethanol_loc, df_ethanol_production, how='left', on='State')
+    df_biomass = pd.merge(df_ethanol_production, df_ethanol_loc, how='left', on='State')
+    df_biomass.fillna(0, inplace=True)
 
     # split out state level 2015 ethanol production to individual counties by state
     df_biomass['biomass_production_bbtu'] = df_biomass['biomass_production_bbtu'] * df_biomass['ethanol_pct']
@@ -3396,19 +3408,19 @@ def prep_county_ethanol_production_data() -> pd.DataFrame:
     df_biomass['biomass_production_bbtu'] = df_biomass['biomass_production_bbtu'] / 365
 
     df_biomass = df_biomass[['FIPS', 'biomass_production_bbtu']]
-    df_biomass = df_biomass.rename(columns=
-                                   {'biomass_production_bbtu':
-                                        'IND_biomass_ethanol_total_total_bbtu_from_IND_biomass_ethanol_total_total_bbtu'})
+    ethanol_prod_name = 'IND_biomass_ethanol_total_total_bbtu'
+    df_biomass = df_biomass.rename(columns={'biomass_production_bbtu':ethanol_prod_name + '_from_' + ethanol_prod_name})
 
-    df_biomass['IND_biomass_ethanol_total_total_bbtu_to_EPD_biomass_total_total_total_bbtu_fraction'] = 1
+    # create ethanol production flows to ethanol demand as 100% of produced ethanol
+    df_biomass[ethanol_prod_name + '_to_EPD_biomass_total_total_total_bbtu_fraction'] = 1
 
-    # create intensity variable
-    df_biomass[
-        'IND_biomass_ethanol_total_total_mgd_from_IND_biomass_ethanol_total_total_bbtu_intensity'] = ethanol_intensity
+    # create water intensity variable set equal to calculated mg/bbtu
+    ethanol_water_name = 'IND_biomass_ethanol_total_total_mgd'
+    df_biomass[ethanol_water_name + '_from_' + ethanol_prod_name + '_intensity'] = ethanol_intensity
 
     # assume all ethanol production water comes from fresh surfacewater
-    df_biomass['IND_biomass_ethanol_total_total_mgd_from_WSW_fresh_surfacewater_withdrawal_total_bbtu_fraction'] = 1
-    df_biomass['IND_biomass_ethanol_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'] = 1
+    df_biomass[ethanol_water_name + '_from_WSW_fresh_surfacewater_withdrawal_total_bbtu_fraction'] = 1
+    df_biomass[ethanol_water_name + 'to_SRD_total_total_total_total_mgd_fraction'] = 1
 
     # merge with full county data to distribute value to each county in a state and include all FIPS
     df_biomass = pd.merge(df_loc, df_biomass, how='left', on='FIPS')
@@ -3433,12 +3445,14 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
     df_corn_prod = pd.read_csv(prod_data, dtype={'State ANSI': str, 'County ANSI': str, 'Value': float})
 
     # read in 2015 crop irrigation data
-    df_irr_water = prep_water_use_2015(variables=['State',
-                                                  'ACI_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
-                                                  'ACI_fresh_surfacewater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
-                                                  ])
+    crop_fgw = 'IC-WGWFr'
+    crop_fsw = 'IC-WSWFr'
+    df_irr_water = prep_water_use_2015(variables=['State', crop_fgw, crop_fsw])
+
+    # read in full county list for 2015
     df_loc = prep_water_use_2015()
 
+    # read in state abbreviation key
     data_state = 'input_data/State_FIPS_Code.csv'
     df_state_abb = pd.read_csv(data_state, dtype={'State_FIPS': str})
 
@@ -3446,13 +3460,40 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
     ethanol_fraction = 0.38406  # corn grown for ethanol fraction
     af_gal_conversion = 325851  # acre ft to gallon conversion
 
-    # clean data
+    # prep county-level corn production data (bushels/year)
+    df_corn_prod = df_corn_prod.dropna(subset=["County ANSI"])  # drop unnamed counties
+    df_corn_prod['County ANSI'] = df_corn_prod['County ANSI'].apply(lambda x: '{0:0>3}'.format(x))
+    df_corn_prod['State ANSI'] = df_corn_prod['State ANSI'].apply(lambda x: '{0:0>2}'.format(x))
+    df_corn_prod["FIPS"] = df_corn_prod["State ANSI"] + df_corn_prod["County ANSI"]  # creat FIPS code from ANSI
+    df_corn_prod = df_corn_prod[["State", "FIPS", "Value"]]  # reduce to required variables
+
+    # determine corn growth by percent of state total corn production
+    df_corn_prod_sum = df_corn_prod.groupby("State", as_index=False).sum()  # sum by state
+    df_corn_prod_sum = df_corn_prod_sum[["State", "Value"]]  # reduce to required variables
+    df_corn_prod_sum = df_corn_prod_sum.rename(columns={"Value": "state_total"})  # rename value column
+    df_corn_prod = pd.merge(df_corn_prod, df_corn_prod_sum, how="left", on="State")  # merge state and total
+    df_corn_prod["corn_frac"] = df_corn_prod["Value"] / df_corn_prod['state_total']  # county fraction of state total
+    df_corn_prod = df_corn_prod[["State", "FIPS", "corn_frac", 'Value']]  # reduce to required variables
+    df_corn_prod = df_corn_prod.rename(columns={"State": "State_name"})  # rename
+    df_corn_prod['State_name'] = df_corn_prod['State_name'].str.lower()
+
+    # change state full name to state abbreviation
+    df_state_abb = df_state_abb[['State_name', 'State']]
+    df_state_abb['State_name'] = df_state_abb['State_name'].str.lower()
+    df_corn_prod = pd.merge(df_corn_prod, df_state_abb, how='left', on='State_name')
+
+    # clean state-level data
     df_corn.fillna(0, inplace=True)  # replaces blank values with 0
 
-    # calculate the irrigation intensity for all crops by state (total gallons per year)
+    # calculate total gallons applied
     df_corn["gallons_applied"] = af_gal_conversion * df_corn["Acre-feet-Applied_All"]  # gallons applied to all crops
+
+    # calculate the irrigation intensity for all crops by state (total gallons per day)
     df_corn["irr_intensity"] = df_corn["gallons_applied"] / df_corn["Total_Acres_Irrigated_All"]  # gal/acre all crops
     df_corn["irr_intensity"] = df_corn["irr_intensity"] / 10 ** 6  # convert to million gallons/acre
+
+    # drop rows with no corn production
+    df_corn = df_corn[df_corn.Acres_Corn_Harvested > 0]
 
     # calculate the amount of corn grown for ethanol production in each state
     df_corn["corn_prod"] = ethanol_fraction * df_corn["Acres_Corn_Harvested"]  # acres of corn for ethanol by state
@@ -3468,71 +3509,91 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
 
     # calculate irrigation surface water to groundwater ratio for each state from 2015 USGS water dataset
     df_irr_water = df_irr_water.groupby("State", as_index=False).sum()
-    df_irr_water['surface_frac_fill'] = df_irr_water[
-                                            'ACI_fresh_surfacewater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd'] \
-                                        / (df_irr_water[
-                                               'ACI_fresh_surfacewater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd']
-                                           + df_irr_water[
-                                               'ACI_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd'])
+    df_irr_water['surface_frac_fill'] = df_irr_water[crop_fsw] / (df_irr_water[crop_fsw] + df_irr_water[crop_fgw])
     df_irr_water = df_irr_water[['State', 'surface_frac_fill']]
     df_irr_water.fillna(0, inplace=True)  # replaces blank values with 0
 
     # fill states with corn growth but no surface vs. groundwater fraction available with estimate from 2015 water data
-    df_corn = pd.merge(df_corn, df_irr_water, how='left', on="State")
+    df_corn = pd.merge(df_corn, df_irr_water, how='right', on="State")
     df_corn['surface_frac'].fillna(df_corn['surface_frac_fill'], inplace=True)
 
+    # merge county level corn production with state water data
+    df = pd.merge(df_corn_prod, df_corn, how='left', on='State')  # merge dataframes
+
+    # calculate county-level water use for corn
+    df['ethanol_corn_mgal'] = df['ethanol_corn_mgal']*df['corn_frac']
+
+    # calculate acres per corn (bushels) harvested to be able to fill in missing acre values
+    df['acres_per_bushel'] = (df['Acres_Corn_Harvested'] * df['corn_frac'])/df['Value']
+
+    # apply the average
+    avg_acres = df['acres_per_bushel'].mean()
+    avg_irr_int = df["irr_intensity"].mean()
+
+    # fill missing water intensity values for west virginia using average acres/bushe and average water intensity/acre
+    df['ethanol_corn_mgal'] = np.where(df['State'] == 'WV',
+                                       (df['Value'] * avg_acres * avg_irr_int)/365,
+                                       df['ethanol_corn_mgal'])
+
     # split up ethanol corn irrigation water by surface and groundwater source percentages
-    df_corn['sw_ethanol_corn'] = (df_corn['surface_frac'] * df_corn["ethanol_corn_mgal"]).round(4)  # surface water
-    df_corn['gw_ethanol_corn'] = ((1 - df_corn['surface_frac']) * df_corn["ethanol_corn_mgal"]).round(4)  # groundwater
-    df_corn.fillna(0, inplace=True)  # replaces blank values with 0
+    df['sw_ethanol_corn'] = (df_corn['surface_frac'] * df_corn["ethanol_corn_mgal"]).round(4)  # surface water
+    df['gw_ethanol_corn'] = ((1 - df_corn['surface_frac']) * df_corn["ethanol_corn_mgal"]).round(4)  # groundwater
 
-    # reduce variables
-    df_corn = df_corn[['State', 'sw_ethanol_corn', 'gw_ethanol_corn', 'ethanol_corn_mgal']]
+    # reduce dataframe
+    df = df[['FIPS', 'State', 'sw_ethanol_corn', 'gw_ethanol_corn']]
 
-    # prep corn production data
-    df_corn_prod = df_corn_prod.dropna(subset=["County ANSI"])  # drop unnamed counties
-    df_corn_prod['County ANSI'] = df_corn_prod['County ANSI'].apply(lambda x: '{0:0>3}'.format(x))
-    df_corn_prod['State ANSI'] = df_corn_prod['State ANSI'].apply(lambda x: '{0:0>2}'.format(x))
-    df_corn_prod["FIPS"] = df_corn_prod["State ANSI"] + df_corn_prod["County ANSI"]  # creat FIPS code from ANSI
-    df_corn_prod = df_corn_prod[["State", "FIPS", "Value"]]  # reduce to required variables
+    # merge with full list of counties
+    df = pd.merge(df_loc, df, how='left', on=['FIPS', 'State'])  # merge dataframes
+    df.fillna(0, inplace=True)  # replace blank values with zero
 
-    # determine corn growth by percent of state total corn production
-    df_corn_prod_sum = df_corn_prod.groupby("State", as_index=False).sum()  # sum by state
-    df_corn_prod_sum = df_corn_prod_sum[["State", "Value"]]  # reduce to required variables
-    df_corn_prod_sum = df_corn_prod_sum.rename(columns={"Value": "state_total"})  # rename value column
-    df_corn_prod = pd.merge(df_corn_prod, df_corn_prod_sum, how="left", on="State")  # merge state and total
-    df_corn_prod["corn_frac"] = df_corn_prod["Value"] / df_corn_prod['state_total']  # county fraction of state total
-    df_corn_prod = df_corn_prod[["State", "FIPS", "corn_frac"]]  # reduce to required variables
-    df_corn_prod = df_corn_prod.rename(columns={"State": "State_name"})  # rename
-    df_corn_prod['State_name'] = df_corn_prod['State_name'].str.lower()
+    return df
 
-    # change state full name to state abbreviation
-    df_state_abb = df_state_abb[['State_name', 'State']]
-    df_state_abb['State_name'] = df_state_abb['State_name'].str.lower()
-    df_corn_prod = pd.merge(df_corn_prod, df_state_abb, how='left', on='State_name')
 
-    # calculate corn for ethanol by county based on percent of state total corn growth
-    df_corn_prod = pd.merge(df_corn_prod, df_corn, how='left', on='State')  # merge dataframes
-    df_corn_prod['sw_ethanol_corn'] = df_corn_prod['sw_ethanol_corn'] * df_corn_prod['corn_frac']  # calc surface water
-    df_corn_prod['gw_ethanol_corn'] = df_corn_prod['gw_ethanol_corn'] * df_corn_prod['corn_frac']  # calc groundwater
+def remove_irrigation_water_double_counting():
+    """
 
-    # combine with full county list to get complete US water for corn irrigation for ethanol by county
-    df_corn_prod = df_corn_prod[['FIPS', 'sw_ethanol_corn',
-                                 'gw_ethanol_corn',
-                                 'ethanol_corn_mgal']]  # reduce dataframe
+    :return:
+    """
 
-    # create new crop irrigation flows for corn ethanol irrigation
-    df_corn_prod = df_corn_prod.rename(columns={'sw_ethanol_corn':
-                                                    'ACI_fresh_surfacewater_withdrawal_ethanol_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
-                                                'gw_ethanol_corn':
-                                                    'ACI_fresh_groundwater_withdrawal_ethanol_mgd_from_WSW_fresh_groundwater_total_total_mgd',
-                                                })
+    # read in crop irrigation withdrawals
+    crop_fsw = 'AGR_crop_fresh_groundwater_withdrawal_mgd_from_WSW_fresh_groundwater_total_total_mgd'
+    crop_fgw = 'AGR_crop_fresh_surfacewater_withdrawal_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
 
-    df_corn_prod = pd.merge(df_loc, df_corn_prod, how='left', on='FIPS')  # merge dataframes
-    df_corn_prod.fillna(0, inplace=True)  # replace blank values with zero
+    df = rename_water_data_2015(variables=['FIPS', 'State', 'County', crop_fsw, crop_fgw ])
 
-    return df_corn_prod
+    # read in corn for ethanol water data
+    df_corn = prep_county_water_corn_biomass_data()
 
+    # merge dataframes
+    df = pd.merge(df, df_corn, how='left', on=['FIPS', 'State', 'County'])
+
+    # TODO pick up here
+
+
+
+    return df
+
+def prep_corn_crop_irr_flows():
+    """
+    prepares values for water for corn growth for ethanol including consumption fractions, surface discharge fractions,
+     and renames fresh surface water withdrawal, fresh groundwater withdrawal values to proper format.
+    :return:
+    """
+
+    # read in discharge flows for all crop irrigation
+    df = calc_irrigation_discharge_flows()
+
+
+
+    ## create ethanol names
+    #crop_ethanol_sw = 'AGR_ethanol_fresh_surfacewater_withdrawal_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
+    #crop_ethanol_gw = 'AGR_ethanol_fresh_groundwater_withdrawal_mgd_from_WSW_fresh_groundwater_total_total_mgd'
+
+    ## create new crop irrigation flows for corn ethanol irrigation
+    #df_corn_prod = df_corn_prod.rename(columns={'sw_ethanol_corn': crop_ethanol_sw,
+    #                                            'gw_ethanol_corn': crop_ethanol_gw})
+
+    return df
 
 
 # def combine_data():
@@ -3624,9 +3685,10 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
 #   return out_df
 
 
-x = prep_pws_to_pwd()
-# print(x)
+x = remove_irrigation_water_double_counting()
+#print(x)
 # for col in x.columns:
+
 #    print(col)
 x.to_csv(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv", index=False)
 import os
