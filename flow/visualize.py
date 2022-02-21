@@ -560,12 +560,13 @@ def plot_map(jsonfile: str, data:pd.DataFrame, level=1, region_col=None, strip="
                                   zoom=3,
                                   center=center))
     # update title
-    fig.update_layout(title_text="Map of Selected Flow Value in Each Region", title_x=0.5,
+    fig.update_layout(title_text="Map of Selected Flow Value in Each Region",
+                      title_x=0.0,
                       margin={"r": 10, "t": 60, "l": 0, "b": 0})
     # update dropdown list
     fig.update_layout(updatemenus=[dict(active=0,
                                         buttons=my_buttons,
-                                        x=0,
+                                        x=.5,
                                         xanchor="left",
                                         y=1.12,
                                         yanchor="top")]

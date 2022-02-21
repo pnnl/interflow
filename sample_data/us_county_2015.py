@@ -2950,13 +2950,13 @@ def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
     df_ng = pd.merge(df_loc, df_ng, how='left', on=['FIPS', 'State'])
     df_ng.fillna(0, inplace=True)
 
-     # combine with petroleum production data
+    # combine with petroleum production data
     df_pet = pd.merge(df_pet, df, how='left', on='State')
     df_pet = df_pet[['FIPS', 'State', 'petroleum_unconventional_production_bbtu',
                       'petroleum_conventional_production_bbtu', 'Total injected (%)', 'Surface Discharge (%)',
                       'Evaporation/ Consumption (%)', 'un_petrol_produced_int']]
 
-     # rename key columns for unconventional petroleum
+    # rename key columns for unconventional petroleum
     df_pet = df_pet.rename(columns={'Total injected (%)': 'PET_uncon_withdrawal_GD',
                                      'Surface Discharge (%)': 'PET_uncon_withdrawal_SD',
                                      'Evaporation/ Consumption (%)': 'PET_uncon_withdrawal_CMP'})
