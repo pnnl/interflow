@@ -94,7 +94,7 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True, output_fi
                 # collect input flow values
                 for t1 in f_dict[r][f_type]:
                     l1_value = 0
-                    t1_value = 0
+                    t5_value = 0
                     for t2 in f_dict[r][f_type][t1]:
                         l2_value = 0
                         for t3 in f_dict[r][f_type][t1][t2]:
@@ -103,7 +103,8 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True, output_fi
                                 for t5 in f_dict[r][f_type][t1][t2][t3][t4]:
                                     l4_value = 0
                                     for u1 in f_dict[r][f_type][t1][t2][t3][t4][t5]:
-                                        t1_name = f'{r}_{t1}_{u1}'
+                                        t5_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
+                                        #t1_name = f'{r}_{t1}_{u1}'
                                         for s1 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1]:
                                             l1_name = f'{r}_{s1}_to_{t1}_{u1}'
                                             for s2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1]:
@@ -139,8 +140,9 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True, output_fi
                                                                     l5_total_value = l5_total_value + l5_value
                                                                     total_dict.update({l5_total_name: l5_total_value})
 
-                                                                    t1_value = t1_value + l5_value
-                                                                    total_dict.update({t1_name: t1_value})
+                                                                    # sum aggregate nodes to replace l5 value
+                                                                    #t5_value = t5_value + l5_value
+                                                                    #total_dict.update({t5_name: t5_value})
 
             # calculate new flows based on intensity values
             elif f_type == 'B_calculate':

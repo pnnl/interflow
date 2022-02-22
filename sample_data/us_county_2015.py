@@ -929,10 +929,10 @@ def prep_pws_to_pwd():
     df['total_supply'] = df[fgw_flow] + df[fsw_flow] + df[sgw_flow] + df[ssw_flow] + df[ibt_flow]
 
     # fraction of supply from each source type
-    df['fsw_frac'] = df[fsw_flow] / df['total_supply']
+    df['fsw_frac'] = (df[fsw_flow] + df[ibt_flow]) / df['total_supply']
     df['fgw_frac'] = df[fgw_flow] / df['total_supply']
     df['sgw_frac'] = df[sgw_flow] / df['total_supply']
-    df['ssw_frac'] = (df[ssw_flow] + df[ibt_flow])  / df['total_supply']
+    df['ssw_frac'] = df[ssw_flow] / df['total_supply']
 
     # determine the total amount of public water demand that can be supplied by public water supply
     df['net_supply'] = df['total_supply'] - df['total_demand']
@@ -969,8 +969,8 @@ def prep_pws_to_pwd():
     out_df[ssw_PWD] = np.where(out_df[pws_imports] > 0, out_df[ssw_flow], out_df['ssw_frac'] * out_df['total_demand'])
 
     # reduce dataframe
-    out_df = out_df[['FIPS', 'State', 'County', pws_fsw_exports, pws_fgw_exports, pws_sgw_exports, pws_ssw_exports,
-                     pws_imports, fsw_PWD, fgw_PWD, sgw_PWD, ssw_PWD]]
+    #out_df = out_df[['FIPS', 'State', 'County', pws_fsw_exports, pws_fgw_exports, pws_sgw_exports, pws_ssw_exports,
+    #                 pws_imports, fsw_PWD, fgw_PWD, sgw_PWD, ssw_PWD]]
 
     return out_df
 
@@ -2479,9 +2479,9 @@ def prep_electricity_demand_data() -> pd.DataFrame:
     df = df.drop(['pop_weight'], axis=1)
 
     # create full variable names for demand flows
-    flow_name = '_total_total_total_total_bbtu_from_EGD_total_total_total_total_bbtu'
-    rej_name = '_total_total_total_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction'
-    esv_name = '_total_total_total_total_bbtu_to_ESV_total_total_total_total_bbtu_fraction'
+    flow_name = '_electricity_demand_total_total_bbtu_from_EGD_total_total_total_total_bbtu'
+    rej_name = '_electricity_demand_total_total_bbtu_to_REJ_total_total_total_total_bbtu_fraction'
+    esv_name = '_electricity_demand_total_total_bbtu_to_ESV_total_total_total_total_bbtu_fraction'
 
     sector_list = ['RES', 'COM', 'IND', 'TRA']
 
@@ -2577,6 +2577,110 @@ def prep_fuel_demand_data() -> pd.DataFrame:
 
     # rename columns to add descriptive language
     df.rename(columns=df_names, inplace=True)
+
+    # create rejected energy and energy service variables for each fuel type
+    coal_demand_list = ['COM', 'IND']
+    biomass_demand_list =  ['TRA', 'RES', 'COM']
+    geothermal_demand_list = ['COM', 'RES']
+    natgas_demand_list = ['TRA', 'COM', 'IND', 'RES']
+    petroleum_demand_list = ['TRA', 'COM', 'IND', 'RES']
+    solar_demand_list = ['COM', 'RES']
+    wind_demand_list = ['COM']
+
+    rej_name = '_to_REJ_'
+    esv_name = '_to_ESV_'
+    suffix = 'total_total_total_total_bbtu_fraction'
+
+    for s in coal_demand_list:
+        t = 'coal_'
+        rejected_energy_name = s + '_' + t + 'demand_total_total_bbtu' + rej_name + suffix
+        energy_service_name = s + '_' + t + 'demand_total_total_bbtu' + esv_name + suffix
+        if s == 'RES' or s == 'COM':
+            efficiency = .65
+        elif s == 'IND':
+            efficiency = .49
+        else:
+            efficiency = .21
+        df[rejected_energy_name] = 1 - efficiency
+        df[energy_service_name] = efficiency
+
+    for s in biomass_demand_list:
+        t = 'biomass_'
+        rejected_energy_name = s + '_' + t + 'demand_total_total_bbtu' + rej_name + suffix
+        energy_service_name = s + '_' + t + 'demand_total_total_bbtu' + esv_name + suffix
+        if s == 'RES' or s == 'COM':
+            efficiency = .65
+        elif s == 'IND':
+            efficiency = .49
+        else:
+            efficiency = .21
+        df[rejected_energy_name] = 1 - efficiency
+        df[energy_service_name] = efficiency
+
+    for s in geothermal_demand_list:
+        t = 'geothermal_'
+        rejected_energy_name = s + '_' + t + 'demand_total_total_bbtu' + rej_name + suffix
+        energy_service_name = s + '_' + t + 'demand_total_total_bbtu' + esv_name + suffix
+        if s == 'RES' or s == 'COM':
+            efficiency = .65
+        elif s == 'IND':
+            efficiency = .49
+        else:
+            efficiency = .21
+        df[rejected_energy_name] = 1 - efficiency
+        df[energy_service_name] = efficiency
+
+    for s in natgas_demand_list:
+        t = 'natgas_'
+        rejected_energy_name = s + '_' + t + 'demand_total_total_bbtu' + rej_name + suffix
+        energy_service_name = s + '_' + t + 'demand_total_total_bbtu' + esv_name + suffix
+        if s == 'RES' or s == 'COM':
+            efficiency = .65
+        elif s == 'IND':
+            efficiency = .49
+        else:
+            efficiency = .21
+        df[rejected_energy_name] = 1 - efficiency
+        df[energy_service_name] = efficiency
+
+    for s in petroleum_demand_list:
+        t = 'petroleum_'
+        rejected_energy_name = s + '_' + t + 'demand_total_total_bbtu' + rej_name + suffix
+        energy_service_name = s + '_' + t + 'demand_total_total_bbtu' + esv_name + suffix
+        if s == 'RES' or s == 'COM':
+            efficiency = .65
+        elif s == 'IND':
+            efficiency = .49
+        else:
+            efficiency = .21
+        df[rejected_energy_name] = 1 - efficiency
+        df[energy_service_name] = efficiency
+
+    for s in solar_demand_list:
+        t = 'solar_'
+        rejected_energy_name = s + '_' + t + 'demand_total_total_bbtu' + rej_name + suffix
+        energy_service_name = s + '_' + t + 'demand_total_total_bbtu' + esv_name + suffix
+        if s == 'RES' or s == 'COM':
+            efficiency = .65
+        elif s == 'IND':
+            efficiency = .49
+        else:
+            efficiency = .21
+        df[rejected_energy_name] = 1 - efficiency
+        df[energy_service_name] = efficiency
+
+    for s in wind_demand_list:
+        t = 'wind_'
+        rejected_energy_name = s + '_' + t + 'demand_total_total_bbtu' + rej_name + suffix
+        energy_service_name = s + '_' + t + 'demand_total_total_bbtu' + esv_name + suffix
+        if s == 'RES' or s == 'COM':
+            efficiency = .65
+        elif s == 'IND':
+            efficiency = .49
+        else:
+            efficiency = .21
+        df[rejected_energy_name] = 1 - efficiency
+        df[energy_service_name] = efficiency
 
     # drop county population variable
     df = df.drop(['pop_weight'], axis=1)
@@ -3851,7 +3955,7 @@ def combine_data():
 #   return out_df
 
 
-x = combine_data()
+x = prep_pws_to_pwd()
 #print(x)
 # for col in x.columns:
 
