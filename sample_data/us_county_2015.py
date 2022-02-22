@@ -969,8 +969,8 @@ def prep_pws_to_pwd():
     out_df[ssw_PWD] = np.where(out_df[pws_imports] > 0, out_df[ssw_flow], out_df['ssw_frac'] * out_df['total_demand'])
 
     # reduce dataframe
-    #out_df = out_df[['FIPS', 'State', 'County', pws_fsw_exports, pws_fgw_exports, pws_sgw_exports, pws_ssw_exports,
-    #                 pws_imports, fsw_PWD, fgw_PWD, sgw_PWD, ssw_PWD]]
+    out_df = out_df[['FIPS', 'State', 'County', pws_fsw_exports, pws_fgw_exports, pws_sgw_exports, pws_ssw_exports,
+                     pws_imports, fsw_PWD, fgw_PWD, sgw_PWD, ssw_PWD]]
 
     return out_df
 
@@ -2403,10 +2403,10 @@ def prep_pws_treatment_dist_intensity_values():
     out_df[ssw_t_flow] = ssw_treat
 
     dist_flow_list = [
-        'PWS_distribution_total_total_total_bbtu_from_PWS_fresh_surfacewater_withdrawal_total_mgd_intensity',
-        'PWS_distribution_total_total_total_bbtu_from_PWS_fresh_groundwater_withdrawal_total_mgd_intensity',
-        'PWS_distribution_total_total_total_bbtu_from_PWS_saline_surfacewater_withdrawal_total_mgd_intensity',
-        'PWS_distribution_total_total_total_bbtu_from_PWS_saline_groundwater_withdrawal_total_mgd_intensity'
+        'PWS_distribution_fresh_surfacewater_total_bbtu_from_PWS_fresh_surfacewater_withdrawal_total_mgd_intensity',
+        'PWS_distribution_fresh_groundwater_total_bbtu_from_PWS_fresh_groundwater_withdrawal_total_mgd_intensity',
+        'PWS_distribution_saline_surfacewater_total_bbtu_from_PWS_saline_surfacewater_withdrawal_total_mgd_intensity',
+        'PWS_distribution_saline_groundwater_total_bbtu_from_PWS_saline_groundwater_withdrawal_total_mgd_intensity'
     ]
 
     for item in dist_flow_list:
@@ -3131,9 +3131,9 @@ def rename_natgas_petroleum_data():
     df = pd.merge(df, df_prod, how='left', on=['FIPS', 'State', 'County'])
 
     # add energy production discharge to energy demand as 100%
-    df['PET_con_EGD_fraction'] = 1
-    df['PET_uncon_EGD_fraction'] = 1
-    df['NG_uncon_EGD_fraction'] = 1
+    df['PET_con_EPD_fraction'] = 1
+    df['PET_uncon_EPD_fraction'] = 1
+    df['NG_uncon_EPD_fraction'] = 1
 
     # rename columns based on dictionary
     df.rename(columns=name_dict, inplace=True)
@@ -3955,11 +3955,11 @@ def combine_data():
 #   return out_df
 
 
-x = prep_pws_to_pwd()
+x = combine_data()
 #print(x)
 # for col in x.columns:
 
-#    print(col)
+#    print(col)f
 x.to_csv(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv", index=False)
 import os
 
