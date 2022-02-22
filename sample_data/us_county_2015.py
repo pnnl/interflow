@@ -2127,7 +2127,8 @@ def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) ->
     output_df = output_df[output_df.EGS_hydro_instream_nocooling_total_bbtu_from_EPD_hydro_total_total_total_bbtu > 0]
 
     # remove flow variable to electricity demand to avoid double inclusion in final dataset
-    output_df = output_df.drop(['EGS_hydro_instream_nocooling_total_bbtu_to_EGD_total_total_total_total_bbtu_fraction'],
+    output_df = output_df.drop(['EGS_hydro_instream_nocooling_total_bbtu_to_EGD_total_total_total_total_bbtu_fraction',
+                                'EGS_hydro_instream_nocooling_total_bbtu_from_EPD_hydro_total_total_total_bbtu'],
                                axis =1)
 
     # merge with full list of counties from 2015 water data
@@ -3819,7 +3820,6 @@ def combine_data():
     x2 = calc_irrigation_discharge_flows()
     x3 = prep_interbasin_transfer_data()
     x4 = prep_pws_to_pwd()
-    #x5 = prep_consumption_fraction()
     x6 = calc_pws_commercial_industrial_flows()
     x7 = calc_discharge_fractions()
     x8 = prep_wastewater_data()
@@ -3842,7 +3842,6 @@ def combine_data():
     out_df = pd.merge(x1, x2, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x3, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x4, how='left', on=['FIPS', 'State', 'County'])
-    #out_df = pd.merge(out_df, x5, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x6, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x7, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x8, how='left', on=['FIPS', 'State', 'County'])
@@ -3863,8 +3862,6 @@ def combine_data():
     out_df = pd.merge(out_df, x23, how='left', on=['FIPS', 'State', 'County'])
 
 
-
-    out_df = out_df[out_df.State == 'CA']
     value_columns = out_df.columns[3:].to_list()
     out_df = pd.melt(out_df, value_vars=value_columns, var_name='flow_name', value_name='value', id_vars=['FIPS'])
     out_df = out_df[out_df.value != 0]
@@ -3872,7 +3869,7 @@ def combine_data():
     df2 = out_df['flow_name'].str.split("_", expand=True)
     out_df = pd.concat([out_df.iloc[:, :i], df2, out_df.iloc[:, i + 1:]], axis=1)
     col = ['FIPS', 't1', 't2', 't3', 't4', 't5', 'T_unit', 'to', 's1', 's2', 's3', 's4', 's5', 'S_unit', 'parameter',
-           'value']
+           'value', 's']
     out_df.columns = col
     out_df['parameter'].fillna('flow_value', inplace=True)
     out_df['type'] = np.where(out_df['parameter'] == 'flow_value', 'A_collect', np.nan)
@@ -3887,79 +3884,9 @@ def combine_data():
     return out_df
 
 
-
-
-#   x1 = x1.drop(['population', 'fresh_groundwater_total_irrigation_mgd', 'fresh_surfacewater_total_irrigation_mgd',
-#                 'fresh_wastewater_total_irrigation_mgd', 'golf_irrigation_fresh_consumption_mgd',
-#                 'crop_irrigation_fresh_consumption_mgd', 'total_irrigation_fresh_consumption',
-#                 'total_pws_withdrawals_mgd', 'fresh_groundwater_thermoelectric_mgd',
-#                 'saline_groundwater_thermoelectric_mgd', 'fresh_surfacewater_thermoelectric_mgd',
-#                 'saline_surfacewater_thermoelectric_mgd', 'wastewater_thermoelectric_mgd',
-#                 'fresh_pws_thermoelectric_mgd', 'total_irrigation_consumption_fraction',
-#                 'ACI_fresh_groundwater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction',
-#                 'ACI_fresh_surfacewater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction',
-#                 'ACI_reclaimed_wastewater_import_total_mgd_to_CMP_total_total_total_total_mgd_fraction',
-#                 'AGI_fresh_groundwater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction',
-#                 'AGI_fresh_surfacewater_withdrawal_total_mgd_to_CMP_total_total_total_total_mgd_fraction',
-#                 'AGI_reclaimed_wastewater_import_total_mgd_to_CMP_total_total_total_total_mgd_fraction',
-#                 'MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd',
-#                 'MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
-#                 'MIN_other_total_saline_groundwater_mgd_from_WSW_saline_groundwater_total_total_mgd',
-#                 'MIN_other_total_saline_surfacewater_mgd_from_WSW_saline_surfacewater_total_total_mgd'
-#                 ], axis=1)
-#   #x7 = x7.drop(['EPD_solar_total_total_total_bbtu_from_EPS_solar_total_total_total_bbtu',
-#   #              'EPD_wind_total_total_total_bbtu_from_EPS_wind_total_total_total_bbtu'
-#   #              ], axis=1)
-#
-#   out_df = pd.merge(x1, x2, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x3, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x4, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x5, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x6, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x7a, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x7b, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x8, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x9, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x10, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x11, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x12, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x13, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x14, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x15, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x16, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x17, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x18, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x19, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x20, how='left', on=['FIPS', 'State', 'County'])
-#   out_df = pd.merge(out_df, x21, how='left', on=['FIPS', 'State', 'County'])
-#   #out_df = out_df[out_df.State == 'CA']
-#   value_columns = out_df.columns[3:].to_list()
-#   out_df = pd.melt(out_df, value_vars=value_columns, var_name='flow_name', value_name='value', id_vars=['FIPS'])
-#   out_df = out_df[out_df.value != 0]
-#   i = out_df.columns.get_loc('flow_name')
-#   df2 = out_df['flow_name'].str.split("_", expand=True)
-#   out_df = pd.concat([out_df.iloc[:, :i], df2, out_df.iloc[:, i + 1:]], axis=1)
-#   col = ['FIPS', 't1', 't2', 't3', 't4', 't5', 'T_unit', 'to', 's1', 's2', 's3', 's4', 's5', 'S_unit', 'parameter',
-#          'value']
-#   out_df.columns = col
-#   out_df['parameter'].fillna('flow_value', inplace=True)
-#   out_df['type'] = np.where(out_df['parameter'] == 'flow_value', 'A_collect', np.nan)
-#   out_df['type'] = np.where(out_df['parameter'] == 'intensity', 'B_calculate', out_df['type'])
-#   out_df['type'] = np.where((out_df['to'] == 'from') & (out_df['parameter'] == 'fraction'), 'C_source',
-#                             out_df['type'])
-#   out_df['type'] = np.where((out_df['to'] == 'to') & (out_df['parameter'] == 'fraction'), 'D_discharge',
-#                             out_df['type'])
-#   out_df = out_df.sort_values(by=['FIPS', 'type', 't1', 't2', 't3', 't4', 't5'])
-#   out_df = out_df[['FIPS', 'type', 't1', 't2', 't3', 't4', 't5', 'T_unit',
-#                    's1', 's2', 's3', 's4', 's5', 'S_unit', 'parameter', 'value']]
-#   return out_df
-
-
 x = combine_data()
 #print(x)
-# for col in x.columns:
 
-#    print(col)f
 x.to_csv(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv", index=False)
 import os
 
