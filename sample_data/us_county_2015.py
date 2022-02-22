@@ -2,24 +2,24 @@ import numpy as np
 import pandas as pd
 
 
-def convert_kwh_bbtu(x: float) -> float:
+def convert_kwh_bbtu(value: float) -> float:
     """converts energy in kWh to energy in billion btu.
 
     :return:                Value in bbtu
 
     """
-    bbtu = x * 0.000003412140
+    bbtu = value * 0.000003412140
 
     return bbtu
 
 
-def convert_mwh_bbtu(x: float) -> float:
+def convert_mwh_bbtu(value: float) -> float:
     """converts energy in MWh to energy in billion btu.
 
     :return:                Value in bbtu
 
     """
-    bbtu = x * 0.003412
+    bbtu = value * 0.003412
 
     return bbtu
 
@@ -106,14 +106,14 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
 
 
 def calc_irrigation_consumption() -> pd.DataFrame:
-    '''
+    """
     Takes 2015 USGS water flow data and calculates consumption fractions for crop irrigation and golf irrigation based
     on consumptive use in those subsectors. Additionally, water withdrawal values for crop irrigation are filled in
     with general irrigation values for counties with missing crop irrigation data.
 
     :return:                               Dataframe of 2015 water flow values and irrigation subsector consumption
                                             fractions
-    '''
+    """
 
     # read in prepared 2015 USGS water data
     df = prep_water_use_2015(variables=['FIPS', 'State', 'County', 'IR-WGWFr', 'IR-WSWFr', 'IR-RecWW', 'IR-CUsFr',
@@ -189,9 +189,9 @@ def calc_irrigation_consumption() -> pd.DataFrame:
     flow_list = ['AGR_crop_fresh_surfacewater_withdrawal_mgd', 'AGR_crop_fresh_groundwater_withdrawal_mgd',
                  'AGR_crop_reclaimed_wastewater_import_mgd', 'AGR_golf_fresh_surfacewater_withdrawal_mgd',
                  'AGR_golf_fresh_groundwater_withdrawal_mgd', 'AGR_golf_reclaimed_wastewater_import_mgd',
-                 'AGR_crop_ibt_total_import_mgd' ]
+                 'AGR_crop_ibt_total_import_mgd']
 
-    ## consumption name adder
+    # consumption name adder
     adder = '_to_CMP_total_total_total_total_mgd_fraction'
 
     for var in flow_list:
@@ -202,11 +202,11 @@ def calc_irrigation_consumption() -> pd.DataFrame:
 
 # below is correct and ready
 def rename_water_data_2015(variables=None, all_variables=False) -> pd.DataFrame:
-    '''
+    """
     Takes USGS 2015 flow values and calculated consumption fractions and renames them for higher description.
 
     :return:                 returns a DataFrame of 2015 water flows and consumption fractions for agriculture
-    '''
+    """
 
     # read in USGS 2015 flows and irrigation consumption calculations
     df = prep_water_use_2015(all_variables=True)
@@ -731,6 +731,7 @@ def calc_discharge_fractions():
 
     return output_df
 
+
 # BELOW IS GOOD TO GO
 def prep_irrigation_pws_ratio() -> pd.DataFrame:
     """prepping the ratio of water flows to irrigation vs. water flows to public water supply by county. Used to
@@ -758,6 +759,7 @@ def prep_irrigation_pws_ratio() -> pd.DataFrame:
     df_irr_pws = df_irr_pws[['FIPS', 'State', 'County', 'pws_ibt_pct', 'irrigation_ibt_pct']]
 
     return df_irr_pws
+
 
 # BELOW IS GOOD TO GO
 def prep_interbasin_transfer_data() -> pd.DataFrame:
@@ -889,9 +891,10 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     df = pd.merge(df_loc, df, how='left', on=['FIPS', 'State', 'County'])
     df.fillna(0, inplace=True)
 
-    df = df.drop(['ibt_energy_intensity_bbtu', 'water_interbasin_mgd','pws_ibt_pct','irrigation_ibt_pct'], axis=1)
+    df = df.drop(['ibt_energy_intensity_bbtu', 'water_interbasin_mgd', 'pws_ibt_pct', 'irrigation_ibt_pct'], axis=1)
 
     return df
+
 
 # BELOW IS GOOD TO GO
 def prep_pws_to_pwd():
@@ -938,7 +941,7 @@ def prep_pws_to_pwd():
     df['net_supply'] = df['total_supply'] - df['total_demand']
 
     # reduce dataframe
-    out_df = df[['FIPS', 'State', 'County', 'total_demand', 'total_supply','net_supply',
+    out_df = df[['FIPS', 'State', 'County', 'total_demand', 'total_supply', 'net_supply',
                  'fsw_frac', 'fgw_frac', 'sgw_frac', 'ssw_frac',
                  fgw_flow, fsw_flow, sgw_flow, ssw_flow, ibt_flow]].copy()
 
@@ -3065,6 +3068,9 @@ def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
     # create variable for source fraction for produced water (set equal to 100%)
     df_ng['NG_uncon_prod_source'] = 1
 
+    # add leading zeroes to FIPS codes
+    df_ng['FIPS'] = df_ng['FIPS'].apply(lambda x: '{0:0>5}'.format(x))
+
     # merge natural gas data frame with full county list
     df_ng = pd.merge(df_loc, df_ng, how='left', on=['FIPS', 'State'])
     df_ng.fillna(0, inplace=True)
@@ -3092,6 +3098,9 @@ def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
 
     # create variable for source fraction for produced water (set equal to 100%)
     df_pet['PET_uncon_prod_source'] = 1
+
+    # add leading zeroes to FIPS codes
+    df_pet['FIPS'] = df_pet['FIPS'].apply(lambda x: '{0:0>5}'.format(x))
 
     # merge natural gas data frame with full county list
     df_pet = pd.merge(df_loc, df_pet, how='left', on=['FIPS', 'State'])
@@ -3354,7 +3363,7 @@ def prep_county_coal_data() -> pd.DataFrame:
     for type in water_types:
         # subtract coal calculated values from water to other mining
         other_mining_prefix = 'MIN_other_total_total_total_mgd_from_'
-        other_mining_suffix = 'WSW_' + type + '_total_total_total_mgd'
+        other_mining_suffix = 'WSW_' + type + '_total_total_mgd'
         other_mining_total = other_mining_prefix + other_mining_suffix
         if type == 'fresh_surfacewater':
             df[other_mining_total] = np.where((df['WSW_fresh_surfacewater']- df['total_fsw_with'])<0,
@@ -3403,7 +3412,7 @@ def remove_double_counting_from_mining():
     variable_list = []
     for type in water_types:
         other_mining_prefix = 'MIN_other_total_total_total_mgd_from_'
-        other_mining_suffix = 'WSW_' + type + '_total_total_total_mgd'
+        other_mining_suffix = 'WSW_' + type + '_total_total_mgd'
         other_mining_total = other_mining_prefix + other_mining_suffix
         variable_list.append(other_mining_total)
     variable_list.append('FIPS')
@@ -3450,8 +3459,8 @@ def remove_double_counting_from_mining():
     df_mining = pd.merge(df_mining, df_energy, how='left', on=['FIPS'])
 
     # Subtract natural gas and petroleum water use from other mining
-    fsw_name = 'MIN_other_total_total_total_mgd_from_WSW_fresh_surfacewater_total_total_total_mgd'
-    fgw_name = 'MIN_other_total_total_total_mgd_from_WSW_fresh_groundwater_total_total_total_mgd'
+    fsw_name = 'MIN_other_total_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
+    fgw_name = 'MIN_other_total_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd'
     df_mining[fsw_name] = np.where((df_mining[fsw_name] - df_mining['fsw_total']) < 0,
                                    0,
                                    (df_mining[fsw_name] - df_mining['fsw_total']))
@@ -3467,6 +3476,7 @@ def remove_double_counting_from_mining():
     df = pd.merge(df_loc, df_mining, how='left', on='FIPS')
 
     return df
+
 
 # BELOW IS GOOD TO GO
 def prep_county_ethanol_production_data() -> pd.DataFrame:
@@ -3578,7 +3588,6 @@ def remove_industrial_water_double_counting():
     df = df[['FIPS', 'State', 'County', ind_sw]]
 
     return df
-
 
 
 def prep_county_water_corn_biomass_data() -> pd.DataFrame:
@@ -3814,7 +3823,8 @@ def combine_data():
         'AGR_aquaculture_fresh_groundwater_withdrawal_mgd_from_WSW_fresh_groundwater_total_total_mgd',
         'AGR_aquaculture_saline_groundwater_withdrawal_mgd_from_WSW_saline_groundwater_total_total_mgd',
         'AGR_aquaculture_fresh_surfacewater_withdrawal_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
-        'AGR_aquaculture_saline_surfacewater_withdrawal_mgd_from_WSW_saline_surfacewater_total_total_mgd']
+        'AGR_aquaculture_saline_surfacewater_withdrawal_mgd_from_WSW_saline_surfacewater_total_total_mgd',
+        ]
 
     x1 = rename_water_data_2015(variables=var_list)
     x2 = calc_irrigation_discharge_flows()
@@ -3838,6 +3848,12 @@ def combine_data():
     x21 = remove_industrial_water_double_counting()
     x22 = remove_irrigation_water_double_counting()
     x23 = prep_corn_crop_irr_flows()
+
+    # remove extra coal mining variables
+    x18 = x18.drop(['MIN_other_total_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
+                    'MIN_other_total_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd',
+                    'MIN_other_total_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
+                    'MIN_other_total_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd'], axis=1)
 
     out_df = pd.merge(x1, x2, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x3, how='left', on=['FIPS', 'State', 'County'])
@@ -3869,7 +3885,7 @@ def combine_data():
     df2 = out_df['flow_name'].str.split("_", expand=True)
     out_df = pd.concat([out_df.iloc[:, :i], df2, out_df.iloc[:, i + 1:]], axis=1)
     col = ['FIPS', 't1', 't2', 't3', 't4', 't5', 'T_unit', 'to', 's1', 's2', 's3', 's4', 's5', 'S_unit', 'parameter',
-           'value', 's']
+           'value']
     out_df.columns = col
     out_df['parameter'].fillna('flow_value', inplace=True)
     out_df['type'] = np.where(out_df['parameter'] == 'flow_value', 'A_collect', np.nan)
