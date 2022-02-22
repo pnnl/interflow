@@ -441,6 +441,9 @@ def calc_irrigation_discharge_flows():
         surface_discharge_var = var + '_to_SRD_total_total_total_total_mgd_fraction'
         df[surface_discharge_var] = 1 - (df[consumption_var] + df[conveyance_loss_var])
 
+    for var in variable_list:
+        df = df.drop([var + '_to_CVL_total_total_total_total_mgd_fraction' + "_rem"], axis=1)
+
     return df
 
 
@@ -639,7 +642,7 @@ def calc_pws_commercial_industrial_flows() -> pd.DataFrame:
 
 # BELOW IS COMPLETE AND READy
 def calc_discharge_fractions():
-    """ Takes water flows to residential, commercial, industrial, mining, and nonirrigation agriculture sectors
+    """ Takes water flows to residential, commercial, industrial, mining, and non-irrigation agriculture sectors
         and calculates their discharge fractions to the surface and ocean.
         All water that is not consumed by these sectors is assumed to be discharged to either the surface or ocean.
 
@@ -1013,7 +1016,7 @@ def prep_wastewater_data() -> pd.DataFrame:
     df_county_list = prep_water_use_2015()
 
     # read in public water supply withdrawal data from 2015 USGS water data
-    df_2015_pws = prep_water_use_2015(variables=['FIPS', 'State', 'total_pws_withdrawals_mgd'])  # pws data
+    df_2015_pws = prep_water_use_2015(variables=['FIPS', 'State', 'PS-Wtotl'])  # pws data
 
     # read in wastewater facility water flow data
     ww_flow_data = 'input_data/WW_Facility_Flow.csv'
@@ -1419,7 +1422,8 @@ def prep_wastewater_data() -> pd.DataFrame:
     df_out['WWD_treatment_secondary_total_total_bbtu_to_ESV_total_total_total_total_bbtu_fraction'] = .65
 
     df_out = df_out.drop(
-        ['wastewater_surface_discharge', 'wastewater_ocean_discharge', 'wastewater_irrigation_discharge',
+        ['wastewater_industrial_discharge', 'wastewater_pws_discharge',
+         'wastewater_surface_discharge', 'wastewater_ocean_discharge', 'wastewater_irrigation_discharge',
          'wastewater_consumption', 'wastewater_groundwater_discharge', 'infiltration_wastewater_mgd',
          'total_wastewater_mgd', 'municipal_wastewater_mgd', 'wastewater_no_treatment', 'wastewater_primary_treatment',
          'wastewater_advanced_treatment', 'wastewater_secondary_treatment', ], axis=1)
@@ -2110,7 +2114,7 @@ def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) ->
     df_mean_all[hydro_discharge_name] = 1
 
     # create source fraction
-    hydro_source_name = hydro_name + 'from_WSW_fresh_surfacewater_total_total_mgd_fraction'
+    hydro_source_name = hydro_name + '_from_WSW_fresh_surfacewater_total_total_mgd_fraction'
     df_mean_all[hydro_source_name] = 1
 
     # simplify dataframe
@@ -2121,6 +2125,10 @@ def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) ->
 
     # only keep counties with hydro generation
     output_df = output_df[output_df.EGS_hydro_instream_nocooling_total_bbtu_from_EPD_hydro_total_total_total_bbtu > 0]
+
+    # remove flow variable to electricity demand to avoid double inclusion in final dataset
+    output_df = output_df.drop(['EGS_hydro_instream_nocooling_total_bbtu_to_EGD_total_total_total_total_bbtu_fraction'],
+                               axis =1)
 
     # merge with full list of counties from 2015 water data
     output_df = pd.merge(df_loc, output_df, how='left', on=['FIPS', 'State'])
@@ -2179,20 +2187,23 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
     # merge with county data to distribute value to each county in a state
     df_out = pd.merge(df_loc, df_out, how='left', on='State')
 
-    fuel_source_list = ['EPD_natgas',
-                        'EPD_petroleum',
-                        'EGD_total']
+    # create a list of fuel types
+    fuel_source_list = ['EPD_natgas', 'EPD_petroleum', 'EGD_total']
 
+    # create a fuel fraction name adder
     fuel_flow_name = '_total_total_total_bbtu_fraction'
 
+    # create a list of sectors
     irr_sector_list = ['AGR_crop_pumping_fresh_surfacewater_bbtu',
                        'AGR_golf_pumping_fresh_surfacewater_bbtu',
                        'AGR_crop_pumping_fresh_groundwater_bbtu',
                        'AGR_golf_pumping_fresh_groundwater_bbtu']
 
+    # create rejected energy and energy service fraction name adders
     rejected_energy_flow = '_to_REJ_total_total_total_total_bbtu_fraction'
     energy_services_flow = '_to_ESV_total_total_total_total_bbtu_fraction'
 
+    # loop through sectors and build full length variable names
     output_df = df_out[['FIPS', 'State', 'County']].copy()
     for sector in irr_sector_list:
         for fuel in fuel_source_list:
@@ -2210,6 +2221,7 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
     # electricity source name
     egd_name = '_from_EGD_total_total_total_total_bbtu_fraction'
 
+    # list of non-irrigation sectors
     non_irr_sector_list = ['AGR_aquaculture_pumping_fresh_surfacewater_bbtu',
                            'AGR_aquaculture_pumping_fresh_surfacewater_bbtu',
                            'AGR_aquaculture_pumping_saline_surfacewater_bbtu',
@@ -2217,6 +2229,7 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
                            'AGR_livestock_pumping_fresh_groundwater_bbtu',
                            'AGR_livestock_pumping_fresh_groundwater_bbtu']
 
+    # loop through non-irrigation sectors and build full variable names and values
     for sector in non_irr_sector_list:
         sector_source_name = sector + egd_name
         output_df[sector_source_name] = 1  # set all energy flow to 100% from electricity
@@ -2225,8 +2238,9 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
         output_df[rej_flow_name] = 1 - EFFICIENCY
 
         esv_flow_name = sector + energy_services_flow
-        output_df[energy_services_flow] = EFFICIENCY
+        output_df[esv_flow_name] = EFFICIENCY
 
+    # public water supply sector names
     pws_sector_list = ['PWS_pumping_fresh_surfacewater_total_bbtu',
                        'PWS_pumping_fresh_groundwater_total_bbtu',
                        'PWS_pumping_saline_surfacewater_total_bbtu',
@@ -2240,6 +2254,7 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
                        'PWS_distribution_saline_surfacewater_total_bbtu',
                        'PWS_distribution_saline_groundwater_total_bbtu']
 
+    # loop through public water supply sector names and establish values
     for sector in pws_sector_list:
         sector_source_name = sector + egd_name
         output_df[sector_source_name] = 1  # set all energy flow to 100% from electricity
@@ -2248,9 +2263,8 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
         output_df[rej_flow_name] = 1 - EFFICIENCY
 
         esv_flow_name = sector + energy_services_flow
-        output_df[energy_services_flow] = EFFICIENCY
+        output_df[esv_flow_name] = EFFICIENCY
 
-    # df_out = df_out.drop(["natural_gas_pumping", "petroleum_pumping", "electricity_pumping"], axis=1)
 
     return output_df
 
@@ -3420,13 +3434,46 @@ def prep_county_ethanol_production_data() -> pd.DataFrame:
 
     # assume all ethanol production water comes from fresh surfacewater
     df_biomass[ethanol_water_name + '_from_WSW_fresh_surfacewater_withdrawal_total_bbtu_fraction'] = 1
-    df_biomass[ethanol_water_name + 'to_SRD_total_total_total_total_mgd_fraction'] = 1
+    df_biomass[ethanol_water_name + '_to_SRD_total_total_total_total_mgd_fraction'] = 1
 
     # merge with full county data to distribute value to each county in a state and include all FIPS
     df_biomass = pd.merge(df_loc, df_biomass, how='left', on='FIPS')
     df_biomass.fillna(0, inplace=True)
 
     return df_biomass
+
+# BELOW IS GOOD TO GO
+def remove_industrial_water_double_counting():
+    """
+        Removes fresh surface water withdrawals for the production of ethanol in the industrial sector from
+        total fresh surface water withdrawals by the industrial sector from the USGS 2015 dataset to avoid double
+        counting.
+
+    :return:                                 Dataframe of recalculated industrial fresh surface water withdrawal
+    """
+
+    # read in industrial self-supply fresh water withdrawal from 2015 USGS data
+    ind_sw = 'IND_fresh_surfacewater_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
+    df = rename_water_data_2015(variables=['FIPS', 'State', 'County', ind_sw])
+
+    # read in industrial ethanol production data
+    df_ethanol = prep_county_ethanol_production_data()
+
+    # merge dataframes
+    df = pd.merge(df,df_ethanol, how='left', on=['FIPS', 'State', 'County'] )
+
+    ethanol_prod = 'IND_biomass_ethanol_total_total_bbtu_from_IND_biomass_ethanol_total_total_bbtu'
+    ethanol_int = 'IND_biomass_ethanol_total_total_mgd_from_IND_biomass_ethanol_total_total_bbtu_intensity'
+    df['total_water']= df[ethanol_prod] * df[ethanol_int]
+
+    df[ind_sw] = np.where(df[ind_sw] - df['total_water'] < 0,
+                          0,
+                          df[ind_sw] - df['total_water'])
+
+    df = df[['FIPS', 'State', 'County', ind_sw]]
+
+    return df
+
 
 
 def prep_county_water_corn_biomass_data() -> pd.DataFrame:
@@ -3548,16 +3595,17 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
 
     return df
 
-
+# BELOW IS GOOD TO GO
 def remove_irrigation_water_double_counting():
-    """
+    """  Subtracts water use in the irrigation of corn growth for ethanol from the total water use in crop irrigation
+    provided in the 2015 USGS dataset to prevent double counting.
 
     :return:
     """
 
     # read in crop irrigation withdrawals
-    crop_fsw = 'AGR_crop_fresh_groundwater_withdrawal_mgd_from_WSW_fresh_groundwater_total_total_mgd'
-    crop_fgw = 'AGR_crop_fresh_surfacewater_withdrawal_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
+    crop_fsw = 'AGR_crop_fresh_surfacewater_withdrawal_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
+    crop_fgw = 'AGR_crop_fresh_groundwater_withdrawal_mgd_from_WSW_fresh_groundwater_total_total_mgd'
 
     df = rename_water_data_2015(variables=['FIPS', 'State', 'County', crop_fsw, crop_fgw ])
 
@@ -3567,12 +3615,22 @@ def remove_irrigation_water_double_counting():
     # merge dataframes
     df = pd.merge(df, df_corn, how='left', on=['FIPS', 'State', 'County'])
 
-    # TODO pick up here
+    # remove surface corn ethanol irrigation water from total crop irrigation surface water
+    df[crop_fsw] = np.where((df[crop_fsw] - df['sw_ethanol_corn']) < 0,
+                            0,
+                            (df[crop_fsw] - df['sw_ethanol_corn']))
+#
+    # remove ground corn ethanol irrigation water from total crop irrigation groundwater
+    df[crop_fgw] = np.where((df[crop_fgw] - df['gw_ethanol_corn']) < 0,
+                            0,
+                            (df[crop_fgw] - df['gw_ethanol_corn']))
 
-
+    # reduce dataframe
+    df = df[['FIPS', 'State', 'County', crop_fsw, crop_fgw]]
 
     return df
 
+ # BELOW IS GOOD TO GO
 def prep_corn_crop_irr_flows():
     """
     prepares values for water for corn growth for ethanol including consumption fractions, surface discharge fractions,
@@ -3583,42 +3641,150 @@ def prep_corn_crop_irr_flows():
     # read in discharge flows for all crop irrigation
     df = calc_irrigation_discharge_flows()
 
+    # read in corn for ethanol water data
+    df_corn = prep_county_water_corn_biomass_data()
 
+    df = pd.merge(df, df_corn, how='left', on=['FIPS', 'State', 'County'])
 
-    ## create ethanol names
-    #crop_ethanol_sw = 'AGR_ethanol_fresh_surfacewater_withdrawal_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
-    #crop_ethanol_gw = 'AGR_ethanol_fresh_groundwater_withdrawal_mgd_from_WSW_fresh_groundwater_total_total_mgd'
+    # create variable names
+    cons_adder = '_to_CMP_total_total_total_total_mgd_fraction'
+    cvl_adder = '_to_CVL_total_total_total_total_mgd_fraction'
+    srd_adder = '_to_SRD_total_total_total_total_mgd_fraction'
 
-    ## create new crop irrigation flows for corn ethanol irrigation
-    #df_corn_prod = df_corn_prod.rename(columns={'sw_ethanol_corn': crop_ethanol_sw,
-    #                                            'gw_ethanol_corn': crop_ethanol_gw})
+    type_list = ['fresh_surfacewater_withdrawal_mgd', 'fresh_groundwater_withdrawal_mgd']
+
+    # loop through water types to build variables for consumption, conveyance losses, and surface discharge fractions
+    var_list = []
+    for type in type_list:
+        consumption_name = 'AGR_ethanol_' + type + cons_adder
+        df[consumption_name] = df['AGR_crop_' + type + cons_adder]
+        var_list.append(consumption_name)
+        conveyance_name = 'AGR_ethanol_' + type + cvl_adder
+        df[conveyance_name] = df['AGR_crop_' + type + cvl_adder]
+        var_list.append(conveyance_name)
+        surface_discharge_name = 'AGR_ethanol_' + type + srd_adder
+        df[surface_discharge_name] = df['AGR_crop_' + type + srd_adder]
+        var_list.append(surface_discharge_name)
+
+    # create ethanol water withdrawal names
+    crop_ethanol_sw = 'AGR_ethanol_fresh_surfacewater_withdrawal_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
+    crop_ethanol_gw = 'AGR_ethanol_fresh_groundwater_withdrawal_mgd_from_WSW_fresh_groundwater_total_total_mgd'
+
+    # create new crop irrigation flows for corn ethanol irrigation
+    df = df.rename(columns={'sw_ethanol_corn': crop_ethanol_sw, 'gw_ethanol_corn': crop_ethanol_gw})
+
+    # reduce dataframe
+    df = df[['FIPS', 'State', 'County', crop_ethanol_sw, crop_ethanol_gw] + var_list]
 
     return df
 
 
-# def combine_data():
-#   x1 = prep_water_use_2015(all_variables=True)
-#   x2 = calc_pws_deliveries()
-#   x3 = prep_pws_to_pwd()
-#   x4 = calc_discharge_fractions()
-#   x5 = calc_hydro_water_intensity()
-#   x6 = prep_wastewater_data()
-#   x7a = prep_generation_fuel_flows()
-#   x7b = prep_electricity_cooling_flows()
-#   x8 = prep_irrigation_fuel_data()
-#   x9 = prep_pumping_intensity_data()
-#   x10 = recalc_irrigation_consumption()
-#   x11 = prep_consumption_fraction()
-#   x12 = prep_interbasin_transfer_data()
-#   x13 = prep_electricity_demand_data()
-#   x14 = prep_fuel_demand_data()
-#   x15 = prep_county_petroleum_production_data()
-#   x16 = prep_county_natgas_production_data()
-#   x17 = prep_petroleum_gas_discharge_data()
-#   x18 = prep_county_coal_production_data()
-#   x19 = prep_county_coal_water_source_fractions()
-#   x20 = prep_county_ethanol_production_data()
-#   x21 = remove_petroleum_double_counting_from_mining()
+def combine_data():
+    """
+    Combines output data from all functions into a single dataset, structures data for input into the flow
+    Python package.
+
+    :return:
+    """
+
+    var_list = [
+        'FIPS',
+        'State',
+        'County',
+        'PWS_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
+        'PWS_fresh_surfacewater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
+        'PWS_saline_groundwater_withdrawal_total_mgd_from_WSW_saline_groundwater_total_total_mgd',
+        'PWS_saline_surfacewater_withdrawal_total_mgd_from_WSW_saline_surfacewater_total_total_mgd',
+        'RES_public_total_total_total_mgd_from_PWD_total_total_total_total_mgd',
+        'RES_fresh_groundwater_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
+        'RES_fresh_surfacewater_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
+        'IND_fresh_groundwater_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
+        'IND_saline_groundwater_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd',
+        'IND_saline_surfacewater_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd',
+        'AGR_golf_fresh_groundwater_withdrawal_mgd_from_WSW_fresh_groundwater_total_total_mgd',
+        'AGR_golf_fresh_surfacewater_withdrawal_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
+        'AGR_golf_reclaimed_wastewater_import_mgd_from_WSI_reclaimed_wastewater_total_total_mgd',
+        'AGR_livestock_fresh_groundwater_withdrawal_mgd_from_WSW_fresh_groundwater_total_total_mgd',
+        'AGR_livestock_fresh_surfacewater_withdrawal_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
+        'AGR_aquaculture_fresh_groundwater_withdrawal_mgd_from_WSW_fresh_groundwater_total_total_mgd',
+        'AGR_aquaculture_saline_groundwater_withdrawal_mgd_from_WSW_saline_groundwater_total_total_mgd',
+        'AGR_aquaculture_fresh_surfacewater_withdrawal_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
+        'AGR_aquaculture_saline_surfacewater_withdrawal_mgd_from_WSW_saline_surfacewater_total_total_mgd']
+
+    x1 = rename_water_data_2015(variables=var_list)
+    x2 = calc_irrigation_discharge_flows()
+    x3 = prep_interbasin_transfer_data()
+    x4 = prep_pws_to_pwd()
+    #x5 = prep_consumption_fraction()
+    x6 = calc_pws_commercial_industrial_flows()
+    x7 = calc_discharge_fractions()
+    x8 = prep_wastewater_data()
+    x9 = prep_generation_fuel_flows()
+    x10 = prep_electricity_cooling_flows()
+    x11 = calc_hydro_water_intensity()
+    x12 = prep_pumping_energy_fuel_data()
+    x13 = prep_pumping_intensity_data()
+    x14 = prep_pws_treatment_dist_intensity_values()
+    x15 = prep_electricity_demand_data()
+    x16 = prep_fuel_demand_data()
+    x17 = rename_natgas_petroleum_data()
+    x18 = prep_county_coal_data()
+    x19 = remove_double_counting_from_mining()
+    x20 = prep_county_ethanol_production_data()
+    x21 = remove_industrial_water_double_counting()
+    x22 = remove_irrigation_water_double_counting()
+    x23 = prep_corn_crop_irr_flows()
+
+    out_df = pd.merge(x1, x2, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x3, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x4, how='left', on=['FIPS', 'State', 'County'])
+    #out_df = pd.merge(out_df, x5, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x6, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x7, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x8, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x9, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x10, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x11, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x12, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x13, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x14, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x15, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x16, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x17, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x18, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x19, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x20, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x21, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x22, how='left', on=['FIPS', 'State', 'County'])
+    out_df = pd.merge(out_df, x23, how='left', on=['FIPS', 'State', 'County'])
+
+
+
+    out_df = out_df[out_df.State == 'CA']
+    value_columns = out_df.columns[3:].to_list()
+    out_df = pd.melt(out_df, value_vars=value_columns, var_name='flow_name', value_name='value', id_vars=['FIPS'])
+    out_df = out_df[out_df.value != 0]
+    i = out_df.columns.get_loc('flow_name')
+    df2 = out_df['flow_name'].str.split("_", expand=True)
+    out_df = pd.concat([out_df.iloc[:, :i], df2, out_df.iloc[:, i + 1:]], axis=1)
+    col = ['FIPS', 't1', 't2', 't3', 't4', 't5', 'T_unit', 'to', 's1', 's2', 's3', 's4', 's5', 'S_unit', 'parameter',
+           'value']
+    out_df.columns = col
+    out_df['parameter'].fillna('flow_value', inplace=True)
+    out_df['type'] = np.where(out_df['parameter'] == 'flow_value', 'A_collect', np.nan)
+    out_df['type'] = np.where(out_df['parameter'] == 'intensity', 'B_calculate', out_df['type'])
+    out_df['type'] = np.where((out_df['to'] == 'from') & (out_df['parameter'] == 'fraction'), 'C_source',
+                              out_df['type'])
+    out_df['type'] = np.where((out_df['to'] == 'to') & (out_df['parameter'] == 'fraction'), 'D_discharge',
+                              out_df['type'])
+    out_df = out_df.sort_values(by=['FIPS', 'type', 't1', 't2', 't3', 't4', 't5'])
+    out_df = out_df[['FIPS', 'type', 't1', 't2', 't3', 't4', 't5', 'T_unit',
+                     's1', 's2', 's3', 's4', 's5', 'S_unit', 'parameter', 'value']]
+    return out_df
+
+
+
+
 #   x1 = x1.drop(['population', 'fresh_groundwater_total_irrigation_mgd', 'fresh_surfacewater_total_irrigation_mgd',
 #                 'fresh_wastewater_total_irrigation_mgd', 'golf_irrigation_fresh_consumption_mgd',
 #                 'crop_irrigation_fresh_consumption_mgd', 'total_irrigation_fresh_consumption',
@@ -3685,7 +3851,7 @@ def prep_corn_crop_irr_flows():
 #   return out_df
 
 
-x = remove_irrigation_water_double_counting()
+x = combine_data()
 #print(x)
 # for col in x.columns:
 
