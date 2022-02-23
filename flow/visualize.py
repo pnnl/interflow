@@ -492,7 +492,7 @@ def plot_map(jsonfile: str, data:pd.DataFrame, level=1, region_col=None, strip="
     df['Link'] = df['SOURCE'] + ' to ' + df['TARGET'] + ', ' + df['units']
 
     # pivot values for each link to obtain them as columns
-    df = pd.pivot_table(df, values='value', index=['region', 'countyname'],
+    df = pd.pivot_table(df, values='value', index=['region'],
                         columns=['Link'], aggfunc=np.sum)
     df = df.reset_index()  # reset index to remove multi-index from pivot table
     df = df.rename_axis(None, axis=1)  # drop index name
