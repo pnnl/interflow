@@ -1,4 +1,4 @@
-State,County_Used,Used_FIPS,To (Feet),Basin_Used,Source_County,Source_FIPS,From (Feet),Source_Basin,Elevation Difference (Feet),Total_Intake__Gallons (Acre-Feet/Year)
+State,County_Used,Used_FIPS,To (Feet),Basin_Used,Source_County,Source_FIPS,From (Feet),Source_Basin,Elevation Difference (Feet),Total_Intake_Gallons
 TX,BEXAR,48029,650,SAN ANTONIO,COMAL,48091,630,GUADALUPE,20,2945104590
 TX,KENDALL,48259,1490,SAN ANTONIO,COMAL,48091,630,GUADALUPE,860,317380000
 TX,BEXAR,48029,650,SAN ANTONIO,COMAL,48091,630,GUADALUPE,20,274471000

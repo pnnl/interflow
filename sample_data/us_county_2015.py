@@ -771,8 +771,12 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     """
 
     # read in TX interbasin transfer
-    data_tx = 'input_data/TX_IBT_2015.csv'
-    df_tx = pd.read_csv(data_tx, dtype={'Used_FIPS': str, 'Source_FIPS': str})
+    #data_tx = 'input_data/TX_IBT_2015.csv'
+    data_tx = 'input_data/HistoricalMunicipal_TX_IBT.csv'
+    df_tx = pd.read_csv(data_tx, dtype={'County Used FIPS': str, 'County Source FIPS': str},
+                        skiprows=1, usecols = ['Year', 'County Used', 'County Source', 'Total Intake' ,
+                                       'County Used Elevation (ft)', 'County Source Elevation (ft)', 'County Used FIPS',
+                                       'County Source FIPS'])
 
     # get_west_inter_basin_transfer_data
     data_west = 'input_data/West_IBT_county.csv'
@@ -783,46 +787,65 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     df_loc = prep_water_use_2015()  # full county list
 
     feet_meter_conversion = 1 / 3.281  # feet to meter conversion
-    af_mps_conversion = 1 / 25567  # acre-ft-year to meters per second^3 conversion
-    mps_mgd = 22.82  # cubic meters per second to million gallons per day
-    cfs_mgd = 0.646317  # cubic feet per second to million gallons per day
-    afy_mgd = 0.000892742  # acre foot per year to million gallons per day
 
-    pump_eff = .65  # assumed pump efficiency rate
+    af_mg = 0.325851 # acre-feet to million gallons
+    cf_mg = 7.48052E-06 # cubic feet to million gallons
+    sec_day = 86400  # seconds in a day
+
+    gpy_cmh = 0.00378541 / 8760  # gallons per year to cubic meters per hour
+
+    pump_eff = .466  # assumed pump efficiency rate
     acc_gravity = 9.81  # Acceleration of gravity  (m/s^2)
     water_density = 997  # Water density (kg/m^3)
 
-    # calculate texas interbasin transfer energy
-    elevation_meters = df_tx["Elevation Difference (Feet)"] * feet_meter_conversion  # elevation in meters
-    mps_cubed = df_tx["Total_Intake__Gallons (Acre-Feet/Year)"] * af_mps_conversion  # meters per second cubed per year
-    mps_cubed = mps_cubed / 365  # convert to daily meters per second cubed
-    mgd_tx = mps_cubed * mps_mgd
-    df_tx["water_interbasin_mgd"] = mgd_tx / 2  # dividing in half to split across source and target counties
+    # collect 2015 texas water flows
+    df_tx = df_tx[df_tx.Year == 2015]
 
-    interbasin_mwh = ((elevation_meters * mps_cubed * acc_gravity * water_density) / pump_eff) / (10 ** 6)
-    interbasin_bbtu = convert_mwh_bbtu(interbasin_mwh)  # convert mwh to bbtu
-    df_tx["electricity_interbasin_bbtu"] = interbasin_bbtu / 2  # dividing in half to split across both counties
-    df_tx["electricity_interbasin_bbtu"] = df_tx["electricity_interbasin_bbtu"] / 365  # convert to daily bbtu
+    # collect rows where water is transferred between different counties
+    df_tx = df_tx.loc[df_tx['County Used'] != df_tx['County Source']]
 
+    # drop rows with unknown water sources
+    df_tx = df_tx.dropna(subset=['County Source'])
+
+    # calculate the elevation difference in feet
+    df_tx['elevation_diff_ft'] = df_tx['County Used Elevation (ft)'] - df_tx['County Source Elevation (ft)']
+
+    # drop rows that have lower elevation for the county that receives the water (gravitational flows)
+    df_tx = df_tx[df_tx.elevation_diff_ft > 0]
+
+    # calculate the elevation difference in meters
+    df_tx['elev_df_m'] = df_tx['elevation_diff_ft'] * feet_meter_conversion
+
+    # convert total water intake (gal/year) to cubic meters per hour
+    df_tx['cmh'] = df_tx['Total Intake'] * gpy_cmh
+
+    # calculate power required per hour
+    df_tx['power_watts'] = (df_tx['cmh'] * water_density * acc_gravity * df_tx['elev_df_m']) / pump_eff
+
+    # convert to mwh
+    df_tx['power_mwh'] = df_tx['power_watts'] / 1000000
+
+    # convert to bbtu per day
+    df_tx["electricity_interbasin_bbtu"] = convert_mwh_bbtu(df_tx['power_mwh']) / 365
+
+    # convert water flows to million gallons per day
+    df_tx['water_interbasin_mgd'] = df_tx['Total Intake'] / 365 / 1000000
+
+    # calculate the energy intensity of interbasin transfers for texas
     # split out target county data
-    df_tx_target = df_tx[["State", "Used_FIPS", "electricity_interbasin_bbtu", "water_interbasin_mgd"]].copy()
-    df_tx_target = df_tx_target.rename(columns={"Used_FIPS": "FIPS"})
+    df_tx_target = df_tx[["County Used FIPS", "electricity_interbasin_bbtu", "water_interbasin_mgd"]].copy()
+    df_tx_target = df_tx_target.rename(columns={"County Used FIPS": "FIPS"})
 
     # split out source county data
-    df_tx_source = df_tx[["State", "Source_FIPS", "electricity_interbasin_bbtu", "water_interbasin_mgd"]].copy()
-    df_tx_source = df_tx_source.rename(columns={"Source_FIPS": "FIPS"})
+    df_tx_source = df_tx[["County Source FIPS", "electricity_interbasin_bbtu", "water_interbasin_mgd"]].copy()
+    df_tx_source = df_tx_source.rename(columns={"County Source FIPS": "FIPS"})
 
     # stack source and target county interbasin transfer data
     dataframe_list = [df_tx_target, df_tx_source]
     df_tx = pd.concat(dataframe_list)
 
-    # group by state and county fips code
-    df_tx = df_tx.groupby(["State", "FIPS"], as_index=False).sum()
-
-    # calculate energy intensity per mgd
+    # calculate energy intensity bbtu per mg
     df_tx['ibt_energy_intensity_bbtu'] = df_tx["electricity_interbasin_bbtu"] / df_tx["water_interbasin_mgd"]
-
-    df_tx = df_tx[["State", "FIPS", 'ibt_energy_intensity_bbtu', "water_interbasin_mgd"]]
 
     # prep western state interbasin transfer energy
     df_west = df_west[['FIPS', 'Mwh/yr (Low)', 'Mwh/yr (High)', 'Water Delivery (AF/yr)', 'cfs']]
@@ -830,22 +853,25 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
 
     df_west["electricity_interbasin_bbtu"] = (df_west["Mwh/yr (Low)"] + df_west["Mwh/yr (High)"]) / 2  # average energy
     df_west = df_west.groupby(["FIPS"], as_index=False).sum()  # group by county fips code
-    df_west["electricity_interbasin_bbtu"] = convert_mwh_bbtu(
-        df_west["electricity_interbasin_bbtu"])  # convert mwh values to bbtu
 
-    # convert to bbtu per day rather than bbtu per year
+    # convert mwh per year values to bbtu per year
+    df_west["electricity_interbasin_bbtu"] = convert_mwh_bbtu(df_west["electricity_interbasin_bbtu"])
+
+    # convert to bbtu per day from bbtu per year
     df_west["electricity_interbasin_bbtu"] = df_west["electricity_interbasin_bbtu"] / 365
 
-    # calculate a single water flow value in mgd
-    df_west['water_interbasin_mgd'] = np.where(df_west['cfs'] > 0, cfs_mgd * df_west['cfs'], 0)
+    # calculate water flow in mgd from cubic feet per second
+    df_west['water_interbasin_mgd'] = np.where(df_west['cfs'] > 0, cf_mg * df_west['cfs'] * sec_day, 0)
+
+    # use acre-feet per year values to fill in missing cubic feet per second values
     df_west['water_interbasin_mgd'] = np.where((df_west['cfs'] == 0) & (df_west['Water Delivery (AF/yr)'] > 0),
-                                               afy_mgd * df_west['Water Delivery (AF/yr)'],
+                                               af_mg * df_west['Water Delivery (AF/yr)'] / 365,
                                                df_west['water_interbasin_mgd'])
 
     # calculate the energy intensity
     df_west['ibt_energy_intensity_bbtu'] = df_west["electricity_interbasin_bbtu"] / df_west['water_interbasin_mgd']
 
-    # bring west IBT data together with TX data
+    # bring west IBT data together with TX IBT data
     ibt_dataframe_list = [df_tx, df_west]
     df = pd.concat(ibt_dataframe_list)
     df = df[["FIPS", 'ibt_energy_intensity_bbtu', 'water_interbasin_mgd']]
@@ -3901,7 +3927,7 @@ def combine_data():
     return out_df
 
 
-x = combine_data()
+x = prep_interbasin_transfer_data()
 #print(x)
 
 x.to_csv(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv", index=False)
