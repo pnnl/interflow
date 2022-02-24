@@ -660,10 +660,12 @@ def calc_discharge_fractions():
 
     public_water_list = ['RES_public_total', "COM_public_total", "IND_public_total"]
 
+    # list of water types that are ultimately discharged to surface
     fresh_water_list = ['RES_fresh_surfacewater', 'RES_fresh_groundwater', "IND_fresh_surfacewater",
-                        "IND_fresh_groundwater"]
+                        "IND_fresh_groundwater", "IND_saline_groundwater"]
 
-    saline_water_list = ["IND_saline_surfacewater", "IND_saline_groundwater"]
+    # water types ultimately discharged to the ocean
+    saline_water_list = ["IND_saline_surfacewater"]
 
     # set output dataframe equal to consumption dataframe
     output_df = cons_df.copy()
@@ -682,7 +684,7 @@ def calc_discharge_fractions():
     for item in saline_water_list:
         consumption_name = item + cons_fraction_flow_adder
         ocd_flow_name = item + ocd_fraction_flow_adder
-        output_df[ocd_flow_name] = 1 - output_df[consumption_name]  # all saline water not consumed sent to ocean
+        output_df[ocd_flow_name] = 1 - output_df[consumption_name]  # saline surface water not consumed sent to ocean
         output_variable_list.append(ocd_flow_name)
 
     # mining sector
@@ -3930,7 +3932,7 @@ def combine_data():
     return out_df
 
 
-x = prep_pumping_intensity_data()
+x = calc_discharge_fractions()
 #print(x)
 
 x.to_csv(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv", index=False)
