@@ -2302,8 +2302,6 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
 
 # BELOW IS READY TO GO
 
-# TODO fix this
-
 def prep_pumping_intensity_data() -> pd.DataFrame:
     """Prepares irrigation data so that the outcome is a dataframe of groundwater and surface water pumping energy
     intensities (billion BTU per million gallons) by county. For groundwater pumping intensity, The total differential
@@ -2333,39 +2331,31 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
     name_dict = dict(zip(df_names.original_name, df_names.new_name))
 
     # establish variables
-    acc_gravity = 9.81  # Acceleration of gravity  (m/s^2)
-    water_density = 997  # Water density (kg/m^3)
-    ag_pump_eff = .465  # assumed pump efficiency rate
     psi_psf_conversion = 2.31  # conversion of pounds per square inch (psi) to pounds per square foot (psf)
-    m3_mg_conversion = 3785.41178  # conversion factor for m^3 to million gallons
-    joules_kwh_conversion = 1 / 3600000  # conversion factor from joules to kWh
-    kwh_bbtu_conversion = 3412.1416416 / 1000000000  # 1 kWh is equal to 3412.1416416 btu
-    meter_ft_conversion = 0.3048  # meters in a foot
+    ag_pump_eff = .465  # assumed pump efficiency rate
+    mgd_gpm = 694.4 # 1 million gallons per day is equal to 694.4 gallons per minute
+    water_horsepower = 3960  # water horsepower
+    hpw_kwh = .746  # horsepower to kilowatt-hour conversion
 
     # determine the total head to pump (pressurization head + well depth)
-    head_ft = psi_psf_conversion * df["average_operating_pressure_psi"]  # conversion of psi to head (pounds per sqft)
-    diff_height_gw = meter_ft_conversion * (df["average_well_depth_ft"] + head_ft)  # calc. differential height (m)
+    df['head_ft'] = psi_psf_conversion * df["average_operating_pressure_psi"]  # conversion of psi to head (pounds per sqft)
+    df['diff_height_gw'] = (df["average_well_depth_ft"] + df['head_ft'])  # calc. differential height (ft)
 
-    # power (watts) over cubic meters (water)
-    watts_per_cm = (water_density * acc_gravity * diff_height_gw) / ag_pump_eff
+    # calculate required killowatts per million gallon
+    df['kw_mg_gw'] = ((mgd_gpm * df['diff_height_gw']) / (water_horsepower * ag_pump_eff)) * hpw_kwh * 24
 
-    w_bbtu = 3.41e-9
-
-    bbtu_per_cm = watts_per_cm * w_bbtu
-    # TODO START HERE by converting the above into bbtu/mg
-
-
-    pump_power_gw = (water_density * diff_height_gw * acc_gravity * m3_mg_conversion) / ag_pump_eff  # joules/MG
-    df['groundwater_pumping_bbtu_per_mg'] = pump_power_gw * joules_kwh_conversion * kwh_bbtu_conversion  # (bbtu/mg)
+    # convert to bbtu per million gallon
+    df['groundwater_pumping_bbtu_per_mg'] = df['kw_mg_gw'].apply(convert_kwh_bbtu)
 
     # calculating average groundwater pumping to apply to regions without values
     groundwater_pumping_bbtu_per_mg_avg = df['groundwater_pumping_bbtu_per_mg'].mean()
 
     # determine surface water pumping intensity by state
-    diff_height_sw = meter_ft_conversion * head_ft  # calc. differential height (m)
-    pump_power_sw = (water_density * diff_height_sw * acc_gravity * m3_mg_conversion) / ag_pump_eff  # joules/MG
-    df[
-        'surface_water_pumping_bbtu_per_mg'] = pump_power_sw * joules_kwh_conversion * kwh_bbtu_conversion  # power intensity (bbtu/mg)
+    df['diff_height_sw'] = df['head_ft']  # calc. differential height (ft)
+    df['kw_mg_sw'] = ((mgd_gpm * df['diff_height_sw']) / (water_horsepower * ag_pump_eff)) * hpw_kwh * 24
+
+    # convert to bbtu per million gallon
+    df['surface_water_pumping_bbtu_per_mg'] = df['kw_mg_sw'].apply(convert_kwh_bbtu)
 
     # calculating average surface water pumping to apply to regions without values
     surface_water_pumping_bbtu_per_mg_avg = df['surface_water_pumping_bbtu_per_mg'].mean()
@@ -3940,7 +3930,7 @@ def combine_data():
     return out_df
 
 
-x = prep_interbasin_transfer_data()
+x = prep_pumping_intensity_data()
 #print(x)
 
 x.to_csv(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv", index=False)
