@@ -2301,6 +2301,9 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
 
 
 # BELOW IS READY TO GO
+
+# TODO fix this
+
 def prep_pumping_intensity_data() -> pd.DataFrame:
     """Prepares irrigation data so that the outcome is a dataframe of groundwater and surface water pumping energy
     intensities (billion BTU per million gallons) by county. For groundwater pumping intensity, The total differential
@@ -2339,9 +2342,19 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
     kwh_bbtu_conversion = 3412.1416416 / 1000000000  # 1 kWh is equal to 3412.1416416 btu
     meter_ft_conversion = 0.3048  # meters in a foot
 
-    # determine groundwater pumping intensity by state
+    # determine the total head to pump (pressurization head + well depth)
     head_ft = psi_psf_conversion * df["average_operating_pressure_psi"]  # conversion of psi to head (pounds per sqft)
     diff_height_gw = meter_ft_conversion * (df["average_well_depth_ft"] + head_ft)  # calc. differential height (m)
+
+    # power (watts) over cubic meters (water)
+    watts_per_cm = (water_density * acc_gravity * diff_height_gw) / ag_pump_eff
+
+    w_bbtu = 3.41e-9
+
+    bbtu_per_cm = watts_per_cm * w_bbtu
+    # TODO START HERE by converting the above into bbtu/mg
+
+
     pump_power_gw = (water_density * diff_height_gw * acc_gravity * m3_mg_conversion) / ag_pump_eff  # joules/MG
     df['groundwater_pumping_bbtu_per_mg'] = pump_power_gw * joules_kwh_conversion * kwh_bbtu_conversion  # (bbtu/mg)
 
