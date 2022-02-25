@@ -1,14 +1,19 @@
 import json
 import numpy as np
+import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 from .analyze import *
 
 
 def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=None, strip=None, remove_sectors=None):
-    """Plots interactive sankey diagram(s) for a given region at a given level of granularity. At least one unit type is
-    required. If no region name is specified, the flow data provided must be for a single region. Contains the option
-    to strip strings from node names to remove replicated placeholder names such as 'total'.
+    """Plots interactive sankey diagram(s) for a given region at a given level of granularity from flow package output
+    data. Requires that variable naming is consistent with flow package output variable naming. At least one unit type
+    must be specified as a parameter. Output level can be specified to display sankey diagrams at different levels of
+    granularity. Sankey diagram(s) can only display a single region at a time. If no region name is
+    specified, the flow data provided must be for a single region. Contains the option to strip strings from node names
+    to remove replicated placeholder names such as 'total'.
+
 
         :param data:                        dataframe of flow values from source to target
         :type data:                         DataFrame
@@ -29,11 +34,13 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
         :param strip:                       Optional parameter. Provides a string to remove from variable labels.
         :type strip:                        string
 
-        :param quantile_cap:                Optional parameter to remove all values greater than specified quantile.
-        :type quantile_cap:                 flt
+        :param remove_sectors:              Optional parameter to remove all flows into and out of a level 1 sector.
+                                            Removes values at all levels for specified sector.
+        :type remove_sectors:               list
 
         :return:                            interactive sankey diagram of flow values
             """
+
     # get data
     df = data
 
@@ -63,9 +70,6 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
         df_1 = df_1[df_1.region == region_name]
 
     group_results(df_1, output_level=output_level)
-
-
-
 
     available_levels = [1, 2, 3, 4, 5]
     remove = f'-{strip}'
@@ -348,7 +352,6 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
                         line=dict(color="black", width=1),  # node border color and thickness
                         label=sankey_number,  # node label, refers to list of indexed names
                         color = 'rgba(209, 155, 30, 1)'
-                        #color of nodes, refers to list of hex codes
                     ),
                     link=dict(
                         source=source_list,  # list of source node indices
@@ -368,6 +371,16 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
 
 
 def plot_sector_bar(data, unit_type, region_name, sector_list, inflow=True, strip=None ):
+    """
+
+    :param data:
+    :param unit_type:
+    :param region_name:
+    :param sector_list:
+    :param inflow:
+    :param strip:
+    :return:
+    """
 
     # get data
     df = data
@@ -405,7 +418,6 @@ def plot_sector_bar(data, unit_type, region_name, sector_list, inflow=True, stri
         x_variable = 'S1'
         flow_name = 'Outflows from'
 
-
     fig = px.bar(df_group, x=x_variable, y="value", color="groupname",
                  color_discrete_sequence=px.colors.qualitative.Prism,
                  template="simple_white")
@@ -436,16 +448,35 @@ def plot_sector_bar(data, unit_type, region_name, sector_list, inflow=True, stri
 
 
 def plot_map(jsonfile: str, data:pd.DataFrame, level=1, region_col=None, strip="total", center=None):
-    '''
+    """ Takes flow package output and plots a cloropleth map of an individual value. Displaying the first flow value
+     in the dataset by default and produces a drop-down menu of the remaining flows to select from and update the map.
+     Requires a GeoJSON file containing the geometry information for the region of interest. The feature.id in the file
+     must align with the region data column in the dataframe of input values to display. Flow values can be displayed
+     on the map and represented in the dropdown menu for the indicated level of granularity (level 1 through level 5,
+     inclusive). Additionally, an optional parameter is provided to display additional regional identification
+     information in the hover-template when a region is hovered over. This is provided in the region_col parameter and
+     points to the column in the input data with this information.
 
     :param jsonfile:
+    :type jsonfile:
+
     :param data:
+    :type data:
+
     :param level:
+    :type level:
+
     :param region_col:
+    :type region_col:
+
     :param strip:
+    :type strip:
+
     :param center:
+    :type center:
+
     :return:
-    '''
+    """
 
     # collect flow data
     df = data
@@ -506,7 +537,6 @@ def plot_map(jsonfile: str, data:pd.DataFrame, level=1, region_col=None, strip="
         button_columns = region_col + 1
         starting_column = region_col + 1
 
-
     # create a list of variable columns
     cols = df.columns[button_columns:].to_list()
 
@@ -549,16 +579,16 @@ def plot_map(jsonfile: str, data:pd.DataFrame, level=1, region_col=None, strip="
             hovertemplate="Region: %{customdata}" + \
                           '<br>Value: %{z}<extra></extra>',
             coloraxis="coloraxis",
-            marker_opacity=0.75,
-            marker_line_width=0.1))
+            marker_opacity=1,
+            marker_line_width=0.5))
 
     # update map layout
-    fig.update_layout(coloraxis_colorscale='viridis',
+    fig.update_layout(coloraxis_colorscale='Purples',
                       mapbox=dict(style='carto-positron',
                                   zoom=3,
                                   center=center))
     # update title
-    fig.update_layout(title_text="Map of Selected Flow Value in Each Region",
+    fig.update_layout(title_text="Map of Selected Flow Value",
                       title_x=0.0,
                       margin={"r": 10, "t": 60, "l": 0, "b": 0})
     # update dropdown list
@@ -567,6 +597,5 @@ def plot_map(jsonfile: str, data:pd.DataFrame, level=1, region_col=None, strip="
                                         x=.5,
                                         xanchor="left",
                                         y=1.12,
-                                        yanchor="top")]
-                      )
+                                        yanchor="top")])
     fig.show()

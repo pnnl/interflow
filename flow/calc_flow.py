@@ -1,11 +1,11 @@
-from .reader import *
-from .read_config import *
 import pandas as pd
+
+from .reader import *
 import flow.construct as co
 import flow.deconstruct as de
 
 
-def calculate(data=None, level=5, region_name=None, remove_loops=True, output_file_name=None):
+def calculate(data:pd.DataFrame, level=5, region_name=None, remove_loops=True, output_file_name=None):
     """Loops through input data for each region provided or specified and (1) collects flows for input data, (2)
     calculates totals for input flows at level 1 through level 5 granularity (2) calculates any cross unit flows based
     on input flow intensity values at level 1 through level 5 granularity (3) builds source flows for calculated
@@ -45,11 +45,8 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True, output_fi
         m = 'incorrect level of granularity specified. Must be an integer between 1 and 5, inclusive.'
         raise ValueError(m)
 
-    # load baseline data
-    if data is None:
-        df = read_input_data()  # read DataFrame from configuration file
-    else:
-        df = data  # or read DataFrame from parameter input
+    # load input data
+    df = data  # read file path in as a dataframe with no leading zeros applied
 
     # check to make sure data has correct number of columns
     if len(df.columns.to_list()) == 16:
@@ -64,7 +61,7 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True, output_fi
     else:
         # check that provided region_name is in the input data
         region_column = df.columns[0]
-        if region_name in data[region_column].tolist():
+        if region_name in df[region_column].tolist():
             pass
         else:
             m = 'Region provided is not in the input data.'
@@ -85,7 +82,6 @@ def calculate(data=None, level=5, region_name=None, remove_loops=True, output_fi
     l3_dict = {}  # dictionary of level 3 granularity flows
     l2_dict = {}  # dictionary of level 2 granularity flows
     l1_dict = {}  # dictionary of level 1 granularity flows
-
 
     # loop through data
     for r in f_dict:

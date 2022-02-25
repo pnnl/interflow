@@ -1,8 +1,18 @@
-from .calc_flow import *
-
 
 def group_results(df, output_level=1):
+    """ Groups package run output to level of granularity specified. Returns a dataframe of values with source to target
+    flows by region.
 
+    :param df:
+    :type df:
+
+    :param output_level:
+    :type output_level:
+
+    :return:
+    """
+
+    # collect region column
     reg_col_name = df.columns[0]
 
     if 'S5' in df.columns:
@@ -13,10 +23,11 @@ def group_results(df, output_level=1):
         input_level = 3
     elif ('S5' not in df.columns) & ('S4' not in df.columns) & ('S3' not in df.columns)& ('S2' in df.columns):
         input_level = 2
-    elif ('S5' not in df.columns) & ('S4' not in df.columns) & ('S3' not in df.columns)& ('S2' not in df.columns) & ('S1' in df.columns):
+    elif ('S5' not in df.columns) & ('S4' not in df.columns) & ('S3' not in df.columns) \
+            & ('S2' not in df.columns) & ('S1' in df.columns):
         input_level = 1
     else:
-        m = 'input data not formatted corrected'
+        m = 'input data not formatted correctly'
         raise ValueError(m)
 
     if input_level == 1:
@@ -30,7 +41,7 @@ def group_results(df, output_level=1):
         if output_level == 1:
             df = df.groupby([reg_col_name, 'S1', 'T1', 'units'], as_index=False).sum()
         elif output_level == 2:
-            df = df.groupby([reg_col_name, 'S1', 'S2', 'T1', 'T2','units'], as_index=False).sum()
+            df = df.groupby([reg_col_name, 'S1', 'S2', 'T1', 'T2', 'units'], as_index=False).sum()
         else:
             m = 'Cannot create output level given number of input levels'
             raise ValueError(m)
@@ -59,7 +70,6 @@ def group_results(df, output_level=1):
             m = 'Cannot create output level given number of input levels'
             raise ValueError(m)
 
-
     elif input_level == 5:
         if output_level == 1:
             df = df.groupby([reg_col_name, 'S1', 'T1', 'units'], as_index=False).sum()
@@ -68,9 +78,11 @@ def group_results(df, output_level=1):
         elif output_level == 3:
             df = df.groupby([reg_col_name, 'S1', 'S2','S3', 'T1', 'T2', 'T3', 'units'], as_index=False).sum()
         elif output_level == 4:
-            df = df.groupby([reg_col_name, 'S1', 'S2', 'S3', 'S4', 'T1', 'T2', 'T3', 'T4','units'], as_index=False).sum()
+            df = df.groupby([reg_col_name, 'S1', 'S2', 'S3', 'S4', 'T1', 'T2', 'T3', 'T4','units'],
+                            as_index=False).sum()
         elif output_level == 5:
-            df = df.groupby([reg_col_name, 'S1', 'S2', 'S3', 'S4', 'S5', 'T1', 'T2', 'T3', 'T4', 'T5','units'], as_index=False).sum()
+            df = df.groupby([reg_col_name, 'S1', 'S2', 'S3', 'S4', 'S5', 'T1', 'T2', 'T3', 'T4', 'T5', 'units'],
+                            as_index=False).sum()
         else:
             m = 'Cannot create output level given number of input levels'
             raise ValueError(m)

@@ -1,22 +1,34 @@
 import pkg_resources
 import pandas as pd
-from .read_config import *
 
 
-def read_input_data():
+def read_input_data(path: str, leading_zeros=None):
     """Read in input data as DataFrame.
+        :param path:                    path to a csv file with flow values
+        :type path:                     str
 
-        :return:                        dataframe of input flow values
+        :param leading_zeros:           Optional parameter to add leading zeros to the region column to ensure the
+                                        regional identifier has the correct number of data positions.
+        :type leading_zeros:            int
+
+        :return:                        dataframe of input flow values and parameters
 
         """
 
-    # collect path to file
-    path = read_config(filetype='input_data')
-
     # collect file
-    data = pkg_resources.resource_filename('flow', path)
+    df = pd.read_csv(path)
+
+    # read the region column as a string
+    region_col = df.columns[0]
+    df[region_col] = df[region_col].astype(str)
+
+    # add leading zeros to region if necessary
+    if leading_zeros is None:
+        df = df
+    else:
+        df[region_col] = df[region_col].apply(lambda x: x.zfill(leading_zeros))
 
     # return as DataFrame
-    return pd.read_csv(data)
+    return df
 
 

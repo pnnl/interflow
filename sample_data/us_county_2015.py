@@ -3958,8 +3958,11 @@ def combine_data():
     out_df = out_df.sort_values(by=['FIPS', 'type', 't1', 't2', 't3', 't4', 't5'])
     out_df = out_df[['FIPS', 'type', 't1', 't2', 't3', 't4', 't5', 'T_unit',
                      's1', 's2', 's3', 's4', 's5', 'S_unit', 'parameter', 'value']]
-    return out_df
 
+    out_df['FIPS'] = out_df['FIPS'].astype(str)
+    out_df['FIPS'] = out_df['FIPS'].apply(lambda x: '{0:0>5}'.format(x))
+
+    return out_df
 
 x = combine_data()
 # print(x)
