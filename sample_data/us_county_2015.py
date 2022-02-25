@@ -773,12 +773,12 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     """
 
     # read in TX interbasin transfer
-    #data_tx = 'input_data/TX_IBT_2015.csv'
     data_tx = 'input_data/HistoricalMunicipal_TX_IBT.csv'
     df_tx = pd.read_csv(data_tx, dtype={'County Used FIPS': str, 'County Source FIPS': str},
-                        skiprows=1, usecols = ['Year', 'County Used', 'County Source', 'Total Intake' ,
-                                       'County Used Elevation (ft)', 'County Source Elevation (ft)', 'County Used FIPS',
-                                       'County Source FIPS'])
+                        skiprows=1, usecols=['Year', 'County Used', 'County Source', 'Total Intake',
+                                             'County Used Elevation (ft)', 'County Source Elevation (ft)',
+                                             'County Used FIPS',
+                                             'County Source FIPS'])
 
     # get_west_inter_basin_transfer_data
     data_west = 'input_data/West_IBT_county.csv'
@@ -790,8 +790,8 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
 
     feet_meter_conversion = 1 / 3.281  # feet to meter conversion
 
-    af_mg = 0.325851 # acre-feet to million gallons
-    cf_mg = 7.48052E-06 # cubic feet to million gallons
+    af_mg = 0.325851  # acre-feet to million gallons
+    cf_mg = 7.48052E-06  # cubic feet to million gallons
     sec_day = 86400  # seconds in a day
 
     gpy_cmh = 0.00378541 / 8760  # gallons per year to cubic meters per hour
@@ -2167,7 +2167,7 @@ def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) ->
     # remove flow variable to electricity demand to avoid double inclusion in final dataset
     output_df = output_df.drop(['EGS_hydro_instream_nocooling_total_bbtu_to_EGD_total_total_total_total_bbtu_fraction',
                                 'EGS_hydro_instream_nocooling_total_bbtu_from_EPD_hydro_total_total_total_bbtu'],
-                               axis =1)
+                               axis=1)
 
     # merge with full list of counties from 2015 water data
     output_df = pd.merge(df_loc, output_df, how='left', on=['FIPS', 'State'])
@@ -2311,7 +2311,6 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
         esv_flow_name = sector + energy_services_flow
         output_df[esv_flow_name] = EFFICIENCY
 
-
     return output_df
 
 
@@ -2348,12 +2347,13 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
     # establish variables
     psi_psf_conversion = 2.31  # conversion of pounds per square inch (psi) to pounds per square foot (psf)
     ag_pump_eff = .465  # assumed pump efficiency rate
-    mgd_gpm = 694.4 # 1 million gallons per day is equal to 694.4 gallons per minute
+    mgd_gpm = 694.4  # 1 million gallons per day is equal to 694.4 gallons per minute
     water_horsepower = 3960  # water horsepower
     hpw_kwh = .746  # horsepower to kilowatt-hour conversion
 
     # determine the total head to pump (pressurization head + well depth)
-    df['head_ft'] = psi_psf_conversion * df["average_operating_pressure_psi"]  # conversion of psi to head (pounds per sqft)
+    df['head_ft'] = psi_psf_conversion * df[
+        "average_operating_pressure_psi"]  # conversion of psi to head (pounds per sqft)
     df['diff_height_gw'] = (df["average_well_depth_ft"] + df['head_ft'])  # calc. differential height (ft)
 
     # calculate required killowatts per million gallon
@@ -2628,7 +2628,7 @@ def prep_fuel_demand_data() -> pd.DataFrame:
 
     # create rejected energy and energy service variables for each fuel type
     coal_demand_list = ['COM', 'IND']
-    biomass_demand_list =  ['TRA', 'RES', 'COM']
+    biomass_demand_list = ['TRA', 'RES', 'COM']
     geothermal_demand_list = ['COM', 'RES']
     natgas_demand_list = ['TRA', 'COM', 'IND', 'RES']
     petroleum_demand_list = ['TRA', 'COM', 'IND', 'RES']
@@ -3040,7 +3040,7 @@ def prep_natgas_water_intensity():
     df['natgas_water_intensity'].fillna(df['natgas_water_intensity'].mean(), inplace=True)
     df['natgas_fsw_frac'].fillna(df['natgas_fsw_frac'].mean(), inplace=True)
     df['natgas_fgw_frac'].fillna(df['natgas_fgw_frac'].mean(), inplace=True)
-  
+
     # reduce dataframe to required variables
     df = df[['FIPS', 'State', 'natgas_water_intensity', 'natgas_fsw_frac', 'natgas_fgw_frac']]
 
@@ -3052,6 +3052,7 @@ def prep_natgas_water_intensity():
     df.fillna(0, inplace=True)
 
     return df
+
 
 # BELOW IS GOOD TO GO
 def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
@@ -3125,13 +3126,13 @@ def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
     # combine with petroleum production data
     df_pet = pd.merge(df_pet, df, how='left', on='State')
     df_pet = df_pet[['FIPS', 'State', 'petroleum_unconventional_production_bbtu',
-                      'petroleum_conventional_production_bbtu', 'Total injected (%)', 'Surface Discharge (%)',
-                      'Evaporation/ Consumption (%)', 'un_petrol_produced_int']]
+                     'petroleum_conventional_production_bbtu', 'Total injected (%)', 'Surface Discharge (%)',
+                     'Evaporation/ Consumption (%)', 'un_petrol_produced_int']]
 
     # rename key columns for unconventional petroleum
     df_pet = df_pet.rename(columns={'Total injected (%)': 'PET_uncon_withdrawal_GD',
-                                     'Surface Discharge (%)': 'PET_uncon_withdrawal_SD',
-                                     'Evaporation/ Consumption (%)': 'PET_uncon_withdrawal_CMP'})
+                                    'Surface Discharge (%)': 'PET_uncon_withdrawal_SD',
+                                    'Evaporation/ Consumption (%)': 'PET_uncon_withdrawal_CMP'})
 
     # set conventional petroleum fractions equal to unconventional discharge fractions
     df_pet['PET_con_withdrawal_GD'] = df_pet['PET_uncon_withdrawal_GD']
@@ -3157,6 +3158,7 @@ def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
     output_df = pd.merge(df_ng, df_pet, how='left', on=['FIPS', 'State', 'County'])
 
     return output_df
+
 
 # BELOW IS READY TO GO
 def rename_natgas_petroleum_data():
@@ -3196,6 +3198,7 @@ def rename_natgas_petroleum_data():
     df.rename(columns=name_dict, inplace=True)
 
     return df
+
 
 # BELOW IS GOOD TO GO
 def prep_county_coal_production_data() -> pd.DataFrame:
@@ -3262,7 +3265,7 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     df_coal['Underground'] = df_coal['Underground'] * shortton_bbtu_conversion / 365
 
     # rename surface and underground columns to lowercase
-    df_coal = df_coal.rename(columns = {'Surface': 'surface', 'Underground': 'underground'})
+    df_coal = df_coal.rename(columns={'Surface': 'surface', 'Underground': 'underground'})
 
     # calculate total coal production per county
     df_coal['coal_production_bbtu'] = (df_coal['surface'] + df_coal['underground'])
@@ -3272,6 +3275,7 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     df_coal['surface_water_int'] = SURFACE_INTENSITY
 
     return df_coal
+
 
 # BELOW IS GOOD TO GO
 def prep_county_coal_data() -> pd.DataFrame:
@@ -3347,7 +3351,7 @@ def prep_county_coal_data() -> pd.DataFrame:
             other_prefix = 'MIN_other_total_'
             coal_prefix = 'MIN_coal_' + mine_type + "_"
             other_cmp_suffix = '_mgd_to_CMP_total_total_total_total_mgd_fraction'
-            coal_full_name = coal_prefix  + 'withdrawal_total' + other_cmp_suffix
+            coal_full_name = coal_prefix + 'withdrawal_total' + other_cmp_suffix
             other_full_name = other_prefix + type + other_cmp_suffix
             df[coal_full_name] = df[other_full_name]
             output_variable_list.append(coal_full_name)
@@ -3373,8 +3377,8 @@ def prep_county_coal_data() -> pd.DataFrame:
             output_variable_list.append(full_source_name)
 
             # create production naming and set equal to daily mine production by type
-            mine_type_prefix = 'MIN_coal_'+ mine_type + '_total_total_bbtu'
-            mine_type_suffix = '_from_MIN_coal_'+ mine_type + '_total_total_bbtu'
+            mine_type_prefix = 'MIN_coal_' + mine_type + '_total_total_bbtu'
+            mine_type_suffix = '_from_MIN_coal_' + mine_type + '_total_total_bbtu'
             mine_prod_name = mine_type_prefix + mine_type_suffix
             df[mine_prod_name] = df[mine_type]
             output_variable_list.append(mine_prod_name)
@@ -3413,19 +3417,19 @@ def prep_county_coal_data() -> pd.DataFrame:
         other_mining_suffix = 'WSW_' + type + '_total_total_mgd'
         other_mining_total = other_mining_prefix + other_mining_suffix
         if type == 'fresh_surfacewater':
-            df[other_mining_total] = np.where((df['WSW_fresh_surfacewater']- df['total_fsw_with'])<0,
+            df[other_mining_total] = np.where((df['WSW_fresh_surfacewater'] - df['total_fsw_with']) < 0,
                                               0,
                                               df['WSW_fresh_surfacewater'] - df['total_fsw_with'])
         elif type == 'fresh_groundwater':
-            df[other_mining_total] = np.where((df['WSW_fresh_groundwater']- df['total_fgw_with'])<0,
+            df[other_mining_total] = np.where((df['WSW_fresh_groundwater'] - df['total_fgw_with']) < 0,
                                               0,
                                               df['WSW_fresh_groundwater'] - df['total_fgw_with'])
         elif type == 'saline_surfacewater':
-            df[other_mining_total] = np.where((df['WSW_saline_surfacewater']- df['total_ssw_with'])<0,
+            df[other_mining_total] = np.where((df['WSW_saline_surfacewater'] - df['total_ssw_with']) < 0,
                                               0,
                                               df['WSW_saline_surfacewater'] - df['total_ssw_with'])
         else:
-            df[other_mining_total] = np.where((df['WSW_saline_groundwater'] - df['total_sgw_with'])<0,
+            df[other_mining_total] = np.where((df['WSW_saline_groundwater'] - df['total_sgw_with']) < 0,
                                               0,
                                               df['WSW_saline_groundwater'] - df['total_sgw_with'])
         output_variable_list.append(other_mining_total)
@@ -3455,7 +3459,7 @@ def remove_double_counting_from_mining():
     df_mining = prep_county_coal_data()
 
     # create variable names to reduce dataset to other mining water values
-    water_types = ['fresh_surfacewater','fresh_groundwater', 'saline_surfacewater', 'saline_groundwater']
+    water_types = ['fresh_surfacewater', 'fresh_groundwater', 'saline_surfacewater', 'saline_groundwater']
     variable_list = []
     for type in water_types:
         other_mining_prefix = 'MIN_other_total_total_total_mgd_from_'
@@ -3495,9 +3499,9 @@ def remove_double_counting_from_mining():
                              df_energy['fresh_surfacewater_natgas_unconventional_withdrawal']
 
     # calculate fresh groundwater total
-    df_energy['fgw_total'] = df_energy['fresh_groundwater_petroleum_conventional_withdrawal']+ \
-                           df_energy['fresh_groundwater_petroleum_unconventional_withdrawal']+\
-                           df_energy['fresh_groundwater_natgas_unconventional_withdrawal']
+    df_energy['fgw_total'] = df_energy['fresh_groundwater_petroleum_conventional_withdrawal'] + \
+                             df_energy['fresh_groundwater_petroleum_unconventional_withdrawal'] + \
+                             df_energy['fresh_groundwater_natgas_unconventional_withdrawal']
 
     # reduce energy dataframe to totals
     df_energy = df_energy[['FIPS', 'fsw_total', 'fgw_total']]
@@ -3585,7 +3589,8 @@ def prep_county_ethanol_production_data() -> pd.DataFrame:
 
     df_biomass = df_biomass[['FIPS', 'biomass_production_bbtu']]
     ethanol_prod_name = 'IND_biomass_ethanol_total_total_bbtu'
-    df_biomass = df_biomass.rename(columns={'biomass_production_bbtu':ethanol_prod_name + '_from_' + ethanol_prod_name})
+    df_biomass = df_biomass.rename(
+        columns={'biomass_production_bbtu': ethanol_prod_name + '_from_' + ethanol_prod_name})
 
     # create ethanol production flows to ethanol demand as 100% of produced ethanol
     df_biomass[ethanol_prod_name + '_to_EPD_biomass_total_total_total_bbtu_fraction'] = 1
@@ -3603,6 +3608,7 @@ def prep_county_ethanol_production_data() -> pd.DataFrame:
     df_biomass.fillna(0, inplace=True)
 
     return df_biomass
+
 
 # BELOW IS GOOD TO GO
 def remove_industrial_water_double_counting():
@@ -3622,11 +3628,11 @@ def remove_industrial_water_double_counting():
     df_ethanol = prep_county_ethanol_production_data()
 
     # merge dataframes
-    df = pd.merge(df,df_ethanol, how='left', on=['FIPS', 'State', 'County'] )
+    df = pd.merge(df, df_ethanol, how='left', on=['FIPS', 'State', 'County'])
 
     ethanol_prod = 'IND_biomass_ethanol_total_total_bbtu_from_IND_biomass_ethanol_total_total_bbtu'
     ethanol_int = 'IND_biomass_ethanol_total_total_mgd_from_IND_biomass_ethanol_total_total_bbtu_intensity'
-    df['total_water']= df[ethanol_prod] * df[ethanol_int]
+    df['total_water'] = df[ethanol_prod] * df[ethanol_int]
 
     df[ind_sw] = np.where(df[ind_sw] - df['total_water'] < 0,
                           0,
@@ -3714,7 +3720,6 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
     # convert to million gallons per day from million gallons per year
     df_corn['ethanol_corn_mgd'] = df_corn['ethanol_corn_mgy'] / 365
 
-
     # calculate surface water vs. groundwater fraction in corn irrigation
     df_corn["surface_total"] = df_corn["Off"] + df_corn["Surface"]  # adds off-farm and surface together for surface
     df_corn["water_total"] = df_corn["surface_total"] + df_corn["Ground"]  # sum surface water and groundwater
@@ -3731,16 +3736,16 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
     df_corn['surface_frac'].fillna(df_corn['surface_frac_fill'], inplace=True)
 
     # reduce dataframe
-    #df_corn = df_corn[['State', 'ethanol_corn_mgd', 'surface_frac']]
+    # df_corn = df_corn[['State', 'ethanol_corn_mgd', 'surface_frac']]
 
     # merge county level corn production with state water data
     df = pd.merge(df_corn_prod, df_corn, how='left', on='State')  # merge dataframes
 
     # calculate county-level water use for corn
-    df['county_ethanol_corn_mgd'] = df['ethanol_corn_mgd']*df['corn_frac']
+    df['county_ethanol_corn_mgd'] = df['ethanol_corn_mgd'] * df['corn_frac']
 
     # calculate acres per corn (bushels) harvested to be able to fill in missing acre values
-    df['acres_per_bushel'] = (df['Acres_Corn_Harvested'] * df['corn_frac'])/df['Value']
+    df['acres_per_bushel'] = (df['Acres_Corn_Harvested'] * df['corn_frac']) / df['Value']
 
     # apply the average
     avg_acres = df['acres_per_bushel'].mean()
@@ -3748,8 +3753,8 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
 
     # fill missing water intensity values for west virginia using average acres/bushel and average water intensity/acre
     df['county_ethanol_corn_mgd'] = np.where(df['State'] == 'WV',
-                                       (df['Value'] * avg_acres * avg_irr_int)/365,
-                                       df['county_ethanol_corn_mgd'])
+                                             (df['Value'] * avg_acres * avg_irr_int) / 365,
+                                             df['county_ethanol_corn_mgd'])
 
     # split up ethanol corn irrigation water by surface and groundwater source percentages
     df['sw_ethanol_corn'] = (df['surface_frac'] * df["county_ethanol_corn_mgd"])  # surface water
@@ -3764,6 +3769,7 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
 
     return df
 
+
 # BELOW IS GOOD TO GO
 def remove_irrigation_water_double_counting():
     """  Subtracts water use in the irrigation of corn growth for ethanol from the total water use in crop irrigation
@@ -3776,7 +3782,7 @@ def remove_irrigation_water_double_counting():
     crop_fsw = 'AGR_crop_fresh_surfacewater_withdrawal_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
     crop_fgw = 'AGR_crop_fresh_groundwater_withdrawal_mgd_from_WSW_fresh_groundwater_total_total_mgd'
 
-    df = rename_water_data_2015(variables=['FIPS', 'State', 'County', crop_fsw, crop_fgw ])
+    df = rename_water_data_2015(variables=['FIPS', 'State', 'County', crop_fsw, crop_fgw])
 
     # read in corn for ethanol water data
     df_corn = prep_county_water_corn_biomass_data()
@@ -3788,7 +3794,7 @@ def remove_irrigation_water_double_counting():
     df[crop_fsw] = np.where((df[crop_fsw] - df['sw_ethanol_corn']) < 0,
                             0,
                             (df[crop_fsw] - df['sw_ethanol_corn']))
-#
+    #
     # remove ground corn ethanol irrigation water from total crop irrigation groundwater
     df[crop_fgw] = np.where((df[crop_fgw] - df['gw_ethanol_corn']) < 0,
                             0,
@@ -3799,7 +3805,8 @@ def remove_irrigation_water_double_counting():
 
     return df
 
- # BELOW IS GOOD TO GO
+
+# BELOW IS GOOD TO GO
 def prep_corn_crop_irr_flows():
     """
     prepares values for water for corn growth for ethanol including consumption fractions, surface discharge fractions,
@@ -3879,7 +3886,7 @@ def combine_data():
         'AGR_aquaculture_saline_groundwater_withdrawal_mgd_from_WSW_saline_groundwater_total_total_mgd',
         'AGR_aquaculture_fresh_surfacewater_withdrawal_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
         'AGR_aquaculture_saline_surfacewater_withdrawal_mgd_from_WSW_saline_surfacewater_total_total_mgd',
-        ]
+    ]
 
     x1 = rename_water_data_2015(variables=var_list)
     x2 = calc_irrigation_discharge_flows()
@@ -3932,7 +3939,6 @@ def combine_data():
     out_df = pd.merge(out_df, x22, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x23, how='left', on=['FIPS', 'State', 'County'])
 
-
     value_columns = out_df.columns[3:].to_list()
     out_df = pd.melt(out_df, value_vars=value_columns, var_name='flow_name', value_name='value', id_vars=['FIPS'])
     out_df = out_df[out_df.value != 0]
@@ -3956,7 +3962,7 @@ def combine_data():
 
 
 x = combine_data()
-#print(x)
+# print(x)
 
 x.to_csv(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv", index=False)
 import os
