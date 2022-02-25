@@ -1,11 +1,9 @@
-import pandas as pd
-
 from .reader import *
 import flow.construct as co
 import flow.deconstruct as de
 
 
-def calculate(data:pd.DataFrame, level=5, region_name=None, remove_loops=True, output_file_name=None):
+def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, output_file_path=None) -> pd.DataFrame:
     """Loops through input data for each region provided or specified and (1) collects flows for input data, (2)
     calculates totals for input flows at level 1 through level 5 granularity (2) calculates any cross unit flows based
     on input flow intensity values at level 1 through level 5 granularity (3) builds source flows for calculated
@@ -29,9 +27,9 @@ def calculate(data:pd.DataFrame, level=5, region_name=None, remove_loops=True, o
                                         input value) should be removed from output dataset. Default is True.
     :type remove_loops:                 bool
 
-    :param output_file_name:            Desired name of output file (saved as a .csv) to output path specified in config
-                                        yaml file. Default is set to None (no output saved)
-    :type output_file_name:             str
+    :param output_file_path:            Optional parameter to give a file path, inclusive of file name, to save dataframe output as a csv.
+                                        Default is set to None (no output saved)
+    :type output_file_path:             str
 
     :return:                            DataFrame of flow run output at specified level of granularity for specified
                                         region(s)
@@ -395,8 +393,6 @@ def calculate(data:pd.DataFrame, level=5, region_name=None, remove_loops=True, o
     if output_file_name is None:
         pass
     else:
-        output_file_path = read_config(filetype='output_data')
-        full_file_path = output_file_path + output_file_name + '.csv'
-        df.to_csv(full_file_path)
+        df.to_csv(output_file_path)
 
     return df

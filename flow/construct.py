@@ -1,8 +1,8 @@
 from .reader import *
 
 
-def construct_nested_dictionary(df: pd.DataFrame):
-    """Takes in a DataFrame of values and returns a nested dictionary up to the number of columns provided
+def construct_nested_dictionary(df: pd.DataFrame) -> dict:
+    """Takes in a 16 column DataFrame of values and returns a nested dictionary
 
             :param df:                        dataframe of values to convert to nested dictionary
             :type df:                         DataFrame
@@ -16,7 +16,7 @@ def construct_nested_dictionary(df: pd.DataFrame):
         d = 'Not enough columns passed to dictionary. Expects 16 columns in input dataframe'
         raise ValueError(d)
 
-    # 14 column dataframes
+    # 16 column dataframes
     elif len(df.columns) == 16:
         group1 = df.columns[0]
         group2 = df.columns[1]

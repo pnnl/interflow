@@ -1,15 +1,13 @@
 import pandas as pd
 
 
-def deconstruct_dictionary(input_dict: dict):
+def deconstruct_dictionary(input_dict: dict) -> pd.DataFrame:
     """Takes in a nested dictionary of run values and returns a dataframe with flow information as columns.
 
-            :param input_dict:                        nested dictionary of values to unpack into a dataframe
-            :type input_dict:                         dict
-
-            :return:                                  Dataframe
-
-            """
+    :param input_dict:                        nested dictionary of values to unpack into a dataframe
+    :type input_dict:                         dict
+    :return:                                  Pandas Dataframe
+    """
 
     # convert the dictionaries to a dataframe
     df = pd.DataFrame.from_dict(input_dict, orient='index').transpose()

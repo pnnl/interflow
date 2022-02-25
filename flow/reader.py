@@ -2,8 +2,8 @@ import pkg_resources
 import pandas as pd
 
 
-def read_input_data(path: str, leading_zeros=None):
-    """Read in input data as DataFrame.
+def read_input_data(path: str, leading_zeros=None) -> pd.DataFrame:
+    """Read in input csv data as a Pandas DataFrame.
         :param path:                    path to a csv file with flow values
         :type path:                     str
 
@@ -11,7 +11,7 @@ def read_input_data(path: str, leading_zeros=None):
                                         regional identifier has the correct number of data positions.
         :type leading_zeros:            int
 
-        :return:                        dataframe of input flow values and parameters
+        :return:                        Pandas Dataframe of input flow values and parameters
 
         """
 

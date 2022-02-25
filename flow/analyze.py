@@ -15,6 +15,7 @@ def group_results(df, output_level=1):
     # collect region column
     reg_col_name = df.columns[0]
 
+    # check for various levels of data
     if 'S5' in df.columns:
         input_level = 5
     elif ('S5' not in df.columns) & ('S4' in df.columns):

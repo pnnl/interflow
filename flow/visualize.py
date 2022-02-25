@@ -370,16 +370,34 @@ def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=Non
         m = 'Incorrect level specified. Level must be an integer between 1 and 5, inclusive.'
 
 
-def plot_sector_bar(data, unit_type, region_name, sector_list, inflow=True, strip=None ):
+def plot_sector_bar(data, unit_type, region_name, sector_list, inflow=True, strip=None):
     """
+    Plots a stacked barchart for a single region of inflows or outflows for selected sectors in selected units.
 
-    :param data:
-    :param unit_type:
-    :param region_name:
-    :param sector_list:
-    :param inflow:
-    :param strip:
-    :return:
+    :param data:                            dataframe of flow values from source to target
+    :type data:                             DataFrame
+
+    :param unit_type:                       unit type to be displayed, must be equal to unit type in input data
+    :type  unit_type:                       str
+
+    :param region_name:                     name of region to display values for
+    :type  region_name:                     str
+
+    :param sector_list:                     list of sectors to include stacked values for. Must be provided at level 1
+                                            granularity.
+    :type  sector_list:                     list
+
+    :param inflow:                          If true, shows inflows into each specified sector. If false, shows outflows.
+                                            Default is set to True
+    :type  inflow:                          bool
+
+    :param strip:                           optional parameter to provide a string that will be removed from the labels
+                                            in the output. For example, if the input data has a repeated word such as
+                                            'total' for numerous levels, the word 'total' will be stripped.
+    :type  strip:                           str
+
+    :return:                                stacked barchart for a single region of inflows or outflows for selected
+                                            sectors in selected units.
     """
 
     # get data
@@ -457,25 +475,35 @@ def plot_map(jsonfile: str, data:pd.DataFrame, level=1, region_col=None, strip="
      information in the hover-template when a region is hovered over. This is provided in the region_col parameter and
      points to the column in the input data with this information.
 
-    :param jsonfile:
-    :type jsonfile:
+    :param jsonfile:                        Path to GeoJSON file containing geometry information for the values to be
+                                            plotted on the map. the feature.id in the file must align with the region
+                                            data column in the dataframe of input values to display.
+    :type jsonfile:                         str
 
-    :param data:
-    :type data:
+    :param data:                            dataframe of flow values from source to target by region
+    :type data:                             Dataframe
 
-    :param level:
-    :type level:
+    :param level:                           level of granularity to display for values. Level should be between 1 and
+                                            5 inclusive.
+    :type level:                            int
 
-    :param region_col:
-    :type region_col:
+    :param region_col:                      optional parameter to indicate an additional regional identifier column that
+                                            can be displayed on hover in the figure. Examples include the associated
+                                            US county name belonging to the region code. Default is set to no additional
+                                            region information displayed.
+    :type region_col:                       int
 
-    :param strip:
-    :type strip:
+    :param strip:                           optional parameter to provide a string that will be removed from the labels
+                                            in the output. For example, if the input data has a repeated word such as
+                                            'total' for numerous levels, the word 'total' will be stripped.
+    :type  strip:                           str
 
-    :param center:
-    :type center:
+    :param center:                          dictionary of coordinates in the form of {"lat": 37.0902, "lon": -95.7129}
+                                            which centers the displayed map. Default center coordinates are for the US.
+    :type center:                           dict
 
-    :return:
+    :return:                                cloropleth map shaded by value for all regions provided at level specified
+                                            and for specified units.
     """
 
     # collect flow data
