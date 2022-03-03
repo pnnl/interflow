@@ -763,13 +763,8 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
 
     """
 
-    # read in TX interbasin transfer
-    data_tx = 'input_data/HistoricalMunicipal_TX_IBT.csv'
-    df_tx = pd.read_csv(data_tx, dtype={'County Used FIPS': str, 'County Source FIPS': str},
-                        skiprows=1, usecols=['Year', 'County Used', 'County Source', 'Total Intake',
-                                             'County Used Elevation (ft)', 'County Source Elevation (ft)',
-                                             'County Used FIPS',
-                                             'County Source FIPS'])
+    # read in TX interbasin  data
+    df_tx = get_tx_ibt_data()
 
     # get_west_inter_basin_transfer_data
     data_west = 'input_data/West_IBT_county.csv'

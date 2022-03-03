@@ -76,12 +76,28 @@ def get_water_consumption_rename_data():
     return pd.read_csv(data)
 
 
-def get_water_use_1995_data():
+def get_tx_ibt_data():
     """Read in data
         :return:                        dataframe of values
         """
 
-    data = pkg_resources.resource_filename('flow', 'input_data/usco1995.csv')
+    data = pkg_resources.resource_filename('flow', 'input_data/HistoricalMunicipal_TX_IBT.csv')
 
     # read in read in state level water discharge data from oil and natural gas
-    return pd.read_csv(data, dtype={'StateCode': str, 'CountyCode': str})
+    return pd.read_csv(data, dtype={'County Used FIPS': str, 'County Source FIPS': str},
+                       skiprows=1, usecols=['Year', 'County Used', 'County Source', 'Total Intake',
+                                            'County Used Elevation (ft)', 'County Source Elevation (ft)',
+                                            'County Used FIPS',
+                                            'County Source FIPS'])
+
+
+def get_west_ibt_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/West_IBT_county.csv')
+
+    # read in read in state level water discharge data from oil and natural gas
+    return pd.read_csv(data, dtype={'FIPS': str})
+
