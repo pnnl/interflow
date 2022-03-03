@@ -32,3 +32,14 @@ def read_input_data(path: str, leading_zeros=None) -> pd.DataFrame:
     return df
 
 
+def get_coal_production_data():
+    """Read in a dataframe of coal mine production by county
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'data/coalpublic2015.csv')
+
+    # read in read in state level water discharge data from oil and natural gas
+    return pd.read_csv(data, skiprows=3)
+
+

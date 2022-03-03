@@ -27,7 +27,6 @@ setup(
     include_package_data=True,
     install_requires=[
         'pandas>=1.3.4',
-        'PyYAML>=5.4.1',
         'matplotlib>=3.3.3'
         'plotly>=5.5.0'
     ]

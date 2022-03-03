@@ -1,0 +1,623 @@
+﻿State_Group,Project,Current or Future,Water Delivery (AF/yr),Net Energy Use (MWh/yr),Name of Pumping Plant,cfs,Head,Pump Efficiency (Low),Pump Efficiency (High),Capacity Factor (Low),Capacity Factor (High),Mwh/yr (Low),Mwh/yr (High),HUC 8,State,County,FIPS
+ID,Avondale Project,,,,Avondale,13.4,215,0.34,0.59,0.263,0.4862528,952.5608774,3056.132659,17010305,ID,Kootenai,16055
+ID,Avondale Project,,,,Pumping Plant 2,12.1,193,0.34,0.59,0.263,0.4862528,772.1330847,2477.260187,17010305,ID,Kootenai,16055
+OR,Baker Project,,,,Lilley Pumping Plant,67.5,101,0.34,0.59,0.263,0.4862528,2254.107526,7231.927942,17050203,OR,Baker,41001
+OR,Baker Project,,,,Lilley Relift Plant,34.3,35,0.34,0.59,0.263,0.4862528,396.9279186,1273.477007,17050203,OR,Baker,41001
+ID,Boise Project,,,,C' Line Canal,600,92,0.34,0.59,0.263,0.4862528,18251.07964,58555.54418,17050122,ID,Gem,16045
+ID,Boise Project,,,,Black Canyon,270,27,0.34,0.59,0.263,0.4862528,2410.3328,7733.150671,17050122,ID,Gem,16045
+ID,Boise Project,,,,Willow Creek,27,39,0.34,0.59,0.263,0.4862528,348.1591822,1117.010652,17050114,ID,Canyon,16027
+ID,Boise Project,,,,"C' Line Relift Plants No 7. 8, 10 & 11",8.5,20,0.34,0.59,0.263,0.4862528,56.20803511,180.3341034,17050114,ID,Canyon,16027
+CA,Boulder Canyon Project - All American Canal System,,,,Pumping Plant L-1,16.8,45,0.34,0.59,0.263,0.4862528,249.9604385,801.9563659,15030104,CA,Imperial,6025
+CA,Boulder Canyon Project - All American Canal System,,,,Pumping Plant L-2,39,37,0.34,0.59,0.263,0.4862528,477.1070275,1530.718302,15030104,CA,Imperial,6025
+CA,Boulder Canyon Project - All American Canal System,,,,Pumping Plant L-3,7.8,24.75,0.34,0.59,0.263,0.4862528,63.8291834,204.7852863,15030104,CA,Imperial,6025
+CA,Boulder Canyon Project - All American Canal System,,,,Pumping Plant L-4,46.8,40,0.34,0.59,0.263,0.4862528,618.9496573,1985.796716,15030104,CA,Imperial,6025
+CA,Boulder Canyon Project - All American Canal System,,,,Pumping Plant L-5,36.9,36,0.34,0.59,0.263,0.4862528,439.2161991,1409.1519,15030104,CA,Imperial,6025
+CA,Boulder Canyon Project - All American Canal System,,,,Pumping Plant L-6,9,37,0.34,0.59,0.263,0.4862528,110.1016217,353.242685,15030104,CA,Imperial,6025
+CA,Boulder Canyon Project - All American Canal System,,,,Coachella 0-1,21,38,0.34,0.59,0.263,0.4862528,263.8471295,846.5094973,15030104,CA,Imperial,6025
+CA,Boulder Canyon Project - All American Canal System,,,,Coachella 0-2,6,42,0.34,0.59,0.263,0.4862528,83.32014617,267.3187886,15030104,CA,Imperial,6025
+CA,Boulder Canyon Project - All American Canal System,,,,Lateral 113.0 Relift,3,11,0.34,0.59,0.263,0.4862528,10.91097152,35.00603184,15030104,CA,Imperial,6025
+CA,Boulder Canyon Project - All American Canal System,,,,Lateral 114.3 Relift,3,9,0.34,0.59,0.263,0.4862528,8.927158518,28.64129878,15030104,CA,Imperial,6025
+CA,Boulder Canyon Project - All American Canal System,,,,Lateral 114.8 Relift,3,7,0.34,0.59,0.263,0.4862528,6.943345514,22.27656572,15030104,CA,Imperial,6025
+CA,Boulder Canyon Project - All American Canal System,,,,Lateral 115.3 Relift,3,10.5,0.34,0.59,0.263,0.4862528,10.41501827,33.41484858,15030104,CA,Imperial,6025
+CA,Boulder Canyon Project - All American Canal System,,,,Wistaria No 1,20,7.8,0.34,0.59,0.263,0.4862528,51.5791381,165.4830596,15030104,CA,Imperial,6025
+CA,Boulder Canyon Project - All American Canal System,,,,Wistaria No 2,20,3.04,0.34,0.59,0.263,0.4862528,20.10263844,64.4959617,15030104,CA,Imperial,6025
+CA,Boulder Canyon Project - All American Canal System,,,,Woodbine Canal,9,2.74,0.34,0.59,0.263,0.4862528,8.153471447,26.15905289,15030104,CA,Imperial,6025
+CA,Boulder Canyon Project - All American Canal System,,,,West Side,5,2.75,0.34,0.59,0.263,0.4862528,4.546238134,14.5858466,15030104,CA,Imperial,6025
+MT,Buffalo Rapids Project,,,,Glendive Pumping Plant,330,103,0.34,0.59,0.263,0.4862528,11238.30067,36056.2128,10100004,MT,Dawson,30021
+MT,Buffalo Rapids Project,,,,Shirley Pumping Plant,111,51,0.34,0.59,0.263,0.4862528,1871.727569,6005.125644,10100001,MT,Custer,30017
+MT,Buffalo Rapids Project,,,,Terry Pumping Plant,61.5,109,0.34,0.59,0.263,0.4862528,2216.415079,7110.998014,10100004,MT,Prairie,30079
+MT,Buffalo Rapids Project,,,,Fallon Pumping Plant,72,49,0.34,0.59,0.263,0.4862528,1166.482046,3742.463041,10100004,MT,Prairie,30079
+ND,Buford-Trenton Project,,,,Pumping Plant,240,29,0.34,0.59,0.263,0.4862528,2301.223085,7383.090353,10110101,ND,Williams,38105
+CA,Cachuma Project,,,,Carpenteria Pumping Plant,5.3,280,0.34,0.59,0.263,0.4862528,490.663083,1574.210644,18060013,CA,Santa Barbara,6083
+CA,Cachuma Project,,,,Lateral 10-L Pumping Plant,0.7,310,0.34,0.59,0.263,0.4862528,71.74790365,230.1911791,18060013,CA,Santa Barbara,6083
+CA,Cachuma Project,,,,Shepard Mesa Extension,1.8,193,0.34,0.59,0.263,0.4862528,114.8627729,368.5180443,18060013,CA,Santa Barbara,6083
+CA,Cachuma Project,,,,Lateral 13-L Pumping Plant,0.7,225,0.34,0.59,0.263,0.4862528,52.07509136,167.0742429,18060013,CA,Santa Barbara,6083
+AZ,Central Arizona Project,Current,1500000,3800000,Mark Wilmer Pumping Plant,3000,824,0.34,0.59,0.263,0.4862528,817330.9577,2622270.022,15030204,AZ,Mohave,4015
+AZ,Central Arizona Project,Current,,3800000,Bouse Hills Pumping Plant,3000,118,0.34,0.59,0.263,0.4862528,117044.9672,375519.2507,15030105,AZ,La Paz,4012
+AZ,Central Arizona Project,Current,,3800000,Little Harquahala Pumping Plant,3000,115,0.34,0.59,0.263,0.4862528,114069.2477,365972.1511,15030105,AZ,La Paz,4012
+AZ,Central Arizona Project,Current,,3800000,Hassayampa Pumping Plant,3000,194,0.34,0.59,0.263,0.4862528,192429.8614,617379.1071,15070103,AZ,Maricopa,4013
+AZ,Central Arizona Project,Current,,3800000,Salt-Gila Pumping Plant,2800,86,0.34,0.59,0.263,0.4862528,79617.02856,255437.9536,15060106,AZ,Maricopa,4013
+AZ,Central Arizona Project,Current,,3800000,Brady Pumping Plant,1240,148,0.34,0.59,0.263,0.4862528,60678.22708,194675.9686,15050100,AZ,Pinal,4021
+AZ,Central Arizona Project,Current,,3800000,Picacho Pumping Plant,930,232,0.34,0.59,0.263,0.4862528,71337.91562,228875.8009,15050100,AZ,Pinal,4021
+AZ,Central Arizona Project,Current,,3800000,Red Rock Pumping Plant,775,232,0.34,0.59,0.263,0.4862528,59448.26302,190729.8341,15050305,AZ,Pinal,4021
+AZ,Central Arizona Project,Current,,3800000,Twin Peaks Pumping Plant,621,84,0.34,0.59,0.263,0.4862528,17247.27026,55334.98925,15050301,AZ,Pima,4019
+AZ,Central Arizona Project,Current,,3800000,Sandario Pumping Plant,621,86,0.34,0.59,0.263,0.4862528,17657.91955,56652.48899,15050304,AZ,Pima,4019
+AZ,Central Arizona Project,Current,,3800000,Brawley Pumping Plant,580,229,0.34,0.59,0.263,0.4862528,43915.0072,140893.9742,15050304,AZ,Pima,4019
+AZ,Central Arizona Project,Current,,3800000,San Xavier Pumping Plant,580,172,0.34,0.59,0.263,0.4862528,32984.19755,105824.2951,15050304,AZ,Pima,4019
+AZ,Central Arizona Project,Current,,3800000,Snyder Hill Pumping Plant,410,293,0.34,0.59,0.263,0.4862528,39719.2427,127432.5638,15050304,AZ,Pima,4019
+AZ,Central Arizona Project,Current,,3800000,Black Mountain Pumping Plant,200,397,0.34,0.59,0.263,0.4862528,26252.45875,84226.63419,15050304,AZ,Pima,4019
+UT,Central Utah Project - Jensen Unit,Current,2180010,,UWCD,45,605,0.34,0.59,0.263,0.4862528,9001.551506,28879.97627,14060002,UT,Uintah,49047
+CA,Central Valley Project - Delta Division Project,,,814000,Clayton Canal Pumping Plant,39,89,0.34,0.59,0.263,0.4862528,1147.635823,3681.998077,18050001,CA,Contra Costa,6013
+CA,Central Valley Project - Delta Division Project,,,814000,Contra Costa Canal No 1 Pumping Plant,410,28,0.34,0.59,0.263,0.4862528,3795.695548,12177.85593,18050001,CA,Contra Costa,6013
+CA,Central Valley Project - Delta Division Project,,,814000,Contra Costa Canal No 2 Pumping Plant,410,26,0.34,0.59,0.263,0.4862528,3524.574437,11308.00907,18050001,CA,Contra Costa,6013
+CA,Central Valley Project - Delta Division Project,,,814000,Contra Costa Canal No 3 Pumping Plant,410,34.5,0.34,0.59,0.263,0.4862528,4676.839157,15004.85819,18050001,CA,Contra Costa,6013
+CA,Central Valley Project - Delta Division Project,,,814000,Contra Costa Canal No 4 Pumping Plant,394,52.5,0.34,0.59,0.263,0.4862528,6839.195331,21942.41723,18050001,CA,Contra Costa,6013
+CA,Central Valley Project - Delta Division Project,,,814000,Ygnacio Canal,30,85,0.34,0.59,0.263,0.4862528,843.1205267,2705.011552,18050001,CA,Contra Costa,6013
+CA,Central Valley Project - Delta Division Project,,,814000,Tracy Pumping Plant,4602,197,0.34,0.59,0.263,0.4862528,299752.1611,961704.801,18040003,CA,San Joaquin,6077
+CA,Central Valley Project - Delta Division Project,,,814000,Columbia Canal No 1 Pumping Plant,100,7.25,0.34,0.59,0.263,0.4862528,239.710738,769.0719117,18050001,CA,Alameda,6001
+CA,Central Valley Project - Delta Division Project,,,814000,Mowry Canal Pumping Plant,10,21,0.34,0.59,0.263,0.4862528,69.43345514,222.7656572,18050001,CA,Alameda,6001
+CA,Central Valley Project - Delta Division Project,,,814000,Lateral 8.7 Pumping Plant,5,20,0.34,0.59,0.263,0.4862528,33.06355007,106.0788844,18050001,CA,Alameda,6001
+CA,Central Valley Project - Delta Division Project,,,814000,Lateral 9.3 Pumping Plant,5,94,0.34,0.59,0.263,0.4862528,155.3986853,498.5707566,18050001,CA,Alameda,6001
+CA,Central Valley Project - Delta Division Project,,,814000,Lateral 10.5 Pumping Plant,2,10,0.34,0.59,0.263,0.4862528,6.612710013,21.21577688,18050001,CA,Alameda,6001
+CA,Central Valley Project - Delta Division Project,,,814000,Lateral 12.1 Pumping Plant,6,70,0.34,0.59,0.263,0.4862528,138.8669103,445.5313144,18050001,CA,Alameda,6001
+CA,Central Valley Project - Delta Division Project,,,814000,Lateral 13.2 Pumping Plant,2,38,0.34,0.59,0.263,0.4862528,25.12829805,80.61995213,18050001,CA,Alameda,6001
+CA,Central Valley Project - Delta Division Project,,,814000,Lateral 14.0 Pumping Plant,9,75,0.34,0.59,0.263,0.4862528,223.178963,716.0324695,18050001,CA,Alameda,6001
+CA,Central Valley Project - Delta Division Project,,,814000,Lateral 14.1 Pumping Plant,4.6,21,0.34,0.59,0.263,0.4862528,31.93938936,102.4722023,18050001,CA,Alameda,6001
+CA,Central Valley Project - Delta Division Project,,,814000,Lateral 14.8 Pumping Plant,3,13,0.34,0.59,0.263,0.4862528,12.89478453,41.37076491,18050001,CA,Alameda,6001
+CA,Central Valley Project - Delta Division Project,,,814000,Lateral 15.1 Pumping Plant,3,79,0.34,0.59,0.263,0.4862528,78.36061366,251.406956,18050001,CA,Alameda,6001
+CA,Central Valley Project - Delta Division Project,,,814000,Lateral 15.1-0.02 Pumping Plant,2,22,0.34,0.59,0.263,0.4862528,14.54796203,46.67470913,18050001,CA,Alameda,6001
+CA,Central Valley Project - Delta Division Project,,,814000,Lateral 16.1 Pumping Plant,6.9,25,0.34,0.59,0.263,0.4862528,57.03462387,182.9860755,18050001,CA,Alameda,6001
+CA,Central Valley Project - Delta Division Project,,,814000,Lateral 16.7 Pumping Plant,3,58,0.34,0.59,0.263,0.4862528,57.53057712,184.5772588,18050001,CA,Alameda,6001
+CA,Central Valley Project - Delta Division Project,,,814000,Lateral 16.8 Pumping Plant,3.1,19,0.34,0.59,0.263,0.4862528,19.47443099,62.4804629,18050001,CA,Alameda,6001
+CA,Central Valley Project - Delta Division Project,,,814000,Lateral 17.2-0.03RT Pumping Plant,2,12,0.34,0.59,0.263,0.4862528,7.935252016,25.45893225,18050001,CA,Alameda,6001
+CA,Central Valley Project - Delta Division Project,,,814000,Lateral 17.8 Pumping Plant,5,60,0.34,0.59,0.263,0.4862528,99.1906502,318.2366531,18050001,CA,Alameda,6001
+CA,Central Valley Project - Delta Division Project,,,814000,Lateral 19.4 Pumping Plant,5,78,0.34,0.59,0.263,0.4862528,128.9478453,413.7076491,18050001,CA,Alameda,6001
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Corning Canal Pumping Plant,504,59,0.34,0.59,0.263,0.4862528,9831.777248,31543.61706,18020156,CA,Tehama,6103
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Corning Water District Plant C-4,81.9,101,0.34,0.59,0.263,0.4862528,2734.983798,8774.739237,18020157,CA,Tehama,6103
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Corning Water District Plant C-5,29.4,88.5,0.34,0.59,0.263,0.4862528,860.2805092,2760.066493,18020157,CA,Tehama,6103
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Corning Water District Plant C-6,77.9,85,0.34,0.59,0.263,0.4862528,2189.302968,7024.013329,18020157,CA,Tehama,6103
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Corning Water District Plant C-7,37.3,107,0.34,0.59,0.263,0.4862528,1319.599347,4233.714354,18020157,CA,Tehama,6103
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Corning Water District Plant C-10,28.5,63,0.34,0.59,0.263,0.4862528,593.6560415,1904.646369,18020157,CA,Tehama,6103
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Corning Water District Plant C-11,24.7,91,0.34,0.59,0.263,0.4862528,743.1694149,2384.335084,18020157,CA,Tehama,6103
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Colusa County Water District Plant 2A,83.7,111,0.34,0.59,0.263,0.4862528,3071.835246,9855.470911,18020156,CA,Colusa,6011
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Colusa County Water District Plant 2A1,83.3,111,0.34,0.59,0.263,0.4862528,3057.15503,9808.371886,18020156,CA,Colusa,6011
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Colusa County Water District Plant 2B,123.3,101,0.34,0.59,0.263,0.4862528,4117.50308,13210.32171,18020156,CA,Colusa,6011
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Colusa County Water District Plant 2C,65,103,0.34,0.59,0.263,0.4862528,2213.604677,7101.981309,18020156,CA,Colusa,6011
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Colusa County Water District Plant 2D,24.6,103,0.34,0.59,0.263,0.4862528,837.7642316,2687.826772,18020156,CA,Colusa,6011
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Colusa County Water District Plant 3B Unit A,20.5,41,0.34,0.59,0.263,0.4862528,277.8991383,891.5930232,18020156,CA,Colusa,6011
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Colusa County Water District Plant 3B Unit C,71,95,0.34,0.59,0.263,0.4862528,2230.136452,7155.020751,18020156,CA,Colusa,6011
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Colusa County Water District Plant 3C Unit D,43,86,0.34,0.59,0.263,0.4862528,1222.690081,3922.797144,18020156,CA,Colusa,6011
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Colusa County Water District Plant 3C Unit G,19,84,0.34,0.59,0.263,0.4862528,527.6942591,1693.018995,18020156,CA,Colusa,6011
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Colusa County Water District Plant 3D,32.5,93,0.34,0.59,0.263,0.4862528,999.3458008,3206.23428,18020156,CA,Colusa,6011
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Colusa County Water District Plant 3G,10,89,0.34,0.59,0.263,0.4862528,294.2655956,944.1020709,18020156,CA,Colusa,6011
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Colusa County Water District Plant 5B,24.7,114,0.34,0.59,0.263,0.4862528,931.0034428,2986.969226,18020156,CA,Colusa,6011
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Colusa County Water District Plant 6B Unit A,35.8,47,0.34,0.59,0.263,0.4862528,556.3272934,1784.883308,18020156,CA,Colusa,6011
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Colusa County Water District Plant 6B Unit B,13.1,147,0.34,0.59,0.263,0.4862528,636.7047836,2042.761076,18020156,CA,Colusa,6011
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Dunnigan Water District Lateral 6,12.6,52,0.34,0.59,0.263,0.4862528,216.63238,695.0288504,18020116,CA,Yolo,6113
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Kanawha Water District Lateral 1,23.2,177,0.34,0.59,0.263,0.4862528,1357.72162,4356.023308,18020104,CA,Glenn,6021
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Kanawha Water District Lateral 2,34.5,48,0.34,0.59,0.263,0.4862528,547.5323891,1756.666325,18020104,CA,Glenn,6021
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Kanawha Water District Lateral 3,5,22,0.34,0.59,0.263,0.4862528,36.36990507,116.6867728,18020104,CA,Glenn,6021
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Orland-Artois Water District Plant 33.6,51,46,0.34,0.59,0.263,0.4862528,775.6708846,2488.610627,18020104,CA,Glenn,6021
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Orland-Artois Water District Plant 38.6 Rt,24.8,43,0.34,0.59,0.263,0.4862528,352.5896979,1131.225223,18020104,CA,Glenn,6021
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Orland-Artois Water District Plant 38.6 Lt,70,136,0.34,0.59,0.263,0.4862528,3147.649966,10098.70979,18020104,CA,Glenn,6021
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Westside Water District Lateral 4,13,39,0.34,0.59,0.263,0.4862528,167.6321988,537.8199438,18020104,CA,Colusa,6011
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Westside Water District Lateral 5,38,51,0.34,0.59,0.263,0.4862528,640.7716003,2055.808779,18020104,CA,Colusa,6011
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Westside Water District Lateral 6,32,37,0.34,0.59,0.263,0.4862528,391.4724328,1255.973991,18020104,CA,Colusa,6011
+CA,Central Valley Project - Sacramento Canals Unit Project,,,814000,Westside Water District Lateral 7,24.5,48,0.34,0.59,0.263,0.4862528,388.8273488,1247.48768,18020104,CA,Colusa,6011
+CA,Central Valley Project - San Felipe Division Project,,,814000,Pacheco Pumping Plant,504,306,0.34,0.59,0.263,0.4862528,50991.92946,163599.0986,18060002,CA,Merced,6047
+CA,Central Valley Project - San Felipe Division Project,,,814000,Coyote Pumping Plant,342,230,0.34,0.59,0.263,0.4862528,26007.78848,83441.65045,18050003,CA,Santa Clara,6085
+CA,Central Valley Project - San Luis Unit Project,,,814000,Dos Amigos Pumping Plant,2200,235,0.34,0.59,0.263,0.4862528,170938.5538,548427.8322,18040001,CA,Merced,6047
+CA,Central Valley Project - San Luis Unit Project,,,814000,Pleasant Valley Pumping Plant,1185,180,0.34,0.59,0.263,0.4862528,70524.55229,226266.2604,18030009,CA,Fresno,6019
+CA,Central Valley Project - Shasta/Trinity River Division Project,,,814000,Wintu Pumping Plant,100,295,0.34,0.59,0.263,0.4862528,9753.74727,31293.27089,18020154,CA,Shasta,6089
+WA,Chief Joseph Dam Project - Foster Creek Division,,,,Bridgeport Bar Unit Main Plant,8.9,200,0.34,0.59,0.263,0.4862528,588.5311912,1888.204142,17020005,WA,Douglas,53017
+WA,Chief Joseph Dam Project - Foster Creek Division,,,,Bridgeport Bar Unit Booster Plant Low Lift,0.5,100,0.34,0.59,0.263,0.4862528,16.53177503,53.03944219,17020005,WA,Douglas,53017
+WA,Chief Joseph Dam Project - Foster Creek Division,,,,Bridgeport Bar Unit Booster Plant High Lift,0.5,200,0.34,0.59,0.263,0.4862528,33.06355007,106.0788844,17020005,WA,Douglas,53017
+WA,Chief Joseph Dam Project - Foster Creek Division,,,,Brewster Flat Unit Main Plant,46,190,0.34,0.59,0.263,0.4862528,2889.754276,9271.294494,17020005,WA,Douglas,53017
+WA,Chief Joseph Dam Project - Foster Creek Division,,,,Brewster Flat Unit Booster Plant,46.8,350,0.34,0.59,0.263,0.4862528,5415.809501,17375.72126,17020005,WA,Douglas,53017
+WA,Chief Joseph Dam Project - Foster Creek Division,,,,Brewster Flat Unit Relift Plant,39,150,0.34,0.59,0.263,0.4862528,1934.217679,6205.614736,17020005,WA,Douglas,53017
+WA,Chief Joseph Dam Project - Greater Wenatchee Division,,,,East Unit River Plant,76,81,0.34,0.59,0.263,0.4862528,2035.392142,6530.216122,17020010,WA,Douglas,53017
+WA,Chief Joseph Dam Project - Greater Wenatchee Division,,,,East Unit Booster Plant,76,652,0.34,0.59,0.263,0.4862528,16383.65033,52564.20879,17020010,WA,Douglas,53017
+WA,Chief Joseph Dam Project - Greater Wenatchee Division,,,,East Unit Lateral 8,0.12,54,0.34,0.59,0.263,0.4862528,2.142518044,6.873911708,17020010,WA,Douglas,53017
+WA,Chief Joseph Dam Project - Greater Wenatchee Division,,,,East Unit North Relift,5.7,108,0.34,0.59,0.263,0.4862528,203.5392142,653.0216122,17020010,WA,Douglas,53017
+WA,Chief Joseph Dam Project - Greater Wenatchee Division,,,,East Unit East Relift,26,108,0.34,0.59,0.263,0.4862528,928.4244859,2978.695073,17020010,WA,Douglas,53017
+WA,Chief Joseph Dam Project - Greater Wenatchee Division,,,,Brays Landing Unit Main Well,32.3,135,0.34,0.59,0.263,0.4862528,1441.736101,4625.569753,17020010,WA,Douglas,53017
+WA,Chief Joseph Dam Project - Greater Wenatchee Division,,,,Brays Landing Unit Plant No 1,31.2,241,0.34,0.59,0.263,0.4862528,2486.114457,7976.283474,17020010,WA,Douglas,53017
+WA,Chief Joseph Dam Project - Greater Wenatchee Division,,,,Brays Landing Unit Plant A,31.2,241,0.34,0.59,0.263,0.4862528,2486.114457,7976.283474,17020010,WA,Douglas,53017
+WA,Chief Joseph Dam Project - Greater Wenatchee Division,,,,Brays Landing Unit Plant B,19,161,0.34,0.59,0.263,0.4862528,1011.413997,3244.953073,17020010,WA,Douglas,53017
+WA,Chief Joseph Dam Project - Greater Wenatchee Division,,,,Brays Landing Unit Plant C,9.1,130,0.34,0.59,0.263,0.4862528,391.1417973,1254.913202,17020010,WA,Douglas,53017
+WA,Chief Joseph Dam Project - Greater Wenatchee Division,,,,Howard Flat Unit River Well,16.7,112,0.34,0.59,0.263,0.4862528,618.4206405,1984.099453,17020005,WA,Chelan,53007
+WA,Chief Joseph Dam Project - Greater Wenatchee Division,,,,Howard Flat Unit River Booster,16.7,490,0.34,0.59,0.263,0.4862528,2705.590302,8680.435108,17020005,WA,Chelan,53007
+WA,Chief Joseph Dam Project - Greater Wenatchee Division,,,,Howard Flat Unit Reservoir Relift,16.8,178,0.34,0.59,0.263,0.4862528,988.7324012,3172.182958,17020005,WA,Chelan,53007
+WA,Chief Joseph Dam Project - Greater Wenatchee Division,,,,Howard Flat Unit North Booster,5.5,84,0.34,0.59,0.263,0.4862528,152.7536013,490.0844458,17020005,WA,Chelan,53007
+WA,Chief Joseph Dam Project - Greater Wenatchee Division,,,,Howard Flat Unit South Booster,1.3,54,0.34,0.59,0.263,0.4862528,23.21061215,74.46737683,17020005,WA,Chelan,53007
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Oroville-Tonasket Unit Auxiliary No 1,11.5,145,0.34,0.59,0.263,0.4862528,551.3346974,1768.865397,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Oroville-Tonasket Unit Auxiliary No 2,8.7,127,0.34,0.59,0.263,0.4862528,365.3191647,1172.065593,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Oroville-Tonasket Unit Auxiliary No 3,5.5,125,0.34,0.59,0.263,0.4862528,227.3119067,729.2923301,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Oroville-Tonasket Unit Midway,56,110,0.34,0.59,0.263,0.4862528,2036.714684,6534.459278,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Oroville-Tonasket Unit Extension Colbert Relift,5.7,261,0.34,0.59,0.263,0.4862528,491.8864343,1578.135563,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Oroville-Tonasket Extension Cordell,33.2,400,0.34,0.59,0.263,0.4862528,4390.839449,14087.27585,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Oroville-Tonasket Extension Crater Lakes,19.8,384,0.34,0.59,0.263,0.4862528,2513.887839,8065.389737,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Oroville-Tonasket Extension Ellisford,30.6,400,0.34,0.59,0.263,0.4862528,4046.978528,12984.05545,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Oroville-Tonasket Extension East Tonasket,24.7,348,0.34,0.59,0.263,0.4862528,2842.01051,9118.116585,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Oroville-Tonasket Extension Bonaparte Creek,22.7,424,0.34,0.59,0.263,0.4862528,3182.300567,10209.88046,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,West Osoyoos Plant 1,38,206,0.34,0.59,0.263,0.4862528,2588.214699,8303.855069,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,West Osoyoos Plant 2,11.4,170,0.34,0.59,0.263,0.4862528,640.7716003,2055.808779,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,East Osoyoos,27.4,109,0.34,0.59,0.263,0.4862528,987.4759863,3168.151961,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Tonasket Orchards Relift,6.9,243,0.34,0.59,0.263,0.4862528,554.376544,1778.624654,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Osoyoos Plant 1,73.5,194,0.34,0.59,0.263,0.4862528,4714.531604,15125.78812,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Osoyoos Plant 2,5.3,194,0.34,0.59,0.263,0.4862528,339.9594218,1090.703089,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Osoyoos Plant 3,5.3,194,0.34,0.59,0.263,0.4862528,339.9594218,1090.703089,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Kernan Booster,2.9,186,0.34,0.59,0.263,0.4862528,178.3447891,572.1895023,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Vandiver Booster,3.7,245,0.34,0.59,0.263,0.4862528,299.7210814,961.6050869,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Devon Booster,0.8,194,0.34,0.59,0.263,0.4862528,51.3146297,164.6344286,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Charles Elder Booster,0.6,52,0.34,0.59,0.263,0.4862528,10.31582762,33.09661193,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,CL1-4667LT Booster,0.6,52,0.34,0.59,0.263,0.4862528,10.31582762,33.09661193,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,CL2-5132RT Booster,0.3,116,0.34,0.59,0.263,0.4862528,11.50611542,36.91545176,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,CL2C-1132RT Booster,0.7,103,0.34,0.59,0.263,0.4862528,23.8388196,76.48287563,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,CO2-1-1374LT Booster,1.3,116,0.34,0.59,0.263,0.4862528,49.8598335,159.9669576,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Temby Booster,0.6,217,0.34,0.59,0.263,0.4862528,43.04874219,138.1147075,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,TKA-1 Booster,0.5,39,0.34,0.59,0.263,0.4862528,6.447392263,20.68538245,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Lusk Booster,0.6,114,0.34,0.59,0.263,0.4862528,22.61546825,72.55795691,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Smith Booster,0.4,144,0.34,0.59,0.263,0.4862528,19.04460484,61.1014374,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Davis Booster,0.175,111.5,0.34,0.59,0.263,0.4862528,6.451525207,20.69864231,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Whitestone Coulee Unit North Branch,8.2,230,0.34,0.59,0.263,0.4862528,623.5785543,2000.647759,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Whitestone Coulee Unit Whitestone Flats,15.4,187,0.34,0.59,0.263,0.4862528,952.1641148,3054.859712,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Okanogan-Similkameen Division,,,,Whitestone Coulee Unit Spectacle Lake Canal,3.6,119,0.34,0.59,0.263,0.4862528,141.6442485,454.4419407,17020006,WA,Okanogan,53047
+WA,Chief Joseph Dam Project - Chelan Division,,,,Manson Unit Lake Chelan,101.7,267,0.34,0.59,0.263,0.4862528,8978.043322,28804.55418,17020009,WA,Chelan,53007
+WA,Chief Joseph Dam Project - Chelan Division,,,,Manson Unit Plant A,94.8,277,0.34,0.59,0.263,0.4862528,8682.355993,27855.89072,17020009,WA,Chelan,53007
+WA,Chief Joseph Dam Project - Chelan Division,,,,Manson Unit Booster A-a,0.2,50,0.34,0.59,0.263,0.4862528,3.306355007,10.60788844,17020009,WA,Chelan,53007
+WA,Chief Joseph Dam Project - Chelan Division,,,,Manson Unit Plant B,47.4,193,0.34,0.59,0.263,0.4862528,3024.719687,9704.3085,17020009,WA,Chelan,53007
+WA,Chief Joseph Dam Project - Chelan Division,,,,Manson Unit Plant C,29.7,270,0.34,0.59,0.263,0.4862528,2651.36608,8506.465738,17020009,WA,Chelan,53007
+WA,Chief Joseph Dam Project - Chelan Division,,,,Manson Unit Plant C-a,0.6,238,0.34,0.59,0.263,0.4862528,47.2147495,151.4806469,17020009,WA,Chelan,53007
+WA,Chief Joseph Dam Project - Chelan Division,,,,Manson Unit Plant D,10.7,314,0.34,0.59,0.263,0.4862528,1110.869155,3564.038357,17020009,WA,Chelan,53007
+WA,Chief Joseph Dam Project - Chelan Division,,,,Manson Unit Plant E,4.5,304,0.34,0.59,0.263,0.4862528,452.3093649,1451.159138,17020009,WA,Chelan,53007
+WA,Chief Joseph Dam Project - Chelan Division,,,,Manson Unit Plant F,6.8,347,0.34,0.59,0.263,0.4862528,780.1675274,2503.037356,17020009,WA,Chelan,53007
+WA,Chief Joseph Dam Project - Chelan Division,,,,Manson Unit Booster F-a,0.5,132,0.34,0.59,0.263,0.4862528,21.82194304,70.01206369,17020009,WA,Chelan,53007
+WA,Chief Joseph Dam Project - Chelan Division,,,,Manson Unit Plant G,3,184,0.34,0.59,0.263,0.4862528,182.5107964,585.5554418,17020009,WA,Chelan,53007
+WA,Chief Joseph Dam Project - Chelan Division,,,,Manson Unit Plant H,1.9,583,0.34,0.59,0.263,0.4862528,366.2449441,1175.035802,17020009,WA,Chelan,53007
+WA,Chief Joseph Dam Project - Chelan Division,,,,Manson Unit Booster H-a,0.4,238,0.34,0.59,0.263,0.4862528,31.47649966,100.9870979,17020009,WA,Chelan,53007
+NV,Colorado River Basin Salinity Control Project - Las Vegas Wash Unit,,,,First Stage Intake,10.5,105,0.34,0.59,0.263,0.4862528,364.5256395,1169.5197,15030108,NV,Clark,32003
+NV,Colorado River Basin Salinity Control Project - Las Vegas Wash Unit,,,,Reject,10.5,199,0.34,0.59,0.263,0.4862528,690.8628786,2216.518289,15030108,NV,Clark,32003
+NV,Colorado River Basin Salinity Control Project - Las Vegas Wash Unit,,,,Second Stage Intake,10.5,105,0.34,0.59,0.263,0.4862528,364.5256395,1169.5197,15030108,NV,Clark,32003
+"NV, AZ, CA",Colorado River Front Work and Levee System,,,,Senator Wash Pumping Plant,1200,74,0.34,0.59,0.263,0.4862528,29360.43246,94198.04933,15030104,CA,Imperial,6025
+CO,Colorado-Big Thompson Project (Alva B. Adams Tunnel),Current,213000,,Willow Creek Pumping Plant,400,175,0.34,0.59,0.263,0.4862528,23144.48505,74255.21906,14020005,CO,Grand,8049
+CO,Colorado-Big Thompson Project (Alva B. Adams Tunnel),,,,Granby Pumping Plant,600,186,0.34,0.59,0.263,0.4862528,36898.92187,118384.035,14020005,CO,Grand,8049
+CO,Columbia Basin Project,,,408000,Block No 1 - 5 relift plants,103,20.5,0.34,0.59,0.263,0.4862528,698.1368597,2239.855644,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 2 Burbank No 1,40.5,90,0.34,0.59,0.263,0.4862528,1205.1664,3866.575335,17060110,WA,Walla Walla,53071
+CO,Columbia Basin Project,,,408000,Block No 2 Burbank BP .3,9,24,0.34,0.59,0.263,0.4862528,71.41726814,229.1303903,17060110,WA,Walla Walla,53071
+CO,Columbia Basin Project,,,408000,Block No 3,29.5,85,0.34,0.59,0.263,0.4862528,829.0685179,2659.928026,17070101,WA,Walla Walla,53071
+CO,Columbia Basin Project,,,408000,Block No 11 Lower Scootney,76,149,0.34,0.59,0.263,0.4862528,3744.11641,12012.37287,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 11 Upper Scooteney,24,97,0.34,0.59,0.263,0.4862528,769.7194456,2469.516428,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 11 Upper Scooteney (PE 27A-2nd Relift),9,155,0.34,0.59,0.263,0.4862528,461.2365234,1479.800437,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 11 2 Plants,5.75,14,0.34,0.59,0.263,0.4862528,26.6161578,85.39350192,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 12 - 2 plants,17,15.5,0.34,0.59,0.263,0.4862528,87.12245443,279.5178603,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 13 - 6 plants,25.3,16.25,0.34,0.59,0.263,0.4862528,135.9325202,436.1168134,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 14 Mesa,160,82,0.34,0.59,0.263,0.4862528,4337.937769,13917.54963,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 14 - 9 plants,103,16.75,0.34,0.59,0.263,0.4862528,570.4288975,1830.125953,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 15 Ringold,232,36.5,0.34,0.59,0.263,0.4862528,2799.82142,8982.759929,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 15 Ringold Relift,118,14.5,0.34,0.59,0.263,0.4862528,565.7173416,1815.009712,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 15 - 12 Plants,153.7,29,0.34,0.59,0.263,0.4862528,1473.741617,4728.254113,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 16 - Eltopia Branch,72,50,0.34,0.59,0.263,0.4862528,1190.287802,3818.839838,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 16 - 11 Plants,110,40.25,0.34,0.59,0.263,0.4862528,1463.888679,4696.642606,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 161 - 1 plant,28,26,0.34,0.59,0.263,0.4862528,240.7026445,772.2542783,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 17 - Sagemoor,88,91,0.34,0.59,0.263,0.4862528,2647.729089,8494.797061,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 18 - 13 plants,177.8,20,0.34,0.59,0.263,0.4862528,1175.73984,3772.165128,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 19 - 5 plants,37.5,38.75,0.34,0.59,0.263,0.4862528,480.4547119,1541.458789,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 20 - White Bluffs No 1,178,85,0.34,0.59,0.263,0.4862528,5002.515125,16049.73521,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 20 - 9 plants,95.7,40,0.34,0.59,0.263,0.4862528,1265.672697,4060.699694,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Blocks No 21 and 48 - Radar,256,197.5,0.34,0.59,0.263,0.4862528,16716.93091,53633.48394,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Blocks No 23 and 201 - White Bluffs No 2,222,84.5,0.34,0.59,0.263,0.4862528,6202.391357,19899.33792,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 23 - 3 Plants,20,16.5,0.34,0.59,0.263,0.4862528,109.1097152,350.0603184,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 24 - 1 plant,36,260,0.34,0.59,0.263,0.4862528,3094.748286,9928.983578,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 201 - 1 plant,10.2,11,0.34,0.59,0.263,0.4862528,37.09730318,119.0205083,17020016,WA,Franklin,53021
+CO,Columbia Basin Project,,,408000,Block No 40 - 5 plants,40,28,0.34,0.59,0.263,0.4862528,370.3117608,1188.083505,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 401 - 2 plants,35.8,18.25,0.34,0.59,0.263,0.4862528,216.0207044,693.0663911,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 41 - 7 plants,95,20,0.34,0.59,0.263,0.4862528,628.2074513,2015.498803,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 42 - 9 plants,135,21,0.34,0.59,0.263,0.4862528,937.3516444,3007.336372,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 43 - 7 plants,54.1,34,0.34,0.59,0.263,0.4862528,608.1709399,1951.214999,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 44 - Warden,135,55,0.34,0.59,0.263,0.4862528,2454.968592,7876.357165,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 44 - North Warden,72,57,0.34,0.59,0.263,0.4862528,1356.928095,4353.477415,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 44 - Warden Relift,57,73.5,0.34,0.59,0.263,0.4862528,1385.19743,4444.174861,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 44 - 6 plants,49,68.5,0.34,0.59,0.263,0.4862528,1109.778058,3560.537754,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 45 - 15 plants,165.5,56,0.34,0.59,0.263,0.4862528,3064.32982,9831.391004,17020016,WA,Adams,53001
+CO,Columbia Basin Project,,,408000,Block No 46 - 1 plant,8,22.5,0.34,0.59,0.263,0.4862528,59.51439012,190.9419919,17020016,WA,Adams,53001
+CO,Columbia Basin Project,,,408000,Block No 47 - 5 plants,43,15.6,0.34,0.59,0.263,0.4862528,221.7902938,711.5771564,17020016,WA,Adams,53001
+CO,Columbia Basin Project,,,408000,Block No 48 - 1 plant,14.4,17,0.34,0.59,0.263,0.4862528,80.93957056,259.681109,17020016,WA,Adams,53001
+CO,Columbia Basin Project,,,408000,Block No 49 - Lower Saddle Gap,112,94,0.34,0.59,0.263,0.4862528,3480.930551,11167.98495,17020016,WA,Adams,53001
+CO,Columbia Basin Project,,,408000,Block No 49 - Upper Saddle Gap,90,64,0.34,0.59,0.263,0.4862528,1904.460484,6110.14374,17020015,WA,Adams,53001
+CO,Columbia Basin Project,,,408000,Block No 49 - PE 17,14,86,0.34,0.59,0.263,0.4862528,398.0851428,1277.189768,17020016,WA,Adams,53001
+CO,Columbia Basin Project,,,408000,Block No 70 - W9,47,157.5,0.34,0.59,0.263,0.4862528,2447.529294,7852.489416,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 70 - 2 plants,25,60.5,0.34,0.59,0.263,0.4862528,500.0861948,1604.443126,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 71 - 2 plants,17,17.75,0.34,0.59,0.263,0.4862528,99.76926233,320.0930336,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 72 - 11 plants,60,47.5,0.34,0.59,0.263,0.4862528,942.3111769,3023.248205,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 73 - Quincy,421,159.5,0.34,0.59,0.263,0.4862528,22202.00855,71231.44046,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 73 - 2 plants,17.3,46.5,0.34,0.59,0.263,0.4862528,265.9797285,853.3515854,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 74 - Babcock,292,132.5,0.34,0.59,0.263,0.4862528,12792.28752,41041.92036,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 74 - Babcock WW Disposal,20,32,0.34,0.59,0.263,0.4862528,211.6067204,678.90486,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 741 - 1 plant,17.2,70,0.34,0.59,0.263,0.4862528,398.0851428,1277.189768,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 75 - 3 plants,35,13,0.34,0.59,0.263,0.4862528,150.4391528,482.6589239,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 75 - 1 plant,3,21.5,0.34,0.59,0.263,0.4862528,21.32598979,68.42088042,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 76 - 2 plants,99.6,12.5,0.34,0.59,0.263,0.4862528,411.6411983,1320.68211,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 77 - Evergreen,253,152.5,0.34,0.59,0.263,0.4862528,12756.7442,40927.88556,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 77 - 2 plants,47.2,19,0.34,0.59,0.263,0.4862528,296.513917,951.3154351,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 78 - 4 plants,51,9.5,0.34,0.59,0.263,0.4862528,160.1929001,513.9521948,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 79 - 1 Plant,3,20,0.34,0.59,0.263,0.4862528,19.83813004,63.64733063,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Frenchman Springs,197,159,0.34,0.59,0.263,0.4862528,10356.49579,33227.08895,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 80 - Hope Valley,60,84,0.34,0.59,0.263,0.4862528,1666.402923,5346.375773,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Blocks No 80 and 81 - Frenchman Hills,432,242,0.34,0.59,0.263,0.4862528,34565.95778,110899.1089,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 82 - Low Gap,85.6,72,0.34,0.59,0.263,0.4862528,2037.772718,6537.853802,17020010,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 83 - Sand Hollow,178,65,0.34,0.59,0.263,0.4862528,3825.452743,12273.32692,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 83 - 6 plants,44.4,13,0.34,0.59,0.263,0.4862528,190.842811,612.2873206,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 85 - 4 plants,21.4,13.5,0.34,0.59,0.263,0.4862528,95.52059614,306.461897,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 86 - 1 plant,3,16,0.34,0.59,0.263,0.4862528,15.87050403,50.9178645,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 87 - 5 plants,47,28.75,0.34,0.59,0.263,0.4862528,446.7712203,1433.390925,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 88 - 1 plant,11,7,0.34,0.59,0.263,0.4862528,25.45893355,81.68074097,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Block No 89 - 14 plants,134.3,18,0.34,0.59,0.263,0.4862528,799.2782593,2564.350951,17020015,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Lake Lenore No 1,35,60,0.34,0.59,0.263,0.4862528,694.3345514,2227.656572,17020014,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Lake Lenore No 2,40,197,0.34,0.59,0.263,0.4862528,2605.407745,8359.016089,17020014,WA,Grant,53025
+CO,Columbia Basin Project,,,408000,Lake Lenore No 3,4,250,0.34,0.59,0.263,0.4862528,330.6355007,1060.788844,17020014,WA,Grant,53025
+OR,Crooked River Project,,,,Barnes Butte Pumping Plant,147,82,0.34,0.59,0.263,0.4862528,3985.480325,12786.74872,17070305,OR,Crook,41013
+OR,Crooked River Project,,,,Ochoco Relift Plant,80,99,0.34,0.59,0.263,0.4862528,2618.633165,8401.447643,17070305,OR,Crook,41013
+OR,Crooked River Project,,,,Combs Flat Pumping Plant,6.5,140,0.34,0.59,0.263,0.4862528,300.8783056,965.3178478,17070305,OR,Crook,41013
+OR,Crooked River Project,,,,Hudspeth Pumping Plant,2,59,0.34,0.59,0.263,0.4862528,39.01498908,125.1730836,17070305,OR,Crook,41013
+OR,Crooked River Project,,,,Johnson Creek Pumping Plant,14.2,125,0.34,0.59,0.263,0.4862528,586.8780137,1882.900198,17070305,OR,Crook,41013
+OR,Crooked River Project,,,,Tunnel Pumping Plant,7.8,92,0.34,0.59,0.263,0.4862528,237.2640353,761.2220743,17070305,OR,Crook,41013
+OR,Crooked River Project,,,,McKay Creek Pumping Plant,3,49,0.34,0.59,0.263,0.4862528,48.6034186,155.93596,17070305,OR,Crook,41013
+OR,Crooked River Project,,,,Grimes Flat Pumping Plant,21,78,0.34,0.59,0.263,0.4862528,541.5809501,1737.572126,17070305,OR,Crook,41013
+OR,Crooked River Project,,,,Houston Pumping Plant,4,4,0.34,0.59,0.263,0.4862528,5.290168011,16.9726215,17070305,OR,Crook,41013
+OR,Crooked River Project,,,,Stahancyk No 1 Pumping Plant,4,4,0.34,0.59,0.263,0.4862528,5.290168011,16.9726215,17070305,OR,Crook,41013
+OR,Crooked River Project,,,,Stahancyk No 2 Pumping Plant,4,4,0.34,0.59,0.263,0.4862528,5.290168011,16.9726215,17070305,OR,Crook,41013
+MT,Crow Creek Pumping Unit,,,,Crow Creek Pumping Plant,100,180,0.34,0.59,0.263,0.4862528,5951.439012,19094.19919,10030101,MT,Broadwater,30007
+ID,Dalton Gardens Project,,,,Dalton Gardens Pumping Plant,13.4,180,0.34,0.59,0.263,0.4862528,797.4928276,2558.622691,17010303,ID,Kootenai,16055
+OR,Deschutes Project,,,,Crooked River Pumping Plant,200,150,0.34,0.59,0.263,0.4862528,9919.06502,31823.66531,17070306,OR,Jefferson,41031
+CO,Dolores Project,,,,Great Cut Pumping Plant to Dove Creek Canal,494,80,0.34,0.59,0.263,0.4862528,13066.71499,41922.37511,14080203,CO,Dolores,8033
+CO,Dolores Project,,,,Great Cut Pumping Plant to U Lateral,165,26,0.34,0.59,0.263,0.4862528,1418.426298,4550.78414,14080203,CO,Dolores,8033
+CO,Dolores Project,,,,Fairview Pumping Plant,105,199,0.34,0.59,0.263,0.4862528,6908.628786,22165.18289,14080203,CO,Dolores,8033
+CO,Dolores Project,,,,Cahone Pumping Plant,78.5,170,0.34,0.59,0.263,0.4862528,4412.330756,14156.22712,14080203,CO,Dolores,8033
+CO,Dolores Project,,,,Dove Creek Pumping Plant,42.5,120,0.34,0.59,0.263,0.4862528,1686.241053,5410.023103,14080203,CO,Dolores,8033
+CO,Dolores Project,,,,Pleasant View Pumping Plant,46.8,180,0.34,0.59,0.263,0.4862528,2785.273458,8936.08522,14080203,CO,Montezuma,8083
+CO,Dolores Project,,,,Ruin Canyon Pumping Plant,65.2,180,0.34,0.59,0.263,0.4862528,3880.338236,12449.41787,14080203,CO,Montezuma,8083
+NM,Fort Sumner Project,,,,Fort Sumner Pumping Plant,20,21.3,0.34,0.59,0.263,0.4862528,140.8507233,451.8960474,13060003,NM,De Baca,35011
+CA,Friant Division Project,,,,Delano-Earlimart Irrigation District Plant D-1,10.7,23,0.34,0.59,0.263,0.4862528,81.36939671,261.0601344,18030005,CA,Tulare,6107
+CA,Friant Division Project,,,,Delano-Earlimart Irrigation District Plant D-2,9,24,0.34,0.59,0.263,0.4862528,71.41726814,229.1303903,18030005,CA,Tulare,6107
+CA,Friant Division Project,,,,Delano-Earlimart Irrigation District Plant D-3,68.2,40,0.34,0.59,0.263,0.4862528,901.9736458,2893.831966,18030005,CA,Tulare,6107
+CA,Friant Division Project,,,,Delano-Earlimart Irrigation District Plant D-4,13,18,0.34,0.59,0.263,0.4862528,77.36870716,248.2245894,18030005,CA,Tulare,6107
+CA,Friant Division Project,,,,Delano-Earlimart Irrigation District Plant D-5,3,10,0.34,0.59,0.263,0.4862528,9.91906502,31.82366531,18030005,CA,Tulare,6107
+CA,Friant Division Project,,,,Delano-Earlimart Irrigation District Plant D-6,5,19,0.34,0.59,0.263,0.4862528,31.41037256,100.7749402,18030005,CA,Tulare,6107
+CA,Friant Division Project,,,,Delano-Earlimart Irrigation District Plant D-7,10.05,18.5,0.34,0.59,0.263,0.4862528,61.47340546,197.2271658,18030005,CA,Tulare,6107
+CA,Friant Division Project,,,,Delano-Earlimart Irrigation District Plant D-8,14.6,17,0.34,0.59,0.263,0.4862528,82.06373127,263.287791,18030005,CA,Tulare,6107
+CA,Friant Division Project,,,,Delano-Earlimart Irrigation District Plant D-9,19,47,0.34,0.59,0.263,0.4862528,295.2575021,947.2844375,18030005,CA,Tulare,6107
+CA,Friant Division Project,,,,Delano-Earlimart Irrigation District Plant D-10,41.2,57,0.34,0.59,0.263,0.4862528,776.4644098,2491.156521,18030005,CA,Tulare,6107
+CA,Friant Division Project,,,,Delano-Earlimart Irrigation District Plant D-11,12,20.5,0.34,0.59,0.263,0.4862528,81.33633316,260.9540556,18030005,CA,Tulare,6107
+CA,Friant Division Project,,,,Delano-Earlimart Irrigation District Plant D-12,50.25,38,0.34,0.59,0.263,0.4862528,631.3484885,2025.576297,18030005,CA,Tulare,6107
+CA,Friant Division Project,,,,Delano-Earlimart Irrigation District Plant D-13,12.9,11,0.34,0.59,0.263,0.4862528,46.91717755,150.5259369,18030005,CA,Tulare,6107
+CA,Friant Division Project,,,,Delano-Earlimart Irrigation District Plant D-14,22.3,46.5,0.34,0.59,0.263,0.4862528,342.8524824,1099.984992,18030005,CA,Tulare,6107
+CA,Friant Division Project,,,,Delano-Earlimart Irrigation District Plant D-15,10,14,0.34,0.59,0.263,0.4862528,46.28897009,148.5104381,18030005,CA,Tulare,6107
+CA,Friant Division Project,,,,Delano-Earlimart Irrigation District Plant D-17,9,25,0.34,0.59,0.263,0.4862528,74.39298765,238.6774898,18030005,CA,Tulare,6107
+CA,Friant Division Project,,,,Delano-Earlimart Irrigation District Plant D-18,18.8,59,0.34,0.59,0.263,0.4862528,366.7408973,1176.626985,18030005,CA,Tulare,6107
+CA,Friant Division Project,,,,Delano-Earlimart Irrigation District Plant D-19,7,18,0.34,0.59,0.263,0.4862528,41.66007308,133.6593943,18030005,CA,Tulare,6107
+CA,Friant Division Project,,,,Exeter Irrigation District Plant E-1,21,92,0.34,0.59,0.263,0.4862528,638.7877873,2049.444046,18030006,CA,Tulare,6107
+CA,Friant Division Project,,,,Exeter Irrigation District Plant E-2,11.5,47.5,0.34,0.59,0.263,0.4862528,180.6096422,579.4559059,18030006,CA,Tulare,6107
+CA,Friant Division Project,,,,Exeter Irrigation District Plant E-3,3.6,24,0.34,0.59,0.263,0.4862528,28.56690726,91.6521561,18030006,CA,Tulare,6107
+CA,Friant Division Project,,,,Exeter Irrigation District Plant E-4,3.7,23,0.34,0.59,0.263,0.4862528,28.13708111,90.2731306,18030006,CA,Tulare,6107
+CA,Friant Division Project,,,,Exeter Irrigation District Plant E-5,13.6,17,0.34,0.59,0.263,0.4862528,76.44292775,245.2543807,18030006,CA,Tulare,6107
+CA,Friant Division Project,,,,Exeter Irrigation District Plant E-6,4.7,14,0.34,0.59,0.263,0.4862528,21.75581594,69.79990592,18030006,CA,Tulare,6107
+CA,Friant Division Project,,,,Exeter Irrigation District Plant E-7,2,38,0.34,0.59,0.263,0.4862528,25.12829805,80.61995213,18030006,CA,Tulare,6107
+CA,Friant Division Project,,,,Exeter Irrigation District Plant E-8,2,7,0.34,0.59,0.263,0.4862528,4.628897009,14.85104381,18030006,CA,Tulare,6107
+CA,Friant Division Project,,,,Ivanhoe Irrigation District Plant I-1,2.8,12.5,0.34,0.59,0.263,0.4862528,11.57224252,37.12760953,18030007,CA,Tulare,6107
+CA,Friant Division Project,,,,Ivanhoe Irrigation District Plant I-2,6.7,20,0.34,0.59,0.263,0.4862528,44.30515709,142.1457051,18030007,CA,Tulare,6107
+CA,Friant Division Project,,,,Ivanhoe Irrigation District Plant I-3,8.1,11.3,0.34,0.59,0.263,0.4862528,30.26306738,97.09400287,18030007,CA,Tulare,6107
+CA,Friant Division Project,,,,Ivanhoe Irrigation District Plant I-4,2,19.5,0.34,0.59,0.263,0.4862528,12.89478453,41.37076491,18030007,CA,Tulare,6107
+CA,Friant Division Project,,,,Lingmore Irrigation District Plant L-1,2,8,0.34,0.59,0.263,0.4862528,5.290168011,16.9726215,18030006,CA,Tulare,6107
+CA,Friant Division Project,,,,Lingmore Irrigation District Plant L-2,2,8,0.34,0.59,0.263,0.4862528,5.290168011,16.9726215,18030006,CA,Tulare,6107
+CA,Friant Division Project,,,,Lingmore Irrigation District Plant L-3,14,22,0.34,0.59,0.263,0.4862528,101.8357342,326.7229639,18030006,CA,Tulare,6107
+CA,Friant Division Project,,,,Lingmore Irrigation District Plant L-4,12.5,84.5,0.34,0.59,0.263,0.4862528,349.2337476,1120.458216,18030006,CA,Tulare,6107
+CA,Friant Division Project,,,,Trauger Pumping Plant,66,147,0.34,0.59,0.263,0.4862528,3207.825627,10291.77336,18030006,CA,Tulare,6107
+CA,Friant Division Project,,,,Saucelito Irrigation District Plant SA-1,14,13,0.34,0.59,0.263,0.4862528,60.17566112,193.0635696,18030006,CA,Tulare,6107
+CA,Friant Division Project,,,,Saucelito Irrigation District Plant SA-2,10,14.5,0.34,0.59,0.263,0.4862528,47.9421476,153.8143823,18030006,CA,Tulare,6107
+CA,Friant Division Project,,,,Saucelito Irrigation District Plant SA-3,10,14.5,0.34,0.59,0.263,0.4862528,47.9421476,153.8143823,18030006,CA,Tulare,6107
+CA,Friant Division Project,,,,Southern San Joaquin M.U.D. Plant S-1,6,16.5,0.34,0.59,0.263,0.4862528,32.73291457,105.0180955,18030009,CA,Kern,6029
+CA,Friant Division Project,,,,Southern San Joaquin M.U.D. Plant S-2,17.5,16.5,0.34,0.59,0.263,0.4862528,95.47100082,306.3027786,18030009,CA,Kern,6029
+CA,Friant Division Project,,,,Southern San Joaquin M.U.D. Plant S-3,6,16.5,0.34,0.59,0.263,0.4862528,32.73291457,105.0180955,18030009,CA,Kern,6029
+CA,Friant Division Project,,,,Southern San Joaquin M.U.D. Plant S-4,78,55,0.34,0.59,0.263,0.4862528,1418.426298,4550.78414,18030009,CA,Kern,6029
+CA,Friant Division Project,,,,Southern San Joaquin M.U.D. Plant S-5,33.75,35,0.34,0.59,0.263,0.4862528,390.5631852,1253.056822,18030009,CA,Kern,6029
+CA,Friant Division Project,,,,Southern San Joaquin M.U.D. Plant S-6,15.8,39,0.34,0.59,0.263,0.4862528,203.7375955,653.6580855,18030009,CA,Kern,6029
+CA,Friant Division Project,,,,Southern San Joaquin M.U.D. Plant S-7,72,52,0.34,0.59,0.263,0.4862528,1237.899315,3971.593431,18030009,CA,Kern,6029
+CA,Friant Division Project,,,,Southern San Joaquin M.U.D. Plant S-8,64,64,0.34,0.59,0.263,0.4862528,1354.283011,4344.991104,18030009,CA,Kern,6029
+CA,Friant Division Project,,,,Southern San Joaquin M.U.D. Plant S-9,36,53,0.34,0.59,0.263,0.4862528,630.8525353,2023.985114,18030009,CA,Kern,6029
+CA,Friant Division Project,,,,Southern San Joaquin M.U.D. Plant S-10,4,19,0.34,0.59,0.263,0.4862528,25.12829805,80.61995213,18030009,CA,Kern,6029
+CA,Friant Division Project,,,,Southern San Joaquin M.U.D. Plant S-12,59.5,61,0.34,0.59,0.263,0.4862528,1200.04155,3850.133108,18030009,CA,Kern,6029
+CA,Friant Division Project,,,,Southern San Joaquin M.U.D. Plant S-13,24,40,0.34,0.59,0.263,0.4862528,317.4100806,1018.35729,18030009,CA,Kern,6029
+CA,Friant Division Project,,,,Southern San Joaquin M.U.D. Plant S-14,11.05,32,0.34,0.59,0.263,0.4862528,116.912713,375.0949352,18030009,CA,Kern,6029
+CA,Friant Division Project,,,,Southern San Joaquin M.U.D. Plant S-15,3,28,0.34,0.59,0.263,0.4862528,27.77338206,89.10626288,18030009,CA,Kern,6029
+CA,Friant Division Project,,,,Southern San Joaquin M.U.D. Plant S-16,3,28,0.34,0.59,0.263,0.4862528,27.77338206,89.10626288,18030009,CA,Kern,6029
+CA,Friant Division Project,,,,Stone Corral Irrigation District Plant SC-1,5,14,0.34,0.59,0.263,0.4862528,23.14448505,74.25521906,18030007,CA,Tulare,6107
+CA,Friant Division Project,,,,Stone Corral Irrigation District Plant SC-2,2.7,27,0.34,0.59,0.263,0.4862528,24.103328,77.33150671,18030007,CA,Tulare,6107
+CA,Friant Division Project,,,,Stone Corral Irrigation District Plant SC-2A,2,94,0.34,0.59,0.263,0.4862528,62.15947413,199.4283026,18030007,CA,Tulare,6107
+CA,Friant Division Project,,,,Stone Corral Irrigation District Plant SC-3,2.1,51,0.34,0.59,0.263,0.4862528,35.41106212,113.6104852,18030007,CA,Tulare,6107
+CA,Friant Division Project,,,,Stone Corral Irrigation District Plant SC-4,2.3,26,0.34,0.59,0.263,0.4862528,19.77200294,63.43517286,18030007,CA,Tulare,6107
+CA,Friant Division Project,,,,Stone Corral Irrigation District Plant SC-4A,2,46,0.34,0.59,0.263,0.4862528,30.41846606,97.59257363,18030007,CA,Tulare,6107
+CA,Friant Division Project,,,,Stone Corral Irrigation District Plant SC-5,2,17,0.34,0.59,0.263,0.4862528,11.24160702,36.06682069,18030007,CA,Tulare,6107
+CA,Friant Division Project,,,,Stone Corral Irrigation District Plant SC-6,2.4,40,0.34,0.59,0.263,0.4862528,31.74100806,101.835729,18030007,CA,Tulare,6107
+CA,Friant Division Project,,,,Teapot Dome Water District Plant T-1,34,144,0.34,0.59,0.263,0.4862528,1618.791411,5193.622179,18030006,CA,Tulare,6107
+CA,Friant Division Project,,,,Teapot Dome Water District Plant T-2,23.1,148,0.34,0.59,0.263,0.4862528,1130.37665,3626.624899,18030006,CA,Tulare,6107
+CA,Friant Division Project,,,,Teapot Dome Water District Plant T-2A,3.8,18,0.34,0.59,0.263,0.4862528,22.61546825,72.55795691,18030006,CA,Tulare,6107
+CA,Friant Division Project,,,,Teapot Dome Water District Plant T-3,5.3,64,0.34,0.59,0.263,0.4862528,112.1515618,359.8195758,18030006,CA,Tulare,6107
+AZ,Gila Project,,,,Wellton-Mohawk No. 1,1300,35,0.34,0.59,0.263,0.4862528,15043.91528,48265.89239,15070201,AZ,Yuma,4027
+AZ,Gila Project,,,,Wellton-Mohawk No. 2,1200,90,0.34,0.59,0.263,0.4862528,35708.63407,114565.1951,15070201,AZ,Yuma,4027
+AZ,Gila Project,,,,Wellton-Mohawk No. 3,900,60,0.34,0.59,0.263,0.4862528,17854.31704,57282.59756,15070201,AZ,Yuma,4027
+AZ,Gila Project,,,,"Unit 1, Domes distribution system: 5 plants",215,12.75,0.34,0.59,0.263,0.4862528,906.3545662,2907.887418,15070201,AZ,Yuma,4027
+AZ,Gila Project,,,,Texas Hill distribution system: 3 plants,210,12.25,0.34,0.59,0.263,0.4862528,850.5598255,2728.879301,15070201,AZ,Yuma,4027
+AZ,Gila Project,,,,"Ralph's Mill area, Mohawk Laterals: 5 plants",240,28.5,0.34,0.59,0.263,0.4862528,2261.546825,7255.795691,15070201,AZ,Yuma,4027
+AZ,Gila Project,,,,"Yuma Mesa Division: Plant No 1, Gravity Main Canal",968,52,0.34,0.59,0.263,0.4862528,16642.86856,53395.86724,15070201,AZ,Yuma,4027
+AZ,Gila Project,,,,"Yuma Mesa Division: Unit 1, 6 plants",98,3.3,0.34,0.59,0.263,0.4862528,106.9275209,343.0591121,15070201,AZ,Yuma,4027
+AZ,Gila Project,,,,"Yuma Mesa Division: South Gila Unit, 5 plants",69,41370,0.34,0.59,0.263,0.4862528,943808.9557,3028053.578,15070201,AZ,Yuma,4027
+CO,Grand Valley Project,,,,Price Stubb,25,31,0.34,0.59,0.263,0.4862528,256.242513,822.1113539,14020005,CO,Mesa,8077
+CO,Grand Valley Project,,,,Orchard Mesa,140,85.5,0.34,0.59,0.263,0.4862528,3957.706943,12697.64246,14020005,CO,Mesa,8077
+OR,Grants Pass Project,,,,Savage Rapids Pumping Plant,125,120,0.34,0.59,0.263,0.4862528,4959.53251,15911.83266,17100308,OR,Josephine,41033
+OR,Grants Pass Project,,,,Jerome Prairie Pumping Plant,24.5,90,0.34,0.59,0.263,0.4862528,729.051279,2339.0394,17100308,OR,Josephine,41033
+OR,Grants Pass Project,,,,Demaray Pumping Plant,8,114,0.34,0.59,0.263,0.4862528,301.5395766,967.4394255,17100308,OR,Josephine,41033
+OR,Grants Pass Project,,,,Allen Creek Pumping Plant,4.2,75.5,0.34,0.59,0.263,0.4862528,104.8445173,336.3761424,17100308,OR,Josephine,41033
+OR,Grants Pass Project,,,,Dowell Road Pumping Plant,2,66,0.34,0.59,0.263,0.4862528,43.64388609,140.0241274,17100308,OR,Josephine,41033
+OR,Grants Pass Project,,,,C-Back Pumping Plant,1,30,0.34,0.59,0.263,0.4862528,9.91906502,31.82366531,17100308,OR,Josephine,41033
+NM,Hammond Project,,,,Hammon Pumping Plants,18,65,0.34,0.59,0.263,0.4862528,386.8435358,1241.122947,14080101,NM,San Juan,35045
+NM,Hammond Project,,,,Auxiliary Pumping Plant,12,56,0.34,0.59,0.263,0.4862528,222.1870565,712.850103,14080101,NM,San Juan,35045
+WY,Hanover-Bluff Unit,,,,Hanover Pumping Plant No 1,20,80,0.34,0.59,0.263,0.4862528,529.0168011,1697.26215,10080007,WY,Washakie,56043
+WY,Hanover-Bluff Unit,,,,Hanover Pumping Plant No 2,100,100,0.34,0.59,0.263,0.4862528,3306.355007,10607.88844,10080007,WY,Washakie,56043
+WY,Hanover-Bluff Unit,,,,Hanover Pumping Plant No 3,17,67,0.34,0.59,0.263,0.4862528,376.5938353,1208.238493,10080007,WY,Washakie,56043
+WY,Hanover-Bluff Unit,,,,Bluff Pumping Plant No 1,17,116,0.34,0.59,0.263,0.4862528,652.0132073,2091.8756,10080007,WY,Washakie,56043
+WY,Hanover-Bluff Unit,,,,Bluff Pumping Plant No 2,20,51,0.34,0.59,0.263,0.4862528,337.2482107,1082.004621,10080007,WY,Washakie,56043
+MT,Helena Valley Unit,,,,Helena Valley Pumping Plant,300,211,0.34,0.59,0.263,0.4862528,20929.22719,67147.93381,10030101,MT,Lewis and Clark,30049
+MT,Huntley Project,,,,Main Canal Pumping Plant,50,42,0.34,0.59,0.263,0.4862528,694.3345514,2227.656572,10070007,MT,Yellowstone,30111
+UT,Hyrum Project,,,,Wellsville Canal Pumping Plant,16,81,0.34,0.59,0.263,0.4862528,428.5036089,1374.782342,16010203,UT,Cache,49005
+MT,Intake Project,,,,Pumping Plant,9,13,0.34,0.59,0.263,0.4862528,38.68435358,124.1122947,10100004,MT,Dawson,30021
+"OR, CA",Klamath Project,,,,Adams Pumping Plant,30,36,0.34,0.59,0.263,0.4862528,357.0863407,1145.651951,18010204,OR,Klamath,41035
+"OR, CA",Klamath Project,,,,Main Pumping Plant,75,327,0.34,0.59,0.263,0.4862528,8108.835654,26015.84639,18010204,OR,Klamath,41035
+"OR, CA",Klamath Project,,,,Booster Pumping Plant,60,125,0.34,0.59,0.263,0.4862528,2479.766255,7955.916328,18010204,OR,Klamath,41035
+"OR, CA",Klamath Project,,,,Dry Lake Pumping Plant,50,25.5,0.34,0.59,0.263,0.4862528,421.5602634,1352.505776,18010204,OR,Klamath,41035
+"OR, CA",Klamath Project,,,,Dry Lake No. 2 Pumping Plant,15,48,0.34,0.59,0.263,0.4862528,238.0575605,763.7679675,18010204,OR,Klamath,41035
+"OR, CA",Klamath Project,,,,Plant A,100,20,0.34,0.59,0.263,0.4862528,661.2710013,2121.577688,18010204,CA,Modoc,6049
+"OR, CA",Klamath Project,,,,Plant B,75,10.5,0.34,0.59,0.263,0.4862528,260.3754568,835.3712145,18010204,CA,Siskiyou,6093
+"OR, CA",Klamath Project,,,,Plant C,100,12,0.34,0.59,0.263,0.4862528,396.7626008,1272.946613,18010204,CA,Siskiyou,6093
+"OR, CA",Klamath Project,,,,Plant D,334,78,0.34,0.59,0.263,0.4862528,8613.716063,27635.67096,18010204,CA,Siskiyou,6093
+"OR, CA",Klamath Project,,,,Plant E,300,10.5,0.34,0.59,0.263,0.4862528,1041.501827,3341.484858,18010204,OR,Klamath,41035
+"OR, CA",Klamath Project,,,,Plant F,300,10.5,0.34,0.59,0.263,0.4862528,1041.501827,3341.484858,18010204,OR,Klamath,41035
+"OR, CA",Klamath Project,,,,Plant G,45,8,0.34,0.59,0.263,0.4862528,119.0287802,381.8839838,18010204,OR,Klamath,41035
+"OR, CA",Klamath Project,,,,Plant H,30,8,0.34,0.59,0.263,0.4862528,79.35252016,254.5893225,18010204,CA,Siskiyou,6093
+"OR, CA",Klamath Project,,,,Plant J,20,16,0.34,0.59,0.263,0.4862528,105.8033602,339.45243,18010204,CA,Siskiyou,6093
+"OR, CA",Klamath Project,,,,Plant K,7,12,0.34,0.59,0.263,0.4862528,27.77338206,89.10626288,18010204,CA,Siskiyou,6093
+"OR, CA",Klamath Project,,,,Plant L,10,9,0.34,0.59,0.263,0.4862528,29.75719506,95.47099594,18010204,CA,Siskiyou,6093
+"OR, CA",Klamath Project,,,,Plant M,16.6,11,0.34,0.59,0.263,0.4862528,60.37404242,193.7000429,18010204,CA,Siskiyou,6093
+"OR, CA",Klamath Project,,,,Plant U,10,10.5,0.34,0.59,0.263,0.4862528,34.71672757,111.3828286,18010204,CA,Siskiyou,6093
+"OR, CA",Klamath Project,,,,Plant V,22,10.7,0.34,0.59,0.263,0.4862528,77.83159686,249.7096938,18010204,OR,Klamath,41035
+"OR, CA",Klamath Project,,,,Plant W,66,8,0.34,0.59,0.263,0.4862528,174.5755444,560.0965095,18010204,OR,Klamath,41035
+"OR, CA",Klamath Project,,,,Plant X,11,8,0.34,0.59,0.263,0.4862528,29.09592406,93.34941825,18010204,CA,Siskiyou,6093
+"OR, CA",Klamath Project,,,,Plant Y,22,10.7,0.34,0.59,0.263,0.4862528,77.83159686,249.7096938,18010204,CA,Siskiyou,6093
+"OR, CA",Klamath Project,,,,Plant No. 1,50,12,0.34,0.59,0.263,0.4862528,198.3813004,636.4733063,18010204,OR,Klamath,41035
+"OR, CA",Klamath Project,,,,Plant No. 2,12,12,0.34,0.59,0.263,0.4862528,47.6115121,152.7535935,18010204,CA,Siskiyou,6093
+"OR, CA",Klamath Project,,,,Plant No. 3,50,10,0.34,0.59,0.263,0.4862528,165.3177503,530.3944219,18010204,CA,Siskiyou,6093
+"OR, CA",Klamath Project,,,,Plant No. 5,50,10,0.34,0.59,0.263,0.4862528,165.3177503,530.3944219,18010204,CA,Siskiyou,6093
+"OR, CA",Klamath Project,,,,Plant No. 6,25,10.5,0.34,0.59,0.263,0.4862528,86.79181893,278.4570715,18010204,CA,Siskiyou,6093
+"OR, CA",Klamath Project,,,,Plant No. 10,24,13,0.34,0.59,0.263,0.4862528,103.1582762,330.9661193,18010204,CA,Siskiyou,6093
+"MT, ND",Lower Yellowstone Project,,,,Thomas Point Pumping Plant,45,35,0.34,0.59,0.263,0.4862528,520.7509136,1670.742429,10100004,MT,Richland,30083
+OK,McGee Creek Project,,,,Atoka Pumping Plant,140,166,0.34,0.59,0.263,0.4862528,7683.969036,24652.73273,11140103,OK,Atoka,40005
+ID,Michaud Flats Project,,,,American Falls Pumping Plant,126,195,0.34,0.59,0.263,0.4862528,8123.714251,26063.58189,17040206,ID,Power,16077
+MT,Milk River Project,,,,Dodson Pumping Plant,30,20.5,0.34,0.59,0.263,0.4862528,203.3408329,652.3851389,10050004,MT,Phillips,30071
+ID,Minidoka Project,,,,South Side Pumping Division Lift No 1,1011,31,0.34,0.59,0.263,0.4862528,10362.44723,33246.18315,17040209,ID,Cassia,16031
+ID,Minidoka Project,,,,South Side Pumping Division Lift No 2,891,34,0.34,0.59,0.263,0.4862528,10016.27186,32135.53723,17040209,ID,Cassia,16031
+ID,Minidoka Project,,,,South Side Pumping Division Lift No 3,453,31,0.34,0.59,0.263,0.4862528,4643.114336,14896.65773,17040209,ID,Cassia,16031
+ID,Minidoka Project,,,,North Side Pumping Division Unit A,240,168,0.34,0.59,0.263,0.4862528,13331.22339,42771.00618,17040209,ID,Minidoka,16067
+ID,Minidoka Project,,,,North Side Pumping Division Unit B,1128,237,0.34,0.59,0.263,0.4862528,88390.77221,283587.0463,17040209,ID,Minidoka,16067
+OK,Mountain Park Project,,,,Altus Pumping Plant,8.5,140,0.34,0.59,0.263,0.4862528,393.4562458,1262.338724,11120302,OK,Jackson,40065
+OK,Mountain Park Project,,,,Frederick Pumping Plant,2.85,104,0.34,0.59,0.263,0.4862528,98.0003624,314.4178133,11130102,OK,Tillman,40141
+NM,Navajo Indian Irrigation Project,,,,Gallegos Pumping Plant,880,337,0.34,0.59,0.263,0.4862528,98053.26408,314587.5395,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Kutz Pumping Plant,200,356,0.34,0.59,0.263,0.4862528,23541.24765,75528.16568,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 1 33.3R Booster Plant,14.8,170,0.34,0.59,0.263,0.4862528,831.8789197,2668.944731,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 1 34.9R Booster Plant,14,83,0.34,0.59,0.263,0.4862528,384.1984518,1232.636636,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 1 36.3R Booster Plant,21.8,169,0.34,0.59,0.263,0.4862528,1218.127312,3908.158258,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 1 38.8R Booster Plant,52.1,110,0.34,0.59,0.263,0.4862528,1894.872054,6079.380864,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 1 40.3R Booster Plant,30,161,0.34,0.59,0.263,0.4862528,1596.969468,5123.610115,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 1 1-7 Booster Plant,2.62,165,0.34,0.59,0.263,0.4862528,142.9337269,458.5790172,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 1 108 Booster Plant,3.88,145,0.34,0.59,0.263,0.4862528,186.0155327,596.7998035,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 1 1-10 Booster Plant,1.89,147,0.34,0.59,0.263,0.4862528,91.86046115,294.7189645,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 1 1-15 Booster Plant,2.62,129,0.34,0.59,0.263,0.4862528,111.7481865,358.5254134,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 1 1-19 Booster Plant,1.68,173,0.34,0.59,0.263,0.4862528,96.09590191,308.3076695,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 1 1-26 Booster Plant,1.26,159,0.34,0.59,0.263,0.4862528,66.2395162,212.518437,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 1 1-33 Booster Plant,3.67,155,0.34,0.59,0.263,0.4862528,188.0820046,603.4297338,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 1 1-41 Booster Plant,3.67,146,0.34,0.59,0.263,0.4862528,177.161114,568.3918783,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 1 1-51 Booster Plant,3.99,167,0.34,0.59,0.263,0.4862528,220.3123532,706.8354303,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 1 1-54 Booster Plant,2,158,0.34,0.59,0.263,0.4862528,104.4808182,335.2092746,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 1 1-55 Booster Plant,3.26,156,0.34,0.59,0.263,0.4862528,168.1479902,539.4747744,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 2 33.3R Booster Plant,30.4,137,0.34,0.59,0.263,0.4862528,1377.030733,4417.973376,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 3 33.3R Booster Plant,24.5,126,0.34,0.59,0.263,0.4862528,1020.671791,3274.655161,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 4 33.1L Booster Plant,5.99,329,0.34,0.59,0.263,0.4862528,651.5866875,2090.507182,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 4 33.8L Booster Plant,3.25,345,0.34,0.59,0.263,0.4862528,370.7250551,1189.409491,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 4 34.3L Booster Plant,5.25,260,0.34,0.59,0.263,0.4862528,451.3174584,1447.976772,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 4 36.3L Booster Plant,29.61,365,0.34,0.59,0.263,0.4862528,3573.392769,11464.63455,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 4 39.3L Booster Plant,7.04,311,0.34,0.59,0.263,0.4862528,723.9065906,2322.533526,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 4 41.6L-A Booster Plant,64.67,441,0.34,0.59,0.263,0.4862528,9429.549242,30253.13561,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 4 41.6L-B Booster Plant,5.68,18,0.34,0.59,0.263,0.4862528,33.80417359,108.4550514,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 4 41.6L-C Booster Plant,3.89,35,0.34,0.59,0.263,0.4862528,45.01602342,144.4264011,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 4 43.8L Booster Plant,4.62,288,0.34,0.59,0.263,0.4862528,439.9303718,1411.443204,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 4 45.7L-A Booster Plant,86.17,405,0.34,0.59,0.263,0.4862528,11538.79874,37020.31074,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 4 45.7L-B Booster Plant,54.21,273,0.34,0.59,0.263,0.4862528,4893.183884,15698.96416,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 5 C0.9L Booster Plant,3.21,216,0.34,0.59,0.263,0.4862528,229.2494307,735.5085527,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 5 C0.9R Booster Plant,11.55,172,0.34,0.59,0.263,0.4862528,656.8404856,2107.363117,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 5 C1.2R Booster Plant,2.78,163,0.34,0.59,0.263,0.4862528,149.8241708,480.6858567,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 5 2.0R Booster Plant,86.18,139,0.34,0.59,0.263,0.4862528,3960.689275,12707.21078,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 5 C2.4R Booster Plant,7.7,166,0.34,0.59,0.263,0.4862528,422.618297,1355.9003,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 5 C2.7L Booster Plant,32.96,377,0.34,0.59,0.263,0.4862528,4108.45028,13181.27731,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 5 C2.9R Booster Plant,6.74,154,0.34,0.59,0.263,0.4862528,343.1864243,1101.056388,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 5 C3.2R Booster Plant,2.35,148,0.34,0.59,0.263,0.4862528,114.9950271,368.9423599,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 5 C4.4A Booster Plant,12.3,185,0.34,0.59,0.263,0.4862528,752.3610818,2413.825014,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 5 C4.4B Booster Plant,43.22,260,0.34,0.59,0.263,0.4862528,3715.417248,11920.2964,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 5 C4.4C Booster Plant,8.02,143,0.34,0.59,0.263,0.4862528,379.1926303,1216.576293,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 6 G7.5L Booster Plant,87.93,344,0.34,0.59,0.263,0.4862528,10001.03617,32086.65608,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 6 G7.5L-C Booster Plant,6,63,0.34,0.59,0.263,0.4862528,124.9802193,400.9781829,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 6 G7.5L-E Booster Plant,32.38,69,0.34,0.59,0.263,0.4862528,738.7124483,2370.03565,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 6 G11.1L Booster Plant,3.67,169,0.34,0.59,0.263,0.4862528,205.0700566,657.9330646,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 6 G11.3L Booster Plant,3.88,155,0.34,0.59,0.263,0.4862528,198.8441901,637.9584106,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 6 G11.4R Booster Plant,1.99,233,0.34,0.59,0.263,0.4862528,153.3057626,491.8559632,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 6 G11.4L Booster Plant,2.31,181,0.34,0.59,0.263,0.4862528,138.2420092,443.5264235,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 6 G12.0R Booster Plant,0.63,167,0.34,0.59,0.263,0.4862528,34.78616103,111.6055943,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 6 G12.2L Booster Plant,1.05,190,0.34,0.59,0.263,0.4862528,65.96178238,211.6273743,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 6 G12.6L Booster Plant,1.47,148,0.34,0.59,0.263,0.4862528,71.93305953,230.7852208,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 6 G12.9L Booster Plant,1.05,174,0.34,0.59,0.263,0.4862528,60.40710597,193.8061218,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 6 G13.3L Booster Plant,38.76,170,0.34,0.59,0.263,0.4862528,2178.623441,6989.749849,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 6 G13.4R Booster Plant,14.06,361,0.34,0.59,0.263,0.4862528,1678.193385,5384.203503,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 6 G14.1R Booster Plant,1.78,197,0.34,0.59,0.263,0.4862528,115.9406447,371.9762159,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 6 G14.3L Booster Plant,0.94,162,0.34,0.59,0.263,0.4862528,50.34917404,161.5369251,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 6 A0.6R Booster Plant,2.31,179,0.34,0.59,0.263,0.4862528,136.7144732,438.625579,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 6 A0.9R Booster Plant,1.36,148,0.34,0.59,0.263,0.4862528,66.55031357,213.5155785,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 6 A1.5R Booster Plant,3.15,156,0.34,0.59,0.263,0.4862528,162.474285,521.2716378,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 6 A2.1R Booster Plant,6.4,169,0.34,0.59,0.263,0.4862528,357.6153575,1147.349213,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 7 A0.8L Booster Plant,51.02,361,0.34,0.59,0.263,0.4862528,6089.717391,19537.8423,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 7 A3.1R Booster Plant,51.62,147,0.34,0.59,0.263,0.4862528,2508.908468,8049.414257,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 7 A3.2R Booster Plant,1.68,161,0.34,0.59,0.263,0.4862528,89.43029022,286.9221665,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 7 A3.7R Booster Plant,2.94,178,0.34,0.59,0.263,0.4862528,173.0281702,555.1320177,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 7 A4.2R Booster Plant,2.94,183,0.34,0.59,0.263,0.4862528,177.8885121,570.7256137,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 7 A4.5R Booster Plant,64.53,154,0.34,0.59,0.263,0.4862528,3285.729964,10541.71643,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 7 A4.9R Booster Plant,4.8,168,0.34,0.59,0.263,0.4862528,266.6244677,855.4201236,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 7 A5.4R Booster Plant,5.34,175,0.34,0.59,0.263,0.4862528,308.9788754,991.3071745,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 7 A5.9R Booster Plant,4.62,173,0.34,0.59,0.263,0.4862528,264.2637303,847.8460913,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 7 A6.4R Booster Plant,1.62,180,0.34,0.59,0.263,0.4862528,96.413312,309.3260268,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 7 A6.9R Booster Plant,4.62,180,0.34,0.59,0.263,0.4862528,274.9564824,882.1520025,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 8 B2.1R Booster Plant,37.76,170,0.34,0.59,0.263,0.4862528,2122.415406,6809.415746,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 8 B3.1AH Booster Plant,94.05,121,0.34,0.59,0.263,0.4862528,3762.648529,12071.83008,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 8 B3.1C Booster Plant,94.05,212,0.34,0.59,0.263,0.4862528,6592.408994,21150.64444,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 9 B1.0L Booster Plant,22.22,246,0.34,0.59,0.263,0.4862528,1807.293323,5798.399115,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 9 B2.9L Booster Plant,52.73,410,0.34,0.59,0.263,0.4862528,7148.10808,22933.51225,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 9 B0.1R Booster Plant,52.73,190,0.34,0.59,0.263,0.4862528,3312.537891,10627.72519,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 9 B1.7L Booster Plant,22.22,150,0.34,0.59,0.263,0.4862528,1102.008124,3535.609216,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 9 B4.6L Booster Plant,52.73,190,0.34,0.59,0.263,0.4862528,3312.537891,10627.72519,14080101,NM,San Juan,35045
+NM,Navajo Indian Irrigation Project,,,,Block 9 B4.6R Booster Plant,14.4,320,0.34,0.59,0.263,0.4862528,1523.568387,4888.114992,14080101,NM,San Juan,35045
+OK,Norman Project,,,,Reservoir Pumping Plant,52.28,548,0.34,0.59,0.263,0.4862528,9472.521938,30391.00633,11090203,OK,Cleveland,40027
+OK,Norman Project,,,,Midwest City-Del City Relift Pumping Plant,29.38,242,0.34,0.59,0.263,0.4862528,2350.805184,7542.166248,11100302,OK,Oklahoma,40109
+NE,North Loup Division,,,,"Geranium Pumping Plant (Future) (Average Annual Power Requirement = 4,000,000 kWH.",200,130,0.34,0.59,0.263,0.4862528,8596.523017,27580.50994,10210007,NE,Valley,31175
+NE,North Loup Division,,,,Smaller Pumping Plant,13,72,0.34,0.59,0.263,0.4862528,309.4748286,992.8983578,10210007,NE,Valley,31175
+WA,Okanogan Project,,,,Shell Rock Point Pumping Plant,33,620,0.34,0.59,0.263,0.4862528,6764.802344,21703.73974,17020006,WA,Okanogan,53047
+WA,Okanogan Project,,,,Duck Lake,10,27.5,0.34,0.59,0.263,0.4862528,90.92476268,291.716932,17020006,WA,Okanogan,53047
+WY,Owl Creek Unit,,,,Lucerne Pumping Plant No 1,84,203,0.34,0.59,0.263,0.4862528,5637.996557,18088.57136,10080007,WY,Hot Springs,56017
+WY,Owl Creek Unit,,,,Lucerne Pumping Plant No 2,33,24.5,0.34,0.59,0.263,0.4862528,267.3188023,857.6477802,10080007,WY,Hot Springs,56017
+OR/ID,Owyhee Project,,,,Ontario-Nyssa Pumping Plant,130,120,0.34,0.59,0.263,0.4862528,5157.91381,16548.30596,17050115,OR,Malheur,41045
+OR/ID,Owyhee Project,,,,Owyhee Ditch Pumping Plant,222,50,0.34,0.59,0.263,0.4862528,3670.054057,11774.75617,17050115,OR,Malheur,41045
+OR/ID,Owyhee Project,,,,Dead Ox Pumping Plant,176,80.5,0.34,0.59,0.263,0.4862528,4684.443773,15029.25634,17050122,ID,Payette,16075
+OR/ID,Owyhee Project,,,,Succor Creek No1 Pumping Plant,15,61,0.34,0.59,0.263,0.4862528,302.5314831,970.621792,17050103,OR,Malheur,41045
+OR/ID,Owyhee Project,,,,Succor Creek No 2 Pumping Plant,15,66,0.34,0.59,0.263,0.4862528,327.3291457,1050.180955,17050103,OR,Malheur,41045
+OR/ID,Owyhee Project,,,,Gem Pumping Plant,334,128,0.34,0.59,0.263,0.4862528,14135.32892,45350.84465,17050103,ID,Owyhee,16073
+OR/ID,Owyhee Project,,,,Gem District South Pumping Plant,13,20,0.34,0.59,0.263,0.4862528,85.96523017,275.8050994,17050103,ID,Owyhee,16073
+OR/ID,Owyhee Project,,,,Gem District North Pumping Plant,5.5,33,0.34,0.59,0.263,0.4862528,60.01034337,192.5331751,17050103,ID,Owyhee,16073
+OR/ID,Owyhee Project,,,,Kingman Colony Pumping Plant,6,44,0.34,0.59,0.263,0.4862528,87.28777218,280.0482548,17050103,OR,Malheur,41045
+UT,Provo River Project,,,,Jordan Narrows Siphon and Pumping Plant,65,103,0.34,0.59,0.263,0.4862528,2213.604677,7101.981309,16020203,UT,Salt Lake,49035
+NV,R.B. Griffith Project (formerly Southern Nevada Water Project),,,,1st Stage: Pumping Plant No 1,311,223,0.34,0.59,0.263,0.4862528,22930.56388,73568.88868,15010015,NV,Clark,32003
+NV,R.B. Griffith Project (formerly Southern Nevada Water Project),,,,1st Stage: PP No. 1A Main Aqueduct,300,355,0.34,0.59,0.263,0.4862528,35212.68082,112974.0119,15010005,NV,Clark,32003
+NV,R.B. Griffith Project (formerly Southern Nevada Water Project),,,,1st Stage: PP No. 1A Boulder City Lateral,15,455,0.34,0.59,0.263,0.4862528,2256.587292,7239.883859,15010005,NV,Clark,32003
+NV,R.B. Griffith Project (formerly Southern Nevada Water Project),,,,1st Stage: No. 2A,300,355,0.34,0.59,0.263,0.4862528,35212.68082,112974.0119,15010015,NV,Clark,32003
+NV,R.B. Griffith Project (formerly Southern Nevada Water Project),,,,1st Stage: No. 3,28,230,0.34,0.59,0.263,0.4862528,2129.292624,6831.480154,15010015,NV,Clark,32003
+NV,R.B. Griffith Project (formerly Southern Nevada Water Project),,,,1st Stage: No. 4,15,455,0.34,0.59,0.263,0.4862528,2256.587292,7239.883859,15010015,NV,Clark,32003
+NV,R.B. Griffith Project (formerly Southern Nevada Water Project),,,,1st Stage: No. 5,15,455,0.34,0.59,0.263,0.4862528,2256.587292,7239.883859,15010015,NV,Clark,32003
+NV,R.B. Griffith Project (formerly Southern Nevada Water Project),,,,1st Stage: No. 6,90,182,0.34,0.59,0.263,0.4862528,5415.809501,17375.72126,15010015,NV,Clark,32003
+NV,R.B. Griffith Project (formerly Southern Nevada Water Project),,,,1st Stage: No. 7,15,78,0.34,0.59,0.263,0.4862528,386.8435358,1241.122947,15010015,NV,Clark,32003
+NV,R.B. Griffith Project (formerly Southern Nevada Water Project),,,,2nd Stage: PP No. 1 (modifications),312,223,0.34,0.59,0.263,0.4862528,23004.29559,73805.44459,15010015,NV,Clark,32003
+NV,R.B. Griffith Project (formerly Southern Nevada Water Project),,,,2nd Stage: PP No. 1A Boulder City Lateral (modifications),15,445,0.34,0.59,0.263,0.4862528,2206.991967,7080.765532,15010015,NV,Clark,32003
+NV,R.B. Griffith Project (formerly Southern Nevada Water Project),,,,2nd Stage: PP No. 4 (modifications),15,445,0.34,0.59,0.263,0.4862528,2206.991967,7080.765532,15010015,NV,Clark,32003
+NV,R.B. Griffith Project (formerly Southern Nevada Water Project),,,,2nd Stage: PP No. 5 (modifications),15,445,0.34,0.59,0.263,0.4862528,2206.991967,7080.765532,15010015,NV,Clark,32003
+NV,R.B. Griffith Project (formerly Southern Nevada Water Project),,,,2nd Stage:  PP No. 1B,306,355,0.34,0.59,0.263,0.4862528,35916.93444,115233.4921,15010015,NV,Clark,32003
+NV,R.B. Griffith Project (formerly Southern Nevada Water Project),,,,2nd Stage: PP No. 2B,306,355,0.34,0.59,0.263,0.4862528,35916.93444,115233.4921,15010015,NV,Clark,32003
+NV,R.B. Griffith Project (formerly Southern Nevada Water Project),,,,2nd Stage: PP No. 7B,7.5,175,0.34,0.59,0.263,0.4862528,433.9590946,1392.285357,15010015,NV,Clark,32003
+NV,R.B. Griffith Project (formerly Southern Nevada Water Project),,,,Hacienda Pumping Plant,250,365,0.34,0.59,0.263,0.4862528,30170.48944,96796.98199,15010015,NV,Clark,32003
+NV,R.B. Griffith Project (formerly Southern Nevada Water Project),,,,Twin Lakes - Robinson Pumping Plant,10,102,0.34,0.59,0.263,0.4862528,337.2482107,1082.004621,15010015,NV,Clark,32003
+NV,R.B. Griffith Project (formerly Southern Nevada Water Project),,,,Twin Lakes - Carlton Pumping Plant,32,117,0.34,0.59,0.263,0.4862528,1237.899315,3971.593431,15010015,NV,Clark,32003
+ID,Rathdrum Prairie Project,,,,Post Falls Unit Pumping Plant,60,150,0.34,0.59,0.263,0.4862528,2975.719506,9547.099594,17010305,ID,Kootenai,16055
+ID,Rathdrum Prairie Project,,,,Hayden Lake Unit Pumping Plant,20,225,0.34,0.59,0.263,0.4862528,1487.859753,4773.549797,17010305,ID,Kootenai,16055
+ID,Rathdrum Prairie Project,,,,East Greenacres Unit Pumping Plant,87,430,0.34,0.59,0.263,0.4862528,12369.07408,39684.11064,17010305,ID,Kootenai,16055
+CO,San Luis Valley Project,,,,San Luis Lake Pumping Plant,52.51,15,0.34,0.59,0.263,0.4862528,260.4250521,835.5303328,13010003,CO,Alamosa,8003
+CO,San Luis Valley Project,,,,Alamosa Wildlife Refuge Pumping Plant,19.95,15.5,0.34,0.59,0.263,0.4862528,102.2407627,328.0224302,13010003,CO,Alamosa,8003
+MT,Savage Unit,,,,,42,84,0.34,0.59,0.263,0.4862528,1166.482046,3742.463041,10100004,MT,Richland,30083
+CO,Silt Project,,,,Silt Pumping Plant,36,225,0.34,0.59,0.263,0.4862528,2678.147555,8592.389634,14010005,CO,Garfield,8045
+OR,Tualatin Project,,,,Patton Valley Units No 1-3,26.04,80,0.34,0.59,0.263,0.4862528,688.779875,2209.835319,17090010,OR,Washington,41067
+OR,Tualatin Project,,,,Patton Valley Unit No 4,5.78,80,0.34,0.59,0.263,0.4862528,152.8858555,490.5087614,17090010,OR,Washington,41067
+OR,Tualatin Project,,,,Patton Valley Unit No 5,2.88,80,0.34,0.59,0.263,0.4862528,76.17841935,244.4057496,17090010,OR,Washington,41067
+OR,Tualatin Project,,,,City of Hillsboro M&I Unit No 1,8.24,66,0.34,0.59,0.263,0.4862528,179.8128107,576.8994048,17090010,OR,Washington,41067
+OR,Tualatin Project,,,,City of Hillsboro M&I Units No 2-3,24,85,0.34,0.59,0.263,0.4862528,674.4964214,2164.009241,17090010,OR,Washington,41067
+OR,Tualatin Project,,,,USBR Irrigation Units No 5-8,25.2,377,0.34,0.59,0.263,0.4862528,3141.169511,10077.91833,17090010,OR,Washington,41067
+OR,Tualatin Project,,,,USBR Irrigation Units No 9-13,123,377,0.34,0.59,0.263,0.4862528,15331.8988,49189.83947,17090010,OR,Washington,41067
+OR,Umatilla Basin Project,,,,River Pumping Plant,60,145,0.34,0.59,0.263,0.4862528,2876.528856,9228.862941,17070103,OR,Umatilla,41059
+OR,Umatilla Basin Project,,,,Columbia River Pumping Plant,282,335,0.34,0.59,0.263,0.4862528,31235.13575,100212.7221,17070103,OR,Umatilla,41059
+OR,Umatilla Basin Project,,,,Cold Springs Pumping Plant,158,63,0.34,0.59,0.263,0.4862528,3291.145774,10559.09215,17070103,OR,Umatilla,41059
+OR,Umatilla Basin Project,,,,Stanfield Pumping Plant,79,61,0.34,0.59,0.263,0.4862528,1593.332478,5111.941438,17070103,OR,Umatilla,41059
+OR,Umatilla Basin Project,,,,West Extension Irrigation District,147,97,0.34,0.59,0.263,0.4862528,4714.531604,15125.78812,17070103,OR,Umatilla,41059
+CA,Ventura River Project,,,,Rincon Pumping Plant,6,900,0.34,0.59,0.263,0.4862528,1785.431704,5728.259756,18070101,CA,Ventura,6111
+CA,Ventura River Project,,,,Ventura Avenue No. 1 Pumping Plant,2,900,0.34,0.59,0.263,0.4862528,595.1439012,1909.419919,18070101,CA,Ventura,6111
+CA,Ventura River Project,,,,Ventura Avenue No. 2 Pumping Plant,6,429,0.34,0.59,0.263,0.4862528,851.0557787,2730.470484,18070101,CA,Ventura,6111
+CA,Ventura River Project,,,,Ojai Valley Pumping Plant,50,220,0.34,0.59,0.263,0.4862528,3636.990507,11668.67728,18070101,CA,Ventura,6111
+CA,Ventura River Project,,,,Upper Ojai Pumping Plant,48,1040,0.34,0.59,0.263,0.4862528,16505.32419,52954.57908,18070101,CA,Ventura,6111
+UT,Weber Basin Project,,,,South Davis Pumping Plant,14,402.5,0.34,0.59,0.263,0.4862528,1863.131046,5977.545135,16020102,UT,Davis,49011
+UT,Weber Basin Project,,,,East Bountiful Pumping Plant,13,350,0.34,0.59,0.263,0.4862528,1504.391528,4826.589239,16020102,UT,Davis,49011
+UT,Weber Basin Project,,,,East Layton Pumping Plant,4,175,0.34,0.59,0.263,0.4862528,231.4448505,742.5521906,16020102,UT,Davis,49011
+UT,Weber Basin Project,,,,East Sand Ridge Pumping Plant,8,107,0.34,0.59,0.263,0.4862528,283.0239886,908.0352503,16020102,UT,Weber,49057
+UT,Weber Basin Project,,,,Val Verda Pumping Plant,5,253,0.34,0.59,0.263,0.4862528,418.2539083,1341.897887,16020204,UT,Davis,49011
+UT,Weber Basin Project,,,,West Sand Ridge Pumping Plant,13,155,0.34,0.59,0.263,0.4862528,666.2305338,2137.48952,16020102,UT,Weber,49057
+UT,Weber Basin Project,,,,Weber Aqueduct,17,295,0.34,0.59,0.263,0.4862528,1658.137036,5319.856051,16020102,UT,Weber,49057
+UT,Weber Basin Project,,,,Willard No. 1 Pumping Plant,500,46,0.34,0.59,0.263,0.4862528,7604.616515,24398.14341,16020102,UT,Box Elder,49003
+UT,Weber Basin Project,,,,Willard No. 2 Pumping Plant,300,17,0.34,0.59,0.263,0.4862528,1686.241053,5410.023103,16020102,UT,Box Elder,49003
+UT,Weber Basin Project,,,,Layton No. 1 Pumping Plant,277.5,28,0.34,0.59,0.263,0.4862528,2569.03784,8242.329316,16020102,UT,Davis,49011
+UT,Weber Basin Project,,,,Layton No. 2 Pumping Plant,150,343,0.34,0.59,0.263,0.4862528,17011.19651,54577.58601,16020102,UT,Davis,49011
+WA,Yakima Project,,,,Chandler 1 Pumping Plant,500,108,0.34,0.59,0.263,0.4862528,17854.31704,57282.59756,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Amon Pumping Plant,20,225,0.34,0.59,0.263,0.4862528,1487.859753,4773.549797,17020016,WA,Benton,53005
+WA,Yakima Project,,,,Snipes Mountain Canal Pumping Plant,80,63,0.34,0.59,0.263,0.4862528,1666.402923,5346.375773,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Grandview Pumping Plant,38,56.5,0.34,0.59,0.263,0.4862528,709.8744199,2277.513648,17030003,WA,Yakima,53077
+WA,Yakima Project,,,,West Grandview Pumping Plant,4,64,0.34,0.59,0.263,0.4862528,84.64268817,271.561944,17030003,WA,Yakima,53077
+WA,Yakima Project,,,,Prosser Pumping Plant,40,106,0.34,0.59,0.263,0.4862528,1401.894523,4497.744698,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Spring Creek Pumping Plant,22,77,0.34,0.59,0.263,0.4862528,560.0965381,1796.976301,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Wippel Pumping Plant,65,136.5,0.34,0.59,0.263,0.4862528,2933.56348,9411.849016,17030001,WA,Benton,53005
+WA,Yakima Project,,,,Mile 7.2 - Area No 1 Pumping Plant,39,162,0.34,0.59,0.263,0.4862528,2088.955093,6702.063915,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Mile 16.8 - Area No 2 Pumping Plant,56.6,169.5,0.34,0.59,0.263,0.4862528,3172.017803,10176.88993,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Mile 22.5 - Area No 3 Pumping Plant,46.9,196,0.34,0.59,0.263,0.4862528,3039.333776,9751.195367,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Mile 24.0 - Area No 4 Pumping Plant,14,164,0.34,0.59,0.263,0.4862528,759.1391095,2435.571185,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Mile 27.0 - Area No 5 Pumping Plant,5.5,115,0.34,0.59,0.263,0.4862528,209.1269542,670.9489437,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Mile 29.6 - Area No 6 Pumping Plant,5.5,151,0.34,0.59,0.263,0.4862528,274.5927833,880.9851347,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Mile 37.8 - Area No 7 Pumping Plant,21.6,157,0.34,0.59,0.263,0.4862528,1121.25111,3597.347127,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Mile 42.8 - Area No 8 Pumping Plant,32.1,144,0.34,0.59,0.263,0.4862528,1528.329538,4903.390351,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Mile 48.5 - Area No 9 Pumping Plant,30.6,185,0.34,0.59,0.263,0.4862528,1871.727569,6005.125644,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Mile 52.4 - Area No 9A Pumping Plant,33,166,0.34,0.59,0.263,0.4862528,1811.221273,5811.001286,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Mile 56.1 - AreaNo 10 Pumping Plant,13.5,139,0.34,0.59,0.263,0.4862528,620.437517,1990.570265,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Mile 61.8 - Area No 12 Pumping Plant,11.8,150,0.34,0.59,0.263,0.4862528,585.2248362,1877.596253,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Mile 67.3 - Area No 13 Pumping Plant,48,111,0.34,0.59,0.263,0.4862528,1761.625948,5651.88296,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Mile 71.0 - Area No 14 Pumping Plant,33,241,0.34,0.59,0.263,0.4862528,2629.544137,8436.453674,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Mile 78.8 - Area No 15 Pumping Plant,77.1,211.5,0.34,0.59,0.263,0.4862528,5391.557387,17297.9124,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Mile 81.5 - Severyns Pumping Plant,3,70,0.34,0.59,0.263,0.4862528,69.43345514,222.7656572,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Mile 88.3 - Area No 16 Pumping Plant,46,204,0.34,0.59,0.263,0.4862528,3102.683538,9954.44251,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Mile 92.7 - Area No 17 Pumping Plant,12.2,235,0.34,0.59,0.263,0.4862528,947.9319804,3041.281615,17030003,WA,Benton,53005
+WA,Yakima Project,,,,Terrace Heights Pumping Plant,6,94,0.34,0.59,0.263,0.4862528,186.4784224,598.2849079,17030003,WA,Yakima,53077
+WA,Yakima Project,,,,Cascade 2 Pumping Plant,160,108,0.34,0.59,0.263,0.4862528,5713.381452,18330.43122,17030003,WA,Yakima,53077
+AZ,Yuma Auxilliary Project,,,,Lilley Pumping Plant,22.3,101,0.34,0.59,0.263,0.4862528,744.6903382,2389.214713,15030108,AZ,Yuma,4027
+AZ/CA,Yuma Project,,,,1,133.6,12,0.34,0.59,0.263,0.4862528,530.0748347,1700.656674,15030108,AZ,Yuma,4027
+AZ/CA,Yuma Project,,,,2,66.8,12,0.34,0.59,0.263,0.4862528,265.0374173,850.3283372,15030108,AZ,Yuma,4027
+AZ/CA,Yuma Project,,,,Gardenshire Drain,9,8,0.34,0.59,0.263,0.4862528,23.80575605,76.37679675,15030108,AZ,Yuma,4027
+CA,State Water Project,Current,2300000,11299,Barker Slough Pumping Plant,154,120,0.34,0.59,0.263,0.4862528,6110.144052,19603.37783,18020163,CA,Solano,6095
+CA,State Water Project,,,10831,Cordelia Pumping Plant,140,140,0.34,0.59,0.263,0.4862528,6480.455813,20791.46134,18050001,CA,Solano,6095
+CA,State Water Project,,,892609,Banks Pumping Plant,10670,244,0.34,0.59,0.263,0.4862528,860802.9133,2761742.539,18040003,CA,Contra Costa,6013
+CA,State Water Project,,,100593,South Bay Pumping Plant,330,566,0.34,0.59,0.263,0.4862528,61756.09882,198134.1402,18040003,CA,Contra Costa,6013
+CA,State Water Project,,,460,Del Valle Pumping Plant,120,19,0.34,0.59,0.263,0.4862528,753.8489415,2418.598564,18050004,CA,Alameda,6001
+CA,State Water Project,,,397083,Dos Amigos Pumping Plant,15450,118,0.34,0.59,0.263,0.4862528,602781.5813,1933924.141,18040001,CA,Merced,6047
+CA,State Water Project,,,0,Las Perillas Pumping Plant,461,55,0.34,0.59,0.263,0.4862528,8383.263119,26896.30113,18030012,CA,Kings,6031
+CA,State Water Project,,,20952,Badger Hill Pumping Plant,454,151,0.34,0.59,0.263,0.4862528,22666.38611,72721.31839,18030012,CA,Kings,6031
+CA,State Water Project,,,24067,Devil's Den Pumping Plant,134,521,0.34,0.59,0.263,0.4862528,23082.98684,74057.91234,18030012,CA,Kern,6029
+CA,State Water Project,,,22857,Bluestone Pumping Plant,134,484,0.34,0.59,0.263,0.4862528,21443.69603,68798.52125,18030012,CA,Kern,6029
+CA,State Water Project,,,23929,Polonio Pass Pumping Plant,134,533,0.34,0.59,0.263,0.4862528,23614.64873,75763.6608,18030012,CA,Kern,6029
+CA,State Water Project,,,524039,Buena Vista Pumping Plant,5405,205,0.34,0.59,0.263,0.4862528,366352.4006,1175380.559,18030003,CA,Kern,6029
+CA,State Water Project,,,572039,Teerink Pumping Plant,5445,233,0.34,0.59,0.263,0.4862528,419472.3002,1345806.894,18030003,CA,Kern,6029
+CA,State Water Project,,,1268283,Chrisman Pumping Plant,4995,518,0.34,0.59,0.263,0.4862528,855489.6008,2744695.662,18030003,CA,Kern,6029
+CA,State Water Project,,,4655664,Edmonston Pumping Plant,4480,1926,0.34,0.59,0.263,0.4862528,2852881.805,9152995.323,18030003,CA,Kern,6029
+CA,State Water Project,,,236677,Oso Pumping Plant,3252,231,0.34,0.59,0.263,0.4862528,248377.3557,796877.3089,18090206,CA,Los Angeles,6037
+CA,State Water Project,,,708440,Pearblossom Pumping Plant,2575,540,0.34,0.59,0.263,0.4862528,459748.6637,1475026.887,18090206,CA,Los Angeles,6037
+CA,State Water Project,,,301,Cherry Valley Pumping Station,32,75,0.34,0.59,0.263,0.4862528,793.5252016,2545.893225,18070203,CA,Riverside,6065
+CA,State Water Project,,,3254,Greenspot Pumping Plant,200,382,0.34,0.59,0.263,0.4862528,25260.55225,81044.26766,18070203,CA,San Bernardino,6071
+CA,State Water Project,,,2638,Crafton Hills Pumping Plant,120,613,0.34,0.59,0.263,0.4862528,24321.54743,78031.62735,18070203,CA,San Bernardino,6071
+CA,Colorado River Aqueduct,Current,1200000,2400000,"Hinds Pumping Plant, Hayfield Lake",225,441,0.34,0.59,0.263,0.4862528,32807.30755,105256.773,18100100,CA,Riverside,6065
+CA,Colorado River Aqueduct,,,,Eagle Mountain Pumping Plant,225,438,0.34,0.59,0.263,0.4862528,32584.12859,104540.7406,18100100,CA,Riverside,6065
+CA,Colorado River Aqueduct,,,,Parker Dam (W.P. Whitsett) Intake Pumping Plant - Lake Havasu,225,291,0.34,0.59,0.263,0.4862528,21648.35941,69455.14954,15030104,CA,San Bernardino,6071
+CA,Colorado River Aqueduct,,,,Gene Pumping Plant,225,303,0.34,0.59,0.263,0.4862528,22541.07526,72319.27942,15030104,CA,San Bernardino,6071
+CA,Colorado River Aqueduct,,,,Iron Mountain Pumping Plant,225,144,0.34,0.59,0.263,0.4862528,10712.59022,34369.55854,18100100,CA,San Bernardino,6071
+CA,"Mokelumne Aqueduct, CA",,364000,95000,,,,,,,,95000,95000,18040012,CA,Amador,6005
