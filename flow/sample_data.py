@@ -763,7 +763,7 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
 
     """
 
-    # read in TX interbasin  data
+    # read in TX interbasin data
     df_tx = get_tx_ibt_data()
 
     # get_west_inter_basin_transfer_data
@@ -910,7 +910,6 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     return df
 
 
-# BELOW IS GOOD TO GO
 def prep_pws_to_pwd():
     """
     Calculates public water supply exports, imports, and flows to public water demand based on total public water
@@ -998,7 +997,6 @@ def prep_pws_to_pwd():
     return out_df
 
 
-# BELOW IS READY TO GO
 def prep_county_identifier() -> pd.DataFrame:
     """preps a dataset of FIPS codes and associated county name crosswalk so that datasets with just county names can be
     mapped to appropriate FIPS codes.
@@ -1006,9 +1004,9 @@ def prep_county_identifier() -> pd.DataFrame:
             :return:                DataFrame of FIPS code and county name identifier crosswalk
 
             """
+
     # read in data
-    data = 'input_data/county_FIPS_list.csv'
-    df = pd.read_csv(data, dtype={'FIPS': str, 'STATEFIPS': str})
+    df = get_county_fips_data()
 
     # clean data
     df["COUNTY_SHORT"] = df["COUNTY_SHORT"].str.replace(' ', '')  # remove spaces between words in county name
@@ -1505,12 +1503,11 @@ def prep_power_plant_location() -> pd.DataFrame:
     :return:                DataFrame of power plant codes and associated FIPS codes
 
     """
-    # read in wastewater facility water flow data
-    df_plant_data = 'input_data/EIA860_Generator_Y2015.csv'
-    df_plant = pd.read_csv(df_plant_data, skiprows=1, usecols=['Plant Code', "State", 'County'])
+    # read in power plant location data
+    df_plant = get_power_plant_location_data()
 
-    # read in data
-    df_county = prep_county_identifier()  # county identifier data
+    # read in county identifier data
+    df_county = prep_county_identifier()
 
     # prepare county identifier data
     df_county["county_identifier"] = df_county['county_identifier'].str.replace("'", '', regex=True)  # apostrophes
@@ -1574,7 +1571,6 @@ def prep_power_plant_location() -> pd.DataFrame:
     return df_plant
 
 
-# FUNCTION BELOW IS CORRECT
 def prep_electricity_fuel() -> pd.DataFrame:
     """
     Prepares fuel and generation data by power plant ID from EIA 923 data. Bins generation type, prime mover, and
@@ -1583,7 +1579,7 @@ def prep_electricity_fuel() -> pd.DataFrame:
     :return:                            Dataframe of power plant fuel and generation data by plant ID.
     """
 
-    # assumed efficiency level to fill missing values
+    # establish assumed efficiency level to fill missing values
     EFFICIENCY = .3
 
     # read in electricity generation data by power plant id
