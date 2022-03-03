@@ -64,3 +64,13 @@ def get_water_use_1995_data():
     # read in read in state level water discharge data from oil and natural gas
     return pd.read_csv(data, dtype={'StateCode': str, 'CountyCode': str})
 
+
+def get_water_consumption_rename_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/variable_rename_key_1995water.csv')
+
+    # read in read in state level water discharge data from oil and natural gas
+    return pd.read_csv(data)

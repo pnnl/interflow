@@ -201,7 +201,6 @@ def calc_irrigation_consumption() -> pd.DataFrame:
     return df
 
 
-# below is correct and ready
 def rename_water_data_2015(variables=None, all_variables=False) -> pd.DataFrame:
     """
     Takes USGS 2015 flow values and calculated consumption fractions and renames them for higher description.
@@ -266,7 +265,6 @@ def calc_population_county_weight(df: pd.DataFrame) -> pd.DataFrame:
     return df_state
 
 
-# BELOW IS COMPLETE AND WORKING
 def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
     """prepping 1995 water use data from USGS by replacing missing values, fixing FIPS codes,
      and reducing to needed variables
@@ -315,7 +313,6 @@ def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
     return df
 
 
-# BELOW IS COMPLETE AND WORKING
 def calc_irrigation_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.90) -> pd.DataFrame:
     """
     This function calculates the fraction of water lost during conveyance for irrigation (Crop and golf) for surface
@@ -393,7 +390,6 @@ def calc_irrigation_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.90) ->
     return df_output
 
 
-# Below is correct and should be included in output (Includes all discharges from crop and golf irrigation
 def calc_irrigation_discharge_flows():
     """ Recalculates the consumption fractions for crop and golf irrigation given the calculated conveyance loss
         fractions. Returns irrigation discharges to consumption, conveyance losses, and surface discharge. The fraction
@@ -447,7 +443,6 @@ def calc_irrigation_discharge_flows():
     return df
 
 
-# BELOW IS COMPLETE AND WORKING
 def prep_consumption_fraction() -> pd.DataFrame:
     """prepping water consumption fractions for sectors not included in the 2015 USGS water datset by using the
     consumptive use estimates in the 1995 USGS dataset. For Residential and Commercial sectors it is assumed that
@@ -469,7 +464,7 @@ def prep_consumption_fraction() -> pd.DataFrame:
     df_loc = prep_water_use_2015()  # prepared dataframe of 2015 FIPS codes, county names, and state names
 
     # read in variable naming key data
-    df_rename = pd.read_csv('input_data/variable_rename_key_1995water.csv')
+    df_rename = get_water_consumption_rename_data()
     # convert to dictionary
     rename_dict = dict(zip(df_rename.original_name, df_rename.new_name))
 
