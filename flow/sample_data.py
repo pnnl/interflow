@@ -465,6 +465,7 @@ def prep_consumption_fraction() -> pd.DataFrame:
 
     # read in variable naming key data
     df_rename = get_water_consumption_rename_data()
+
     # convert to dictionary
     rename_dict = dict(zip(df_rename.original_name, df_rename.new_name))
 
@@ -543,7 +544,6 @@ def prep_consumption_fraction() -> pd.DataFrame:
     return df_all
 
 
-# below is complete, do not include in output
 def prep_public_water_supply_fraction() -> pd.DataFrame:
     """calculates public water supply deliveries for the commercial and industrial sectors individually
      as a ratio to the sum of public water supply deliveries to residential end users and thermoelectric cooling.
@@ -591,7 +591,6 @@ def prep_public_water_supply_fraction() -> pd.DataFrame:
     return df_output
 
 
-# BELOW IS COMPLETE AND READY
 def calc_pws_commercial_industrial_flows() -> pd.DataFrame:
     """calculates public water deliveries to the commercial and industrial sectors based on ratios determined
     from 1995 USGS water dataset
@@ -635,7 +634,6 @@ def calc_pws_commercial_industrial_flows() -> pd.DataFrame:
     return df
 
 
-# BELOW IS COMPLETE AND READy
 def calc_discharge_fractions():
     """ Takes water flows to residential, commercial, industrial, mining, and non-irrigation agriculture sectors
         and calculates their discharge fractions to the surface and ocean.
@@ -729,7 +727,6 @@ def calc_discharge_fractions():
     return output_df
 
 
-# BELOW IS GOOD TO GO
 def prep_irrigation_pws_ratio() -> pd.DataFrame:
     """prepping the ratio of water flows to irrigation vs. water flows to public water supply by county. Used to
     determine the split of electricity in interbasin transfers between the two sectors.
@@ -758,7 +755,6 @@ def prep_irrigation_pws_ratio() -> pd.DataFrame:
     return df_irr_pws
 
 
-# BELOW IS GOOD TO GO
 def prep_interbasin_transfer_data() -> pd.DataFrame:
     """Prepares interbasin water transfer data so that output is a dataframe of energy use (BBTU) and total
         water transferred for irrigation and public water supply in total.
