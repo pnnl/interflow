@@ -1,0 +1,42 @@
+﻿2015 Utility Bundled Retail Sales- Transportation,,,,,,
+(Data from forms EIA-861- schedules 4A & 4D and EIA-861S),,,,,,
+Entity,State,Ownership,Customers (Count),Sales (Megawatthours),Revenues (Thousands Dollars),Average Price (cents/kWh)
+City of North Little Rock - (AR),AR,Municipal,1,324,37.0,11.42
+Entergy Arkansas Inc,AR,Investor Owned,1,113,12.0,10.62
+Salt River Project,AZ,Political Subdivision,1,"6,216",584.0,9.40
+City & County of San Francisco,CA,Municipal,1,"104,193","6,519.0",6.26
+City of Pasadena - (CA),CA,Municipal,1,"8,927","1,280.1",14.34
+City of Santa Clara - (CA),CA,Municipal,1,"18,195","2,041.6",11.22
+Los Angeles Department of Water & Power,CA,Municipal,2,"142,408","20,357.8",14.30
+Sacramento Municipal Util Dist,CA,Political Subdivision,1,"28,651","3,720.1",12.98
+San Diego Gas & Electric Co,CA,Investor Owned,4,"83,031","6,744.0",8.12
+Southern California Edison Co,CA,Investor Owned,1,"72,761","11,337.0",15.58
+WAPA-- Western Area Power Administration,CA,Federal,1,"8,910",312.0,3.50
+Public Service Co of Colorado,CO,Investor Owned,1,"64,264","6,477.0",10.08
+Florida Power & Light Co,FL,Investor Owned,1,"92,204","8,198.0",8.89
+JEA,FL,Municipal,1,"3,256",316.9,9.73
+Georgia Power Co,GA,Investor Owned,1,"170,853","9,003.5",5.27
+Northern Indiana Pub Serv Co,IN,Investor Owned,1,"21,016","2,084.7",9.92
+Entergy New Orleans Inc,LA,Investor Owned,1,"11,829",978.9,8.28
+Massachusetts Electric Co,MA,Investor Owned,1,33,7.8,23.64
+DTE Electric Company,MI,Investor Owned,1,"4,292",491.0,11.44
+Northern States Power Co - Minnesota,MN,Investor Owned,1,"24,209","2,299.7",9.50
+Union Electric Co - (MO),MO,Investor Owned,1,"20,622","1,724.0",8.36
+"Duke Energy Carolinas, LLC",NC,Investor Owned,1,"8,651",683.6,7.90
+Public Service Elec & Gas Co,NJ,Investor Owned,1,"11,478","1,039.0",9.05
+Nevada Power Co,NV,Investor Owned,1,"8,344",760.0,9.11
+Consolidated Edison Co-NY Inc,NY,Investor Owned,2,"1,506",295.0,19.59
+Long Island Power Authority,NY,State,1,"319,189","46,979.4",14.72
+New York State Elec & Gas Corp,NY,Investor Owned,1,"43,448","1,448.5",3.33
+Niagara Mohawk Power Corp.,NY,Investor Owned,1,"5,712",52.7,0.92
+Dayton Power & Light Co,OH,Investor Owned,1,"3,545",394.0,11.11
+PacifiCorp,OR,Investor Owned,1,"15,138","1,458.8",9.64
+Portland General Electric Co,OR,Investor Owned,1,"8,987",746.4,8.31
+ENGIE Resources Inc.,TX,Retail Energy Provider,1,"9,800",444.0,4.53
+Texas General Land Office,TX,Retail Energy Provider,2,"169,814","9,141.0",5.38
+PacifiCorp,UT,Investor Owned,1,"55,620","5,588.7",10.05
+Virginia Electric & Power Co,VA,Investor Owned,1,"196,432","15,928.8",8.11
+City of Seattle - (WA),WA,Municipal,4,681,63.0,9.25
+City of Tacoma  - (WA),WA,Municipal,1,501,7.0,1.40
+Puget Sound Energy Inc,WA,Investor Owned,1,"4,106",362.8,8.84
+Wisconsin Electric Power Co,WI,Investor Owned,1,191,28.0,14.66
