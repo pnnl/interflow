@@ -275,8 +275,7 @@ def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
 
     """
     # read in 1995 water data
-    data = 'input_data/usco1995.csv'
-    df = pd.read_csv(data, dtype={'StateCode': str, 'CountyCode': str})
+    df = get_water_use_1995_data()
 
     # create a complete state + county FIPS code from the sum of the state and county level FIPS code strings
     df["FIPS"] = df["StateCode"] + df["CountyCode"]
