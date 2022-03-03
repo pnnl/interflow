@@ -390,7 +390,7 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
         raise ValueError(m)
 
     # save to output file if output file name specified
-    if output_file_name is None:
+    if output_file_path is None:
         pass
     else:
         df.to_csv(output_file_path)
