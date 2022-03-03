@@ -767,21 +767,20 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     df_tx = get_tx_ibt_data()
 
     # get_west_inter_basin_transfer_data
-    data_west = 'input_data/West_IBT_county.csv'
-    df_west = pd.read_csv(data_west, dtype={'FIPS': str})
+    df_west = get_west_ibt_data()
 
     # read in pws to irr water ratio
     df_ratio = prep_irrigation_pws_ratio()
-    df_loc = prep_water_use_2015()  # full county list
 
+    # read in full county list
+    df_loc = prep_water_use_2015()
+
+    # establish constants
     feet_meter_conversion = 1 / 3.281  # feet to meter conversion
-
     af_mg = 0.325851  # acre-feet to million gallons
     cf_mg = 7.48052E-06  # cubic feet to million gallons
     sec_day = 86400  # seconds in a day
-
     gpy_cmh = 0.00378541 / 8760  # gallons per year to cubic meters per hour
-
     pump_eff = .466  # assumed pump efficiency rate
     acc_gravity = 9.81  # Acceleration of gravity  (m/s^2)
     water_density = 997  # Water density (kg/m^3)
