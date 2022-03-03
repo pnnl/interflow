@@ -43,5 +43,13 @@ def get_water_use_2015_data():
     return pd.read_csv(data, skiprows=1, dtype={'FIPS': str})
 
 
+def get_water_use_rename_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
 
+    data = pkg_resources.resource_filename('flow', 'input_data/variable_rename_key.csv')
+
+    # read in read in state level water discharge data from oil and natural gas
+    return pd.read_csv(data)
 

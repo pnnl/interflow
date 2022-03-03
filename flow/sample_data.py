@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from .reader import *
 
 
 def convert_kwh_bbtu(value: float) -> float:
@@ -42,7 +43,7 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
     """
 
     # read in 2015 USGS data
-    df = pd.read_csv('input_data/usco2015v2.0.csv', skiprows=1, dtype={'FIPS': str})
+    df = get_water_use_2015_data()
 
     # replacing characters for missing data with value of zero
     df.replace("--", 0, inplace=True)
@@ -212,7 +213,7 @@ def rename_water_data_2015(variables=None, all_variables=False) -> pd.DataFrame:
     df = prep_water_use_2015(all_variables=True)
 
     # read in renaming data
-    df_names = pd.read_csv('input_data/variable_rename_key.csv')
+    df_names = get_water_use_rename_data()
 
     # convert to dictionary
     df_names = dict(zip(df_names.original_name, df_names.new_name))

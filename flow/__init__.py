@@ -4,6 +4,7 @@ from .construct import *
 from .calc_flow import *
 from .deconstruct import *
 from .analyze import *
+from .sample_data import *
 
 
 __version__ = "0.0.0"
