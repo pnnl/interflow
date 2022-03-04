@@ -168,3 +168,14 @@ def get_irrigation_pumping_data():
 
     # return dataframe
     return pd.read_csv(data, skiprows=3)
+
+
+def get_pumping_intensity_rename_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/variable_rename_key_pump_intensity.csv')
+
+    # return dataframe
+    return pd.read_csv(data)

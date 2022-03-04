@@ -2303,13 +2303,15 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
 
     # read in irrigation well depth, pressure, and pump fuel type data
     df = get_irrigation_pumping_data()
+
+    # reduce dataset
     df = df[['State', 'average_well_depth_ft', 'average_operating_pressure_psi']]
 
     # read in FIPS codes and states from 2015 water dataset
     df_loc = prep_water_use_2015()
 
     # read in renaming data
-    df_names = pd.read_csv('input_data/variable_rename_key_pump_intensity.csv')
+    df_names = get_pumping_intensity_rename_data()
 
     # convert to dictionary
     name_dict = dict(zip(df_names.original_name, df_names.new_name))
@@ -2388,13 +2390,13 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
     return df
 
 
-# BELOW IS GOOD TO GO
 def prep_pws_treatment_dist_intensity_values():
     """ Prepares energy intensity values for public water supply treatment and distribution
 
-    :return:                                            Dataframe of publicw water supply intensities
+    :return:                                            Dataframe of public water supply intensities
     """
-    # create a dataframe of counties
+
+    # read in dataframe of FIPS codes
     out_df = prep_water_use_2015()
 
     # establish intensity values
@@ -2402,7 +2404,7 @@ def prep_pws_treatment_dist_intensity_values():
     FSW_TREATMENT = 405  # fresh surface water treatment (kWh/mg)
     SGW_TREATMENT = 12000  # saline groundwater treatment (kWh/mg)
     SSW_TREATMENT = 12000  # saline surface water treatment (kWh/mg)
-    DISTRIBUTION = 1040  # distrubution (kWh)
+    DISTRIBUTION = 1040  # distribution (kWh/mg)
 
     # convert intensities to bbtu/million gallon
     fgw_treat = convert_kwh_bbtu(FGW_TREATMENT)
