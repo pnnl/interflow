@@ -3148,7 +3148,6 @@ def rename_natgas_petroleum_data():
     return df
 
 
-# BELOW IS GOOD TO GO
 def prep_county_coal_production_data() -> pd.DataFrame:
     """prepares a dataframe of coal production by county from surface and underground mines in bbtu. Also creates a
     surface and underground water intensity per bbtu variable.
@@ -3162,19 +3161,13 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     SURFACE_INTENSITY = 0.00034
 
     # read in coal production data
-    data_prod = 'input_data/coalpublic2015.csv'
-    df_coal = pd.read_csv(data_prod, skiprows=3)
+    df_coal = get_coal_production_data()
 
     # read in coal mine location data
-    loc_data = 'input_data/Coal_Mine_Loc.csv'
-    df_coal_loc = pd.read_csv(loc_data, dtype={'FIPS_CNTY_CD': str}, usecols=["MINE_ID", "STATE", "FIPS_CNTY_CD"])
+    df_coal_loc = get_coal_mine_location_data()
 
     # read in state fips code to state abbrev. data
-    fipsdata = 'input_data/State_FIPS_Code.csv'
-    df_fips = pd.read_csv(fipsdata, dtype={'State_FIPS': str})
-
-    # read in full list of FIPS codes and states from 2015 water dataset
-    df_loc = prep_water_use_2015()
+    df_fips = get_state_fips_crosswalk_data()
 
     # establish unit conversions
     shortton_bbtu_conversion = 0.02009  # one short ton is equal to 0.02009 bbtu

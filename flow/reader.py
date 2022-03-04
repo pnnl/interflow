@@ -281,3 +281,36 @@ def get_petroleum_natgas_rename_data():
     # return dataframe
     return pd.read_csv(data)
 
+
+def get_coal_production_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/coalpublic2015.csv')
+
+    # return dataframe
+    return pd.read_csv(data, skiprows=3)
+
+
+def get_coal_mine_location_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/Coal_Mine_Loc.csv')
+
+    # return dataframe
+    return pd.read_csv(data, dtype={'FIPS_CNTY_CD': str}, usecols=["MINE_ID", "STATE", "FIPS_CNTY_CD"])
+
+
+def get_state_fips_crosswalk_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/State_FIPS_Code.csv')
+
+    # return dataframe
+    return pd.read_csv(data, dtype={'State_FIPS': str})
+
