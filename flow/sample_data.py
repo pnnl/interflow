@@ -3218,7 +3218,6 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     return df_coal
 
 
-# BELOW IS GOOD TO GO
 def prep_county_coal_data() -> pd.DataFrame:
     """prepares a dataframe of water type and water source fractions to coal mining by county. These are assumed to
     be equal to total mining water withdrawal sources and discharge fractions in the 2015 USGS water data. Also
@@ -3470,7 +3469,6 @@ def remove_double_counting_from_mining():
     return df
 
 
-# BELOW IS GOOD TO GO
 def prep_county_ethanol_production_data() -> pd.DataFrame:
     """ Takes 2015 eia data on ethanol plant capacity with locational data and combines with state level biomass
      (ethanol) production data to split out state total by county. Returns a dataframe of ethanol production (bbtu) by
@@ -3480,17 +3478,18 @@ def prep_county_ethanol_production_data() -> pd.DataFrame:
 
     """
     # ethanol plant location data
-    ethanol_data = 'input_data/eia819_ethanolcapacity_2015.csv'
-    df_ethanol_loc = pd.read_csv(ethanol_data, dtype={'FIPS': str}, skiprows=1)
+    df_ethanol_loc = get_ethanol_plant_location_data()
 
-    # ethanol production data
+    # get state-level ethanol production data
     df_ethanol_production = prep_state_fuel_production_data()
-    df_ethanol_production = df_ethanol_production[['State', 'biomass_production_bbtu']]  # reduce dataset
+
+    # reduce production dataset
+    df_ethanol_production = df_ethanol_production[['State', 'biomass_production_bbtu']]
 
     # read in FIPS codes and states from 2015 water dataset
     df_loc = prep_water_use_2015()
 
-    # bbtus per gallon of ethanol
+    # establish constant for bbtus per gallon of ethanol
     btu_per_gal = 80430
     bbtu_per_gal_ethanol = btu_per_gal / 1000000000
 

@@ -314,3 +314,14 @@ def get_state_fips_crosswalk_data():
     # return dataframe
     return pd.read_csv(data, dtype={'State_FIPS': str})
 
+
+def get_ethanol_plant_location_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/eia819_ethanolcapacity_2015.csv')
+
+    # return dataframe
+    return pd.read_csv(data, dtype={'FIPS': str}, skiprows=1)
+
