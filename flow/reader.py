@@ -194,3 +194,23 @@ def get_electricity_demand_data():
                               'Industrial': float, 'Transportation': float})
 
 
+def get_fuel_demand_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/use_all_btu.csv')
+
+    # return dataframe
+    return pd.read_csv(data)
+
+
+def get_fuel_renaming_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/variable_rename_key_fuel_demand.csv')
+
+    # return dataframe
+    return pd.read_csv(data)

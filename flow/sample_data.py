@@ -2452,9 +2452,6 @@ def prep_electricity_demand_data() -> pd.DataFrame:
     tra_eff = .21
 
     # Read in state-level electricity generation demand by sector
-    data = 'input_data/eia_sales_annual.csv'
-
-    # read in transportation electricity sales data
     df = get_electricity_demand_data()
 
     # build renaming dictionary
@@ -2463,7 +2460,7 @@ def prep_electricity_demand_data() -> pd.DataFrame:
                    "Industrial": 'IND',
                    "Transportation": 'TRA'}
 
-    # reduce dataframe to only include 2015
+    # reduce dataframe to only include 2015 values
     df = df[df.Year == 2015]
 
     # remove US total
@@ -2534,7 +2531,6 @@ def prep_electricity_demand_data() -> pd.DataFrame:
     return df
 
 
-# BELOW IS GOOD TO GO
 def prep_fuel_demand_data() -> pd.DataFrame:
     """prepares fuel demand data to the residential, commercial, industrial, and transportation sectors. Returns a
     dataframe of fuel demand by fuel type and sector in bbtu per day for each county.
@@ -2543,13 +2539,11 @@ def prep_fuel_demand_data() -> pd.DataFrame:
 
     """
 
-    # read in fuel data
-    data = 'input_data/use_all_btu.csv'
-    df = pd.read_csv(data)
+    # read in fuel demand data
+    df = get_fuel_demand_data()
 
     # read in variable renaming key
-    # read in renaming data
-    df_names = pd.read_csv('input_data/variable_rename_key_fuel_demand.csv')
+    df_names = get_fuel_renaming_data()
 
     # convert to dictionary
     df_names = dict(zip(df_names.original_name, df_names.new_name))
