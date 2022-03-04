@@ -2160,6 +2160,7 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
 
     """
     # establish pumping efficiency assumption
+    # TODO update efficiency assumptions
     EFFICIENCY = .65
 
     # read in irrigation pumping dataset
@@ -2286,8 +2287,6 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
     return output_df
 
 
-# BELOW IS READY TO GO
-
 def prep_pumping_intensity_data() -> pd.DataFrame:
     """Prepares irrigation data so that the outcome is a dataframe of groundwater and surface water pumping energy
     intensities (billion BTU per million gallons) by county. For groundwater pumping intensity, The total differential
@@ -2303,8 +2302,7 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
     """
 
     # read in irrigation well depth, pressure, and pump fuel type data
-    data = 'input_data/FRIS2013tab8.csv'
-    df = pd.read_csv(data, skiprows=3)
+    df = get_irrigation_pumping_data()
     df = df[['State', 'average_well_depth_ft', 'average_operating_pressure_psi']]
 
     # read in FIPS codes and states from 2015 water dataset
