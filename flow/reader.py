@@ -303,8 +303,8 @@ def get_coal_mine_location_data():
 
 
 def get_state_fips_crosswalk_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in data with state names, state abbreviations, and state-level FIPS codes.
+        :return:                        dataframe of state identification values
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/State_FIPS_Code.csv')
@@ -314,8 +314,8 @@ def get_state_fips_crosswalk_data():
 
 
 def get_ethanol_plant_location_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in data on ethanol plant locations for 2015.
+        :return:                        dataframe of ethanol plant location values
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/eia819_ethanolcapacity_2015.csv')
@@ -325,8 +325,8 @@ def get_ethanol_plant_location_data():
 
 
 def get_corn_irrigation_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in data from USDA Farm and Ranch Irrigation Survey on total irrigation to all crops and corn production.
+        :return:                        dataframe of irrigation values
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/USDA_FRIS.csv')
@@ -336,8 +336,8 @@ def get_corn_irrigation_data():
 
 
 def get_corn_production_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in data from USDA on the total corn production for 2015 at the county level.
+        :return:                        dataframe of county-level corn production values
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/USDA_NASS_CornProd_2015.csv')
