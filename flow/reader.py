@@ -32,6 +32,27 @@ def read_input_data(path: str, leading_zeros=None) -> pd.DataFrame:
     return df
 
 
+def read_sample_data() -> pd.DataFrame:
+    """Read in input csv data as a Pandas DataFrame.
+
+        """
+
+    # collect file
+    data = pkg_resources.resource_filename('flow', 'input_data/test_output.csv')
+
+    # read in file
+    df = pd.read_csv(data, dtype={'FIPS': str})
+
+    # read the region column as a string
+    region_col = df.columns[0]
+
+    # add leading zeros to region if necessary
+    df[region_col] = df[region_col].apply(lambda x: x.zfill(5))
+
+    # return dataframe
+    return df
+
+
 def get_water_use_2015_data():
     """Read in data
         :return:                        dataframe of values

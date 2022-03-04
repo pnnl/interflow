@@ -8,7 +8,7 @@ class TestCalcFlow(unittest.TestCase):
 
     def test_calc_flow(self):
         # create sample test data
-        sample_data = read_input_data()
+        sample_data = read_sample_data()
         first_region = sample_data[sample_data.columns[0]].iloc[0]
         first_column = sample_data.columns[0]
         sample_data = sample_data.loc[sample_data[first_column] == first_region]
