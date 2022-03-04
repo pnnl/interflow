@@ -104,6 +104,52 @@ def get_county_fips_data():
     return pd.read_csv(data, dtype={'FIPS': str, 'STATEFIPS': str})
 
 
+def get_wastewater_flow_data():
+    """Read in data of wastewater facility water flow data.
+        :return:                        dataframe of wastewater flow values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/WW_Facility_Flow.csv')
+
+    # return dataframe
+    return pd.read_csv(data, dtype={'CWNS_NUMBER': str})
+
+
+def get_wastewater_type_data():
+    """Read in data of wastewater facility treatment type data.
+        :return:                        dataframe of wastewater treatment values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/WW_Facility_Type.csv')
+
+    # return dataframe
+    return pd.read_csv(data, dtype={'CWNS_NUMBER': str})
+
+
+def get_wastewater_location_data():
+    """Read in data of wastewater facility location data.
+        :return:                        dataframe of wastewater location values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/WW_Facility_Loc.csv')
+
+    # return dataframe
+    return pd.read_csv(data, dtype={'CWNS_NUMBER': str})
+
+
+def get_wastewater_discharge_data():
+    """Read in data of wastewater facility discharge data.
+        :return:                        dataframe of wastewater discharge values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/WW_Discharge.csv')
+
+    # return dataframe
+    return pd.read_csv(data, dtype={'CWNS_NUMBER': str})
+
+
+
+
 def get_power_plant_location_data():
     """Read in data that includes information on the location (county, state) of individual power plants (by plant code)
      in the US for 2015
