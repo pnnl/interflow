@@ -3604,8 +3604,7 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
     df_loc = prep_water_use_2015()
 
     # read in state abbreviation key
-    data_state = 'input_data/State_FIPS_Code.csv'
-    df_state_abb = pd.read_csv(data_state, dtype={'State_FIPS': str})
+    df_state_abb = get_state_fips_crosswalk_data()
 
     # set up variables
     ethanol_fraction = 0.38406  # corn grown for ethanol fraction
@@ -3707,7 +3706,6 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
     return df
 
 
-# BELOW IS GOOD TO GO
 def remove_irrigation_water_double_counting():
     """  Subtracts water use in the irrigation of corn growth for ethanol from the total water use in crop irrigation
     provided in the 2015 USGS dataset to prevent double counting.
@@ -3743,7 +3741,6 @@ def remove_irrigation_water_double_counting():
     return df
 
 
-# BELOW IS GOOD TO GO
 def prep_corn_crop_irr_flows():
     """
     prepares values for water for corn growth for ethanol including consumption fractions, surface discharge fractions,
@@ -3876,14 +3873,15 @@ def combine_data():
     out_df = pd.merge(out_df, x22, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x23, how='left', on=['FIPS', 'State', 'County'])
 
+    # restructure merged dataframes into proper format
     value_columns = out_df.columns[3:].to_list()
     out_df = pd.melt(out_df, value_vars=value_columns, var_name='flow_name', value_name='value', id_vars=['FIPS'])
     out_df = out_df[out_df.value != 0]
     i = out_df.columns.get_loc('flow_name')
     df2 = out_df['flow_name'].str.split("_", expand=True)
     out_df = pd.concat([out_df.iloc[:, :i], df2, out_df.iloc[:, i + 1:]], axis=1)
-    col = ['FIPS', 't1', 't2', 't3', 't4', 't5', 'T_unit', 'to', 's1', 's2', 's3', 's4', 's5', 'S_unit', 'parameter',
-           'value']
+    col = ['FIPS', 't1', 't2', 't3', 't4', 't5', 'T_unit', 'to',
+           's1', 's2', 's3', 's4', 's5', 'S_unit', 'parameter', 'value']
     out_df.columns = col
     out_df['parameter'].fillna('flow_value', inplace=True)
     out_df['type'] = np.where(out_df['parameter'] == 'flow_value', 'A_collect', np.nan)
