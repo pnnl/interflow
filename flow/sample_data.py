@@ -3550,7 +3550,6 @@ def prep_county_ethanol_production_data() -> pd.DataFrame:
     return df_biomass
 
 
-# BELOW IS GOOD TO GO
 def remove_industrial_water_double_counting():
     """
         Removes fresh surface water withdrawals for the production of ethanol in the industrial sector from
@@ -3590,17 +3589,15 @@ def prep_county_water_corn_biomass_data() -> pd.DataFrame:
     :return:                DataFrame of a number of water values for 2015 at the county level
 
     """
-    # read in corn data
-    corn_irr_data = 'input_data/USDA_FRIS.csv'
-    df_corn = pd.read_csv(corn_irr_data)
+    # read in corn irrigation data
+    df_corn = get_corn_irrigation_data()
 
-    # corn production data
-    prod_data = 'input_data/USDA_NASS_CornProd_2015.csv'
-    df_corn_prod = pd.read_csv(prod_data, dtype={'State ANSI': str, 'County ANSI': str, 'Value': float})
+    # read in corn production data
+    df_corn_prod = get_corn_production_data()
 
-    # read in 2015 crop irrigation data
-    crop_fgw = 'IC-WGWFr'
-    crop_fsw = 'IC-WSWFr'
+    # read in 2015 USGS crop irrigation data
+    crop_fgw = 'IC-WGWFr'  # fresh groundwater to crop irrigation
+    crop_fsw = 'IC-WSWFr'  # fresh surface water to crop irrigation
     df_irr_water = prep_water_use_2015(variables=['State', crop_fgw, crop_fsw])
 
     # read in full county list for 2015

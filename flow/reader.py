@@ -325,3 +325,25 @@ def get_ethanol_plant_location_data():
     # return dataframe
     return pd.read_csv(data, dtype={'FIPS': str}, skiprows=1)
 
+
+def get_corn_irrigation_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/USDA_FRIS.csv')
+
+    # return dataframe
+    return pd.read_csv(data)
+
+
+def get_corn_production_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/USDA_NASS_CornProd_2015.csv')
+
+    # return dataframe
+    return pd.read_csv(data, dtype={'State ANSI': str, 'County ANSI': str, 'Value': float})
+
