@@ -1840,7 +1840,6 @@ def prep_electricity_cooling() -> pd.DataFrame:
     return df_cooling
 
 
-# FUNCTION BELOW IS CORRECT
 def prep_generation_fuel_flows() -> pd.DataFrame:
     """ Function prepares data flows from fuel supply to electricity generation, electricity generation supply to
     electricity generation demand, and electricity generation to rejected energy.
@@ -1848,6 +1847,7 @@ def prep_generation_fuel_flows() -> pd.DataFrame:
     :return:
     """
 
+    # establish efficiency assumption constant
     EFFICIENCY_ASSUMPTION = .30
 
     # load electricity generation and cooling data
@@ -1940,7 +1940,6 @@ def prep_generation_fuel_flows() -> pd.DataFrame:
     return output_df
 
 
-# FUNCTION BELOW IS CORRECT
 def prep_electricity_cooling_flows() -> pd.DataFrame:
     """
     Prepares flows from water supply to thermoelectric cooling and water flows from thermoelectric cooling to
@@ -2068,7 +2067,6 @@ def prep_electricity_cooling_flows() -> pd.DataFrame:
     return output_df
 
 
-# FUNCTION BELOW IS COMPLETE AND READY
 def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) -> pd.DataFrame:
     """calculating the water use required for a bbtu of hydroelectric generation. Daily water use (mgd) is
     combined with daily generation from hydropower for each region from 1995 USGS data. Discharge and source
@@ -2080,7 +2078,9 @@ def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) ->
 
     # read in data from 1995 water use
     df = prep_water_use_1995(variables=['FIPS', 'State', "HY-InUse", "HY-InPow"])  # 1995 hydropower data
-    df_loc = prep_water_use_2015()  # prepared list of 2015 counties with FIPS codes
+
+    # read in 2015 counties with FIPS codes
+    df_loc = prep_water_use_2015()
 
     # read in generation data for hydro to only include intensities for counties with hydro
     df_hydro = prep_generation_fuel_flows()
@@ -2150,7 +2150,6 @@ def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) ->
     return output_df
 
 
-# BELOW IS READY TO GO
 def prep_pumping_energy_fuel_data() -> pd.DataFrame:
     """prepping pumping fuel source data so that the outcome is a dataframe showing the percent of energy for
     crop irrigation, golf irrigation, aquaculture, livestock, and public water supply, that comes from each fuel
@@ -2160,12 +2159,11 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
     :return:                DataFrame fuel source fractions, rejected energy fractions, and energy services fractions
 
     """
-    # pumping efficiency assumption
+    # establish pumping efficiency assumption
     EFFICIENCY = .65
 
     # read in irrigation pumping dataset
-    data = 'input_data/FRIS2013tab8.csv'
-    df = pd.read_csv(data, skiprows=3)
+    df = get_irrigation_pumping_data()
 
     # read in FIPS codes and states from 2015 water dataset
     df_loc = prep_water_use_2015()

@@ -151,9 +151,20 @@ def get_electricity_cooling_flow_data():
         :return:                        dataframe of values
         """
 
-    data = pkg_resources.resource_filename('flow', 'input_data\2015_TE_Model_Estimates_USGS.csv')
+    data = pkg_resources.resource_filename('flow', r'input_data\2015_TE_Model_Estimates_USGS.csv')
 
     # return dataframe
     return pd.read_csv(data, usecols=['EIA_PLANT_ID', "COUNTY", 'STATE', 'NAME_OF_WATER_SOURCE', 'GENERATION_TYPE',
                                       'COOLING_TYPE', 'WATER_SOURCE_CODE', 'WATER_TYPE_CODE', 'WITHDRAWAL',
                                       'CONSUMPTION'])
+
+
+def get_irrigation_pumping_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/FRIS2013tab8.csv')
+
+    # return dataframe
+    return pd.read_csv(data, skiprows=3)
