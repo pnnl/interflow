@@ -1,5 +1,7 @@
 import pkg_resources
 import pandas as pd
+import json
+
 
 
 def read_sample_data() -> pd.DataFrame:
@@ -388,4 +390,17 @@ def get_corn_production_data():
 
     # return dataframe
     return pd.read_csv(data, dtype={'State ANSI': str, 'County ANSI': str, 'Value': float})
+
+
+def load_geojson_data():
+    """Read in GeoJSON file with county-level information for mapping all US counties.
+        :return:                        dataframe of county-level corn production values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/geojson-counties-fips.json')
+
+    f = open(data)
+
+    # return dataframe
+    return json.load(f)
 

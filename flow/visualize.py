@@ -465,7 +465,7 @@ def plot_sector_bar(data, unit_type, region_name, sector_list, inflow=True, stri
     fig.show()
 
 
-def plot_map(jsonfile: str, data:pd.DataFrame, level=1, region_col=None, strip="total", center=None):
+def plot_map(jsonfile: dict, data:pd.DataFrame, level=1, region_col=None, strip="total", center=None):
     """ Takes flow package output and plots a cloropleth map of an individual value. Displaying the first flow value
      in the dataset by default and produces a drop-down menu of the remaining flows to select from and update the map.
      Requires a GeoJSON file containing the geometry information for the region of interest. The feature.id in the file
@@ -475,10 +475,10 @@ def plot_map(jsonfile: str, data:pd.DataFrame, level=1, region_col=None, strip="
      information in the hover-template when a region is hovered over. This is provided in the region_col parameter and
      points to the column in the input data with this information.
 
-    :param jsonfile:                        Path to GeoJSON file containing geometry information for the values to be
+    :param jsonfile:                        loaded GeoJSON file containing geometry information for the values to be
                                             plotted on the map. the feature.id in the file must align with the region
                                             data column in the dataframe of input values to display.
-    :type jsonfile:                         str
+    :type jsonfile:                         dict
 
     :param data:                            dataframe of flow values from source to target by region
     :type data:                             Dataframe
@@ -509,9 +509,8 @@ def plot_map(jsonfile: str, data:pd.DataFrame, level=1, region_col=None, strip="
     # collect flow data
     df = data
 
-    # collect geojson file
-    f = open(jsonfile)
-    geo_id = json.load(f)
+    # collect geojson dictionary
+    geo_id = jsonfile
 
     # set center coordinates for map
     if center is None:
