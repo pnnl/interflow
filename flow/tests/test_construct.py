@@ -9,7 +9,7 @@ class TestConstruct(unittest.TestCase):
     def test_construct_nested_dictionary(self):
 
         # load data
-        sample_data = read_input_data()
+        sample_data = read_sample_data()
 
         # grab a subset of the sample
         first_region = sample_data[sample_data.columns[0]].iloc[0]
