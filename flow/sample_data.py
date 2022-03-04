@@ -1461,9 +1461,14 @@ def prep_wastewater_data() -> pd.DataFrame:
 
 
 def calc_sc_ww_values():
-    """
+    """ Calculates estimates for wastewater treatment demand data for the state of South Carolina. South Carolina is
+    the only state that does not have wastewater treatment values in the wastewater treatment facility dataset. Total
+    municipal wastewater treatment flows are estimated as the amount of public water supply deliveries to the
+    residential, commercial, and industrial sectors that is not consumed. For the state of South Carolina, therefore,
+    wastewater treatment demand is expected to be equal to wastewater treatment supply with no exports or imports.
 
-    :return:
+    :return:                                            Dataframe of wastewater treatment flows from municipal sources
+                                                        for the state of South Carolina
     """
 
     # prepare treatment fraction assumptions
@@ -1529,6 +1534,9 @@ def calc_sc_ww_values():
     # fill blank infiltration values with zero
     df_ww_sc.fillna(0, inplace=True)
 
+    # drop helper columns
+    df_ww_sc = df_ww_sc.drop(['total_municipal', 'advanced_municipal', 'secondary_municipal'], axis=1)
+
     return df_ww_sc
 
 
@@ -1549,9 +1557,11 @@ def combine_ww_data() -> pd.DataFrame:
     # drop south carolina rows from full wastewater treatment dataset
     df_ww = df_ww[df_ww.State != 'SC']
 
+    # combine full wastewater dataframe with south carolina dataframe
+    concatenate_list = [df_ww, df_sc]
+    df = pd.concat(concatenate_list)
 
-
-    return df_ww
+    return df
 
 
 # TODO fix south carolina estimates by brining in residential pws deliveries, commercial pws deliveres, ind
@@ -3889,14 +3899,15 @@ def prep_corn_crop_irr_flows():
     return df
 
 
-def combine_data():
+def collect_sample_data():
     """
     Combines output data from all functions into a single dataset, structures data for input into the flow
     Python package.
 
-    :return:
+    :return:                                            Dataframe of fully structured data
     """
 
+    # create list of variables to include from the USGS dataset for 2015
     var_list = [
         'FIPS',
         'State',
@@ -3922,13 +3933,14 @@ def combine_data():
         'AGR_aquaculture_saline_surfacewater_withdrawal_mgd_from_WSW_saline_surfacewater_total_total_mgd',
     ]
 
+    # read in output data from all relevant functions
     x1 = rename_water_data_2015(variables=var_list)
     x2 = calc_irrigation_discharge_flows()
     x3 = prep_interbasin_transfer_data()
     x4 = prep_pws_to_pwd()
     x6 = calc_pws_commercial_industrial_flows()
     x7 = calc_discharge_fractions()
-    x8 = prep_wastewater_data()
+    x8 = combine_ww_data()
     x9 = prep_generation_fuel_flows()
     x10 = prep_electricity_cooling_flows()
     x11 = calc_hydro_water_intensity()
@@ -3951,6 +3963,7 @@ def combine_data():
                     'MIN_other_total_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
                     'MIN_other_total_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd'], axis=1)
 
+    # merge output dataframes
     out_df = pd.merge(x1, x2, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x3, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x4, how='left', on=['FIPS', 'State', 'County'])
@@ -3997,6 +4010,10 @@ def combine_data():
     out_df['FIPS'] = out_df['FIPS'].astype(str)
     out_df['FIPS'] = out_df['FIPS'].apply(lambda x: '{0:0>5}'.format(x))
 
-    # TODO add a save to csv from here
+    out_df.reset_index(inplace=True)
+
+    # save csv to data folder
+    data = pkg_resources.resource_filename('flow', 'input_data/us_county_sample_data.csv')
+    out_df.to_csv(data, index=False)
 
     return out_df
