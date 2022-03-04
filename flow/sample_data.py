@@ -1583,21 +1583,18 @@ def prep_electricity_fuel() -> pd.DataFrame:
     EFFICIENCY = .3
 
     # read in electricity generation data by power plant id
-    data = 'input_data\EIA923_Schedules_2_3_4_5_M_12_2015_Final_Revision.csv'
-    df = pd.read_csv(data, skiprows=5)
+    df = get_electricity_generation_data()
 
     # read in power plant location data by power plant id
     df_gen_loc = prep_power_plant_location()
-    df_loc = prep_water_use_2015()
 
     # read in cooling water withdrawal intensities
-    water_data = 'input_data\cooling_water_intensities.csv'
-    df_water = pd.read_csv(water_data)
+    df_water = get_electricity_water_data()
 
-    # remove unnecessary variables
+    # keep only necessary variables
     df_gen_loc = df_gen_loc[['FIPS', 'plant_code']]
-    df = df[['Plant Id', "AER\nFuel Type Code", "Reported\nPrime Mover", "Total Fuel Consumption\nMMBtu",
-             "Net Generation\n(Megawatthours)"]]
+    df = df[['Plant Id', "AER\nFuel Type Code", "Reported\nPrime Mover",
+             "Total Fuel Consumption\nMMBtu", "Net Generation\n(Megawatthours)"]]
 
     # create a dictionary to bin power plant fuel types
     fuel_consumption_dict = {'SUN': 'solar',  # solar
@@ -1619,6 +1616,7 @@ def prep_electricity_fuel() -> pd.DataFrame:
                              'WOO': 'petroleum',  # waste oil
                              'WWW': 'biomass'}  # wood and wood waste
 
+    # create a dictionary to bin prime mover types
     prime_mover_dict = {'HY': 'instream',
                         'CA': 'combinedcycle',
                         'CT': 'combinedcycle',
@@ -1702,9 +1700,8 @@ def prep_electricity_fuel() -> pd.DataFrame:
     return df
 
 
-# FUNCTION BELOW IS CORRECT
 def prep_electricity_cooling() -> pd.DataFrame:
-    """ Function maps cooling water data to power plant generation data and fills blank values.
+    """ Maps cooling water data to power plant generation data and fills blank values.
 
     :return:
     """

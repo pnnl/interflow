@@ -122,3 +122,25 @@ def get_power_plant_location_data():
 
     # return dataframe
     return pd.read_csv(data, skiprows=1, usecols=['Plant Code', "State", 'County'])
+
+
+def get_electricity_generation_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data\EIA923_Schedules_2_3_4_5_M_12_2015_Final_Revision.csv')
+
+    # return dataframe
+    return pd.read_csv(data, skiprows=5)
+
+
+def get_electricity_water_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data\cooling_water_intensities.csv')
+
+    # return dataframe
+    return pd.read_csv(data)
