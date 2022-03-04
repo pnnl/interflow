@@ -3,12 +3,12 @@ import pandas as pd
 
 
 def read_sample_data() -> pd.DataFrame:
-    """Read in complete input csv data as a Pandas DataFrame.
+    """Read in complete sample input csv data as a Pandas DataFrame.
 
         """
 
     # collect file
-    data = pkg_resources.resource_filename('flow', 'input_data/test_output.csv')
+    data = pkg_resources.resource_filename('flow', 'input_data/us_county_sample_data.csv')
 
     # read in file
     df = pd.read_csv(data, dtype={'FIPS': str})
@@ -146,8 +146,6 @@ def get_wastewater_discharge_data():
 
     # return dataframe
     return pd.read_csv(data, dtype={'CWNS_NUMBER': str})
-
-
 
 
 def get_power_plant_location_data():
