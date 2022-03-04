@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 from .reader import *
 
 
@@ -3897,12 +3896,6 @@ def combine_data():
     out_df['FIPS'] = out_df['FIPS'].astype(str)
     out_df['FIPS'] = out_df['FIPS'].apply(lambda x: '{0:0>5}'.format(x))
 
-    return out_df
+    # TODO add a save to csv from here
 
-#x = combine_data()
-## print(x)
-#
-#x.to_csv(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv", index=False)
-#import os
-#
-#os.startfile(r"C:\Users\mong275\Local Files\Repos\flow\sample_data\test_output.csv")
+    return out_df
