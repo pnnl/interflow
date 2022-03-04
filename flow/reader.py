@@ -269,3 +269,4 @@ def get_county_natgas_production_data():
 
     # return dataframe
     return pd.read_csv(data, dtype={'geoid': str})
+

@@ -2951,7 +2951,6 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     return ng_df
 
 
-# BELOW IS GOOD TO GO
 def prep_natgas_water_intensity():
     """Water withdrawal data is supplied for a select number of states. State totals are split out to counties using
     the same county percent of total natural gas production as the production calculation. For states with 2015
@@ -2966,8 +2965,7 @@ def prep_natgas_water_intensity():
     df_loc = prep_water_use_2015()
 
     # read in read in state level natural gas water data
-    un_data = 'input_data/Unconventional_Oil_NG_State.csv'
-    df_ng_water = pd.read_csv(un_data)
+    df_ng_water = get_state_water_to_unconventional_production_data()
     df_ng_water = df_ng_water[['State', 'FSW_Unconventional_NG (MGD)', 'FGW_Unconventional_NG (MGD)']]
 
     # read in county-level natural gas production data
