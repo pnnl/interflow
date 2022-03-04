@@ -165,8 +165,8 @@ def get_irrigation_pumping_data():
 
 
 def get_pumping_intensity_rename_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in data to rename pumping intensity variables.
+        :return:                        dataframe of rename values to map to old names
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/variable_rename_key_pump_intensity.csv')
@@ -176,8 +176,9 @@ def get_pumping_intensity_rename_data():
 
 
 def get_electricity_demand_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in data from US EIA for 2015 on the total electricity demand in each state by the residential, commercial,
+    industrial, and transportation sector.
+        :return:                        dataframe of electricity demand values
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/eia_sales_annual.csv')
@@ -189,8 +190,9 @@ def get_electricity_demand_data():
 
 
 def get_fuel_demand_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in data from US EIA for 2015 on the total fuel demand in each state by the residential, commercial,
+    industrial, and transportation sector.
+        :return:                        dataframe of fuel demand values
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/use_all_btu.csv')
@@ -200,8 +202,8 @@ def get_fuel_demand_data():
 
 
 def get_fuel_renaming_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in data to rename fuel demand variables.
+        :return:                        dataframe of new variable names to map to old variable names
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/variable_rename_key_fuel_demand.csv')
@@ -211,8 +213,9 @@ def get_fuel_renaming_data():
 
 
 def get_state_fuel_production_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in data from US EIA for 2015 with state-level fuel production data including biomass, natural gas, and
+    petroleum.
+        :return:                        dataframe of fuel production values
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/eia_SEDS_Prod_dataset.csv')
@@ -222,8 +225,8 @@ def get_state_fuel_production_data():
 
 
 def get_county_petroleum_natgas_production_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in data on county level petroleum and natural gas production data.
+        :return:                        dataframe of natural gas and petroleum production values
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/oilgascounty.csv')
@@ -233,8 +236,8 @@ def get_county_petroleum_natgas_production_data():
 
 
 def get_state_water_to_conventional_oil_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in data on the water to oil ratio by PADD region for conventional oil production.
+        :return:                        dataframe of water intensity values
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/PADD_intensity.csv')
@@ -244,8 +247,8 @@ def get_state_water_to_conventional_oil_data():
 
 
 def get_state_water_to_unconventional_production_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in state-level data on water use in the production of unconventional natural gas and petroleum.
+        :return:                        dataframe of water use values
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/Unconventional_Oil_NG_State.csv')
@@ -255,8 +258,9 @@ def get_state_water_to_unconventional_production_data():
 
 
 def get_state_petroleum_natgas_water_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in state-level data on the water to oil and water to natural gas ratios as well as the percent of water
+    from each that is injected, consumed, or discharged to the surface.
+        :return:                        dataframe of natural gas and petroleum values
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/Oil_NG_WOR_WGR.csv')
@@ -266,8 +270,8 @@ def get_state_petroleum_natgas_water_data():
 
 
 def get_petroleum_natgas_rename_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in data to rename original petroleum and natural gas values to their long-form descriptive name.
+        :return:                        dataframe of new variable names to map to old variable names
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/variable_rename_key_ng_petroleum.csv')
@@ -277,8 +281,8 @@ def get_petroleum_natgas_rename_data():
 
 
 def get_coal_production_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in 2015 data from US EIA on coal production and mine type at the coal-mine level.
+        :return:                        dataframe of coal mine production values
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/coalpublic2015.csv')
@@ -288,8 +292,8 @@ def get_coal_production_data():
 
 
 def get_coal_mine_location_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in data with information on the county location of individual coal mines.
+        :return:                        dataframe of coal mine location values
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/Coal_Mine_Loc.csv')
