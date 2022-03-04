@@ -1589,7 +1589,7 @@ def prep_electricity_fuel() -> pd.DataFrame:
     df_gen_loc = prep_power_plant_location()
 
     # read in cooling water withdrawal intensities
-    df_water = get_electricity_water_data()
+    df_water = get_electricity_water_intensity_data()
 
     # keep only necessary variables
     df_gen_loc = df_gen_loc[['FIPS', 'plant_code']]
@@ -1709,12 +1709,8 @@ def prep_electricity_cooling() -> pd.DataFrame:
     # read in electricity generation data
     df_gen = prep_electricity_fuel()
 
-    # read in power plant cooling type data
-    cooling_data = r'input_data\2015_TE_Model_Estimates_USGS.csv'
-    df_cooling = pd.read_csv(cooling_data,
-                             usecols=['EIA_PLANT_ID', "COUNTY", 'STATE', 'NAME_OF_WATER_SOURCE', 'GENERATION_TYPE',
-                                      'COOLING_TYPE', 'WATER_SOURCE_CODE', 'WATER_TYPE_CODE', 'WITHDRAWAL',
-                                      'CONSUMPTION'])
+    # read in power plant cooling flow data
+    df_cooling = get_electricity_cooling_flow_data()
 
     water_source_dict = {'SW': 'surfacewater',  # river, canal, bay
                          'GW': 'groundwater',  # well, aquifer

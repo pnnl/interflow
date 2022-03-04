@@ -135,7 +135,7 @@ def get_electricity_generation_data():
     return pd.read_csv(data, skiprows=5)
 
 
-def get_electricity_water_data():
+def get_electricity_water_intensity_data():
     """Read in data
         :return:                        dataframe of values
         """
@@ -144,3 +144,16 @@ def get_electricity_water_data():
 
     # return dataframe
     return pd.read_csv(data)
+
+
+def get_electricity_cooling_flow_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data\2015_TE_Model_Estimates_USGS.csv')
+
+    # return dataframe
+    return pd.read_csv(data, usecols=['EIA_PLANT_ID', "COUNTY", 'STATE', 'NAME_OF_WATER_SOURCE', 'GENERATION_TYPE',
+                                      'COOLING_TYPE', 'WATER_SOURCE_CODE', 'WATER_TYPE_CODE', 'WITHDRAWAL',
+                                      'CONSUMPTION'])
