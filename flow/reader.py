@@ -260,5 +260,13 @@ def get_state_water_to_unconventional_production_data():
     return pd.read_csv(data)
 
 
+def get_state_petroleum_natgas_water_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
 
+    data = pkg_resources.resource_filename('flow', 'input_data/Oil_NG_WOR_WGR.csv')
+
+    # return dataframe
+    return pd.read_csv(data)
 

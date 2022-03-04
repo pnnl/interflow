@@ -3017,8 +3017,7 @@ def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
     """
 
     # read in state level water discharge data from oil and natural gas
-    data = 'input_data/Oil_NG_WOR_WGR.csv'
-    df = pd.read_csv(data)
+    df = get_state_petroleum_natgas_water_data()
 
     # read in full county list data
     df_loc = prep_water_use_2015()
