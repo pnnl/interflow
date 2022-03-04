@@ -3,7 +3,7 @@ import pandas as pd
 
 
 def read_sample_data() -> pd.DataFrame:
-    """Read in input csv data as a Pandas DataFrame.
+    """Read in complete input csv data as a Pandas DataFrame.
 
         """
 
@@ -16,7 +16,7 @@ def read_sample_data() -> pd.DataFrame:
     # read the region column as a string
     region_col = df.columns[0]
 
-    # add leading zeros to region if necessary
+    # add leading zeros to region
     df[region_col] = df[region_col].apply(lambda x: x.zfill(5))
 
     # return dataframe
@@ -24,7 +24,7 @@ def read_sample_data() -> pd.DataFrame:
 
 
 def get_water_use_2015_data():
-    """Read in data
+    """Read in 2015 USGS water use data
         :return:                        dataframe of values
         """
 
@@ -35,8 +35,8 @@ def get_water_use_2015_data():
 
 
 def get_water_use_rename_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in variable renaming key for USGS 2015 water use data
+        :return:                        dataframe of variable names to map to original names
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/variable_rename_key.csv')
@@ -46,8 +46,8 @@ def get_water_use_rename_data():
 
 
 def get_water_use_1995_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in 1995 USGS water use data
+        :return:                        dataframe of water use values
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/usco1995.csv')
@@ -57,8 +57,8 @@ def get_water_use_1995_data():
 
 
 def get_water_consumption_rename_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in 1995 water use rename key data.
+        :return:                        dataframe of variable names to map to original names
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/variable_rename_key_1995water.csv')
@@ -68,8 +68,8 @@ def get_water_consumption_rename_data():
 
 
 def get_tx_ibt_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in data on Texas interbasin water transfers for 2015.
+        :return:                        dataframe of interbasin transfer values
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/HistoricalMunicipal_TX_IBT.csv')
@@ -83,8 +83,8 @@ def get_tx_ibt_data():
 
 
 def get_west_ibt_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in data on western interbasin water transfers.
+        :return:                        dataframe of interbasin transfer values for western states
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/West_IBT_county.csv')
@@ -94,8 +94,8 @@ def get_west_ibt_data():
 
 
 def get_county_fips_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in data to map the 2015 county alphanumeric names to county FIPS codes.
+        :return:                        dataframe of county names and FIPS codes
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/county_FIPS_list.csv')
@@ -105,8 +105,9 @@ def get_county_fips_data():
 
 
 def get_power_plant_location_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in data that includes information on the location (county, state) of individual power plants (by plant code)
+     in the US for 2015
+        :return:                        dataframe of power plants and their locations
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/EIA860_Generator_Y2015.csv')
@@ -116,8 +117,8 @@ def get_power_plant_location_data():
 
 
 def get_electricity_generation_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in electricity generation and fuel use by individual power plants in the US for 2015.
+        :return:                        dataframe of electricity generation and fuel use values
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data\EIA923_Schedules_2_3_4_5_M_12_2015_Final_Revision.csv')
@@ -127,8 +128,8 @@ def get_electricity_generation_data():
 
 
 def get_electricity_water_intensity_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in water intensity data for various types of power plant technologies.
+        :return:                        dataframe of water intensity values
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data\cooling_water_intensities.csv')
@@ -138,8 +139,8 @@ def get_electricity_water_intensity_data():
 
 
 def get_electricity_cooling_flow_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in USGS 2015 data on thermoelectric cooling withdrawals and water consumption for individual power plants.
+        :return:                        dataframe of thermoelectric cooling values
         """
 
     data = pkg_resources.resource_filename('flow', r'input_data\2015_TE_Model_Estimates_USGS.csv')
@@ -151,8 +152,10 @@ def get_electricity_cooling_flow_data():
 
 
 def get_irrigation_pumping_data():
-    """Read in data
-        :return:                        dataframe of values
+    """Read in data from USDA Farm and Ranch Irrigation Survey 2013 with information on average_well_depth_ft,
+    average operating pressure (psi),average pumping capacity (gpm), and the amount of irrigation pumping using
+    electricity, natural gas, propane, and diesel at the state-level.
+        :return:                        dataframe of irrigation pumping values
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/FRIS2013tab8.csv')
