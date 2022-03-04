@@ -2800,7 +2800,6 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     return df
 
 
-# BELOW IS READY
 def prep_petroleum_water_intensity():
     """ Takes county level petroleum-production values and determines the water intensity for the given county for
     both unconventional and conventional petroleum production.
@@ -2808,7 +2807,7 @@ def prep_petroleum_water_intensity():
     :return:                                        Dataframe of county-level petroleum water intensity values
     """
 
-    # create variables
+    # create constants for conversions and ratios
     GALLON_OIL_TO_BBTU_CONVERSION = 0.0001355  # gallon of oil to billion btu conversion
     MILLION_MULTIPLIER = 1000000
     CONVENTIONAL_SURFACE_WATER = .80  # percent of water in conventional oil that comes from surface
@@ -2822,12 +2821,10 @@ def prep_petroleum_water_intensity():
     df_conventional = df[['FIPS', 'State', 'oil_pct', 'petroleum_conventional_production_bbtu']].copy()
 
     # read in state-level water to oil intensity data for conventional oil production
-    data_water_intensity = 'input_data/PADD_intensity.csv'
-    df_conventional_water = pd.read_csv(data_water_intensity)
+    df_conventional_water = get_state_water_to_conventional_oil_data()
 
     # read in state level unconventional oil water use data
-    un_data = 'input_data/Unconventional_Oil_NG_State.csv'
-    df_unconventional_water = pd.read_csv(un_data)
+    df_unconventional_water = get_state_water_to_unconventional_production_data()
     df_unconventional_water = df_unconventional_water[['State', 'FSW_Unconventional_Oil (MGD)',
                                                        'FGW_Unconventional_Oil (MGD)']]
 

@@ -236,3 +236,25 @@ def get_county_petroleum_production_data():
 
     # return dataframe
     return pd.read_csv(data, dtype={'geoid': str})
+
+
+def get_state_water_to_conventional_oil_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/PADD_intensity.csv')
+
+    # return dataframe
+    return pd.read_csv(data)
+
+
+def get_state_water_to_unconventional_production_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/Unconventional_Oil_NG_State.csv')
+
+    # return dataframe
+    return pd.read_csv(data)
