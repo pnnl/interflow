@@ -2738,7 +2738,6 @@ def prep_state_fuel_production_data() -> pd.DataFrame:
     return df
 
 
-# BELOW IS GOOD TO GO
 def prep_county_petroleum_production_data() -> pd.DataFrame:
     """prepares a dataframe of oil production by county. The dataframe uses 2011 crude oil production
     (barrels per year) by county in the US to determine which counties in a given state contribute the most to the
@@ -2757,12 +2756,10 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     df = df[["State", "petroleum_production_bbtu"]]  # reduce dataframe to required variables
 
     # read in county level oil and gas production data for 2011
-    data_prod = 'input_data/oilgascounty.csv'
-    df_petroleum_loc = pd.read_csv(data_prod, dtype={'geoid': str})
-    df_petroleum_loc = df_petroleum_loc[['FIPS', 'Stabr', 'oil2011']]  # reduce dataframe to required variables
+    df_petroleum_loc = get_county_petroleum_production_data()
 
-    # read in FIPS codes and states from 2015 water dataset
-    df_loc = prep_water_use_2015()
+    # reduce dataframe to required variables
+    df_petroleum_loc = df_petroleum_loc[['FIPS', 'Stabr', 'oil2011']]
 
     # calculate percent of state total petroleum production for each county in 2011
     df_petroleum_loc_sum = df_petroleum_loc[['Stabr', 'oil2011']].groupby("Stabr", as_index=False).sum()
