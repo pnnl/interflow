@@ -2881,13 +2881,13 @@ def prep_petroleum_water_intensity():
     # merge unconventional and conventional together
     output_df = pd.merge(df_unconventional, df_conventional, how='left', on=['FIPS', 'State', 'County'])
 
+    # reduce dataframe
     output_df = output_df[['FIPS', 'State', 'County', 'un_water_intensity', 'un_fsw_frac', 'un_fgw_frac',
                            'con_water_int', 'con_fsw_frac', 'con_fgw_frac']]
 
     return output_df
 
 
-# BELOW IS READY TO GO
 def prep_county_natgas_production_data() -> pd.DataFrame:
     """prepares a dataframe of natural gas production by county for the year 2015. The dataframe uses 2011 natural gas
      production (million cubic ft) by county in the US to determine which counties in a given state contribute the
@@ -2902,8 +2902,7 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     df = df[["State", "natgas_production_bbtu"]]  # collect required variables
 
     # read in county level gas production data from 2011 dataset
-    data_prod = 'input_data/oilgascounty.csv'
-    df_ng_loc = pd.read_csv(data_prod, dtype={'geoid': str})
+    df_ng_loc = get_county_natgas_production_data()
     df_ng_loc = df_ng_loc[['FIPS', 'Stabr', 'gas2011']]  # collect required variables
 
     # read in FIPS codes and states from 2015 water dataset
