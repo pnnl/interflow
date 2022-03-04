@@ -2756,7 +2756,7 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     df = df[["State", "petroleum_production_bbtu"]]  # reduce dataframe to required variables
 
     # read in county level oil and gas production data for 2011
-    df_petroleum_loc = get_county_petroleum_production_data()
+    df_petroleum_loc = get_county_petroleum_natgas_production_data()
 
     # reduce dataframe to required variables
     df_petroleum_loc = df_petroleum_loc[['FIPS', 'Stabr', 'oil2011']]
@@ -2969,7 +2969,7 @@ def prep_natgas_water_intensity():
     df_ng_water = df_ng_water[['State', 'FSW_Unconventional_NG (MGD)', 'FGW_Unconventional_NG (MGD)']]
 
     # read in county-level natural gas production data
-    ng_prod_df = prep_county_natgas_production_data()
+    ng_prod_df = get_county_petroleum_natgas_production_data()
 
     # combine natural gas production data and natural gas water data
     df = pd.merge(ng_prod_df, df_ng_water, how='left', on='State')
@@ -3006,7 +3006,6 @@ def prep_natgas_water_intensity():
     return df
 
 
-# BELOW IS GOOD TO GO
 def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
     """prepares a dataframe of produced water intensities, consumption fractions, and discharge fractions for
     petroleum and natural gas production. Note that only unconventional petroleum production results in produced water.

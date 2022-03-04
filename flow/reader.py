@@ -227,7 +227,7 @@ def get_state_fuel_production_data():
     return pd.read_csv(data, skiprows=1)
 
 
-def get_county_petroleum_production_data():
+def get_county_petroleum_natgas_production_data():
     """Read in data
         :return:                        dataframe of values
         """
@@ -260,13 +260,5 @@ def get_state_water_to_unconventional_production_data():
     return pd.read_csv(data)
 
 
-def get_county_natgas_production_data():
-    """Read in data
-        :return:                        dataframe of values
-        """
 
-    data = pkg_resources.resource_filename('flow', 'input_data/oilgascounty.csv')
-
-    # return dataframe
-    return pd.read_csv(data, dtype={'geoid': str})
 
