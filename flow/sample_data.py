@@ -2699,7 +2699,6 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     return df
 
 
-# BELOW IS GOOD TO GO
 def prep_state_fuel_production_data() -> pd.DataFrame:
     """preps state-level fuel production data for petroleum, biomass, natural gas, and coal. Outputs are used
     to determine county-level fuel production for each fuel type. Values are annual production.
@@ -2708,11 +2707,10 @@ def prep_state_fuel_production_data() -> pd.DataFrame:
 
     """
 
-    # read in energy production data
-    data = 'input_data/eia_SEDS_Prod_dataset.csv'
-    df = pd.read_csv(data, skiprows=1)
+    # read in state-level energy production data
+    df = get_state_fuel_production_data()
 
-    # list of fuel demand codes that are relevant from dataset
+    # dictionary of fuel demand codes that are relevant from dataset
     msn_prod_dict = {"PAPRB": "petroleum_production_bbtu",  # crude oil production (including lease condensate) (BBTU)
                      "EMFDB": "biomass_production_bbtu",  # biomass inputs to the production of fuel ethanol (BBTU)
                      "NGMPB": "natgas_production_bbtu",  # natural gas marketed production (BBTU)

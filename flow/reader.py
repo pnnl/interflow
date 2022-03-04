@@ -214,3 +214,14 @@ def get_fuel_renaming_data():
 
     # return dataframe
     return pd.read_csv(data)
+
+
+def get_state_fuel_production_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/eia_SEDS_Prod_dataset.csv')
+
+    # return dataframe
+    return pd.read_csv(data, skiprows=1)
