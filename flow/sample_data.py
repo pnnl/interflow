@@ -2438,7 +2438,6 @@ def prep_pws_treatment_dist_intensity_values():
     return out_df
 
 
-# BELOW IS WORKING
 def prep_electricity_demand_data() -> pd.DataFrame:
     """prepping electricity demand data by sector from EIA electricity sales data.
     Produces a dataframe of demand data by county.
@@ -2456,9 +2455,7 @@ def prep_electricity_demand_data() -> pd.DataFrame:
     data = 'input_data/eia_sales_annual.csv'
 
     # read in transportation electricity sales data
-    df = pd.read_csv(data, skiprows=1,
-                     dtype={'Residential': float, 'Commercial': float,
-                            'Industrial': float, 'Transportation': float})
+    df = get_electricity_demand_data()
 
     # build renaming dictionary
     rename_dict = {"Residential": 'RES',

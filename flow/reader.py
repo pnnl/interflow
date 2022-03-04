@@ -179,3 +179,18 @@ def get_pumping_intensity_rename_data():
 
     # return dataframe
     return pd.read_csv(data)
+
+
+def get_electricity_demand_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/eia_sales_annual.csv')
+
+    # return dataframe
+    return pd.read_csv(data, skiprows=1,
+                       dtype={'Residential': float, 'Commercial': float,
+                              'Industrial': float, 'Transportation': float})
+
+
