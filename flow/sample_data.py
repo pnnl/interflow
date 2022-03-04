@@ -2969,7 +2969,7 @@ def prep_natgas_water_intensity():
     df_ng_water = df_ng_water[['State', 'FSW_Unconventional_NG (MGD)', 'FGW_Unconventional_NG (MGD)']]
 
     # read in county-level natural gas production data
-    ng_prod_df = get_county_petroleum_natgas_production_data()
+    ng_prod_df = prep_county_natgas_production_data()
 
     # combine natural gas production data and natural gas water data
     df = pd.merge(ng_prod_df, df_ng_water, how='left', on='State')
