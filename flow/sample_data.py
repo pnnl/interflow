@@ -2902,7 +2902,7 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     df = df[["State", "natgas_production_bbtu"]]  # collect required variables
 
     # read in county level gas production data from 2011 dataset
-    df_ng_loc = get_county_natgas_production_data()
+    df_ng_loc = get_county_petroleum_natgas_production_data()
     df_ng_loc = df_ng_loc[['FIPS', 'Stabr', 'gas2011']]  # collect required variables
 
     # read in FIPS codes and states from 2015 water dataset
@@ -3110,7 +3110,6 @@ def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
     return output_df
 
 
-# BELOW IS READY TO GO
 def rename_natgas_petroleum_data():
     """ Takes county level natural gas and petroleum production, water intensity, water source, and water discharge
     data and renames into required variable name structure. Also adds a flow connection between energy production of
@@ -3129,8 +3128,7 @@ def rename_natgas_petroleum_data():
     df_prod = prep_petroleum_gas_discharge_data()
 
     # load variable renaming key
-    # read in renaming data
-    df_names = pd.read_csv('input_data/variable_rename_key_ng_petroleum.csv')
+    df_names = get_petroleum_natgas_rename_data()
 
     # convert to dictionary
     name_dict = dict(zip(df_names.original_name, df_names.new_name))

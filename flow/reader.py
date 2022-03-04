@@ -270,3 +270,14 @@ def get_state_petroleum_natgas_water_data():
     # return dataframe
     return pd.read_csv(data)
 
+
+def get_petroleum_natgas_rename_data():
+    """Read in data
+        :return:                        dataframe of values
+        """
+
+    data = pkg_resources.resource_filename('flow', 'input_data/variable_rename_key_ng_petroleum.csv')
+
+    # return dataframe
+    return pd.read_csv(data)
+
