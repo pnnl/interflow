@@ -270,6 +270,15 @@ class TestReader(unittest.TestCase):
         # returns a dataframe
         self.assertTrue(type(df) == pd.DataFrame)
 
+    def test_load_geojson_data(self):
+        """Test load_geojson_data()."""
+
+        # load the data
+        geo = load_geojson_data()
+
+        # returns a geojson dictionary
+        self.assertTrue(type(geo) == dict)
+
 
 if __name__ == '__main__':
     unittest.main()
