@@ -3,7 +3,6 @@ import pandas as pd
 import json
 
 
-
 def read_sample_data() -> pd.DataFrame:
     """Read in complete sample input csv data as a Pandas DataFrame.
 
