@@ -475,8 +475,8 @@ def plot_map(jsonfile: dict, data:pd.DataFrame, level=1, region_col=None, strip=
      information in the hover-template when a region is hovered over. This is provided in the region_col parameter and
      points to the column in the input data with this information.
 
-    :param jsonfile:                        loaded GeoJSON file containing geometry information for the values to be
-                                            plotted on the map. the feature.id in the file must align with the region
+    :param jsonfile:                        loaded GeoJSON dictionary containing geometry information for the values to
+                                            be plotted on the map. the feature.id in the file must align with the region
                                             data column in the dataframe of input values to display.
     :type jsonfile:                         dict
 
