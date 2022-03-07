@@ -3593,6 +3593,16 @@ def prep_county_ethanol_production_data() -> pd.DataFrame:
     # get state-level ethanol production data
     df_ethanol_production = prep_state_fuel_production_data()
 
+    # read in discharge data fractions
+    df_dis = calc_discharge_fractions()
+
+    # consumption and surface discharge variable names
+    ind_cmp = 'IND_fresh_surfacewater_total_total_mgd_to_CMP_total_total_total_total_mgd_fraction'
+    ind_sd = 'IND_fresh_surfacewater_total_total_mgd_to_SRD_total_total_total_total_mgd_fraction'
+
+    # reduce consumption and discharge dataframe
+    df_dis = df_dis[['FIPS', ind_cmp, ind_sd]]
+
     # reduce production dataset
     df_ethanol_production = df_ethanol_production[['State', 'biomass_production_bbtu']]
 
@@ -3646,12 +3656,21 @@ def prep_county_ethanol_production_data() -> pd.DataFrame:
     df_biomass[ethanol_prod_name + '_to_EPD_biomass_total_total_total_bbtu_fraction'] = 1
 
     # create water intensity variable set equal to calculated mg/bbtu
-    ethanol_water_name = 'IND_biomass_ethanol_total_total_mgd'
+    ethanol_water_name = 'IND_biomass_ethanol_fresh_surfacewater_mgd'
     df_biomass[ethanol_water_name + '_from_' + ethanol_prod_name + '_intensity'] = ethanol_intensity
 
     # assume all ethanol production water comes from fresh surfacewater
     df_biomass[ethanol_water_name + '_from_WSW_fresh_surfacewater_withdrawal_total_bbtu_fraction'] = 1
-    df_biomass[ethanol_water_name + '_to_SRD_total_total_total_total_mgd_fraction'] = 1
+
+    # merge biomass dataframe with industrial consumption and discharge fraction data
+    df_biomass = pd.merge(df_biomass, df_dis, how='left', on=['FIPS'])
+
+    # set industrial consumption and discharge equal to all industrial consumption and discharge fractions
+    df_biomass[ethanol_water_name + '_to_CMP_total_total_total_total_mgd_fraction'] = df_biomass[ind_cmp]
+    df_biomass[ethanol_water_name + '_to_SRD_total_total_total_total_mgd_fraction'] = df_biomass[ind_sd]
+
+    # drop consumption and discharge fractions for all industrial sector
+    df_biomass = df_biomass.drop([ind_cmp, ind_sd], axis=1)
 
     # merge with full county data to distribute value to each county in a state and include all FIPS
     df_biomass = pd.merge(df_loc, df_biomass, how='left', on='FIPS')
