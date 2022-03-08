@@ -395,7 +395,7 @@ def get_corn_production_data():
     return pd.read_csv(data, dtype={'State ANSI': str, 'County ANSI': str, 'Value': float})
 
 
-def load_geojson_data():
+def load_sample_geojson_data():
     """Read in GeoJSON file with county-level information for mapping all US counties.
         :return:                        dataframe of county-level corn production values
         """
@@ -406,4 +406,29 @@ def load_geojson_data():
 
     # return dataframe
     return json.load(f)
+
+
+def load_sample_data_output() -> pd.DataFrame:
+    """Read in a copy of the run output for all US counties.
+        :return:                        dataframe of county output values
+
+        """
+
+    # collect file
+    data = pkg_resources.resource_filename('flow', 'input_data/us_county_sample_output.csv')
+
+    # read in file
+    df = pd.read_csv(data)
+
+    # identify first column
+    region_col = df.columns[0]
+
+    # convert to string
+    df[region_col] = df[region_col].astype(str)
+
+    # add leading zeros to region
+    df[region_col] = df[region_col].apply(lambda x: x.zfill(5))
+
+    # return dataframe
+    return df
 

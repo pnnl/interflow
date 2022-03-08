@@ -505,6 +505,12 @@ def plot_map(jsonfile: dict, data:pd.DataFrame, level=1, region_col=None, strip=
     :return:                                cloropleth map shaded by value for all regions provided at level specified
                                             and for specified units.
     """
+    acceptable_values = [1, 2, 3, 4, 5]
+    if level in acceptable_values:
+        pass
+    else:
+        m = 'incorrect level of granularity specified. Must be an integer between 1 and 5, inclusive.'
+        raise ValueError(m)
 
     # collect flow data
     df = data
@@ -584,7 +590,7 @@ def plot_map(jsonfile: dict, data:pd.DataFrame, level=1, region_col=None, strip=
             hovertemplate='Value: %{z}<extra></extra>',
             coloraxis="coloraxis",
             marker_opacity=0.75,
-            marker_line_width=0.1))
+            marker_line_width=0.5))
 
     else:
         mycustomdata = df[df.columns[region_col]].to_list()
