@@ -2852,7 +2852,8 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     """prepares a dataframe of oil production by county. The dataframe uses 2011 crude oil production
     (barrels per year) by county in the US to determine which counties in a given state contribute the most to the
     state total. These percent of state total values from 2011 are mapped to 2015 state total oil production to get
-    2015 values on a county level.
+    2015 values on a county level. For states that do not have county values in the 2011 estimate, individually-sourced
+    information is supplemented.
 
     :return:                DataFrame of a oil production (bbtu) by county
 
@@ -3002,7 +3003,8 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     """prepares a dataframe of natural gas production by county for the year 2015. The dataframe uses 2011 natural gas
      production (million cubic ft) by county in the US to determine which counties in a given state contribute the
      most to the state total. These percent of state total values from 2011 are mapped to 2015 state total natural gas
-      production to get 2015 values on a county level.
+      production to get 2015 values on a county level. For some states, no county-level estimates exist in the 2011
+      estimates. County-level values for these states are individually provided.
 
     :return:                DataFrame of a natural gas production (bbtu) and water use (mgd) by county
 
@@ -3028,7 +3030,6 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     df_ng_loc = df_ng_loc.rename(columns={"Stabr": "State"})
 
     # add rows with missing county percentages to cover all states in 2015 production
-
     idaho_df = {'State': 'ID', 'FIPS': '16075', 'gas_pct': 1}  # Idaho
     ak_arctic_df = {'State': 'AK', 'FIPS': '02185', 'gas_pct': .9608}  # Alaska, arctic slope region
     ak_cook_df = {'State': 'AK', 'FIPS': '02122', 'gas_pct': .0392}  # Alaska, cook inlet basin (kenai peninsula)
