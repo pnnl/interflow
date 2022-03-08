@@ -6,7 +6,7 @@ import plotly.express as px
 from .analyze import *
 
 
-def plot_sankey(data, unit_type1, output_level, unit_type2=None, region_name=None, strip=None, remove_sectors=None):
+def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=None, strip=None, remove_sectors=None):
     """Plots interactive sankey diagram(s) for a given region at a given level of granularity from flow package output
     data. Requires that variable naming is consistent with flow package output variable naming. At least one unit type
     must be specified as a parameter. Output level can be specified to display sankey diagrams at different levels of

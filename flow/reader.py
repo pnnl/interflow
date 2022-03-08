@@ -12,10 +12,12 @@ def read_sample_data() -> pd.DataFrame:
     data = pkg_resources.resource_filename('flow', 'input_data/us_county_sample_data.csv')
 
     # read in file
-    df = pd.read_csv(data, dtype={'FIPS': str})
+    df = pd.read_csv(data)
 
-    # read the region column as a string
     region_col = df.columns[0]
+
+    df[region_col] = df[region_col].astype(str)
+
 
     # add leading zeros to region
     df[region_col] = df[region_col].apply(lambda x: x.zfill(5))

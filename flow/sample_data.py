@@ -1800,12 +1800,26 @@ def prep_electricity_fuel() -> pd.DataFrame:
     # grouping rows by both plant code and fuel type
     df = df.groupby(['plant_code', 'fuel_type', 'prime_mover'], as_index=False).sum()
 
+    # calculate withdrawals by generator as a percent of estimated plant withdrawals
+    df_percent = df.copy()
+    df_percent = df_percent.groupby('plant_code', as_index=False).sum()
+    df_percent = df_percent.rename(columns={'water_withdrawal_mgd': 'water_withdrawal_mgd_sum',
+                                            'water_consumption_mgd': 'water_consumption_mgd_sum'})
+    df_percent = df_percent[['plant_code', 'water_withdrawal_mgd_sum', 'water_consumption_mgd_sum']]
+
+    # merge summed water values back with generator-level dataset
+    df = pd.merge(df, df_percent, how='left', on='plant_code')
+
+    # calculate percentages of water withdrawals by generator for each plant
+    df['withdrawal_pct'] = df['water_withdrawal_mgd'] / df['water_withdrawal_mgd_sum']
+    df['consumption_pct'] = df['water_consumption_mgd'] / df['water_consumption_mgd_sum']
+
     # merging power plant location data with power plant generation data
     df = pd.merge(df, df_gen_loc, how='left', on='plant_code')
 
-    # reduce dataframe
+   # reduce dataframe
     df = df[['plant_code', 'fuel_type', 'prime_mover', 'fuel_amt', 'water_withdrawal_mgd', 'water_consumption_mgd',
-             'generation_bbtu', 'FIPS']]
+             'withdrawal_pct', 'consumption_pct', 'generation_bbtu', 'FIPS']]
 
     return df
 
@@ -1813,7 +1827,7 @@ def prep_electricity_fuel() -> pd.DataFrame:
 def prep_electricity_cooling() -> pd.DataFrame:
     """ Maps cooling water data to power plant generation data and fills blank values.
 
-    :return:
+    :return:                                        Dataframe of cooling water values by plant.
     """
 
     # read in electricity generation data
@@ -1911,41 +1925,41 @@ def prep_electricity_cooling() -> pd.DataFrame:
     # merge cooling information by plant ID with generation data by plant ID
     df_cooling = pd.merge(df_gen, df_cooling, how='left', on='plant_code')
 
-    # create a list of generation that does not require cooling
-    no_cool_list = ['hydro', 'wind', 'solar', 'geothermal']
+ #  # create a list of generation that does not require cooling
+ #  no_cool_list = ['hydro', 'wind', 'solar', 'geothermal']
 
-    # fill values for power plants with no cooling (renewables)
-    for item in no_cool_list:
-        df_cooling["COOLING_TYPE"] = np.where(df_cooling['fuel_type'] == item, "nocooling", df_cooling["COOLING_TYPE"])
-        df_cooling["WATER_SOURCE_CODE"] = np.where(df_cooling['fuel_type'] == item, "nocooling",
-                                                   df_cooling["WATER_SOURCE_CODE"])
-        df_cooling["WATER_TYPE_CODE"] = np.where(df_cooling['fuel_type'] == item, "nocooling",
-                                                 df_cooling["WATER_TYPE_CODE"])
-        df_cooling["WITHDRAWAL"] = np.where(df_cooling['fuel_type'] == item, 0, df_cooling["WITHDRAWAL"])
-        df_cooling["CONSUMPTION"] = np.where(df_cooling['fuel_type'] == item, 0, df_cooling["CONSUMPTION"])
-        df_cooling["SURFACE_DISCHARGE_MGD"] = np.where(df_cooling['fuel_type'] == item, 0,
-                                                       df_cooling["SURFACE_DISCHARGE_MGD"])
-        df_cooling["OCEAN_DISCHARGE_MGD"] = np.where(df_cooling['fuel_type'] == item, 0,
-                                                     df_cooling["OCEAN_DISCHARGE_MGD"])
+ #  # fill values for power plants with no cooling (renewables)
+ #  for item in no_cool_list:
+ #      df_cooling["COOLING_TYPE"] = np.where(df_cooling['fuel_type'] == item, "nocooling", df_cooling["COOLING_TYPE"])
+ #      df_cooling["WATER_SOURCE_CODE"] = np.where(df_cooling['fuel_type'] == item, "nocooling",
+ #                                                 df_cooling["WATER_SOURCE_CODE"])
+ #      df_cooling["WATER_TYPE_CODE"] = np.where(df_cooling['fuel_type'] == item, "nocooling",
+ #                                               df_cooling["WATER_TYPE_CODE"])
+ #      df_cooling["WITHDRAWAL"] = np.where(df_cooling['fuel_type'] == item, 0, df_cooling["WITHDRAWAL"])
+ #      df_cooling["CONSUMPTION"] = np.where(df_cooling['fuel_type'] == item, 0, df_cooling["CONSUMPTION"])
+ #      df_cooling["SURFACE_DISCHARGE_MGD"] = np.where(df_cooling['fuel_type'] == item, 0,
+ #                                                     df_cooling["SURFACE_DISCHARGE_MGD"])
+ #      df_cooling["OCEAN_DISCHARGE_MGD"] = np.where(df_cooling['fuel_type'] == item, 0,
+ #                                                   df_cooling["OCEAN_DISCHARGE_MGD"])
 
-    # fill cooling type column blanks with 'complex'
-    df_cooling["COOLING_TYPE"].fillna('complex', inplace=True)
-    df_cooling["WATER_SOURCE_CODE"].fillna('surfacewater', inplace=True)
-    df_cooling["WATER_TYPE_CODE"].fillna('fresh', inplace=True)
+ #  # fill cooling type column blanks with 'complex'
+ #  df_cooling["COOLING_TYPE"].fillna('complex', inplace=True)
+ #  df_cooling["WATER_SOURCE_CODE"].fillna('surfacewater', inplace=True)
+ #  df_cooling["WATER_TYPE_CODE"].fillna('fresh', inplace=True)
 
-    # fill missing water values with Macknick et al. (2012) averages
-    df_cooling["WITHDRAWAL"].fillna(df_cooling["water_withdrawal_mgd"], inplace=True)
-    df_cooling["CONSUMPTION"].fillna(df_cooling["water_consumption_mgd"], inplace=True)
+ #  # fill missing water values with Macknick et al. (2012) averages
+ #  #df_cooling["WITHDRAWAL"].fillna(df_cooling["water_withdrawal_mgd"], inplace=True)
+ #  #df_cooling["CONSUMPTION"].fillna(df_cooling["water_consumption_mgd"], inplace=True)
 
-    # all filled values are assumed to be discharged to the surface
-    df_cooling["SURFACE_DISCHARGE_MGD"].fillna(df_cooling["water_withdrawal_mgd"] - df_cooling["water_consumption_mgd"],
-                                               inplace=True)
-    df_cooling['OCEAN_DISCHARGE_MGD'].fillna(0, inplace=True)
+ #  # all filled values are assumed to be discharged to the surface
+ #  df_cooling["SURFACE_DISCHARGE_MGD"].fillna(df_cooling["water_withdrawal_mgd"] - df_cooling["water_consumption_mgd"],
+ #                                             inplace=True)
+ #  df_cooling['OCEAN_DISCHARGE_MGD'].fillna(0, inplace=True)
 
-    # reduce output dataset
-    df_cooling = df_cooling[['plant_code', 'fuel_type', 'prime_mover', 'fuel_amt', 'generation_bbtu', 'FIPS',
-                             'COOLING_TYPE', 'WATER_SOURCE_CODE', 'WATER_TYPE_CODE', 'WITHDRAWAL', 'CONSUMPTION',
-                             'SURFACE_DISCHARGE_MGD', 'OCEAN_DISCHARGE_MGD']]
+ #  # reduce output dataset
+ #  df_cooling = df_cooling[['plant_code', 'fuel_type', 'prime_mover', 'fuel_amt', 'generation_bbtu', 'FIPS',
+ #                           'COOLING_TYPE', 'WATER_SOURCE_CODE', 'WATER_TYPE_CODE', 'WITHDRAWAL', 'CONSUMPTION',
+ #                           'SURFACE_DISCHARGE_MGD', 'OCEAN_DISCHARGE_MGD']]
 
     return df_cooling
 
@@ -3700,7 +3714,7 @@ def remove_industrial_water_double_counting():
     df = pd.merge(df, df_ethanol, how='left', on=['FIPS', 'State', 'County'])
 
     ethanol_prod = 'IND_biomass_ethanol_total_total_bbtu_from_IND_biomass_ethanol_total_total_bbtu'
-    ethanol_int = 'IND_biomass_ethanol_total_total_mgd_from_IND_biomass_ethanol_total_total_bbtu_intensity'
+    ethanol_int = 'IND_biomass_ethanol_fresh_surfacewater_mgd_from_IND_biomass_ethanol_total_total_bbtu_intensity'
     df['total_water'] = df[ethanol_prod] * df[ethanol_int]
 
     df[ind_sw] = np.where(df[ind_sw] - df['total_water'] < 0,
@@ -3919,7 +3933,7 @@ def prep_corn_crop_irr_flows():
     return df
 
 
-def collect_sample_data():
+def compile_sample_data():
     """
     Combines output data from all functions into a single dataset, structures data for input into the flow
     Python package.
@@ -4029,8 +4043,6 @@ def collect_sample_data():
 
     out_df['FIPS'] = out_df['FIPS'].astype(str)
     out_df['FIPS'] = out_df['FIPS'].apply(lambda x: '{0:0>5}'.format(x))
-
-    out_df.reset_index(inplace=True)
 
     # save csv to data folder
     data = pkg_resources.resource_filename('flow', 'input_data/us_county_sample_data.csv')
