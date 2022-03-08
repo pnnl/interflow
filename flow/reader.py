@@ -177,7 +177,7 @@ def get_electricity_water_intensity_data():
         :return:                        dataframe of water intensity values
         """
 
-    data = pkg_resources.resource_filename('flow', r'input_data\\cooling_water_intensities.csv')
+    data = pkg_resources.resource_filename('flow', r'input_data\cooling_water_intensities.csv')
 
     # return dataframe
     return pd.read_csv(data)

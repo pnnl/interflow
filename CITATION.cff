@@ -10,7 +10,8 @@ authors:
   given-names: "Juliet"
 - family-names: "Rice"
   given-names: "Jennie S."
-title: "flow: a python package for building sectoral interdepencency datasets"
+title: "flow: a Python package for collecting, calculating, organizing, and visualizing cross-sectoral resource
+interdependencies and flows."
 version: 1.0.0
 date-released: 2022-03-31
 url: "https://github.com/IWPR-PNNL/flow"
