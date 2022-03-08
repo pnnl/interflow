@@ -1925,41 +1925,47 @@ def prep_electricity_cooling() -> pd.DataFrame:
     # merge cooling information by plant ID with generation data by plant ID
     df_cooling = pd.merge(df_gen, df_cooling, how='left', on='plant_code')
 
- #  # create a list of generation that does not require cooling
- #  no_cool_list = ['hydro', 'wind', 'solar', 'geothermal']
+    # multiply Plant-level water values from USGS by generator water percents calculated previously
+    df_cooling['WITHDRAWAL'] = df_cooling['WITHDRAWAL']*df_cooling['withdrawal_pct']
+    df_cooling['CONSUMPTION'] = df_cooling['CONSUMPTION']*df_cooling['consumption_pct']
+    df_cooling['SURFACE_DISCHARGE_MGD'] = df_cooling['SURFACE_DISCHARGE_MGD']*df_cooling['withdrawal_pct']
+    df_cooling['OCEAN_DISCHARGE_MGD'] = df_cooling['OCEAN_DISCHARGE_MGD']*df_cooling['withdrawal_pct']
 
- #  # fill values for power plants with no cooling (renewables)
- #  for item in no_cool_list:
- #      df_cooling["COOLING_TYPE"] = np.where(df_cooling['fuel_type'] == item, "nocooling", df_cooling["COOLING_TYPE"])
- #      df_cooling["WATER_SOURCE_CODE"] = np.where(df_cooling['fuel_type'] == item, "nocooling",
- #                                                 df_cooling["WATER_SOURCE_CODE"])
- #      df_cooling["WATER_TYPE_CODE"] = np.where(df_cooling['fuel_type'] == item, "nocooling",
- #                                               df_cooling["WATER_TYPE_CODE"])
- #      df_cooling["WITHDRAWAL"] = np.where(df_cooling['fuel_type'] == item, 0, df_cooling["WITHDRAWAL"])
- #      df_cooling["CONSUMPTION"] = np.where(df_cooling['fuel_type'] == item, 0, df_cooling["CONSUMPTION"])
- #      df_cooling["SURFACE_DISCHARGE_MGD"] = np.where(df_cooling['fuel_type'] == item, 0,
- #                                                     df_cooling["SURFACE_DISCHARGE_MGD"])
- #      df_cooling["OCEAN_DISCHARGE_MGD"] = np.where(df_cooling['fuel_type'] == item, 0,
- #                                                   df_cooling["OCEAN_DISCHARGE_MGD"])
+    # create a list of generation that does not require cooling
+    no_cool_list = ['hydro', 'wind', 'solar', 'geothermal']
 
- #  # fill cooling type column blanks with 'complex'
- #  df_cooling["COOLING_TYPE"].fillna('complex', inplace=True)
- #  df_cooling["WATER_SOURCE_CODE"].fillna('surfacewater', inplace=True)
- #  df_cooling["WATER_TYPE_CODE"].fillna('fresh', inplace=True)
+    # fill values for power plants with no cooling (renewables)
+    for item in no_cool_list:
+        df_cooling["COOLING_TYPE"] = np.where(df_cooling['fuel_type'] == item, "nocooling", df_cooling["COOLING_TYPE"])
+        df_cooling["WATER_SOURCE_CODE"] = np.where(df_cooling['fuel_type'] == item, "nocooling",
+                                                   df_cooling["WATER_SOURCE_CODE"])
+        df_cooling["WATER_TYPE_CODE"] = np.where(df_cooling['fuel_type'] == item, "nocooling",
+                                                 df_cooling["WATER_TYPE_CODE"])
+        df_cooling["WITHDRAWAL"] = np.where(df_cooling['fuel_type'] == item, 0, df_cooling["WITHDRAWAL"])
+        df_cooling["CONSUMPTION"] = np.where(df_cooling['fuel_type'] == item, 0, df_cooling["CONSUMPTION"])
+        df_cooling["SURFACE_DISCHARGE_MGD"] = np.where(df_cooling['fuel_type'] == item, 0,
+                                                       df_cooling["SURFACE_DISCHARGE_MGD"])
+        df_cooling["OCEAN_DISCHARGE_MGD"] = np.where(df_cooling['fuel_type'] == item, 0,
+                                                     df_cooling["OCEAN_DISCHARGE_MGD"])
 
- #  # fill missing water values with Macknick et al. (2012) averages
- #  #df_cooling["WITHDRAWAL"].fillna(df_cooling["water_withdrawal_mgd"], inplace=True)
- #  #df_cooling["CONSUMPTION"].fillna(df_cooling["water_consumption_mgd"], inplace=True)
+    # fill cooling type column blanks with 'complex'
+    df_cooling["COOLING_TYPE"].fillna('complex', inplace=True)
+    df_cooling["WATER_SOURCE_CODE"].fillna('surfacewater', inplace=True)
+    df_cooling["WATER_TYPE_CODE"].fillna('fresh', inplace=True)
 
- #  # all filled values are assumed to be discharged to the surface
- #  df_cooling["SURFACE_DISCHARGE_MGD"].fillna(df_cooling["water_withdrawal_mgd"] - df_cooling["water_consumption_mgd"],
- #                                             inplace=True)
- #  df_cooling['OCEAN_DISCHARGE_MGD'].fillna(0, inplace=True)
+    # fill missing water values with the previously calculated water withdrawal values using intensity values
+    df_cooling["WITHDRAWAL"].fillna(df_cooling["water_withdrawal_mgd"], inplace=True)
+    df_cooling["CONSUMPTION"].fillna(df_cooling["water_consumption_mgd"], inplace=True)
 
- #  # reduce output dataset
- #  df_cooling = df_cooling[['plant_code', 'fuel_type', 'prime_mover', 'fuel_amt', 'generation_bbtu', 'FIPS',
- #                           'COOLING_TYPE', 'WATER_SOURCE_CODE', 'WATER_TYPE_CODE', 'WITHDRAWAL', 'CONSUMPTION',
- #                           'SURFACE_DISCHARGE_MGD', 'OCEAN_DISCHARGE_MGD']]
+    # all filled values are assumed to be discharged to the surface
+    df_cooling["SURFACE_DISCHARGE_MGD"].fillna(df_cooling["water_withdrawal_mgd"] - df_cooling["water_consumption_mgd"],
+                                               inplace=True)
+    df_cooling['OCEAN_DISCHARGE_MGD'].fillna(0, inplace=True)
+
+    # reduce output dataset
+    df_cooling = df_cooling[['plant_code', 'fuel_type', 'prime_mover', 'fuel_amt', 'generation_bbtu', 'FIPS',
+                             'COOLING_TYPE', 'WATER_SOURCE_CODE', 'WATER_TYPE_CODE', 'WITHDRAWAL', 'CONSUMPTION',
+                             'SURFACE_DISCHARGE_MGD', 'OCEAN_DISCHARGE_MGD']]
 
     return df_cooling
 
