@@ -5,6 +5,7 @@ import json
 
 def read_sample_data() -> pd.DataFrame:
     """Read in complete sample input csv data as a Pandas DataFrame.
+        :return:                        dataframe of values
 
         """
 
@@ -14,10 +15,11 @@ def read_sample_data() -> pd.DataFrame:
     # read in file
     df = pd.read_csv(data)
 
+    # identify first column
     region_col = df.columns[0]
 
+    # convert to string
     df[region_col] = df[region_col].astype(str)
-
 
     # add leading zeros to region
     df[region_col] = df[region_col].apply(lambda x: x.zfill(5))
@@ -28,7 +30,7 @@ def read_sample_data() -> pd.DataFrame:
 
 def get_water_use_2015_data():
     """Read in 2015 USGS water use data
-        :return:                        dataframe of values
+        :return:                        dataframe of 2015 water use values
         """
 
     data = pkg_resources.resource_filename('flow', 'input_data/usco2015v2.0.csv')
