@@ -166,7 +166,7 @@ def get_electricity_generation_data():
         :return:                        dataframe of electricity generation and fuel use values
         """
 
-    data = pkg_resources.resource_filename('flow', 'input_data\EIA923_Schedules_2_3_4_5_M_12_2015_Final_Revision.csv')
+    data = pkg_resources.resource_filename('flow', "input_data\\EIA923_Schedules_2_3_4_5_M_12_2015_Final_Revision.csv")
 
     # return dataframe
     return pd.read_csv(data, skiprows=5)
@@ -188,7 +188,7 @@ def get_electricity_cooling_flow_data():
         :return:                        dataframe of thermoelectric cooling values
         """
 
-    data = pkg_resources.resource_filename('flow', r'input_data\2015_TE_Model_Estimates_USGS.csv')
+    data = pkg_resources.resource_filename('flow', "input_data\\2015_TE_Model_Estimates_USGS.csv")
 
     # return dataframe
     return pd.read_csv(data, usecols=['EIA_PLANT_ID', "COUNTY", 'STATE', 'NAME_OF_WATER_SOURCE', 'GENERATION_TYPE',
