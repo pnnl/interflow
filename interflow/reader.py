@@ -10,7 +10,7 @@ def read_sample_data() -> pd.DataFrame:
         """
 
     # collect file
-    data = pkg_resources.resource_filename('interflow', 'input_data/us_county_sample_data.csv.gz')
+    data = pkg_resources.resource_filename('interflow', 'input_data/us_county_sample_data.csv.zip')
 
     # read in file
     df = pd.read_csv(data)
