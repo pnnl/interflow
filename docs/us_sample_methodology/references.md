@@ -42,3 +42,4 @@ Reference numbers correspond with those included in the Methodology subsections.
 29. U.S. EIA. 2021. Maryland: State Profile and Energy Estimates. https://www.eia.gov/state/analysis.php?sid=MD#34
 30. University of Nevada - Reno. 2011. Oil and Gas Wells Information. Retrieved November 18, 2021 from https://gisweb.unr.edu/OilGas/
 31. State of Oregon. 2021. Oil & Gas Permits and Production Information. Department of Geology and Mineral Industries. Retrieved November 18 from https://www.oregongeology.org/mlrr/oilgas-report.htm
+32. Veil, J. (2020). U.S. Produced Water Volumes and Management Practices in 2017. http://www.veilenvironmental.com/publications/pw/pw_report_2017_final.pdf

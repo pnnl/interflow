@@ -143,56 +143,39 @@ Water discharged from the industrial production of ethanol is assumed to be equa
 ### Natural Gas
 
 #### Water withdrawal
-The average intensity of water use in unconventional natural gas drilling was determined by taking the total water to unconventional natural gas production in each county and dividing it by the total natural gas production per day in the same county. The average intensity value (million gallons per bbtu) was applied to counties that recorded unconventional natural gas production in 2015 but no water estimates were available for the same county. Note that this is a different average intensity calculation than what was determined for biomass given that water use in natural gas production is sourced onsite, whereas corn use in ethanol production can be sourced in an external location.
 
-Average intensity = 0.0008 million gallons per bbtu
+No county level water use or water intensity estimates exist for natural gas for the year 2015. Water use estimates for natural gas extraction for this analysis are used from Greenberg et al. [4].  Only state-level values for unconventional petroleum and natural gas extraction are available in their dataset. State-level values are split into county-level values following the same methodology used to split up the state-level natural gas production values described previously.
 
-Water withdrawal type and source - It is assumed that 80% of water withdrawals by natural gas production are from fresh surface water sources and the remainder is from fresh groundwater sources following [SOURCE]. No saline water is assumed to be used in the production of natural gas. 0% of water flows to natural gas are assumed to come from wastewater reuse.
+The intensity of water use in unconventional natural gas drilling was determined by taking the total water to unconventional natural gas production in each county and dividing it by the total natural gas production per day in the same county. The average intensity value (million gallons per bbtu) was applied to counties that recorded unconventional natural gas production in 2015 but no water estimates were available.
+
+It is assumed that 80% of water withdrawals by natural gas production are from fresh surface water sources and the remainder is from fresh groundwater sources following the methodology in Greenberg et al. [4]. No saline water is assumed to be used in the production of natural gas and no water flows to natural gas are assumed to come from wastewater reuse.
 
 #### Produced Water
-When water is injected into the ground for natural gas production, some water is produced. Water production fractions are provided in [SOURCE] for various states in gallons of water per mmcf of natural gas produced. This is converted to million gallons of water per bbtu and applied to unconventional natural gas production by county. It is assumed that the state value provided in [SOURCE] applies to each county in the state. For states without a value, the US average is supplied.
+When water is injected into the ground for natural gas production, some additional water is extracted or "produced". No exact values exist regarding produced water for oil and natural gas individually. Veil [32] provided an analysis for 2017 on produced water by state and Greenberg et al. [4] adapted these to provide values for states with missing data. The information from both of these sources is used here. Produced water values are converted to million gallons of water per bbtu and applied to unconventional natural gas production by county. For states without a value, the US average is supplied.
 
-Natural gas average produced water intensity: 0.005342 mg/BBTU
+The water-oil-ratio (WOR) (barrels of water/barrel of oil) and water-gas-ratio (WGR) [barrels of water/million cubic feet (mmcf) of natural gas] from Greenberg et al. [4] were applied to 2015 data on oil and gas production to estimate total produced water. For the state of Idaho, which did not have a WOR value in the dataset, the WOR and WGR was assumed to be the average of both Montana and Wyoming. This produced water was split out into injection, surface discharge, and consumption/evaporation based on percentage breakdowns by state provided in [32]. Note that offsite disposal of water is assumed to be injected
 
 #### Water Consumption/Evaporation
-The same resource that provided produced water intensities for natural gas also supplied discharge percentages to surface, injection (ground), and consumption for each state. These estimates do not differentiate between natural gas and petroleum drilling. The assumption is made that these values are equivalent and are applied appropriately. For states without estimates, the national average is applied. This is also the default value for discharge and consumption in the flow package. Values provided by [SOURCE] split discharge and consumption evenly. For use within the flow package, these values must be applied separately. That is, consumption is an individual fraction and other discharges are fractions of the remaining water after consumption. The values provided in
-[SOURCE] have been adjusted appropriately.
-
-Average natural gas consumption fraction: 5%
+The same resource (Veil [32]) that provided produced water intensities for natural gas also supplied discharge percentages to surface, injection (ground), and consumption for each state. These estimates do not differentiate between natural gas and petroleum drilling. The assumption is made that these values are equivalent and are applied appropriately. For states without estimates, the national average is applied.
 
 #### Water Discharge:
-Average natural gas discharge fractions (applied after consumption):
-Injection (ground) Discharge = 95%
-Surface Discharge = 5%
+
+See the Water Consumption/Evaporation section above.
 
 ### Petroleum
 
 #### Water Withdrawal
-The average intensity of water use in unconventional petroleum drilling was determined through the same procedure as for natural gas. The only differentiating factor is that unconventional Petroleum production was used instead of total petroleum production given that data is available for conventional petroleum production water intensity.
+No county level water use or water intensity estimates exist for unconventional petroleum for the year 2015. Water use estimates for unconventional petroleum extraction for this analysis are used from Greenberg et al. [4].  Only state-level values for unconventional petroleum and natural gas extraction are available in their dataset. State-level values are split into county-level values following the same methodology used to split up the state-level unconventional petroleum production values described previously.
 
-Average unconventional petroleum water intensity = 0.0019 million gallons per bbtu
+For conventional petroleum water intensity, gallon of water per gallon of oil (WOR) estimates were provided by Greenberg et al. [4]. For states that were not included in the dataset but had 2015 conventional petroleum production, the average US WOR value was applied.
 
-For conventional water intensity, gallon of water per gallon of oil estimates were provided by [SOURCE]. These values were used to determine the total US average water intensity for conventional oil production. The average value was applied to states that did not have water intensity values. The average value was taken by converting gallons of water per gallon of oil to mgal/bbtu
-1 gal water = .0000001 mgal Water
-1 gal oil = 0.0001355 bbtu
-
-Average conventional petroleum water intensity = 0.014984 million gallons per bbtu
-
-Water withdrawal type and source - It is assumed that 80% of water withdrawals for petroleum production are from fresh surface water sources and the remainder is from fresh groundwater sources following [SOURCE]. No saline water is assumed to be used in the production of petroleum. 0% of water flows to natural gas are assumed to come from wastewater reuse.
+It is assumed that 80% of water withdrawals for petroleum production are from fresh surface water sources and the remainder is from fresh groundwater sources following Greenberg et al. [4]. No saline water is assumed to be used in the production of petroleum. 0% of water flows to natural gas are assumed to come from wastewater reuse.
 
 #### Produced Water
-Produced Water - Water produced during unconventional petroleum drilling is estimated in [SOURCE] for various states. These estimates are converted to mg per bbtu as with produced water from natural gas. For states with no produced water intensity estimate, the US average is applied. This also represents the default value in the flow package.
-
-Petroleum average produced water intensity: 0.075540 mg/BBTU
+The methodology for petroleum produced water follows that of natural gas. See the Natural Gas Produced water section above for more information.
 
 #### Water Consumption
-Consumption - Consumption estimates for petroleum follow the same as those as natural gas and are applied to all water (withdrawals + produced) in petroleum (conventional and unconventional)
-
-Average petroleum consumption fraction: 5%
+Consumption - Consumption estimates for petroleum follow the same as those as natural gas and are applied to all water (withdrawals + produced) in petroleum (conventional and unconventional). These values are estimated from Veil [32].
 
 #### Water Discharge
-Discharge - Discharge estimates for petroleum follow the same as those as natural gas and are applied to all water (withdrawals + produced) in petroleum (conventional and unconventional)
-
-Average petroleum discharge fractions (applied after consumption):
-Injection (ground) Discharge = 95%
-Surface Discharge = 5%
+Discharge - Discharge estimates for petroleum follow the same as those as natural gas and are applied to all water (withdrawals + produced) in petroleum (conventional and unconventional). Note that offsite disposal of water is assumed to be injected.

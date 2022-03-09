@@ -27,8 +27,8 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
                                         input value) should be removed from output dataset. Default is True.
     :type remove_loops:                 bool
 
-    :param output_file_path:            Optional parameter to give a file path, inclusive of file name, to save dataframe output as a csv.
-                                        Default is set to None (no output saved)
+    :param output_file_path:            Optional parameter to give a file path, inclusive of file name, to save
+                                        dataframe output as a csv. Default is set to None (no output saved)
     :type output_file_path:             str
 
     :return:                            DataFrame of flow run output at specified level of granularity for specified

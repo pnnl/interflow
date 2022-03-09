@@ -8,7 +8,9 @@ def group_results(df: pd.DataFrame, output_level=1):
     :param df:                                          Dataframe of run output values.
     :type df:                                           DataFrame
 
-    :param output_level:                                Level of granularity output will be grouped to
+    :param output_level:                                Level of granularity output will be grouped to. Must be an
+                                                        integer between one and five, inclusive. Default value is set to
+                                                        level 1 granularity.
     :type output_level:                                 int
 
     :return:                                            DataFrame of values organized as source to target flow values
