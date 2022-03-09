@@ -9,13 +9,13 @@ def readme():
 
 
 # get version from __init__ of package
-version = re.search(r"__version__ = ['\"]([^'\"]*)['\"]", open('flow/__init__.py').read(), re.M).group(1)
+version = re.search(r"__version__ = ['\"]([^'\"]*)['\"]", open('interflow/__init__.py').read(), re.M).group(1)
 
 setup(
     name='interflow',
     version=version,
     packages=find_packages(),
-    url='https://github.com/kmongird/flow',
+    url='https://github.com/kmongird/interflow',
     license='BSD2-Clause',
     author='Kendall Mongird',
     author_email='kendall.mongird@pnnl.gov',
