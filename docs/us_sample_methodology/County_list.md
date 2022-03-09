@@ -5,7 +5,9 @@ parent: US Sample Data Methodology
 nav_order: 3
 ---
 
-# County Name - FIPS Code Crosswalk
+# FIPS Code Guide
+
+The table below provides the FIPS codes for all 3,142 US counties included in the US sample data analysis.
 
 
 | State	| County Name |	FIPS |
