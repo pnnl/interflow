@@ -1703,8 +1703,8 @@ def prep_electricity_fuel() -> pd.DataFrame:
 
     # keep only necessary variables
     df_gen_loc = df_gen_loc[['FIPS', 'plant_code']]
-    df = df[['Plant Id', "AER\nFuel Type Code", "Reported\nPrime Mover",
-             "Total Fuel Consumption\nMMBtu", "Net Generation\n(Megawatthours)"]]
+    df = df[['Plant Id', "AER Fuel Type Code", "Reported Prime Mover",
+             "Total Fuel Consumption MMBtu", "Net Generation (Megawatthours)"]]
 
     # create a dictionary to bin power plant fuel types
     fuel_consumption_dict = {'SUN': 'solar',  # solar
@@ -1748,10 +1748,10 @@ def prep_electricity_fuel() -> pd.DataFrame:
 
     # rename columns in power plant generation data file
     df = df.rename(columns={"Plant Id": "plant_code"})
-    df = df.rename(columns={"AER\nFuel Type Code": "fuel_type"})
-    df = df.rename(columns={"Reported\nPrime Mover": "prime_mover"})
-    df = df.rename(columns={"Total Fuel Consumption\nMMBtu": "fuel_amt"})
-    df = df.rename(columns={"Net Generation\n(Megawatthours)": "generation_mwh"})
+    df = df.rename(columns={"AER Fuel Type Code": "fuel_type"})
+    df = df.rename(columns={"Reported Prime Mover": "prime_mover"})
+    df = df.rename(columns={"Total Fuel Consumption MMBtu": "fuel_amt"})
+    df = df.rename(columns={"Net Generation (Megawatthours)": "generation_mwh"})
 
     # changing string columns to numeric
     string_col = df.columns[3:]  # create list of string columns
@@ -4051,7 +4051,7 @@ def compile_sample_data():
     out_df['FIPS'] = out_df['FIPS'].apply(lambda x: '{0:0>5}'.format(x))
 
     # save csv to data folder
-    data = pkg_resources.resource_filename('flow', 'input_data/us_county_sample_data.csv')
+    data = pkg_resources.resource_filename('interflow', 'input_data/us_county_sample_data.csv')
     out_df.to_csv(data, index=False)
 
     return out_df
