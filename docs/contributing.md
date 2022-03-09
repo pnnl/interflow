@@ -4,15 +4,15 @@ title: Contributing
 nav_order: 4
 ---
 
-# Contributing to interinterflow
+# Contributing to interflow
 
 ## Bugs
 
-If you found a bug in interflow, please open an issue request in GitHub.
+If you found a bug in interflow, please [open an issue request in GitHub](https://github.com/kmongird/interflow/issues). Bugs should be appropriately labeled with the 'bug' issue type. Please be as descriptive as possible in your description.
 
 ## Feature suggestions
 
-If you'd like to suggest a feature to be added to interflow, please open an issue request in GitHub and describe your feature appropriately
+If you'd like to suggest a feature to be added to interflow, please [open an issue request in GitHub](https://github.com/kmongird/interflow/issues) and describe your feature appropriately. Feature suggestions should be tagged as 'enhancement'.
 
 ## Contributing
 
