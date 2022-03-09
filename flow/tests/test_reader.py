@@ -274,7 +274,7 @@ class TestReader(unittest.TestCase):
         """Test load_geojson_data()."""
 
         # load the data
-        geo = load_geojson_data()
+        geo = load_sample_geojson_data()
 
         # returns a geojson dictionary
         self.assertTrue(type(geo) == dict)
