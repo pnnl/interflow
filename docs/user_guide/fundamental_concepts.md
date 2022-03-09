@@ -10,11 +10,11 @@ nav_order: 1
 
 ## Basic Methodology
 
-At its most basic level **flow** collects input values connecting two sectors in specified units (e.g., water delivered to the agriculture sector),
+At its most basic level **interflow** collects input values connecting two sectors in specified units (e.g., water delivered to the agriculture sector),
 calculates additional sector flows in alternative units based on intensity factors (e.g., energy demand based on water delivered to the agriculture sector),
 and builds connections to and from additional sectors to carry those values (e.g., electricity sector connected to agriculture sector to deliver the energy)
 
-**flow** goes through the following steps in completing calculations:
+**interflow** goes through the following steps in completing calculations:
 
 1. Collects a Unit 1 "flow" value connecting Node A to Node B
 2. Calculates a Unit 2 value associated with Node B based on a provided Unit 2 per Unit 1 intensity factor for Node B.
@@ -37,7 +37,7 @@ The diagram below shows each of these steps.
 
 ![image](https://user-images.githubusercontent.com/74064300/153686911-fd0ec47d-571d-455c-bde8-e8b05a13bac0.png)
 
-Note that **flow** does not require node inputs and outputs to be balanced. That is to say, inflows to a node do not have to equal outflows as demonstrated above with only 35% of the energy inflow calculated for public water supply being discharged.
+Note that **interflow** does not require node inputs and outputs to be balanced. That is to say, inflows to a node do not have to equal outflows as demonstrated above with only 35% of the energy inflow calculated for public water supply being discharged.
 
 Additionally, while the capability is provided to calculate alternate-unit flows (step 2 above) from input values, this is not a requirement. That is to say, a user could simply provide flow values connecting various nodes in step 1 and the model will simply return those flows unless told to do otherwise.
 
@@ -55,6 +55,6 @@ More information on generalizability and input data format requirements can be f
 
 ## Aggregation and Output Granularity
 
-While highly granular data can provide significant insight into the finer details of a sector, big picture relationships can also be informative. As **flow** loops through the provided sectors as the various levels of granularity and builds connections, it also tracks sums for each level of granularity so that a level of output granularity can be specified when the model is run. For example, if **flow** calculates energy demand in the public water supply sector for public water supply treatment and public water supply distribution, it will simultaneously be calculating total energy in the public water supply (i.e., their sum).
+While highly granular data can provide significant insight into the finer details of a sector, big picture relationships can also be informative. As **interflow** loops through the provided sectors as the various levels of granularity and builds connections, it also tracks sums for each level of granularity so that a level of output granularity can be specified when the model is run. For example, if **interflow** calculates energy demand in the public water supply sector for public water supply treatment and public water supply distribution, it will simultaneously be calculating total energy in the public water supply (i.e., their sum).
 
 This aggregation is done based off of both initial input values and calculated values. For example, if electricity delivery to the residential sector is provided as input data, but natural gas delivery to the residential sector is later calculated based on intensity factors, the energy delivered to the residential sector (level 1 granularity) will sum both.

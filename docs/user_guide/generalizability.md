@@ -9,11 +9,11 @@ nav_order: 2
 # Organizing your input data
 
 ## Introduction
-Though the flow package comes with sample data for the US for the year 2015 to calculate water and energy interdependencies, alternative input data can be provided to calculate different flows for any region or set of regions, any unit or set of units, and any sector or set of sectors so long as the input data is provided in the correct format.
+Though the **interflow** package comes with sample data for the US for the year 2015 to calculate water and energy interdependencies, alternative input data can be provided to calculate different flows for any region or set of regions, any unit or set of units, and any sector or set of sectors so long as the input data is provided in the correct format.
 
-The flow package requires a csv file with strict guidelines as input data to run calculations. Though different types of calculations are conducted in the flow package, the input into each calculation is provided in the same input file.
+The **interflow** package requires a csv file with strict guidelines as input data to run calculations. Though different types of calculations are conducted in the **interflow** package, the input into each calculation is provided in the same input file.
 
-The four different types of calculations the flow package conducts include the following:
+The four different types of calculations the **interflow** package conducts include the following:
 
 1. Collect input starting values from Node A to Node B in unit type 1
 2. Calculate an alternative unit flow value based on an intensity factor for Node B
@@ -24,7 +24,7 @@ Each of the above calculation types requires a specific format in the input data
 
 ## Input data column header descriptions
 
-The input data for the flow package must have 16 columns described below and each value must be in the column order described below. The flow package builds a nested dictionary of the input values leading to the various parameter values.
+The input data for the flow package must have 16 columns described below and each value must be in the column order described below. The **interflow** package builds a nested dictionary of the input values leading to the various parameter values.
 
 | Column # | Description                  | Type  |
 |:---------|:-----------------------------|:------|
@@ -47,7 +47,7 @@ The input data for the flow package must have 16 columns described below and eac
 
 ### Region (columm 1)
 
-The first item in the data should include the name of the region provided as a string. Note that **flow** will treat inconsistent spelling of regions as multiple regions.
+The first item in the data should include the name of the region provided as a string. Note that **interflow** will treat inconsistent spelling of regions as multiple regions.
 
 ### Calculation type (columm 2)
 
@@ -167,7 +167,7 @@ For source and discharge fractions, it is not a strict requirement that the frac
 
 ## Map Output Data requirements
 
-In order to use the optional cloropleth map visualization output that is included in the package, a GeoJSON file containing geometry information for the specified region(s) must be included. The feature.id in the GeoJSON file should match the region column in the output data in order to display correctly. The **flow** package comes with a GeoJSON file for US counties, an example of what the GeoJSON file structure looks like is provided below:
+In order to use the optional cloropleth map visualization output that is included in the package, a GeoJSON file containing geometry information for the specified region(s) must be included. The feature.id in the GeoJSON file should match the region column in the output data in order to display correctly. The **interflow** package comes with a GeoJSON file for US counties, an example of what the GeoJSON file structure looks like is provided below:
 
 ![image](https://user-images.githubusercontent.com/74064300/157086892-edb4027d-b6c5-40d3-80c1-107060a0b07d.png)
 
