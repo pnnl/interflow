@@ -1,5 +1,5 @@
 [![build](https://github.com/kmongird/flow/actions/workflows/build.yml/badge.svg)](https://github.com/kmongird/flow/actions/workflows/build.yml)
-
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/kmongird/interflow/HEAD?labpath=https%3A%2F%2Fgithub.com%2Fkmongird%2Finterflow%2Fblob%2Fmain%2FQuickstarter.ipynb)
 # flow
 
 flow is an open-source Python package for collecting, calculating, organizing, and visualizing cross-sectoral 
