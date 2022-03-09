@@ -1,5 +1,5 @@
 ---
-title: 'flow: A Python package to organize, calculate, and evaluate cross-sectoral dependencies'
+title: 'interflow: A Python package to organize, calculate, and evaluate cross-sectoral dependencies'
 tags:
   - Python
   - energy-water-nexus
