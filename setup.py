@@ -12,7 +12,7 @@ def readme():
 version = re.search(r"__version__ = ['\"]([^'\"]*)['\"]", open('flow/__init__.py').read(), re.M).group(1)
 
 setup(
-    name='flow',
+    name='interflow',
     version=version,
     packages=find_packages(),
     url='https://github.com/kmongird/flow',
