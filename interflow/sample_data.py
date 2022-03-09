@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from interflow.reader import *
 
 
@@ -4051,8 +4052,8 @@ def compile_sample_data():
     out_df['FIPS'] = out_df['FIPS'].apply(lambda x: '{0:0>5}'.format(x))
 
     # save csv to data folder
-    data = pkg_resources.resource_filename('interflow', 'input_data/us_county_sample_data.csv')
-    out_df.to_csv(data, index=False)
+    data = pkg_resources.resource_filename('interflow', 'input_data/us_county_sample_data.csv.gz',)
+    out_df.to_csv(data, index=False, compression="gzip")
 
     return out_df
 
