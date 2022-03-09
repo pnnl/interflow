@@ -26,8 +26,9 @@ setup(
     python_requires='>=3.7.*, <4',
     include_package_data=True,
     install_requires=[
+        'numpy>=1.19.4',
         'pandas>=1.3.4',
-        'matplotlib>=3.3.3'
-        'plotly>=5.5.0'
+        'plotly>=5.5.0',
+        'json5>=0.9.6'
     ]
 )

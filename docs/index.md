@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Welcome to flow
+title: Welcome to interflow
 nav_order: 1
 ---
 
-# Welcome to flow
+# Welcome to interflow
 
 ## Intro
 **interflow** is an open-source python package for collecting, calculating, organizing, and visualizing cross-sectoral resource interdependencies and flows.
