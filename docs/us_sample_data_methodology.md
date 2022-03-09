@@ -14,7 +14,7 @@ The motivation of the Integrated Water Power Resilience Project is to identify a
 
 Water and power utilities are interdependent, subject to many of the same natural and manmade hazards, and critical for the well-being of communities and society. Because of the interconnectedness of water and power systems there are substantial economic, social, and environmental benefits to co-managing the market sectors for resilience, instead of managing them separately.
 
-To support this initiative and future research in this area, the **flow** model was developed to build, calculate, and visualize interconnections in water and energy between various sectors.
+To support this initiative and future research in this area, the **interflow** model was developed to build, calculate, and visualize interconnections in water and energy between various sectors.
 
 
 ## General Methodology
@@ -26,4 +26,4 @@ The following list of assumptions are applicable to the 2015 US Case Study:
 
 
 ## Data
-All data used in the 2015 US Case Study including input flow values, energy or water intensity values, discharge fractions, and others are described in the various methodology sections. References to each can be found on the references page. A folder containing all input data is also provided with the package. 
+All data used in the 2015 US Case Study including input flow values, energy or water intensity values, discharge fractions, and others are described in the various methodology sections. References to each can be found on the references page. A folder containing all input data is also provided with the package.
