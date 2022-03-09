@@ -1,6 +1,6 @@
 from .reader import *
-import flow.construct as co
-import flow.deconstruct as de
+import interflow.construct as co
+import interflow.deconstruct as de
 
 
 def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, output_file_path=None) -> pd.DataFrame:

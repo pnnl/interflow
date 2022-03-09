@@ -1,4 +1,4 @@
-from .reader import *
+from interflow.reader import *
 
 
 def construct_nested_dictionary(df: pd.DataFrame) -> dict:

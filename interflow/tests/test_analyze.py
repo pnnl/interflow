@@ -1,6 +1,6 @@
 import unittest
-from flow.analyze import *
-from flow.calc_flow import *
+from interflow.analyze import *
+from interflow.calc_flow import *
 
 
 class MyTestCase(unittest.TestCase):

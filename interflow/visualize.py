@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
-from .analyze import *
+from interflow.analyze import *
 
 
 def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=None, strip=None, remove_sectors=None):

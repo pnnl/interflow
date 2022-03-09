@@ -1,5 +1,5 @@
 import numpy as np
-from .reader import *
+from interflow.reader import *
 
 
 def convert_kwh_bbtu(value: float) -> float:

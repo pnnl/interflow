@@ -1,6 +1,6 @@
 import unittest
-from flow.construct import *
-from flow.reader import *
+from interflow.construct import *
+from interflow.reader import *
 
 
 class TestConstruct(unittest.TestCase):

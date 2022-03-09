@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from flow.calc_flow import *
+from interflow.calc_flow import *
 
 
 class TestCalcFlow(unittest.TestCase):

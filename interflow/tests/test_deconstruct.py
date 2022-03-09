@@ -1,6 +1,6 @@
 import unittest
-from flow.deconstruct import *
-from flow.calc_flow import *
+from interflow.deconstruct import *
+from interflow.calc_flow import *
 
 
 class TestDeconstruct(unittest.TestCase):

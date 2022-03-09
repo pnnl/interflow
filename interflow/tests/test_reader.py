@@ -1,5 +1,5 @@
 import unittest
-from flow.reader import *
+from interflow.reader import *
 
 
 class TestReader(unittest.TestCase):
