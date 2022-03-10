@@ -5,7 +5,7 @@ import json
 
 def read_sample_data() -> pd.DataFrame:
     """Read in complete sample input csv data as a Pandas DataFrame.
-        :return:                        dataframe of values
+        :return:                        DataFrame of complete sample data values for US Counties
 
         """
 
