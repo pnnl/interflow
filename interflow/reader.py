@@ -310,7 +310,9 @@ def get_state_water_to_unconventional_production_data():
 def get_state_petroleum_natgas_water_data():
     """Read in state-level data on the water to oil and water to natural gas ratios as well as the percent of water
     from each that is injected, consumed, or discharged to the surface.
+
     :return:                        dataframe of natural gas and petroleum values
+
     """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/Oil_NG_WOR_WGR.csv')
