@@ -143,25 +143,25 @@ Data positions 3 through 8 provide information on the primary node (PN). The pri
 Level 1 name refers to the major sector name, Level 2 refers to the sub-sector name, and so on through level 5. For more information on these levels see the Fundamental Concepts section.
 Primary Node units refers to the units that that sector name (which will be assigned to a value) is associated with.
 
-### Secondary Node Information (columms 9-14)
+Secondary Node Information (columms 9-14)
 """"""""""""""""""""""""""""""""""""""""""""
 
 These data inputs follow the same structure as the primary node but are used to describe the node that is being linked to the primary node as either a source (inflow from),a target node (discharge to), or a node upon which an alternate unit value is calculated (described in greater detail later on this page).
 
-### Parameter (columms 15)
+Parameter (columms 15)
 """"""""""""""""""""""""""""""""""""""""""""
 
 This data item identifies the type of value in the value column (position 16). The value of this data position can be changed by the user with no effect on calculated outcome. It is provided as an optional data position for the user to organize their input data. Examples (consistent with those in the same data) are shown later on this page.
 
-### Value (columms 16)
+Value (columms 16)
 """"""""""""""""""""""""""""""""""""""""""""
 
 This data item providing one of the following: (1) an input flow value in primary node units, (2) an intensity coefficient (unit 2 required per unit 1) (3) a source flow fraction, or (4) a discharge flow fraction.
 
-## Creating input data for different calculations
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Creating input data for different calculations
+*************************************************
 
-### Collect values
+Collect values
 """""""""""""""""""""""""""""""""""""""""""
 
 To build flows between nodes and calculate cross-unit flows, initial flow values are necessary. For example, if the amount of energy required to withdraw a gallon of water from a larger water supply for the public water supply is a desired flow in the ultimate output, then the amount of water withdrawn from the water supply by the public water supply sector is a required input. Initial values must be supplied in the following way:
@@ -198,6 +198,7 @@ In order to calculate secondary unit flow values from collected flow values, the
 Note that when calculating a secondary unit flow for a sector that has flows in both units, the names of those sectors/nodes do not have to be consistent. In the below example, we are naming the level2 through level5 different than we did for the water flows. This is because different nodes are calculated for different units.
 
 Example:
+
 +----------+-----------------+--------------------+-------+---------------+-----------+-------+---------+---------------------+-------+---------------+------------+-------+---------+-----------+-------+
 |Region    |Calculation type |PN L1               |PN L2  |PN L3          |PN L4      |PN L5  |PN Units |SN L1                |SN L2  |SN L3          |SN L4       |SN L5  |SN Units | Parameter | value |
 +----------+-----------------+--------------------+-------+---------------+-----------+-------+---------+---------------------+-------+---------------+------------+-------+---------+-----------+-------+
@@ -218,6 +219,7 @@ To split calculated values into sources, the following is required:
 
 
 Example:
+
 +----------+-----------------+--------------------+-------+---------------+-----------+-------+---------+---------------------+-------------+----------+---------+-------+---------+-----------+-------+
 |Region    |Calculation type |PN L1               |PN L2  |PN L3          |PN L4      |PN L5  |PN Units |SN L1                |SN L2        |SN L3     |SN L4    |SN L5  |SN Units | Parameter | value |
 +----------+-----------------+--------------------+-------+---------------+-----------+-------+---------+---------------------+-------------+----------+---------+-------+---------+-----------+-------+
@@ -256,8 +258,8 @@ As many discharge rows should be provided as there are discharges for a particul
 
 For source and discharge fractions, it is not a strict requirement that the fractions per primary node value sum to one. Note that, not having them sum to 1 will lead to unbalanced flows (greater inflows than outflows or vice versa)
 
-Map Output Data requirements
---------------------------------
+Map Data requirements
+*******************************************
 
 In order to use the optional cloropleth map visualization output that is included in the package, a GeoJSON file containing geometry information for the specified region(s) must be included. The feature.id in the GeoJSON file should match the region column in the output data in order to display correctly. The **interflow** package comes with a GeoJSON file for US counties, an example of what the GeoJSON file structure looks like is provided below:
 

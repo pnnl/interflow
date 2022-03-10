@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>US County Sample Data &#8212; interflow  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributing to interflow" href="contributing.html" />
+    <link rel="prev" title="Quickstarter" href="quickstarter.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="us-county-sample-data">
+<h1>US County Sample Data<a class="headerlink" href="#us-county-sample-data" title="Permalink to this headline">¶</a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The motivation of the Integrated Water Power Resilience Project is to identify and develop opportunities to improve resilience in the water and power sectors through coordinated planning, investment, and operations and thereby provide benefits to power and water utilities, consumers, and the environment.
+Water and power utilities are interdependent, subject to many of the same natural and manmade hazards, and critical for the well-being of communities and society. Because of the interconnectedness of water and power systems there are substantial economic, social, and environmental benefits to co-managing the market sectors for resilience, instead of managing them separately.
+To support this initiative and future research in this area, the <strong>interflow</strong> model was developed to build, calculate, and visualize interconnections in water and energy between various sectors.</p>
+</section>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>The following list of assumptions are applicable to the 2015 US Case Study:</p>
+<ul class="simple">
+<li><p>Calculations are for the year 2015, the most recent year available for comprehensive county-level water use data in the US. When data was unavailable for 2015, the closest year available was applied or methods were developed to develop data for 2015 based on factors from previous years.</p></li>
+<li><p>Many calculation methodologies and intensity parameters are informed by the literature. References for these methodologies are noted in the methodology descriptions as applicable.</p></li>
+<li><p>Water values are provided in million gallons per day (MGD) and energy values are provided in billion British thermal units (BBTU) per day</p></li>
+<li><p>Data was available at various levels of granularity across the US including plant-level, county-level, state-level, and aggregate estimates for the entire US. Data was aggregated or split out appropriately so that the resulting dataset contains values on the county-level, given by county FIPS code. When data collected was provided at the state-level, state-level totals are divided among state counties through an appropriate method (e.g. population weighting). When information was available at the plant level (e.g. power plant generation), information on plant county were used to sum plant values to achieve a county total. US level estimates were predominantly related to intensity factors or fractions. For example, the fraction of all corn grown for ethanol fuel is a US-level estimate and applied to county-level corn production.</p></li>
+</ul>
+<p>All data used in the 2015 US Case Study including input flow values, energy or water intensity values, discharge fractions, and others are described in the various methodology sections. References to each can be found on the references page. A folder containing all input data is also provided with the package.</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>The following list includes references for data sources and calculation methodology development for the 2015 US sample data.
+Reference numbers correspond with those included in the Methodology subsections.</p>
+<ol class="arabic simple">
+<li><p>Dieter, C. A., Maupin, M. A., Caldwell, R. R., Harris, M. A., Ivahnenko, T. I., Lovelace, J. K., Barber, N. L., &amp; Linsey, K. S. (2018). Estimated use of water in the United States in 2015.</p></li>
+<li><p>Tidwell, V. C., Moreland, B., &amp; Zemlick, K. (2014). Geographic Footprint of Electricity Use for Water Services in the Western U.S. Environmental Science &amp; Technology, 48(15), 8897-8904. <a class="reference external" href="https://doi.org/10.1021/es5016845">https://doi.org/10.1021/es5016845</a></p></li>
+<li><p>Texas Water Development Board. (2022). Water Use Survey Historical Municipal Use by Region. Texas Water Development Board. Retrieved February 10, 2022 from <a class="reference external" href="https://www3.twdb.texas.gov/apps/reports/WU/HistoricalMunicipal">https://www3.twdb.texas.gov/apps/reports/WU/HistoricalMunicipal</a></p></li>
+<li><p>Greenberg, H. R., Simon, A. J., Singer, S. L., &amp; Shuster, E. P. (2017). Development of Energy-Water Nexus State-level Hybrid Sankey Diagrams for 2010 (LLNL-TR-669059). <a class="reference external" href="https://flowcharts.llnl.gov/content/assets/docs/2010_United-States_EnergyWater.pdf">https://flowcharts.llnl.gov/content/assets/docs/2010_United-States_EnergyWater.pdf</a></p></li>
+<li><p>Vilsack, T. (2014). 2013 Farm and Ranch Irrigation Survey Part 1 (AC-12-SS1). (2012 Census of Agriculture, Issue. <a class="reference external" href="https://www.nass.usda.gov/Publications/AgCensus/2012/Online_Resources/Farm_and_Ranch_Irrigation_Survey/fris13.pdf">https://www.nass.usda.gov/Publications/AgCensus/2012/Online_Resources/Farm_and_Ranch_Irrigation_Survey/fris13.pdf</a></p></li>
+<li><p>Lawrence Berkeley National Laboratory (LBNL). (2021). Well-pump energy calculation method. LBNL. Retrieved August 12 from <a class="reference external" href="http://hes-documentation.lbl.gov/calculation-methodology/calculation-of-energy-consumption/major-appliances/miscellaneous-equipment-energy-consumption/well-pump-energy-calculation-method">http://hes-documentation.lbl.gov/calculation-methodology/calculation-of-energy-consumption/major-appliances/miscellaneous-equipment-energy-consumption/well-pump-energy-calculation-method</a></p></li>
+<li><p>Solley, W. B., Pierce, R. R., &amp; Perlman, H. A. (1998). Estimated use of water in the United States in 1995 Report. (Circular, Issue. U. S. G. S. U.S. Dept. of the Interior &amp; S. Branch of Information. <a class="reference external" href="http://pubs.er.usgs.gov/publication/cir1200">http://pubs.er.usgs.gov/publication/cir1200</a></p></li>
+<li><p>U.S. EIA (2016). State Energy Data System (SEDS): 1960-2019 (complete). U.S EIA. Retrieved July 17 from <a class="reference external" href="https://www.eia.gov/state/seds/seds-data-complete.php?sid=US">https://www.eia.gov/state/seds/seds-data-complete.php?sid=US</a></p></li>
+<li><p>U.S. EIA. (2016). Electric Power Annual 2015. U.S. EIA. Retrieved Feb 17, 2022 from <a class="reference external" href="https://www.eia.gov/electricity/annual/xls/epa_02_02.xlsx">https://www.eia.gov/electricity/annual/xls/epa_02_02.xlsx</a></p></li>
+<li><p>U.S. EPA. (2016). Clean Watersheds Needs Survey 2012: Report to Congress (EPA-830-R-15005). <a class="reference external" href="https://www.epa.gov/sites/default/files/2015-12/documents/cwns_2012_report_to_congress-508-opt.pdf">https://www.epa.gov/sites/default/files/2015-12/documents/cwns_2012_report_to_congress-508-opt.pdf</a></p></li>
+<li><p>U.S. EPA. (2016). Clean Watersheds Needs Survey – 2012 Data Dictionary. <a class="reference external" href="https://19january2017snapshot.epa.gov/sites/production/files/2016-01/documents/cwns-2012-data_dictionary2.pdf">https://19january2017snapshot.epa.gov/sites/production/files/2016-01/documents/cwns-2012-data_dictionary2.pdf</a></p></li>
+<li><p>Pabi, S., Amarnath, A., Goldstein, R., &amp; Reekie, L. (2013). Electricity Use and Management in the Municipal Water Supply and Wastewater Industries (3002001433). <a class="reference external" href="https://www.epri.com/research/products/000000003002001433">https://www.epri.com/research/products/000000003002001433</a></p></li>
+<li><p>U.S. Energy Information Administration (EIA). (2016). Form EIA-923 detailed data with previous form data (EIA-906/920). U.S. EIA. Retrieved January 15 from <a class="reference external" href="https://www.eia.gov/electricity/data/eia923/">https://www.eia.gov/electricity/data/eia923/</a></p></li>
+<li><p>Harris, M.A., and Diehl, T.H., 2019, Withdrawal and consumption of water by thermoelectric power plants in the United States, 2015: U.S. Geological Survey Scientific Investigations Report 2019–5103, p., <a class="reference external" href="https://doi.org/10.3133/sir20195103">https://doi.org/10.3133/sir20195103</a>.</p></li>
+<li><p>Macknick et al. (2012) Environ. Res. Lett.7 045802. <a class="reference external" href="https://iopscience.iop.org/article/10.1088/1748-9326/7/4/045802/meta">https://iopscience.iop.org/article/10.1088/1748-9326/7/4/045802/meta</a></p></li>
+<li><p><a class="reference external" href="https://www.usgs.gov/u.s.-board-on-geographic-names/download-gnis-data">https://www.usgs.gov/u.s.-board-on-geographic-names/download-gnis-data</a></p></li>
+<li><p>U.S. EIA (2016). Annual Coal Report 2015. <a class="reference external" href="https://www.eia.gov/coal/annual/">https://www.eia.gov/coal/annual/</a></p></li>
+<li><p>U.S. Department of Labor- Mine Safety and Health Administration. (2021). Mine Data Retrieval System. Mine Safety and Health Administration. Retrieved September 13 from <a class="reference external" href="https://www.msha.gov/mine-data-retrieval-system">https://www.msha.gov/mine-data-retrieval-system</a></p></li>
+<li><p>Plotly. 2022. GeooJSON-Counties-FIPS. <a class="reference external" href="https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json">https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json</a></p></li>
+<li><p>U.S. DOE. (2021). U.S. Corn Production and Portion Used for Fuel Ethanol. U.S., DOE. Retrieved September 10 from <a class="reference external" href="https://afdc.energy.gov/data/10339">https://afdc.energy.gov/data/10339</a></p></li>
+<li><p>Perdue, S. (2019). 2018 Irrigation and Water Management Survey (Special Studies, Issue. <a class="reference external" href="https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/Farm_and_Ranch_Irrigation_Survey/fris.pdf">https://www.nass.usda.gov/Publications/AgCensus/2017/Online_Resources/Farm_and_Ranch_Irrigation_Survey/fris.pdf</a></p></li>
+<li><p>USDA. (2015). National Agricultural Statistics Service. <a class="reference external" href="https://quickstats.nass.usda.gov/">https://quickstats.nass.usda.gov/</a></p></li>
+<li><p>Argonne National Laboratory. 2018. Consumptive Water Use in the Production of Ethanol and Petroleum Gasoline — 2018 Update. Energy Systems Division. ANL/ESD/09-1 Rev. 2. <a class="reference external" href="https://publications.anl.gov/anlpubs/2019/01/148043.pdf">https://publications.anl.gov/anlpubs/2019/01/148043.pdf</a></p></li>
+<li><p>US. EIA. 2016. U.S. Fuel Ethanol Plant Production Capacity Archives. <a class="reference external" href="https://www.eia.gov/petroleum/ethanolcapacity/archive/2016/index.php">https://www.eia.gov/petroleum/ethanolcapacity/archive/2016/index.php</a></p></li>
+<li><p>State of Nebraska. 2016. Ethanol Facilities Capacities by State and Plant. <a class="reference external" href="https://neo.ne.gov/programs/stats/122/2015/122_201512.htm">https://neo.ne.gov/programs/stats/122/2015/122_201512.htm</a></p></li>
+<li><p>USDA. 2020. County-level Oil and Gas Production in the U.S. <a class="reference external" href="https://www.ers.usda.gov/data-products/county-level-oil-and-gas-production-in-the-us.aspx">https://www.ers.usda.gov/data-products/county-level-oil-and-gas-production-in-the-us.aspx</a></p></li>
+<li><p>State of Idaho. 2016. State of Idaho releases oil and gas production data. <a class="reference external" href="https://ogcc.idaho.gov/wp-content/uploads/sites/3/2017/06/2016-10-6-state-of-idaho-releases-oil-gas-production-data.pdf">https://ogcc.idaho.gov/wp-content/uploads/sites/3/2017/06/2016-10-6-state-of-idaho-releases-oil-gas-production-data.pdf</a></p></li>
+<li><p>State of Alaska. Undated. Alaska Oil and Gas Conservation Commission. Department of Commerce, Community, and Economic Development. Retrieved December 3, 2021 from <a class="reference external" href="https://www.commerce.alaska.gov/web/aogcc/Data.aspx">https://www.commerce.alaska.gov/web/aogcc/Data.aspx</a></p></li>
+<li><p>U.S. EIA. 2021. Maryland: State Profile and Energy Estimates. <a class="reference external" href="https://www.eia.gov/state/analysis.php?sid=MD#34">https://www.eia.gov/state/analysis.php?sid=MD#34</a></p></li>
+<li><p>University of Nevada - Reno. 2011. Oil and Gas Wells Information. Retrieved November 18, 2021 from <a class="reference external" href="https://gisweb.unr.edu/OilGas/">https://gisweb.unr.edu/OilGas/</a></p></li>
+<li><p>State of Oregon. 2021. Oil &amp; Gas Permits and Production Information. Department of Geology and Mineral Industries. Retrieved November 18 from <a class="reference external" href="https://www.oregongeology.org/mlrr/oilgas-report.htm">https://www.oregongeology.org/mlrr/oilgas-report.htm</a></p></li>
+<li><p>Veil, J. (2020). U.S. Produced Water Volumes and Management Practices in 2017. <a class="reference external" href="http://www.veilenvironmental.com/publications/pw/pw_report_2017_final.pdf">http://www.veilenvironmental.com/publications/pw/pw_report_2017_final.pdf</a></p></li>
+</ol>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">interflow</a></h1>
+
+
+
+<p class="blurb">a multi-sector multi-resource flow builder</p>
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstarter.html">Quickstarter</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">US County Sample Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to interflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors and Contributions</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="quickstarter.html" title="previous chapter">Quickstarter</a></li>
+      <li>Next: <a href="contributing.html" title="next chapter">Contributing to interflow</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Kendall Mongird.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/sample_data.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -32,6 +32,10 @@ The package collects known flow values between sectors provided by the user, cal
 
    getting_started
    user_guide
+   quickstarter
+   sample_data
+   contributing
+   authors
 
 
 

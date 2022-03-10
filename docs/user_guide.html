@@ -15,6 +15,7 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quickstarter" href="quickstarter.html" />
     <link rel="prev" title="Getting started" href="getting_started.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -65,9 +66,9 @@ and builds connections to and from additional sectors to carry those values (e.g
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 22%" />
-<col style="width: 12%" />
 <col style="width: 15%" />
-<col style="width: 28%" />
+<col style="width: 15%" />
+<col style="width: 27%" />
 <col style="width: 22%" />
 </colgroup>
 <thead>
@@ -107,6 +108,446 @@ and builds connections to and from additional sectors to carry those values (e.g
 <p>This aggregation is done based off of both initial input values and calculated values. For example, if electricity delivery to the residential sector is provided as input data, but natural gas delivery to the residential sector is later calculated based on intensity factors, the energy delivered to the residential sector (level 1 granularity) will sum both.</p>
 </section>
 </section>
+<section id="generalizability">
+<h2>Generalizability<a class="headerlink" href="#generalizability" title="Permalink to this headline">¶</a></h2>
+<section id="organizing-input-data">
+<h3>Organizing input data<a class="headerlink" href="#organizing-input-data" title="Permalink to this headline">¶</a></h3>
+<section id="introduction">
+<h4>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h4>
+<p>Though the <strong>interflow</strong> package comes with sample data for the US for the year 2015 to calculate water and energy interdependencies, alternative input data can be provided to calculate different flows for any region or set of regions, any unit or set of units, and any sector or set of sectors so long as the input data is provided in the correct format.</p>
+<p>The <strong>interflow</strong> package requires a csv file with strict guidelines as input data to run calculations. Though different types of calculations are conducted in the <strong>interflow</strong> package, the input into each calculation is provided in the same input file.</p>
+<p>The four different types of calculations the <strong>interflow</strong> package conducts include the following:</p>
+<ol class="arabic simple">
+<li><p>Collect input starting values from Node A to Node B in unit type 1</p></li>
+<li><p>Calculate an alternative unit flow value based on an intensity factor for Node B</p></li>
+<li><p>Calculate a source inflow connecting Node C to Node B</p></li>
+<li><p>Calculate a discharge outflow connecting Node B to Node D</p></li>
+</ol>
+<p>Each of the above calculation types requires a specific format in the input data that are described in more detail below.</p>
+</section>
+<section id="input-data-descriptions">
+<h4>Input data descriptions<a class="headerlink" href="#input-data-descriptions" title="Permalink to this headline">¶</a></h4>
+<p>The input data for the flow package must have 16 columns described below and each value must be in the column order described below. The <strong>interflow</strong> package builds a nested dictionary of the input values leading to the various parameter values.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 55%" />
+<col style="width: 18%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Column #</p></td>
+<td><p>Description</p></td>
+<td><p>Type</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Region</p></td>
+<td><p>str</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Calculation type</p></td>
+<td><p>str</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>Primary Node Level 1 Name</p></td>
+<td><p>str</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>Primary Node Level 2 Name</p></td>
+<td><p>str</p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p>Primary Node Level 3 Name</p></td>
+<td><p>str</p></td>
+</tr>
+<tr class="row-odd"><td><p>6</p></td>
+<td><p>Primary Node Level 4 Name</p></td>
+<td><p>str</p></td>
+</tr>
+<tr class="row-even"><td><p>7</p></td>
+<td><p>Primary Node Level 5 Name</p></td>
+<td><p>str</p></td>
+</tr>
+<tr class="row-odd"><td><p>8</p></td>
+<td><p>Primary Node Units</p></td>
+<td><p>str</p></td>
+</tr>
+<tr class="row-even"><td><p>9</p></td>
+<td><p>Secondary Node Level 1 Name</p></td>
+<td><p>str</p></td>
+</tr>
+<tr class="row-odd"><td><p>10</p></td>
+<td><p>Secondary Node Level 2 Name</p></td>
+<td><p>str</p></td>
+</tr>
+<tr class="row-even"><td><p>11</p></td>
+<td><p>Secondary Node Level 3 Name</p></td>
+<td><p>str</p></td>
+</tr>
+<tr class="row-odd"><td><p>12</p></td>
+<td><p>Secondary Node Level 4 Name</p></td>
+<td><p>str</p></td>
+</tr>
+<tr class="row-even"><td><p>13</p></td>
+<td><p>Secondary Node Level 5 Name</p></td>
+<td><p>str</p></td>
+</tr>
+<tr class="row-odd"><td><p>14</p></td>
+<td><p>Secondary Node Units</p></td>
+<td><p>str</p></td>
+</tr>
+<tr class="row-even"><td><p>15</p></td>
+<td><p>Parameter</p></td>
+<td><p>str</p></td>
+</tr>
+<tr class="row-odd"><td><p>16</p></td>
+<td><p>Value of parameter</p></td>
+<td><p>flt</p></td>
+</tr>
+</tbody>
+</table>
+<section id="region-columm-1">
+<h5>Region (columm 1)<a class="headerlink" href="#region-columm-1" title="Permalink to this headline">¶</a></h5>
+<p>The first item in the data should include the name of the region provided as a string. Note that <strong>interflow</strong> will treat inconsistent spelling of regions as multiple regions.</p>
+</section>
+<section id="calculation-type-columm-2">
+<h5>Calculation type (columm 2)<a class="headerlink" href="#calculation-type-columm-2" title="Permalink to this headline">¶</a></h5>
+<p>The value of the calculation type must equal one of the following verbatim:
+* A_collect
+* B_calculate
+* C_source
+* D_discharge</p>
+<p>Each of these inputs tells the model what type of calculation it should be conducting for that row of data.</p>
+</section>
+<section id="primary-node-information-columms-3-8">
+<h5>Primary Node Information (columms 3-8)<a class="headerlink" href="#primary-node-information-columms-3-8" title="Permalink to this headline">¶</a></h5>
+<p>Data positions 3 through 8 provide information on the primary node (PN). The primary node should be interpreted as the node for which inflows and outflows are determined.
+Level 1 name refers to the major sector name, Level 2 refers to the sub-sector name, and so on through level 5. For more information on these levels see the Fundamental Concepts section.
+Primary Node units refers to the units that that sector name (which will be assigned to a value) is associated with.</p>
+</section>
+<section id="secondary-node-information-columms-9-14">
+<h5>Secondary Node Information (columms 9-14)<a class="headerlink" href="#secondary-node-information-columms-9-14" title="Permalink to this headline">¶</a></h5>
+<p>These data inputs follow the same structure as the primary node but are used to describe the node that is being linked to the primary node as either a source (inflow from),a target node (discharge to), or a node upon which an alternate unit value is calculated (described in greater detail later on this page).</p>
+</section>
+<section id="parameter-columms-15">
+<h5>Parameter (columms 15)<a class="headerlink" href="#parameter-columms-15" title="Permalink to this headline">¶</a></h5>
+<p>This data item identifies the type of value in the value column (position 16). The value of this data position can be changed by the user with no effect on calculated outcome. It is provided as an optional data position for the user to organize their input data. Examples (consistent with those in the same data) are shown later on this page.</p>
+</section>
+<section id="value-columms-16">
+<h5>Value (columms 16)<a class="headerlink" href="#value-columms-16" title="Permalink to this headline">¶</a></h5>
+<p>This data item providing one of the following: (1) an input flow value in primary node units, (2) an intensity coefficient (unit 2 required per unit 1) (3) a source flow fraction, or (4) a discharge flow fraction.</p>
+</section>
+</section>
+</section>
+<section id="creating-input-data-for-different-calculations">
+<h3>Creating input data for different calculations<a class="headerlink" href="#creating-input-data-for-different-calculations" title="Permalink to this headline">¶</a></h3>
+<p>To build flows between nodes and calculate cross-unit flows, initial flow values are necessary. For example, if the amount of energy required to withdraw a gallon of water from a larger water supply for the public water supply is a desired flow in the ultimate output, then the amount of water withdrawn from the water supply by the public water supply sector is a required input. Initial values must be supplied in the following way:</p>
+<ul class="simple">
+<li><p>The calculation type (data position 2) must be equal to “A_collect”</p></li>
+<li><p>The primary node information (data positions 3-8) must describe the node that is <em>receiving</em> the flow from another node</p></li>
+<li><p>The secondary node information (data positions 9-14) must describe the node that is discharging to the primary node</p></li>
+<li><p>The value (data position 16) must be equal to value of the flow from the secondary to the primary node</p></li>
+</ul>
+<p>Note that, as shown in the below example, while all data positions must be provided, they do not have to be unique. If there is only level 1 through 3 granularity for some of the input data, the remaining levels can be the same and filled with “total” or something equivalent.</p>
+<p>Additionally, some input flow values may be provided that the user does not have a source node for but still wants to calculate secondary unit flows based on. An example might be the production of fuels such as coal. These arguably don’t have a source node since they are the original source, but we may still want to calculate water use based on a water intensity factor. These values can be provided to the model as circular flows. In this scenario, the primary node name will be equal to the secondary node name. The option is provided in the flow calculate function to remove circular flows from the output dataframe.</p>
+<p>Example:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 4%" />
+<col style="width: 8%" />
+<col style="width: 7%" />
+<col style="width: 4%" />
+<col style="width: 5%" />
+<col style="width: 8%" />
+<col style="width: 4%" />
+<col style="width: 8%" />
+<col style="width: 4%" />
+<col style="width: 4%" />
+<col style="width: 5%" />
+<col style="width: 6%" />
+<col style="width: 4%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Region</p></td>
+<td><p>Calculation type</p></td>
+<td><p>PN L1</p></td>
+<td><p>PN L2</p></td>
+<td><p>PN L3</p></td>
+<td><p>PN L4</p></td>
+<td><p>PN L5</p></td>
+<td><p>PN Units</p></td>
+<td><p>SN L1</p></td>
+<td><p>SN L2</p></td>
+<td><p>SN L3</p></td>
+<td><p>SN L4</p></td>
+<td><p>SN L5</p></td>
+<td><p>SN Units</p></td>
+<td><p>Parameter</p></td>
+<td><p>value</p></td>
+</tr>
+<tr class="row-even"><td><p>Region_1</p></td>
+<td><p>A_collect</p></td>
+<td><p>Public Water Supply</p></td>
+<td><p>Fresh</p></td>
+<td><p>Surface Water</p></td>
+<td><p>Withdrawal</p></td>
+<td><p>Total</p></td>
+<td><p>mgd</p></td>
+<td><p>Water Supply</p></td>
+<td><p>Fresh</p></td>
+<td><p>Surface Water</p></td>
+<td><p>Total</p></td>
+<td><p>Total</p></td>
+<td><p>mgd</p></td>
+<td><p>flow_value</p></td>
+<td><p>200</p></td>
+</tr>
+</tbody>
+</table>
+<p>Consistent naming and spelling with sectors is very important as values (both collected and calculated) are assigned to the node names provided. The model looks for node names at level 5 granularity to retrieve and calculate values.</p>
+<p>In order to calculate secondary unit flow values from collected flow values, the data must be in the following format:</p>
+<ul class="simple">
+<li><p>The calculation type (data position 2) must be equal to “B_calculate”</p></li>
+<li><p>The primary node information (data positions 3-8) must describe the node that is <em>being built</em> in the secondary units (E.g., public water supply pumping energy in btu)</p></li>
+<li><p>The secondary node information (data positions 9-14) must describe the node that the new value is based on and be equal to a node that has been collected.</p></li>
+<li><p>The value (data position 16) must be equal to the intensity value to calculate the secondary unit flow from the first unit flow. Examples include kilowatt-hours per gallon, gallons per btu, etc.</p></li>
+</ul>
+<p>Note that when calculating a secondary unit flow for a sector that has flows in both units, the names of those sectors/nodes do not have to be consistent. In the below example, we are naming the level2 through level5 different than we did for the water flows. This is because different nodes are calculated for different units.</p>
+<p>Example:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 5%" />
+<col style="width: 9%" />
+<col style="width: 11%" />
+<col style="width: 4%" />
+<col style="width: 8%" />
+<col style="width: 6%" />
+<col style="width: 4%" />
+<col style="width: 5%" />
+<col style="width: 11%" />
+<col style="width: 4%" />
+<col style="width: 8%" />
+<col style="width: 6%" />
+<col style="width: 4%" />
+<col style="width: 5%" />
+<col style="width: 6%" />
+<col style="width: 4%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Region</p></td>
+<td><p>Calculation type</p></td>
+<td><p>PN L1</p></td>
+<td><p>PN L2</p></td>
+<td><p>PN L3</p></td>
+<td><p>PN L4</p></td>
+<td><p>PN L5</p></td>
+<td><p>PN Units</p></td>
+<td><p>SN L1</p></td>
+<td><p>SN L2</p></td>
+<td><p>SN L3</p></td>
+<td><p>SN L4</p></td>
+<td><p>SN L5</p></td>
+<td><p>SN Units</p></td>
+<td><p>Parameter</p></td>
+<td><p>value</p></td>
+</tr>
+<tr class="row-even"><td><p>Region_1</p></td>
+<td><p>B_calculate</p></td>
+<td><p>Public Water Supply</p></td>
+<td><p>Fresh</p></td>
+<td><p>Surface Water</p></td>
+<td><p>pumping</p></td>
+<td><p>Total</p></td>
+<td><p>btu</p></td>
+<td><p>Public Water Supply</p></td>
+<td><p>Fresh</p></td>
+<td><p>Surface Water</p></td>
+<td><p>Withdrawal</p></td>
+<td><p>Total</p></td>
+<td><p>mgd</p></td>
+<td><p>intensity</p></td>
+<td><p>2</p></td>
+</tr>
+</tbody>
+</table>
+<p>Once secondary unit flow values have been calculated by the model, their aggregate value is split into individual flows from various source. For example, if the public water supply sector receives 80% its energy from the electricity sector and 20% from natural gas generators, we would want 80% of our total calculated energy value to be represented as a flow from the electricity node to the public water supply sector and the remaining 20% from the natural gas fuel supply</p>
+<p>To split calculated values into sources, the following is required:</p>
+<ul class="simple">
+<li><p>The calculation type (data position 2) must be equal to “C_source”</p></li>
+<li><p>The primary node information (data positions 3-8) must describe the node that is <em>receiving</em> the flow from another node (e.g., energy use in public water supply)</p></li>
+<li><p>The secondary node information (data positions 9-14) must describe the node that is discharging to the primary node (e.g., electricity sector)</p></li>
+<li><p>The value (data position 16) must be the fraction of the calculated value that is coming from the secondary node.</p></li>
+</ul>
+<p>Example:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 5%" />
+<col style="width: 9%" />
+<col style="width: 11%" />
+<col style="width: 4%" />
+<col style="width: 8%" />
+<col style="width: 6%" />
+<col style="width: 4%" />
+<col style="width: 5%" />
+<col style="width: 11%" />
+<col style="width: 7%" />
+<col style="width: 5%" />
+<col style="width: 5%" />
+<col style="width: 4%" />
+<col style="width: 5%" />
+<col style="width: 6%" />
+<col style="width: 4%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Region</p></td>
+<td><p>Calculation type</p></td>
+<td><p>PN L1</p></td>
+<td><p>PN L2</p></td>
+<td><p>PN L3</p></td>
+<td><p>PN L4</p></td>
+<td><p>PN L5</p></td>
+<td><p>PN Units</p></td>
+<td><p>SN L1</p></td>
+<td><p>SN L2</p></td>
+<td><p>SN L3</p></td>
+<td><p>SN L4</p></td>
+<td><p>SN L5</p></td>
+<td><p>SN Units</p></td>
+<td><p>Parameter</p></td>
+<td><p>value</p></td>
+</tr>
+<tr class="row-even"><td><p>Region_1</p></td>
+<td><p>C_source</p></td>
+<td><p>Public Water Supply</p></td>
+<td><p>Fresh</p></td>
+<td><p>Surface Water</p></td>
+<td><p>pumping</p></td>
+<td><p>Total</p></td>
+<td><p>btu</p></td>
+<td><p>Electricity Gen.</p></td>
+<td><p>total</p></td>
+<td><p>total</p></td>
+<td><p>total</p></td>
+<td><p>Total</p></td>
+<td><p>btu</p></td>
+<td><p>fraction</p></td>
+<td><p>.8</p></td>
+</tr>
+<tr class="row-odd"><td><p>Region_1</p></td>
+<td><p>C_source</p></td>
+<td><p>Public Water Supply</p></td>
+<td><p>Fresh</p></td>
+<td><p>Surface Water</p></td>
+<td><p>pumping</p></td>
+<td><p>Total</p></td>
+<td><p>btu</p></td>
+<td><p>Fuel Supply</p></td>
+<td><p>natural gas</p></td>
+<td><p>total</p></td>
+<td><p>total</p></td>
+<td><p>Total</p></td>
+<td><p>btu</p></td>
+<td><p>fraction</p></td>
+<td><p>.2</p></td>
+</tr>
+</tbody>
+</table>
+<p>As many source rows should be provided as there are sources for a particular value. If five nodes feed into a single node, five rows with five fractions that sum to 1 should be provided.</p>
+<p>Discharging values follows similar logic as determining source flows in that an aggregate value is split into multiple based on provided fractions. This time, however, the flows being determined are those that are discharged from the primary node (e.g., electricity generation to rejected energy, public water supply to conveyance losses)</p>
+<p>To split calculated and collected values into discharges, the following is required:</p>
+<ul class="simple">
+<li><p>The calculation type (data position 2) must be equal to “D_discharge”</p></li>
+<li><p>The primary node information (data positions 3-8) must describe the node that is <em>discharging</em> the flow to another node</p></li>
+<li><p>The secondary node information (data positions 9-14) must describe the node that is receiving the discharged flow</p></li>
+<li><p>The value (data position 16) must be the fraction of the calculated value that should go to the secondary node.</p></li>
+</ul>
+<p>Example:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 9%" />
+<col style="width: 11%" />
+<col style="width: 4%" />
+<col style="width: 8%" />
+<col style="width: 6%" />
+<col style="width: 4%" />
+<col style="width: 5%" />
+<col style="width: 10%" />
+<col style="width: 7%" />
+<col style="width: 6%" />
+<col style="width: 5%" />
+<col style="width: 4%" />
+<col style="width: 5%" />
+<col style="width: 6%" />
+<col style="width: 4%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Region</p></td>
+<td><p>Calculation type</p></td>
+<td><p>PN L1</p></td>
+<td><p>PN L2</p></td>
+<td><p>PN L3</p></td>
+<td><p>PN L4</p></td>
+<td><p>PN L5</p></td>
+<td><p>PN Units</p></td>
+<td><p>SN L1</p></td>
+<td><p>SN L2</p></td>
+<td><p>SN L3</p></td>
+<td><p>SN L4</p></td>
+<td><p>SN L5</p></td>
+<td><p>SN Units</p></td>
+<td><p>Parameter</p></td>
+<td><p>value</p></td>
+</tr>
+<tr class="row-even"><td><p>Region_1</p></td>
+<td><p>C_source</p></td>
+<td><p>Public Water Supply</p></td>
+<td><p>Fresh</p></td>
+<td><p>Surface Water</p></td>
+<td><p>pumping</p></td>
+<td><p>Total</p></td>
+<td><p>btu</p></td>
+<td><p>Rejected Energy</p></td>
+<td><p>total</p></td>
+<td><p>total</p></td>
+<td><p>total</p></td>
+<td><p>Total</p></td>
+<td><p>btu</p></td>
+<td><p>fraction</p></td>
+<td><p>.3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Region_1</p></td>
+<td><p>C_source</p></td>
+<td><p>Public Water Supply</p></td>
+<td><p>Fresh</p></td>
+<td><p>Surface Water</p></td>
+<td><p>pumping</p></td>
+<td><p>Total</p></td>
+<td><p>btu</p></td>
+<td><p>Energy Services</p></td>
+<td><p>total</p></td>
+<td><p>total</p></td>
+<td><p>total</p></td>
+<td><p>Total</p></td>
+<td><p>btu</p></td>
+<td><p>fraction</p></td>
+<td><p>.7</p></td>
+</tr>
+</tbody>
+</table>
+<p>As many discharge rows should be provided as there are discharges for a particular value. If one values should be discharged to five downstream nodes, five rows with five fractions that sum to 1 should be provided.</p>
+<p>For source and discharge fractions, it is not a strict requirement that the fractions per primary node value sum to one. Note that, not having them sum to 1 will lead to unbalanced flows (greater inflows than outflows or vice versa)</p>
+</section>
+<section id="map-data-requirements">
+<h3>Map Data requirements<a class="headerlink" href="#map-data-requirements" title="Permalink to this headline">¶</a></h3>
+<p>In order to use the optional cloropleth map visualization output that is included in the package, a GeoJSON file containing geometry information for the specified region(s) must be included. The feature.id in the GeoJSON file should match the region column in the output data in order to display correctly. The <strong>interflow</strong> package comes with a GeoJSON file for US counties, an example of what the GeoJSON file structure looks like is provided below:</p>
+<p>![image](<a class="reference external" href="https://user-images.githubusercontent.com/74064300/157086892-edb4027d-b6c5-40d3-80c1-107060a0b07d.png">https://user-images.githubusercontent.com/74064300/157086892-edb4027d-b6c5-40d3-80c1-107060a0b07d.png</a>)</p>
+<p>The image above and the GeoJSON file used for the sample data is part of Plotly’s sample datasets. For more information on the sample GeoJSON file, see the Geospatial section under the US Sample Data Methodology Page.</p>
+<p>The cloropleth map output uses the plotly python package. For more information on the GeoJSON input see the GeoJSON with feature.id section within the Plotly cloropleth documentation (<a class="reference external" href="https://plotly.com/python/choropleth-maps/">https://plotly.com/python/choropleth-maps/</a>)</p>
+</section>
+</section>
 </section>
 
 
@@ -132,8 +573,13 @@ and builds connections to and from additional sectors to carry those values (e.g
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">User Guide</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#fundamental-concepts">Fundamental Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generalizability">Generalizability</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="quickstarter.html">Quickstarter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sample_data.html">US County Sample Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to interflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors and Contributions</a></li>
 </ul>
 
 <div class="relations">
@@ -141,6 +587,7 @@ and builds connections to and from additional sectors to carry those values (e.g
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="getting_started.html" title="previous chapter">Getting started</a></li>
+      <li>Next: <a href="quickstarter.html" title="next chapter">Quickstarter</a></li>
   </ul></li>
 </ul>
 </div>
