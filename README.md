@@ -1,43 +1,54 @@
 [![build](https://github.com/kmongird/flow/actions/workflows/build.yml/badge.svg)](https://github.com/kmongird/flow/actions/workflows/build.yml)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/kmongird/interflow/8db4396789a3f98359132a74e73a02a3e14ddb83?urlpath=lab%2Ftree%2Fnotebooks%2FQuickstarter.ipynb)
-# flow
+# interflow
 
-flow is an open-source Python package for collecting, calculating, organizing, and visualizing cross-sectoral 
+`interflow` is an open-source Python package for collecting, calculating, organizing, and visualizing cross-sectoral 
 resource interdependencies and flows.
 
 ## Purpose
-Interdependencies between sectors can be multi-faceted, complex to evaluate, and difficult to visualize in a way
-that gives actionable interpretations. The links between sectors and their reliance on one other is not always
-well-understood in either a detailed or broad context. This can leave opportunities for optimization unclaimed and 
-potential cascading effects of sectoral impacts unquantified. Commonly discussed examples of cross-sectoral dependency 
-include the interconnections between water and energy. The sectors with energy applications (e.g., electricity 
-generation) require water to operate. Likewise, sectors that provide water services (e.g., public water supply) require
-energy to pump, treat, and move water from location to another. Failure to understand these flows between sectors can 
-lead to vulnerabilities should something happen "upstream" in the flow. In addition to the energy-water-nexus, other 
-sectors are additionally dependent on their production and availability such as food or land. The list of connections 
-is vast and the linkages between sectors can be a complicated network of dependency and reliance. The flow package was 
-built to help aid in understanding and evaluating these interconnections on both a sectoral and a regional-scale.
+`interflow` was created to provide a flexible, adaptable, and updatable method to evaluate the interdependencies 
+between sectors and across regions for multiple resource types. The interdependencies and relationships between 
+sectors offer multi-faceted and multi-scale opportunities as well as vulnerabilities. Whether it is water, energy, 
+or otherwise, resources pass from source to discharge by flowing through sectors and are oftentimes a critical 
+component of a sector's functionality.
 
-The flow package was created to:
+The `interflow` package was created to:
 
 * Provide a framework to aggregate and organize known resource flows through various sectors within a region
-* Calculate out and build additional flows between sectors in alternative units based on interdependency 
-intensity values to analyze additional resource network maps.
-* Provide data output and visualizations in a format that can be used conduct analysis of all flows within a region,
-flows into and out of sectors within a region, and understand how flows and interdependencies vary across regions.
+* Calculate and build additional flows between sectors in alternative units based on interdependency 
+intensity values
+* Provide data output and visualizations in a format that can be used to answer questions about cross-sectoral 
+dependencies, how resources flow through sectors in an individual region, and how these dependencies compare across 
+regions.
 
 ![image](https://user-images.githubusercontent.com/74064300/135877886-91cac5ec-614a-4fee-b9d2-3561bb69d62c.png)
 
-For more information on how the flow package works, how to generalize it with your own data for any region or
-interdependency linkages, see the documentation.
 
-## Project Background
+Though the package comes equipped with sample data for water and energy values across multiple sectors at the US county 
+level, the interflow package can be used for any region, set of regions, set of sectors, and resource type so long as
+the appropriate data is provided by the user. 
 
-The motivation of the Integrated Water Power Resilience Project is to identify and develop opportunities to 
-improve resilience in the water and power sectors through coordinated planning, investment, and operations 
-and thereby provide benefits to power and water utilities, consumers, and the environment. 
+For more information on how the interflow package works, how to generalize it with your own data, see [the 
+documentation](https://kmongird.github.io/interflow/).
 
-Water and power utilities are interdependent, subject to many of the same natural and manmade hazards, and 
-critical for the well-being of communities and society. Because of the interconnectedness of water and power 
-systems there are substantial economic, social, and environmental benefits to co-managing the market sectors 
-for resilience, instead of managing them separately.
+## Installation
+
+interflow can be installed via pip by running the following from a terminal window:
+
+```bash
+pip install interflow
+```
+
+## Quickstarter
+
+See interflow in action with our quickstarter Jupyter Notebook hosted on binder!
+
+## User Guide
+
+If you're interested in background information and explanations on how the model works visit out [User Guide](https://kmongird.github.io/interflow/user_guide.html)
+
+## Contributing to interflow
+
+Spotted a bug or have a suggestion to improve the model? We'd love your input. See our [guidelines for contributing](https://kmongird.github.io/interflow/contributing.html).
+
+
