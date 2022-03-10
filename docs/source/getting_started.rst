@@ -25,9 +25,9 @@ Python 3.7, 3.8, and 3.9
 Installation
 ###################################
 
-**interflow** can be installed via pip by running the following from a terminal window::
+**interflow** can be installed via pip by running the following from a terminal window:
 
-pip install interflow
+    pip install interflow
 
 interflow is not currently configured to support installation via Conda/Miniconda.
 
