@@ -1,7 +1,10 @@
-
+*****************
 Getting started
-===============
-## About
+*****************
+
+About
+########
+
 The interflow model (interflow) gives us the capability to organize and evaluate the interdependencies and linkages between sectors at various levels of granularity and across regions. We can use **interflow** to gain an understanding of topics such as:
 1. which sectors have a high reliance on upstream sectors?
 2. which sectors represent pivotal nodes for passing on resource flows to downstream flows?
@@ -14,21 +17,24 @@ Though **interflow** provides sample data to run water and energy resource data 
 In addition to calculating and organizing flows across sectors, **interflow** also provides visualization and analysis functions to digest the aggregated data output. These include: Sankey diagrams of each unit (water and energy) showing flows between sectors in a given region, bar charts of specified sectors showing the breakdown of subsector components (e.g., electricity use by application in public water supply), and an interactive map to compare output values across included regions. Note that the geospatial maps require additional prerequisite data.
 
 
-## Python version support
-
+Python version support
+########
 Python 3.7, 3.8, and 3.9
 
 
-## Installation
+Installation
+########
 
 **interflow** can be installed via pip by running the following from a terminal window:
 
 `pip install interflow`
 
-## Dependencies
+Dependencies
+########
 
++------------+------------------+
 | Dependency | Minimum Version  |
-|:-----------|:-----------------|
++============+==================+
 |numpy       | 1.19.4           |
 |pandas      | 1.3.4            |
 |plotly      | 5.5.0            |
