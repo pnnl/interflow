@@ -177,10 +177,11 @@ Additionally, some input flow values may be provided that the user does not have
 
 Example:
 
-
-|Region    |Calculation type |PN L1               |PN L2  |PN L3          |PN L4        |PN L5  |PN Units |SN L1         |SN L2  |SN L3          |SN L4  |SN L5  |SN Units | Parameter | value |
-|:---------|:----------------|--------------------|:------|:--------------|:------------|:------|:--------|:-------------|:------|:--------------|:------|:------|:--------|:----------|:------|
-| Region_1 | A_collect       |Public Water Supply |Fresh  | Surface Water | Withdrawal  | Total | mgd     | Water Supply | Fresh | Surface Water | Total | Total | mgd     |flow_value | 200   |
++----------+--------------------+--------------------+-------+---------------+-------------+-------+---------+--------------+-------+---------------+-------+-------+---------+-----------+-------+
+|Region    |Calculation type    |PN L1               |PN L2  |PN L3          |PN L4        |PN L5  |PN Units |SN L1         |SN L2  |SN L3          |SN L4  |SN L5  |SN Units | Parameter | value |
++----------+--------------------+--------------------+-------+---------------+-------------+-------+---------+--------------+-------+---------------+-------+-------+---------+-----------+-------+
+| Region_1 | A_collect          |Public Water Supply |Fresh  | Surface Water | Withdrawal  | Total | mgd     | Water Supply | Fresh | Surface Water | Total | Total | mgd     |flow_value | 200   |
++----------+--------------------+--------------------+-------+---------------+-------------+-------+---------+--------------+-------+---------------+-------+-------+---------+-----------+-------+
 
 
 Calculate values
@@ -197,10 +198,11 @@ In order to calculate secondary unit flow values from collected flow values, the
 Note that when calculating a secondary unit flow for a sector that has flows in both units, the names of those sectors/nodes do not have to be consistent. In the below example, we are naming the level2 through level5 different than we did for the water flows. This is because different nodes are calculated for different units.
 
 Example:
-
++----------+-----------------+--------------------+-------+---------------+-----------+-------+---------+---------------------+-------+---------------+------------+-------+---------+-----------+-------+
 |Region    |Calculation type |PN L1               |PN L2  |PN L3          |PN L4      |PN L5  |PN Units |SN L1                |SN L2  |SN L3          |SN L4       |SN L5  |SN Units | Parameter | value |
-|:---------|:----------------|--------------------|:------|:--------------|:----------|:------|:--------|:--------------------|:------|:--------------|:-----------|:------|:--------|:----------|:------|
-| Region_1 | B_calculate     |Public Water Supply |Fresh  | Surface Water | pumping   | Total | btu     | Public Water Supply |Fresh  | Surface Water | Withdrawal | Total | mgd     |intensity  | 2    |
++----------+-----------------+--------------------+-------+---------------+-----------+-------+---------+---------------------+-------+---------------+------------+-------+---------+-----------+-------+
+| Region_1 | B_calculate     |Public Water Supply |Fresh  | Surface Water | pumping   | Total | btu     | Public Water Supply |Fresh  | Surface Water | Withdrawal | Total | mgd     |intensity  | 2     |
++----------+-----------------+--------------------+-------+---------------+-----------+-------+---------+---------------------+-------+---------------+------------+-------+---------+-----------+-------+
 
 Source values
 """""""""""""""""""""""""""""""""""""""""""
@@ -216,12 +218,13 @@ To split calculated values into sources, the following is required:
 
 
 Example:
-
++----------+-----------------+--------------------+-------+---------------+-----------+-------+---------+---------------------+-------------+----------+---------+-------+---------+-----------+-------+
 |Region    |Calculation type |PN L1               |PN L2  |PN L3          |PN L4      |PN L5  |PN Units |SN L1                |SN L2        |SN L3     |SN L4    |SN L5  |SN Units | Parameter | value |
-|:---------|:----------------|--------------------|:------|:--------------|:----------|:------|:--------|:--------------------|:------------|:---------|:--------|:------|:--------|:----------|:------|
++----------+-----------------+--------------------+-------+---------------+-----------+-------+---------+---------------------+-------------+----------+---------+-------+---------+-----------+-------+
 | Region_1 | C_source        |Public Water Supply |Fresh  | Surface Water | pumping   | Total | btu     | Electricity Gen.    |total        | total    | total   | Total | btu     |fraction   | .8    |
++----------+-----------------+--------------------+-------+---------------+-----------+-------+---------+---------------------+-------------+----------+---------+-------+---------+-----------+-------+
 | Region_1 | C_source        |Public Water Supply |Fresh  | Surface Water | pumping   | Total | btu     | Fuel Supply         |natural gas  | total    | total   | Total | btu     |fraction   | .2    |
-
++----------+-----------------+--------------------+-------+---------------+-----------+-------+---------+---------------------+-------------+----------+---------+-------+---------+-----------+-------+
 
 As many source rows should be provided as there are sources for a particular value. If five nodes feed into a single node, five rows with five fractions that sum to 1 should be provided.
 
@@ -240,10 +243,13 @@ To split calculated and collected values into discharges, the following is requi
 
 Example:
 
++----------+-----------------+--------------------+-------+---------------+-----------+-------+---------+------------------+-------------+----------+---------+-------+---------+-----------+-------+
 |Region    |Calculation type |PN L1               |PN L2  |PN L3          |PN L4      |PN L5  |PN Units |SN L1             |SN L2        |SN L3     |SN L4    |SN L5  |SN Units | Parameter | value |
-|:---------|:----------------|--------------------|:------|:--------------|:----------|:------|:--------|:-----------------|:------------|:---------|:--------|:------|:--------|:----------|:------|
++----------+-----------------+--------------------+-------+---------------+-----------+-------+---------+------------------+-------------+----------+---------+-------+---------+-----------+-------+
 | Region_1 | C_source        |Public Water Supply |Fresh  | Surface Water | pumping   | Total | btu     | Rejected Energy  |total        | total    | total   | Total | btu     |fraction   | .3    |
++----------+-----------------+--------------------+-------+---------------+-----------+-------+---------+------------------+-------------+----------+---------+-------+---------+-----------+-------+
 | Region_1 | C_source        |Public Water Supply |Fresh  | Surface Water | pumping   | Total | btu     | Energy Services  |total        | total    | total   | Total | btu     |fraction   | .7    |
++----------+-----------------+--------------------+-------+---------------+-----------+-------+---------+------------------+-------------+----------+---------+-------+---------+-----------+-------+
 
 
 As many discharge rows should be provided as there are discharges for a particular value. If one values should be discharged to five downstream nodes, five rows with five fractions that sum to 1 should be provided.
