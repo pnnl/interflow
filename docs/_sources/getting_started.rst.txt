@@ -26,6 +26,7 @@ Installation
 ###################################
 
 **interflow** can be installed via pip by running the following from a terminal window:
+::
 
     pip install interflow
 

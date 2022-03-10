@@ -16,7 +16,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Contributing" href="contributing.html" />
-    <link rel="prev" title="Quickstarter" href="quickstarter.html" />
+    <link rel="prev" title="API Documentation" href="api.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -56,51 +56,14 @@ To support this initiative and future research in this area, the <strong>interfl
 <h2>Geospatial Information<a class="headerlink" href="#geospatial-information" title="Permalink to this headline">¶</a></h2>
 <section id="us-counties">
 <h3>US Counties<a class="headerlink" href="#us-counties" title="Permalink to this headline">¶</a></h3>
-<p>In order to get values at the county-level across multiple datasets in a consistent manner, a set of counties was established as the base county list for 2015. This list contains all US counties (not including US Territories) included in the USGS 2015 water use dataset (Dieter et al. [1]). Given that some datasets used in compiling the full sample dataset are from multiple years, some of the county-level FIPS codes required modification in order to match those provided in the 2015 base list. These modifications include mapping older FIPS codes to the 2015 ones or adding new FIPS codes when new counties were created. These modifications were mostly required for values used in from the 1995 USGS dataset (Solley et al. [7]).</p>
+<p>In order to get values at the county-level across multiple datasets in a consistent manner, a set of counties was established as the base county list for 2015. This list contains all US counties (not including US Territories) included in the USGS 2015 water use dataset (Dieter et al. [1]). Given that some datasets used in compiling the full sample dataset are from multiple years, some of the county-level FIPS codes required modification in order to match those provided in the 2015 base list. These modifications include mapping older FIPS codes to the 2015 ones or adding new FIPS codes when new counties were created. These modifications were mostly required for values used in from the 1995 USGS dataset Solley et al. [7]).</p>
+<p>For the full list of US counties and their corresponding FIPS codes, see the <a class="reference external" href="https://kmongird.github.io/interflow/county_list.html">county list</a></p>
 </section>
 <section id="geojson">
 <h3>GeoJSON<a class="headerlink" href="#geojson" title="Permalink to this headline">¶</a></h3>
 <p>In order to plot county-level outputs from the US 2015 dataset, a GeoJSON file containing geometry information for the US counties is required. The file used and included in the sample data is from Plotly’s sample datafiles. The raw JSON datafile can be found in Plotly [19]. A small number of counties included in the GeoJSON file required adjustment to match the baseline county list for the sample data. The FIPS codes for these counties were adjusted accordingly in the GeoJSON file. Note that the modified version of this file is included in the input data, not the raw GeoJSON file.</p>
 <p>For more information on the base map configuration for Plotly’s cloropleth maps, see the <a class="reference external" href="https://plotly.com/python/choropleth-maps/">Plotly cloropleth map documentation</a></p>
 </section>
-</section>
-<section id="sectors">
-<h2>Sectors<a class="headerlink" href="#sectors" title="Permalink to this headline">¶</a></h2>
-<p>The table below outlines all sectors and subsectors/application types per resource type (water and energy). Some of
-these values are included as flow values collected from the literature while the rest are computed by the model based
-on intensity factors, source fraction, and discharge fractions.</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 32%" />
-<col style="width: 28%" />
-<col style="width: 33%" />
-<col style="width: 8%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Sector</p></th>
-<th class="head"><p>Subsector</p></th>
-<th class="head"><p>Application</p></th>
-<th class="head"><p>Units</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td rowspan="4"><p>Agriculture Sector</p></td>
-<td rowspan="2"><p>Crop Irrigation</p></td>
-<td><p>Fresh Surface Water Withdrawal</p></td>
-<td><p>mgd</p></td>
-</tr>
-<tr class="row-odd"><td><p>Fresh Groundwater Withdrawal</p></td>
-<td><p>mgd</p></td>
-</tr>
-<tr class="row-even"><td rowspan="2"><p>Golf Irrigation</p></td>
-<td><p>Fresh Surface Water Withdrawal</p></td>
-<td><p>mgd</p></td>
-</tr>
-<tr class="row-odd"><td><p>Fresh Groundwater Withdrawal</p></td>
-<td><p>mgd</p></td>
-</tr>
-</tbody>
-</table>
 </section>
 <section id="terminology">
 <h2>Terminology<a class="headerlink" href="#terminology" title="Permalink to this headline">¶</a></h2>
@@ -202,11 +165,11 @@ Reference numbers correspond with those included in the Methodology subsections.
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstarter.html">Quickstarter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Sample Data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#geospatial-information">Geospatial Information</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#sectors">Sectors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#terminology">Terminology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#methodology">Methodology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
@@ -222,7 +185,7 @@ Reference numbers correspond with those included in the Methodology subsections.
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="quickstarter.html" title="previous chapter">Quickstarter</a></li>
+      <li>Previous: <a href="api.html" title="previous chapter">API Documentation</a></li>
       <li>Next: <a href="contributing.html" title="next chapter">Contributing</a></li>
   </ul></li>
 </ul>
