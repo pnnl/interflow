@@ -1,5 +1,5 @@
 **************************
-US County Sample Data
+Sample Data
 **************************
 
 Introduction
@@ -13,7 +13,7 @@ To support this initiative and future research in this area, the **interflow** m
 Overview
 ####################
 
-The following list of assumptions are applicable to the 2015 US Case Study:
+The following list of assumptions are applicable to the 2015 US sample data:
 
 *  Calculations are for the year 2015, the most recent year available for comprehensive county-level water use data in the US. When data was unavailable for 2015, the closest year available was applied or methods were developed to develop data for 2015 based on factors from previous years.
 *  Many calculation methodologies and intensity parameters are informed by the literature. References for these methodologies are noted in the methodology descriptions as applicable.
@@ -21,6 +21,27 @@ The following list of assumptions are applicable to the 2015 US Case Study:
 *  Data was available at various levels of granularity across the US including plant-level, county-level, state-level, and aggregate estimates for the entire US. Data was aggregated or split out appropriately so that the resulting dataset contains values on the county-level, given by county FIPS code. When data collected was provided at the state-level, state-level totals are divided among state counties through an appropriate method (e.g. population weighting). When information was available at the plant level (e.g. power plant generation), information on plant county were used to sum plant values to achieve a county total. US level estimates were predominantly related to intensity factors or fractions. For example, the fraction of all corn grown for ethanol fuel is a US-level estimate and applied to county-level corn production.
 
 All data used in the 2015 US Case Study including input flow values, energy or water intensity values, discharge fractions, and others are described in the various methodology sections. References to each can be found on the references page. A folder containing all input data is also provided with the package.
+
+Geospatial Information
+##############################
+
+US Counties
+**********************************
+
+In order to get values at the county-level across multiple datasets in a consistent manner, a set of counties was established as the base county list for 2015. This list contains all US counties (not including US Territories) included in the USGS 2015 water use dataset (Dieter et al. [1]). Given that some datasets used in compiling the full sample dataset are from multiple years, some of the county-level FIPS codes required modification in order to match those provided in the 2015 base list. These modifications include mapping older FIPS codes to the 2015 ones or adding new FIPS codes when new counties were created. These modifications were mostly required for values used in from the 1995 USGS dataset (Solley et al. [7]).
+
+GeoJSON
+**********************************
+
+In order to plot county-level outputs from the US 2015 dataset, a GeoJSON file containing geometry information for the US counties is required. The file used and included in the sample data is from Plotly's sample datafiles. The raw JSON datafile can be found in Plotly [19]. A small number of counties included in the GeoJSON file required adjustment to match the baseline county list for the sample data. The FIPS codes for these counties were adjusted accordingly in the GeoJSON file. Note that the modified version of this file is included in the input data, not the raw GeoJSON file.
+
+For more information on the base map configuration for Plotly's cloropleth maps, see the `Plotly cloropleth map documentation <https://plotly.com/python/choropleth-maps/>`_
+
+
+
+Sectors
+####################
+
 
 
 

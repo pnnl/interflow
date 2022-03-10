@@ -36,6 +36,8 @@ The package collects known flow values between sectors provided by the user, cal
    sample_data
    contributing
    authors
+   license
+   acknowledgement
 
 
 
