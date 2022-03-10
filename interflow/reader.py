@@ -156,8 +156,8 @@ def get_wastewater_discharge_data():
 def get_power_plant_location_data():
     """Read in data that includes information on the location (county, state) of individual power plants (by plant code)
      in the US for 2015
-        :return:                        dataframe of power plants and their locations
-        """
+     :return:                        dataframe of power plants and their locations
+     """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/EIA860_Generator_Y2015.csv')
 
@@ -204,8 +204,8 @@ def get_irrigation_pumping_data():
     """Read in data from USDA Farm and Ranch Irrigation Survey 2013 with information on average_well_depth_ft,
     average operating pressure (psi),average pumping capacity (gpm), and the amount of irrigation pumping using
     electricity, natural gas, propane, and diesel at the state-level.
-        :return:                        dataframe of irrigation pumping values
-        """
+    :return:                        dataframe of irrigation pumping values
+    """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/FRIS2013tab8.csv')
 
@@ -227,8 +227,9 @@ def get_pumping_intensity_rename_data():
 def get_electricity_demand_data():
     """Read in data from US EIA for 2015 on the total electricity demand in each state by the residential, commercial,
     industrial, and transportation sector.
-        :return:                        dataframe of electricity demand values
-        """
+
+    :return:                        dataframe of electricity demand values
+    """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/eia_sales_annual.csv')
 
@@ -241,8 +242,8 @@ def get_electricity_demand_data():
 def get_fuel_demand_data():
     """Read in data from US EIA for 2015 on the total fuel demand in each state by the residential, commercial,
     industrial, and transportation sector.
-        :return:                        dataframe of fuel demand values
-        """
+    :return:                        dataframe of fuel demand values
+    """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/use_all_btu.csv')
 
@@ -264,8 +265,8 @@ def get_fuel_renaming_data():
 def get_state_fuel_production_data():
     """Read in data from US EIA for 2015 with state-level fuel production data including biomass, natural gas, and
     petroleum.
-        :return:                        dataframe of fuel production values
-        """
+    :return:                        dataframe of fuel production values
+    """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/eia_SEDS_Prod_dataset.csv')
 
@@ -309,8 +310,8 @@ def get_state_water_to_unconventional_production_data():
 def get_state_petroleum_natgas_water_data():
     """Read in state-level data on the water to oil and water to natural gas ratios as well as the percent of water
     from each that is injected, consumed, or discharged to the surface.
-        :return:                        dataframe of natural gas and petroleum values
-        """
+    :return:                        dataframe of natural gas and petroleum values
+    """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/Oil_NG_WOR_WGR.csv')
 

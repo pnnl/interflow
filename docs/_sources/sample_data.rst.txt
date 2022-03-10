@@ -1,5 +1,5 @@
 **************************
-US County Sample Data
+Sample Data
 **************************
 
 Introduction
@@ -13,7 +13,7 @@ To support this initiative and future research in this area, the **interflow** m
 Overview
 ####################
 
-The following list of assumptions are applicable to the 2015 US Case Study:
+The following list of assumptions are applicable to the 2015 US sample data:
 
 *  Calculations are for the year 2015, the most recent year available for comprehensive county-level water use data in the US. When data was unavailable for 2015, the closest year available was applied or methods were developed to develop data for 2015 based on factors from previous years.
 *  Many calculation methodologies and intensity parameters are informed by the literature. References for these methodologies are noted in the methodology descriptions as applicable.
@@ -22,6 +22,102 @@ The following list of assumptions are applicable to the 2015 US Case Study:
 
 All data used in the 2015 US Case Study including input flow values, energy or water intensity values, discharge fractions, and others are described in the various methodology sections. References to each can be found on the references page. A folder containing all input data is also provided with the package.
 
+Geospatial Information
+##############################
+
+US Counties
+**********************************
+
+In order to get values at the county-level across multiple datasets in a consistent manner, a set of counties was established as the base county list for 2015. This list contains all US counties (not including US Territories) included in the USGS 2015 water use dataset (Dieter et al. [1]). Given that some datasets used in compiling the full sample dataset are from multiple years, some of the county-level FIPS codes required modification in order to match those provided in the 2015 base list. These modifications include mapping older FIPS codes to the 2015 ones or adding new FIPS codes when new counties were created. These modifications were mostly required for values used in from the 1995 USGS dataset (Solley et al. [7]).
+
+GeoJSON
+**********************************
+
+In order to plot county-level outputs from the US 2015 dataset, a GeoJSON file containing geometry information for the US counties is required. The file used and included in the sample data is from Plotly's sample datafiles. The raw JSON datafile can be found in Plotly [19]. A small number of counties included in the GeoJSON file required adjustment to match the baseline county list for the sample data. The FIPS codes for these counties were adjusted accordingly in the GeoJSON file. Note that the modified version of this file is included in the input data, not the raw GeoJSON file.
+
+For more information on the base map configuration for Plotly's cloropleth maps, see the `Plotly cloropleth map documentation <https://plotly.com/python/choropleth-maps/>`_
+
+
+
+Sectors
+####################
+
+The table below outlines all sectors and subsectors/application types per resource type (water and energy). Some of
+these values are included as flow values collected from the literature while the rest are computed by the model based
+on intensity factors, source fraction, and discharge fractions.
+
++--------------------------------------+---------------------------------+----------------------------------------+---------+
+| Sector                               | Subsector                       | Application                            | Units   |
++======================================+=================================+========================================+=========+
+| Agriculture Sector                   | Crop Irrigation                 | Fresh Surface Water Withdrawal         | mgd     |
++                                      +                                 +----------------------------------------+---------+
+|                                      |                                 | Fresh Groundwater Withdrawal           | mgd     |
++                                      +---------------------------------+----------------------------------------+---------+
+|                                      | Golf Irrigation                 | Fresh Surface Water Withdrawal         | mgd     |
++                                      +                                 +----------------------------------------+---------+
+|                                      |                                 | Fresh Groundwater Withdrawal           | mgd     |
++--------------------------------------+---------------------------------+----------------------------------------+---------+
+
+
+
+
+
+
++--------------------------------------+---------------------------------+--------------------------------+
+| Commercial Sector                    |
++--------------------------------------+---------------------------------+--------------------------------+
+| Electricity Generation Sector        |
++--------------------------------------+---------------------------------+--------------------------------+
+| Energy (Fuels) Production Sector     |
++--------------------------------------+---------------------------------+--------------------------------+
+| Industrial Sector                    |
++--------------------------------------+---------------------------------+--------------------------------+
+| Mining Sector                        |
++--------------------------------------+---------------------------------+--------------------------------+
+| Public Water Sector                  |
++--------------------------------------+---------------------------------+--------------------------------+
+| Residential Sector                   |
++--------------------------------------+---------------------------------+--------------------------------+
+| Transportation Sector                |
++--------------------------------------+---------------------------------+--------------------------------+
+| Wastewater Treatment Sector          |
++--------------------------------------+---------------------------------+--------------------------------+
+
+Terminology
+####################
+
+Methodology
+####################
+
+Agriculture Sector
+**********************************
+
+Commercial Sector
+**********************************
+
+Electricity Generation Sector
+**********************************
+
+Energy (Fuels) Production Sector
+**********************************
+
+Industrial Sector
+**********************************
+
+Mining Sector
+**********************************
+
+Public Water Sector
+**********************************
+
+Residential Sector
+**********************************
+
+Transportation Sector
+**********************************
+
+Wastewater Treatment Sector
+**********************************
 
 
 References

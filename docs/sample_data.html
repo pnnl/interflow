@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>US County Sample Data &#8212; interflow  documentation</title>
+    <title>Sample Data &#8212; interflow  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -15,7 +15,7 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Contributing to interflow" href="contributing.html" />
+    <link rel="next" title="Contributing" href="contributing.html" />
     <link rel="prev" title="Quickstarter" href="quickstarter.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -33,8 +33,8 @@
 
           <div class="body" role="main">
             
-  <section id="us-county-sample-data">
-<h1>US County Sample Data<a class="headerlink" href="#us-county-sample-data" title="Permalink to this headline">¶</a></h1>
+  <section id="sample-data">
+<h1>Sample Data<a class="headerlink" href="#sample-data" title="Permalink to this headline">¶</a></h1>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>The motivation of the Integrated Water Power Resilience Project is to identify and develop opportunities to improve resilience in the water and power sectors through coordinated planning, investment, and operations and thereby provide benefits to power and water utilities, consumers, and the environment.
@@ -43,7 +43,7 @@ To support this initiative and future research in this area, the <strong>interfl
 </section>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>The following list of assumptions are applicable to the 2015 US Case Study:</p>
+<p>The following list of assumptions are applicable to the 2015 US sample data:</p>
 <ul class="simple">
 <li><p>Calculations are for the year 2015, the most recent year available for comprehensive county-level water use data in the US. When data was unavailable for 2015, the closest year available was applied or methods were developed to develop data for 2015 based on factors from previous years.</p></li>
 <li><p>Many calculation methodologies and intensity parameters are informed by the literature. References for these methodologies are noted in the methodology descriptions as applicable.</p></li>
@@ -51,6 +51,92 @@ To support this initiative and future research in this area, the <strong>interfl
 <li><p>Data was available at various levels of granularity across the US including plant-level, county-level, state-level, and aggregate estimates for the entire US. Data was aggregated or split out appropriately so that the resulting dataset contains values on the county-level, given by county FIPS code. When data collected was provided at the state-level, state-level totals are divided among state counties through an appropriate method (e.g. population weighting). When information was available at the plant level (e.g. power plant generation), information on plant county were used to sum plant values to achieve a county total. US level estimates were predominantly related to intensity factors or fractions. For example, the fraction of all corn grown for ethanol fuel is a US-level estimate and applied to county-level corn production.</p></li>
 </ul>
 <p>All data used in the 2015 US Case Study including input flow values, energy or water intensity values, discharge fractions, and others are described in the various methodology sections. References to each can be found on the references page. A folder containing all input data is also provided with the package.</p>
+</section>
+<section id="geospatial-information">
+<h2>Geospatial Information<a class="headerlink" href="#geospatial-information" title="Permalink to this headline">¶</a></h2>
+<section id="us-counties">
+<h3>US Counties<a class="headerlink" href="#us-counties" title="Permalink to this headline">¶</a></h3>
+<p>In order to get values at the county-level across multiple datasets in a consistent manner, a set of counties was established as the base county list for 2015. This list contains all US counties (not including US Territories) included in the USGS 2015 water use dataset (Dieter et al. [1]). Given that some datasets used in compiling the full sample dataset are from multiple years, some of the county-level FIPS codes required modification in order to match those provided in the 2015 base list. These modifications include mapping older FIPS codes to the 2015 ones or adding new FIPS codes when new counties were created. These modifications were mostly required for values used in from the 1995 USGS dataset (Solley et al. [7]).</p>
+</section>
+<section id="geojson">
+<h3>GeoJSON<a class="headerlink" href="#geojson" title="Permalink to this headline">¶</a></h3>
+<p>In order to plot county-level outputs from the US 2015 dataset, a GeoJSON file containing geometry information for the US counties is required. The file used and included in the sample data is from Plotly’s sample datafiles. The raw JSON datafile can be found in Plotly [19]. A small number of counties included in the GeoJSON file required adjustment to match the baseline county list for the sample data. The FIPS codes for these counties were adjusted accordingly in the GeoJSON file. Note that the modified version of this file is included in the input data, not the raw GeoJSON file.</p>
+<p>For more information on the base map configuration for Plotly’s cloropleth maps, see the <a class="reference external" href="https://plotly.com/python/choropleth-maps/">Plotly cloropleth map documentation</a></p>
+</section>
+</section>
+<section id="sectors">
+<h2>Sectors<a class="headerlink" href="#sectors" title="Permalink to this headline">¶</a></h2>
+<p>The table below outlines all sectors and subsectors/application types per resource type (water and energy). Some of
+these values are included as flow values collected from the literature while the rest are computed by the model based
+on intensity factors, source fraction, and discharge fractions.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 28%" />
+<col style="width: 33%" />
+<col style="width: 8%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Sector</p></th>
+<th class="head"><p>Subsector</p></th>
+<th class="head"><p>Application</p></th>
+<th class="head"><p>Units</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td rowspan="4"><p>Agriculture Sector</p></td>
+<td rowspan="2"><p>Crop Irrigation</p></td>
+<td><p>Fresh Surface Water Withdrawal</p></td>
+<td><p>mgd</p></td>
+</tr>
+<tr class="row-odd"><td><p>Fresh Groundwater Withdrawal</p></td>
+<td><p>mgd</p></td>
+</tr>
+<tr class="row-even"><td rowspan="2"><p>Golf Irrigation</p></td>
+<td><p>Fresh Surface Water Withdrawal</p></td>
+<td><p>mgd</p></td>
+</tr>
+<tr class="row-odd"><td><p>Fresh Groundwater Withdrawal</p></td>
+<td><p>mgd</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="terminology">
+<h2>Terminology<a class="headerlink" href="#terminology" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="methodology">
+<h2>Methodology<a class="headerlink" href="#methodology" title="Permalink to this headline">¶</a></h2>
+<section id="agriculture-sector">
+<h3>Agriculture Sector<a class="headerlink" href="#agriculture-sector" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="commercial-sector">
+<h3>Commercial Sector<a class="headerlink" href="#commercial-sector" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="electricity-generation-sector">
+<h3>Electricity Generation Sector<a class="headerlink" href="#electricity-generation-sector" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="energy-fuels-production-sector">
+<h3>Energy (Fuels) Production Sector<a class="headerlink" href="#energy-fuels-production-sector" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="industrial-sector">
+<h3>Industrial Sector<a class="headerlink" href="#industrial-sector" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="mining-sector">
+<h3>Mining Sector<a class="headerlink" href="#mining-sector" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="public-water-sector">
+<h3>Public Water Sector<a class="headerlink" href="#public-water-sector" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="residential-sector">
+<h3>Residential Sector<a class="headerlink" href="#residential-sector" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="transportation-sector">
+<h3>Transportation Sector<a class="headerlink" href="#transportation-sector" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="wastewater-treatment-sector">
+<h3>Wastewater Treatment Sector<a class="headerlink" href="#wastewater-treatment-sector" title="Permalink to this headline">¶</a></h3>
+</section>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
@@ -116,14 +202,20 @@ Reference numbers correspond with those included in the Methodology subsections.
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstarter.html">Quickstarter</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">US County Sample Data</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Sample Data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geospatial-information">Geospatial Information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sectors">Sectors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#terminology">Terminology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#methodology">Methodology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to interflow</a></li>
-<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors and Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgement.html">Acknowledgment</a></li>
 </ul>
 
 <div class="relations">
@@ -131,7 +223,7 @@ Reference numbers correspond with those included in the Methodology subsections.
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="quickstarter.html" title="previous chapter">Quickstarter</a></li>
-      <li>Next: <a href="contributing.html" title="next chapter">Contributing to interflow</a></li>
+      <li>Next: <a href="contributing.html" title="next chapter">Contributing</a></li>
   </ul></li>
 </ul>
 </div>
@@ -158,7 +250,7 @@ Reference numbers correspond with those included in the Methodology subsections.
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2022, Kendall Mongird.
+      &copy;2022, Battelle Memorial Institute.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>

@@ -1,5 +1,5 @@
 **************************
-Authors and Contributions
+Authors
 **************************
 
 * `Kendall L. Mongird <https://www.pnnl.gov/people/kendall-mongird>`_   - Lead developer and maintainer.

@@ -1,7 +1,6 @@
 .. interflow documentation master file, created by
    sphinx-quickstart on Thu Mar 10 11:13:53 2022.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+
 
 Welcome to interflow
 =====================================
@@ -27,16 +26,27 @@ The package collects known flow values between sectors provided by the user, cal
 
 
 
+
+
 .. toctree::
    :maxdepth: 2
 
    getting_started
+
    user_guide
+
    quickstarter
+
+   API documentation
+
    sample_data
+
    contributing
+
    authors
+
    license
+
    acknowledgement
 
 
