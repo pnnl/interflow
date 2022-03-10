@@ -38,15 +38,15 @@ The example walked through above is a high level example of the flow process tha
 
 Up to five levels of granularity can be specified for each node. Various examples of level 5 granularity include the following:
 
-+------------------------+-------------+----------------+------------------------------+------------------------+
-| Level 1                | Level 2     | Level 3        | Level 4                      | Level 5                |
-+========================+=============+================+==============================+========================+
-| Electricity Generation | Natural Gas | Combined Cycle | Carbon Capture Sequestration | Recirculating Cooling  |
-+------------------------+-------------+----------------+------------------------------+------------------------+
-| Electricity Generation | Natural Gas | Combined Cycle | Carbon Capture Sequestration | Once Through Cooling   |
-+------------------------+-------------+----------------+------------------------------+------------------------+
-| Water Supply           | Fresh       | Surface Water  | Lake                         | Lake Michigan          |
-+------------------------+-------------+----------------+------------------------------+------------------------+
++------------------------+----------------+----------------+------------------------------+------------------------+
+| Level 1                | Level 2        | Level 3        | Level 4                      | Level 5                |
++========================+================+================+==============================+========================+
+| Electricity Generation | Natural Gas    | Combined Cycle | Carbon Capture Sequestration | Recirculating Cooling  |
++------------------------+----------------+----------------+------------------------------+------------------------+
+| Electricity Generation | Natural Gas    | Combined Cycle | Carbon Capture Sequestration | Once Through Cooling   |
++------------------------+----------------+----------------+------------------------------+------------------------+
+| Water Supply           | Fresh          | Surface Water  | Lake                         | Lake Michigan          |
++------------------------+----------------+----------------+------------------------------+------------------------+
 
 More information on generalizability and input data format requirements can be found in the generalizability section.
 
