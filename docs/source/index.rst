@@ -31,6 +31,7 @@ The package collects known flow values between sectors provided by the user, cal
    :maxdepth: 2
 
    getting_started
+   user_guide
 
 
 
