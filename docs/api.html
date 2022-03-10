@@ -15,6 +15,8 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Sample Data" href="sample_data.html" />
+    <link rel="prev" title="Quickstarter" href="quickstarter.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -167,13 +169,11 @@ region(s)</p>
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_electricity_demand_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_electricity_demand_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read in data from US EIA for 2015 on the total electricity demand in each state by the residential, commercial,
 industrial, and transportation sector.</p>
-<blockquote>
-<div><dl class="field-list simple">
-<dt class="field-odd">return</dt>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>dataframe of electricity demand values</p>
 </dd>
 </dl>
-</div></blockquote>
 </dd></dl>
 
 <dl class="py function">
@@ -201,14 +201,8 @@ industrial, and transportation sector.</p>
 <dt class="sig sig-object py" id="interflow.reader.get_fuel_demand_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_fuel_demand_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_fuel_demand_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read in data from US EIA for 2015 on the total fuel demand in each state by the residential, commercial,
-industrial, and transportation sector.</p>
-<blockquote>
-<div><dl class="field-list simple">
-<dt class="field-odd">return</dt>
-<dd class="field-odd"><p>dataframe of fuel demand values</p>
-</dd>
-</dl>
-</div></blockquote>
+industrial, and transportation sector.
+:return:                        dataframe of fuel demand values</p>
 </dd></dl>
 
 <dl class="py function">
@@ -223,14 +217,8 @@ industrial, and transportation sector.</p>
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_irrigation_pumping_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_irrigation_pumping_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read in data from USDA Farm and Ranch Irrigation Survey 2013 with information on average_well_depth_ft,
 average operating pressure (psi),average pumping capacity (gpm), and the amount of irrigation pumping using
-electricity, natural gas, propane, and diesel at the state-level.</p>
-<blockquote>
-<div><dl class="field-list simple">
-<dt class="field-odd">return</dt>
-<dd class="field-odd"><p>dataframe of irrigation pumping values</p>
-</dd>
-</dl>
-</div></blockquote>
+electricity, natural gas, propane, and diesel at the state-level.
+:return:                        dataframe of irrigation pumping values</p>
 </dd></dl>
 
 <dl class="py function">
@@ -244,14 +232,8 @@ electricity, natural gas, propane, and diesel at the state-level.</p>
 <dt class="sig sig-object py" id="interflow.reader.get_power_plant_location_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_power_plant_location_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_power_plant_location_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read in data that includes information on the location (county, state) of individual power plants (by plant code)
-in the US for 2015</p>
-<blockquote>
-<div><dl class="field-list simple">
-<dt class="field-odd">return</dt>
-<dd class="field-odd"><p>dataframe of power plants and their locations</p>
-</dd>
-</dl>
-</div></blockquote>
+in the US for 2015
+:return:                        dataframe of power plants and their locations</p>
 </dd></dl>
 
 <dl class="py function">
@@ -272,28 +254,16 @@ in the US for 2015</p>
 <dt class="sig sig-object py" id="interflow.reader.get_state_fuel_production_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_state_fuel_production_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_state_fuel_production_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read in data from US EIA for 2015 with state-level fuel production data including biomass, natural gas, and
-petroleum.</p>
-<blockquote>
-<div><dl class="field-list simple">
-<dt class="field-odd">return</dt>
-<dd class="field-odd"><p>dataframe of fuel production values</p>
-</dd>
-</dl>
-</div></blockquote>
+petroleum.
+:return:                        dataframe of fuel production values</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_state_petroleum_natgas_water_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_state_petroleum_natgas_water_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_state_petroleum_natgas_water_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read in state-level data on the water to oil and water to natural gas ratios as well as the percent of water
-from each that is injected, consumed, or discharged to the surface.</p>
-<blockquote>
-<div><dl class="field-list simple">
-<dt class="field-odd">return</dt>
-<dd class="field-odd"><p>dataframe of natural gas and petroleum values</p>
-</dd>
-</dl>
-</div></blockquote>
+from each that is injected, consumed, or discharged to the surface.
+:return:                        dataframe of natural gas and petroleum values</p>
 </dd></dl>
 
 <dl class="py function">
@@ -591,7 +561,7 @@ livestock, and aquaculture sectors.</p>
 </dl>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
+<dd class="field-odd"><p>DataFrame of corn irrigation consumption fraction and discharge fraction values</p>
 </dd>
 </dl>
 </dd></dl>
@@ -653,15 +623,11 @@ mapped to appropriate FIPS codes.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.sample_data.prep_county_natgas_production_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.sample_data.</span></span><span class="sig-name descname"><span class="pre">prep_county_natgas_production_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#interflow.sample_data.prep_county_natgas_production_data" title="Permalink to this definition">¶</a></dt>
-<dd><dl>
-<dt>prepares a dataframe of natural gas production by county for the year 2015. The dataframe uses 2011 natural gas</dt><dd><p>production (million cubic ft) by county in the US to determine which counties in a given state contribute the
-most to the state total. These percent of state total values from 2011 are mapped to 2015 state total natural gas</p>
-<blockquote>
-<div><p>production to get 2015 values on a county level. For some states, no county-level estimates exist in the 2011
+<dd><p>prepares a dataframe of natural gas production by county for the year 2015. The dataframe uses 2011 natural gas
+production (million cubic ft) by county in the US to determine which counties in a given state contribute the
+most to the state total. These percent of state total values from 2011 are mapped to 2015 state total natural gas
+production to get 2015 values on a county level. For some states, no county-level estimates exist in the 2011
 estimates. County-level values for these states are individually provided.</p>
-</div></blockquote>
-</dd>
-</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>DataFrame of a natural gas production (bbtu) and water use (mgd) by county</p>
@@ -1012,7 +978,7 @@ counting.</p>
 provided in the 2015 USGS dataset to prevent double counting.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
+<dd class="field-odd"><p>DataFrame of crop irrigation values for 2015 with ethanol corn irrigatio removed</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1191,10 +1157,14 @@ sectors in selected units.</p>
 
 
 <h3>Navigation</h3>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstarter.html">Quickstarter</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-interflow.analyze">Modules and Functions</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="sample_data.html">Sample Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
@@ -1206,6 +1176,8 @@ sectors in selected units.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="quickstarter.html" title="previous chapter">Quickstarter</a></li>
+      <li>Next: <a href="sample_data.html" title="next chapter">Sample Data</a></li>
   </ul></li>
 </ul>
 </div>

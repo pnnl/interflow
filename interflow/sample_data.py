@@ -3022,10 +3022,10 @@ def prep_petroleum_water_intensity():
 
 def prep_county_natgas_production_data() -> pd.DataFrame:
     """prepares a dataframe of natural gas production by county for the year 2015. The dataframe uses 2011 natural gas
-     production (million cubic ft) by county in the US to determine which counties in a given state contribute the
-     most to the state total. These percent of state total values from 2011 are mapped to 2015 state total natural gas
-      production to get 2015 values on a county level. For some states, no county-level estimates exist in the 2011
-      estimates. County-level values for these states are individually provided.
+    production (million cubic ft) by county in the US to determine which counties in a given state contribute the
+    most to the state total. These percent of state total values from 2011 are mapped to 2015 state total natural gas
+    production to get 2015 values on a county level. For some states, no county-level estimates exist in the 2011
+    estimates. County-level values for these states are individually provided.
 
     :return:                DataFrame of a natural gas production (bbtu) and water use (mgd) by county
 
@@ -3077,7 +3077,6 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     ng_df = ng_df[ng_df.natgas_county_bbtu > 0]
 
     # keep only required columns
-
     ng_df = ng_df[['FIPS', 'State', 'gas_pct', 'natgas_county_bbtu']]
 
     return ng_df
@@ -3861,7 +3860,7 @@ def remove_irrigation_water_double_counting():
     """  Subtracts water use in the irrigation of corn growth for ethanol from the total water use in crop irrigation
     provided in the 2015 USGS dataset to prevent double counting.
 
-    :return:
+    :return:                      DataFrame of crop irrigation values for 2015 with ethanol corn irrigatio removed
     """
 
     # read in crop irrigation withdrawals
@@ -3896,7 +3895,9 @@ def prep_corn_crop_irr_flows():
     """
     prepares values for water for corn growth for ethanol including consumption fractions, surface discharge fractions,
      and renames fresh surface water withdrawal, fresh groundwater withdrawal values to proper format.
-    :return:
+
+    :return:                      DataFrame of corn irrigation consumption fraction and discharge fraction values
+
     """
 
     # read in discharge flows for all crop irrigation
@@ -3916,6 +3917,7 @@ def prep_corn_crop_irr_flows():
 
     # loop through water types to build variables for consumption, conveyance losses, and surface discharge fractions
     var_list = []
+
     for type in type_list:
         consumption_name = 'AGR_ethanol_' + type + cons_adder
         df[consumption_name] = df['AGR_crop_' + type + cons_adder]

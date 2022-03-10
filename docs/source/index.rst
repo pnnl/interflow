@@ -37,7 +37,7 @@ The package collects known flow values between sectors provided by the user, cal
 
    quickstarter
 
-   API documentation
+   api
 
    sample_data
 
