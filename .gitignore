@@ -2,7 +2,7 @@
 venv
 
 # ignore docs build
-docs/build/
+#docs/build/
 
 # pyenv
 .python-version
@@ -10,8 +10,8 @@ docs/build/
 # jupyter
 notebooks/.ipynb_checkpoints/
 
-build/
-*.pyc
+#build/
+#*.pyc
 flow.egg-info/
 dist/
 
