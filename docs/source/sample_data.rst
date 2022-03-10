@@ -28,7 +28,7 @@ Geospatial Information
 US Counties
 **********************************
 
-In order to get values at the county-level across multiple datasets in a consistent manner, a set of counties was established as the base county list for 2015. This list contains all US counties (not including US Territories) included in the USGS 2015 water use dataset (Dieter et al. [1]). Given that some datasets used in compiling the full sample dataset are from multiple years, some of the county-level FIPS codes required modification in order to match those provided in the 2015 base list. These modifications include mapping older FIPS codes to the 2015 ones or adding new FIPS codes when new counties were created. These modifications were mostly required for values used in from the 1995 USGS dataset (Solley et al. [7]).
+In order to get values at the county-level across multiple datasets in a consistent manner, a set of counties was established as the base county list for 2015. This list contains all US counties (not including US Territories) included in the USGS 2015 water use dataset (Dieter et al. [1]). Given that some datasets used in compiling the full sample dataset are from multiple years, some of the county-level FIPS codes required modification in order to match those provided in the 2015 base list. These modifications include mapping older FIPS codes to the 2015 ones or adding new FIPS codes when new counties were created. These modifications were mostly required for values used in from the 1995 USGS dataset Solley et al. [7]).
 
 For the full list of US counties and their corresponding FIPS codes, see the `county list <https://kmongird.github.io/interflow/county_list.html>`_
 
@@ -48,17 +48,29 @@ The table below outlines all sectors and subsectors/application types per resour
 these values are included as flow values collected from the literature while the rest are computed by the model based
 on intensity factors, source fraction, and discharge fractions.
 
-+--------------------------------------+---------------------------------+----------------------------------------+---------+
-| Sector                               | Subsector                       | Application                            | Units   |
-+======================================+=================================+========================================+=========+
-| Agriculture Sector                   | Crop Irrigation                 | Fresh Surface Water Withdrawal         | mgd     |
-+                                      +                                 +----------------------------------------+---------+
-|                                      |                                 | Fresh Groundwater Withdrawal           | mgd     |
-+                                      +---------------------------------+----------------------------------------+---------+
-|                                      | Golf Irrigation                 | Fresh Surface Water Withdrawal         | mgd     |
-+                                      +                                 +----------------------------------------+---------+
-|                                      |                                 | Fresh Groundwater Withdrawal           | mgd     |
-+--------------------------------------+---------------------------------+----------------------------------------+---------+
++--------------------------------------+---------------------------------+ ---------------- + ---------------------------------------+---------+
+| Sector                               | Subsector                       | Flow Direction   |Application                             | Units   |
++======================================+=================================+==================+========================================+=========+
+| Agriculture Sector                   | Crop Irrigation                 | Inflows          |Fresh Surface Water Withdrawal          | mgd     |
++                                      +                                 +                  +----------------------------------------+---------+
+|                                      |                                 |                  | Fresh Groundwater Withdrawal           | mgd     |
++                                      +                                 +                  +----------------------------------------+---------+
+|                                      |                                 |                  | Interbasin Transfer Imports            | mgd     |
++                                      +                                 +                  +----------------------------------------+---------+
+|                                      |                                 |                  | Fresh Surface Water Pumping            | bbtu    |
+
+
++                                      +                                 +------------------+----------------------------------------+---------+
+|                                      |                                 | Outflows         | Fresh Surface Water Conveyance Losses  | mgd     |
++                                      +                                 +                  +----------------------------------------+---------+
+|                                      |                                 |                  | Fresh Groundwater Conveyance Losses    | mgd     |
++                                      +                                 +                  +----------------------------------------+---------+
+|                                      |                                 |                  | Interbasin Transfer Conveyance Losses  | mgd     |
++                                      +                                 +                  +----------------------------------------+---------+
+|                                      |                                 |                  | Fresh Groundwater Pumping              | bbtu    |
++                                      +                                 +                  +----------------------------------------+---------+
+|                                      |                                 |                  |             | bbtu    |
++--------------------------------------+---------------------------------+ ---------------- + ---------------------------------------+---------+
 
 
 
