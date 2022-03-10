@@ -13,7 +13,7 @@ In order to get values at the county-level across multiple datasets in a consist
 
 For a full list of US counties included and their corresponding FIPS codes, see the County List(https://kmongird.github.io/interflow/us_sample_methodology/County_list.html) page.
 
-# GeoJSON
+## GeoJSON file
 
 In order to plot county-level outputs from the US 2015 dataset, a GeoJSON file containing geometry information for the US counties is required. The file used and included in the sample data is from Plotly's sample datafiles. The raw JSON datafile can be found in Plotly [19]. A small number of counties included in the GeoJSON file required adjustment to match the baseline county list for the sample data. The FIPS codes for these counties were adjusted accordingly in the GeoJSON file. Note that the modified version of this file is included in the input data, not the raw GeoJSON file.
 
