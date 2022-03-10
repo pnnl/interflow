@@ -10,6 +10,7 @@ Welcome to interflow's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   getting_started
 
 
 Indices and tables
