@@ -12,8 +12,8 @@ Feature suggestions |:bulb:|
 If you'd like to suggest a feature to be added to interflow, please `open an issue request in GitHub. <https://github.com/kmongird/interflow/issues>`_ and describe your feature appropriately. Feature suggestions should be tagged as 'enhancement'.
 
 
-Contributing
----------------------
+Contributing |:computer:|
+################################
 The following steps should be taken to contribute to interflow:
 
 1. Fork the interflow repository and clone it locally.
