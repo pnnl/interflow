@@ -1,5 +1,5 @@
 [![build](https://github.com/kmongird/flow/actions/workflows/build.yml/badge.svg)](https://github.com/kmongird/flow/actions/workflows/build.yml)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/kmongird/interflow/8db4396789a3f98359132a74e73a02a3e14ddb83?urlpath=lab%2Ftree%2Fnotebooks%2FQuickstarter.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/kmongird/interflow/31ec8ffa075ccb3b7b0723dada704e18965f8d3d?urlpath=lab%2Ftree%2FQuickstarter.ipynb)
 # interflow
 
 `interflow` is an open-source Python package for collecting, calculating, organizing, and visualizing cross-sectoral 
