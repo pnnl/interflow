@@ -1,5 +1,5 @@
 **************************
-Agriculture Sector
+Agriculture Sector (AGR)
 **************************
 The agriculture sector consists of crop irrigation, golf irrigation, livestock, and aquaculture.
 
@@ -118,9 +118,9 @@ Energy Discharge
 **********************************
 
 **Energy Services**
-"""""""""""""""""""""""""""""""""""""""""""""""""
+---------------------------------------------------------
 Each subsector in the agriculture sector is assumed to have 65% efficiency following estimates provided in Greenberg et al. [4]. Therefore, 65% of all energy in each agriculture sector is assumed to go to energy services.
 
 **Rejected Energy**
-"""""""""""""""""""""""""""""""""""""""""""""""""
+---------------------------------------------------------
 All energy that does not go to energy services is assumed to go to rejected energy, therefore, it is assumed that each agriculture sub-sector sends 35% of its energy to rejected energy.

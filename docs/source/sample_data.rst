@@ -43,8 +43,40 @@ For more information on the base map configuration for Plotly's cloropleth maps,
 Methodology
 ####################
 
-The pages linked below document the methodology, data, and assumptions used in building the us county input data. Information is presented by sector and th.
+The pages linked below document the methodology, data, and assumptions used in building the us county input data. Information is presented by sector. Note that energy production is not represented in the final dataset as a separate sector but is split out between the industrial and mining sectors depending on a variety of factors. A separate page documenting its methodology has been provided however for additional clarity.
 
+Sectors
+******************************************************************************************************
+
+`Agriculture Sector <https://kmongird.github.io/interflow/agriculture_sector.html>`_
+-------------------------------------------------------------------------------------------------------------
+
+`Commercial Sector <https://kmongird.github.io/interflow/commercial_sector.html>`_
+-------------------------------------------------------------------------------------------------------------
+
+`Electricity Generation Sector <https://kmongird.github.io/interflow/electricity_gen_sector.html>`_
+-------------------------------------------------------------------------------------------------------------
+
+`Energy Production <https://kmongird.github.io/interflow/energy_production.html>`_
+-------------------------------------------------------------------------------------------------------------
+
+`Industrial Sector <https://kmongird.github.io/interflow/industrial_sector.html>`_
+-------------------------------------------------------------------------------------------------------------
+
+`Mining Sector <https://kmongird.github.io/interflow/mining_sector.html>`_
+-------------------------------------------------------------------------------------------------------------
+
+`Public Water Sector <https://kmongird.github.io/interflow/public_water_sector.html>`_
+-------------------------------------------------------------------------------------------------------------
+
+`Residential Sector <https://kmongird.github.io/interflow/residential_sector.html>`_
+-------------------------------------------------------------------------------------------------------------
+
+`Transportation Sector <https://kmongird.github.io/interflow/transportation_sector.html>`_
+-------------------------------------------------------------------------------------------------------------
+
+`Wastewater Treatment Sector <https://kmongird.github.io/interflow/wastewater_sector.html>`_
+-------------------------------------------------------------------------------------------------------------
 
 
 References

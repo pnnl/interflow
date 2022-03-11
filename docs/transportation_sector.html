@@ -1,0 +1,150 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Transportation Sector (TRA) &#8212; interflow  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="transportation-sector-tra">
+<h1>Transportation Sector (TRA)<a class="headerlink" href="#transportation-sector-tra" title="Permalink to this headline">¶</a></h1>
+<section id="water-in-transportation-sector">
+<h2>Water in Transportation Sector<a class="headerlink" href="#water-in-transportation-sector" title="Permalink to this headline">¶</a></h2>
+<p>No water is assumed to be delivered to the transportation sector.</p>
+</section>
+<section id="energy-in-transportation-sector">
+<h2>Energy in Transportation Sector<a class="headerlink" href="#energy-in-transportation-sector" title="Permalink to this headline">¶</a></h2>
+<section id="energy-demand">
+<h3>Energy Demand<a class="headerlink" href="#energy-demand" title="Permalink to this headline">¶</a></h3>
+<section id="fuel-demand">
+<h4>Fuel Demand<a class="headerlink" href="#fuel-demand" title="Permalink to this headline">¶</a></h4>
+<p>Energy demand by the transportation sector is supplied on a state-basis from U.S. EIA for 2015. EIA provides information on energy supply (fuels) that go to sectors other than electricity generation in their SEDS dataset [8]. Each fuel is given in BTUs per year and is categorized by a specific MSN code. For the transportation sector, this includes the following MSN codes.</p>
+<ul class="simple">
+<li><p>“NGACB” - Natural gas consumed by the transportation sector</p></li>
+<li><p>“PAACB” - All petroleum products consumed by the transportation sector</p></li>
+<li><p>“EMACB” - Fuel ethanol, excluding denaturant, consumed by the transportation sector</p></li>
+</ul>
+<p>Values are adjusted to BBTU per day.</p>
+<p>To split up state total values to individual counties within a state, total values are split out based on county population. For example, if County 1 in State A makes up 10% of the total state population, then 10% of the state total natural gas deliveries to the transportation sector are in that county. County population data for 2015 is directly provided in Dieter et al. [1]</p>
+</section>
+<section id="electricity-demand">
+<h4>Electricity Demand<a class="headerlink" href="#electricity-demand" title="Permalink to this headline">¶</a></h4>
+<p>Electricity demand by the residential sector is also supplied by US EIA for 2015. Electricity delivery values are used from the Electric Power Annual dataset for residential, commercial, industrial, and transportation sectors [9]. Values are originally provided in annual MWh and are converted to BBTU per day. State level values are broken up into county-level approximations based on population following the same methodology as the fuel deliveries.</p>
+</section>
+</section>
+<section id="energy-discharge">
+<h3>Energy Discharge<a class="headerlink" href="#energy-discharge" title="Permalink to this headline">¶</a></h3>
+<section id="energy-services">
+<h4>Energy Services<a class="headerlink" href="#energy-services" title="Permalink to this headline">¶</a></h4>
+<p>The transportation sector is assumed to have an efficiency of 21%, in line with estimates provided in Greenberg et al. [4]. Therefore, 21% of all energy used in the transportation sector is assumed to go to energy services.</p>
+</section>
+<section id="rejected-energy">
+<h4>Rejected Energy<a class="headerlink" href="#rejected-energy" title="Permalink to this headline">¶</a></h4>
+<p>Given the assumed efficiency of 21%, 79% of energy in the transportation sector is assumed to go to rejected energy.</p>
+</section>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">interflow</a></h1>
+
+
+
+<p class="blurb">a multi-sector multi-resource flow builder</p>
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstarter.html">Quickstarter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sample_data.html">Sample Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgement.html">Acknowledgment</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Battelle Memorial Institute.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/transportation_sector.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
