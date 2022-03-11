@@ -26,7 +26,8 @@ The package collects known flow values between sectors provided by the user, cal
 
 
 
-
+Navigation
+##############################
 
 .. toctree::
    :maxdepth: 2
