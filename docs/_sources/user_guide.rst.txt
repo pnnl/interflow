@@ -30,7 +30,9 @@ A real-world example of the above would be:
 
 The diagram below shows each of these steps.
 
-![image](https://user-images.githubusercontent.com/74064300/153686911-fd0ec47d-571d-455c-bde8-e8b05a13bac0.png)
+.. image:: flow_methodology_example.png
+  :width: 700
+
 
 Note that **interflow** does not require node inputs and outputs to be balanced. That is to say, inflows to a node do not have to equal outflows as demonstrated above with only 35% of the energy inflow calculated for public water supply being discharged.
 
@@ -89,7 +91,7 @@ The input data for the flow package must have 16 columns described below and eac
 
 +---------------+------------------------------+----------+
 | Column #      | Description                  | Type     |
-+---------------+------------------------------+----------+
++===============+==============================+==========+
 | 1             | Region                       | str      |
 +---------------+------------------------------+----------+
 | 2             | Calculation type             | str      |
@@ -124,7 +126,7 @@ The input data for the flow package must have 16 columns described below and eac
 +---------------+------------------------------+----------+
 
 
-Region (columm 1)
+*Region (columm 1)*
 """"""""""""""""""""""""""""""
 
 The first item in the data should include the name of the region provided as a string. Note that **interflow** will treat inconsistent spelling of regions as multiple regions.
@@ -270,3 +272,98 @@ In order to use the optional cloropleth map visualization output that is include
 The image above and the GeoJSON file used for the sample data is part of Plotly's sample datasets. For more information on the sample GeoJSON file, see the Geospatial section under the US Sample Data Methodology Page.
 
 The cloropleth map output uses the plotly python package. For more information on the GeoJSON input see the GeoJSON with feature.id section within the Plotly cloropleth documentation (https://plotly.com/python/choropleth-maps/)
+
+
+Key Outputs
+################################
+
+Data Outputs
+**********************************
+
+interflow returns a Pandas DataFrame when calling `interflow.calculate() <https://kmongird.github.io/interflow/api.html#interflow.calc_flow.calculate>`_. The DataFrame contains the following for each flow value for each region included in the input data when the level parameter is set to 5:
+
++-------------+-----------------------------------------------+-------+
+| Column Name | Description                                   | Type  |
++=============+===============================================+=======+
+| region      | Name of region                                | str   |
++-------------+-----------------------------------------------+-------+
+| S1          | Level 1 source node name                      | str   |
++-------------+-----------------------------------------------+-------+
+| S2          | Level 2 source node name                      | str   |
++-------------+-----------------------------------------------+-------+
+| S3          | Level 3 source node name                      | str   |
++-------------+-----------------------------------------------+-------+
+| S4          | Level 4 source node name                      | str   |
++-------------+-----------------------------------------------+-------+
+| S5          | Level 5 source node name                      | str   |
++-------------+-----------------------------------------------+-------+
+| T1          | Level 1 target node name                      | str   |
++-------------+-----------------------------------------------+-------+
+| T2          | Level 2 target node name                      | str   |
++-------------+-----------------------------------------------+-------+
+| T3          | Level 3 target node name                      | str   |
++-------------+-----------------------------------------------+-------+
+| T4          | Level 4 target node name                      | str   |
++-------------+-----------------------------------------------+-------+
+| T5          | Level 5 target node name                      | str   |
++-------------+-----------------------------------------------+-------+
+| units       | unit type for value                           | str   |
++-------------+-----------------------------------------------+-------+
+| value       | value of flow connecting source to target     | flt   |
++-------------+-----------------------------------------------+-------+
+
+Note that setting the level parameter equal to a value less than 5 will reduce the output accordingly to only show the appropriate levels, aggregated to the level specified. For example, specifying level 1 will return the following DataFrame instead.
+
++-------------+-----------------------------------------------+-------+
+| Column Name | Description                                   | Type  |
++=============+===============================================+=======+
+| region      | Name of region                                | str   |
++-------------+-----------------------------------------------+-------+
+| S1          | Level 1 source node name                      | str   |
++-------------+-----------------------------------------------+-------+
+| T1          | Level 1 target node name                      | str   |
++-------------+-----------------------------------------------+-------+
+| units       | unit type for value                           | str   |
++-------------+-----------------------------------------------+-------+
+| value       | value of flow connecting source to target     | flt   |
++-------------+-----------------------------------------------+-------+
+
+
+Visualizations
+**********************************
+
+In addition to the Pandas DataFrame output, a variety of visualization and analysis functions are pre-built into the flow package and can be used to interpret results. All visualizations in the package utilize the Plotly open source graphing library. These include the following:
+
+Single-unit sankey diagrams
+------------------------------
+
+Sankey diagrams are used to visualize flows from source nodes to target nodes where links between nodes have variable width depending on the value of the flow. The `interflow.plot_sankey() <https://kmongird.github.io/interflow/api.html#interflow.visualize.plot_sankey>`_ function plots up to two sankey diagrams (one for each unit specified) based on the run output that is provided to the function. Users can specify a level of granularity to show flows from level 1 (major sector aggregates only) to level 5 (the highest level of granularity available). For more information on the specific function parameters, defaults, and other components, see the function_guide section.
+
+.. image:: sankey_example.png
+  :width: 700
+
+
+
+Single region stacked barcharts of sectors
+--------------------------------------------
+
+In addition to the Sankey diagrams, there is also the option to plot output in a stacked barchart for any number of sectors. The `interflow.plot_sector_bar() <https://kmongird.github.io/interflow/api.html#interflow.visualize.plot_sector_bar>`_ function takes a list input of the level 1 sector names (e.g., public water supply) and proceeds to plot inflows or outflows (chosen by the user) into that sector for the specified units. Inflows and outflows are displayed in stacked values of level 5 subsectors within each sector. The barcharts are intended to be used to compare sectors within an individual region for an individual unit.
+
+An example output for energy flows into the agricultural and public water supply sectors for an individual US county from the sample data is shown below.
+
+.. image:: bar_inflow_example.png
+  :width: 700
+
+Likewise, the additional figure below shows the energy outflows from those sectors for the same county.
+
+.. image:: bar_outflow_example.png
+  :width: 700
+
+Cloropleth map displaying single flow values across regions
+-------------------------------------------------------------
+
+The **interflow** package also comes with the ability to plot flow values on a regional basis. By providing  `interflow.plot_map() <https://kmongird.github.io/interflow/api.html#interflow.visualize.plot_map>`_ function requires a GeoJSON file to plot a cloropleth map of a selected value. The selectable values are generated as a dropdown list of all available flow values for the specified level of granularity. For example, if level 1 granularity is specified, the drop-down list contains only flows between level 1 nodes. Users can select up to level 5 granularity when running the function and the output will respond appropriately. Below is an example of the cloropleth map output for level 1 granularity for a single flow value using the US county sample data.
+
+.. image:: map_example.png
+  :width: 700
+
