@@ -43,31 +43,8 @@ For more information on the base map configuration for Plotly's cloropleth maps,
 Methodology
 ####################
 
-This section documents the methodology, data, and assumptions used in building the us county input data. Information is presented by sector and then subdivided by resource (water and energy).
+The pages linked below document the methodology, data, and assumptions used in building the us county input data. Information is presented by sector and th.
 
-
-
-
-Mining Sector
-**********************************
-
-
-
-
-
-
-
-Public Water Sector
-**********************************
-
-Residential Sector
-**********************************
-
-Transportation Sector
-**********************************
-
-Wastewater Treatment Sector
-**********************************
 
 
 References
