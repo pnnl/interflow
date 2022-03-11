@@ -134,6 +134,7 @@ The first item in the data should include the name of the region provided as a s
 *Calculation type (columm 2)*
 """"""""""""""""""""""""""""""
 The value of the calculation type must equal one of the following verbatim:
+
 * A_collect
 * B_calculate
 * C_source
@@ -217,9 +218,9 @@ Once secondary unit flow values have been calculated by the model, their aggrega
 To split calculated values into sources, the following is required:
 
 * The calculation type (data position 2) must be equal to "C_source"
-* The primary node information (data positions 3-8) must describe the node that is *receiving* the flow from another node (e.g., energy use in public water supply)
-* The secondary node information (data positions 9-14) must describe the node that is discharging to the primary node (e.g., electricity sector)
-* The value (data position 16) must be the fraction of the calculated value that is coming from the secondary node.
+*  The primary node information (data positions 3-8) must describe the node that is *receiving* the flow from another node (e.g., energy use in public water supply)
+*  The secondary node information (data positions 9-14) must describe the node that is discharging to the primary node (e.g., electricity sector)
+*  The value (data position 16) must be the fraction of the calculated value that is coming from the secondary node.
 
 
 Example:
