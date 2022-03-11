@@ -275,7 +275,6 @@ The image above and the GeoJSON file used for the sample data is part of Plotly'
 
 The cloropleth map output uses the plotly python package. For more information on the GeoJSON input see the GeoJSON with feature.id section within the Plotly cloropleth documentation (https://plotly.com/python/choropleth-maps/)
 
-
 Key Outputs
 ################################
 
