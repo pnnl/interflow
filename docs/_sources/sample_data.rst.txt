@@ -40,12 +40,10 @@ In order to plot county-level outputs from the US 2015 dataset, a GeoJSON file c
 For more information on the base map configuration for Plotly's cloropleth maps, see the `Plotly cloropleth map documentation <https://plotly.com/python/choropleth-maps/>`_
 
 
-
-Terminology
-####################
-
 Methodology
 ####################
+
+This section documents the methodology, data, and assumptions used in building the us county input data. Information is presented by sector and then subdivided by resource (water and energy).
 
 Agriculture Sector
 **********************************

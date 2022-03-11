@@ -134,6 +134,7 @@ The first item in the data should include the name of the region provided as a s
 *Calculation type (columm 2)*
 """"""""""""""""""""""""""""""
 The value of the calculation type must equal one of the following verbatim:
+
 * A_collect
 * B_calculate
 * C_source
@@ -217,9 +218,9 @@ Once secondary unit flow values have been calculated by the model, their aggrega
 To split calculated values into sources, the following is required:
 
 * The calculation type (data position 2) must be equal to "C_source"
-* The primary node information (data positions 3-8) must describe the node that is *receiving* the flow from another node (e.g., energy use in public water supply)
-* The secondary node information (data positions 9-14) must describe the node that is discharging to the primary node (e.g., electricity sector)
-* The value (data position 16) must be the fraction of the calculated value that is coming from the secondary node.
+*  The primary node information (data positions 3-8) must describe the node that is *receiving* the flow from another node (e.g., energy use in public water supply)
+*  The secondary node information (data positions 9-14) must describe the node that is discharging to the primary node (e.g., electricity sector)
+*  The value (data position 16) must be the fraction of the calculated value that is coming from the secondary node.
 
 
 Example:
@@ -267,7 +268,8 @@ Map Data requirements
 
 In order to use the optional cloropleth map visualization output that is included in the package, a GeoJSON file containing geometry information for the specified region(s) must be included. The feature.id in the GeoJSON file should match the region column in the output data in order to display correctly. The **interflow** package comes with a GeoJSON file for US counties, an example of what the GeoJSON file structure looks like is provided below:
 
-![image](https://user-images.githubusercontent.com/74064300/157086892-edb4027d-b6c5-40d3-80c1-107060a0b07d.png)
+.. image:: json_data_example.png
+  :width: 250
 
 The image above and the GeoJSON file used for the sample data is part of Plotly's sample datasets. For more information on the sample GeoJSON file, see the Geospatial section under the US Sample Data Methodology Page.
 

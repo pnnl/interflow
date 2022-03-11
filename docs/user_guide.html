@@ -212,7 +212,7 @@ and builds connections to and from additional sectors to carry those values (e.g
 <p>The first item in the data should include the name of the region provided as a string. Note that <strong>interflow</strong> will treat inconsistent spelling of regions as multiple regions.</p>
 </section>
 <section id="calculation-type-columm-2">
-<h5>Calculation type (columm 2)<a class="headerlink" href="#calculation-type-columm-2" title="Permalink to this headline">¶</a></h5>
+<h5><em>Calculation type (columm 2)</em><a class="headerlink" href="#calculation-type-columm-2" title="Permalink to this headline">¶</a></h5>
 <p>The value of the calculation type must equal one of the following verbatim:
 * A_collect
 * B_calculate
@@ -221,27 +221,29 @@ and builds connections to and from additional sectors to carry those values (e.g
 <p>Each of these inputs tells the model what type of calculation it should be conducting for that row of data.</p>
 </section>
 <section id="primary-node-information-columms-3-8">
-<h5>Primary Node Information (columms 3-8)<a class="headerlink" href="#primary-node-information-columms-3-8" title="Permalink to this headline">¶</a></h5>
+<h5><em>Primary Node Information (columms 3-8)</em><a class="headerlink" href="#primary-node-information-columms-3-8" title="Permalink to this headline">¶</a></h5>
 <p>Data positions 3 through 8 provide information on the primary node (PN). The primary node should be interpreted as the node for which inflows and outflows are determined.
 Level 1 name refers to the major sector name, Level 2 refers to the sub-sector name, and so on through level 5. For more information on these levels see the Fundamental Concepts section.
 Primary Node units refers to the units that that sector name (which will be assigned to a value) is associated with.</p>
 </section>
 <section id="secondary-node-information-columms-9-14">
-<h5>Secondary Node Information (columms 9-14)<a class="headerlink" href="#secondary-node-information-columms-9-14" title="Permalink to this headline">¶</a></h5>
+<h5><em>Secondary Node Information (columms 9-14)</em><a class="headerlink" href="#secondary-node-information-columms-9-14" title="Permalink to this headline">¶</a></h5>
 <p>These data inputs follow the same structure as the primary node but are used to describe the node that is being linked to the primary node as either a source (inflow from),a target node (discharge to), or a node upon which an alternate unit value is calculated (described in greater detail later on this page).</p>
 </section>
 <section id="parameter-columms-15">
-<h5>Parameter (columms 15)<a class="headerlink" href="#parameter-columms-15" title="Permalink to this headline">¶</a></h5>
+<h5><em>Parameter (columms 15)</em><a class="headerlink" href="#parameter-columms-15" title="Permalink to this headline">¶</a></h5>
 <p>This data item identifies the type of value in the value column (position 16). The value of this data position can be changed by the user with no effect on calculated outcome. It is provided as an optional data position for the user to organize their input data. Examples (consistent with those in the same data) are shown later on this page.</p>
 </section>
 <section id="value-columms-16">
-<h5>Value (columms 16)<a class="headerlink" href="#value-columms-16" title="Permalink to this headline">¶</a></h5>
+<h5><em>Value (columms 16)</em><a class="headerlink" href="#value-columms-16" title="Permalink to this headline">¶</a></h5>
 <p>This data item providing one of the following: (1) an input flow value in primary node units, (2) an intensity coefficient (unit 2 required per unit 1) (3) a source flow fraction, or (4) a discharge flow fraction.</p>
 </section>
 </section>
 </section>
 <section id="creating-input-data-for-different-calculations">
 <h3>Creating input data for different calculations<a class="headerlink" href="#creating-input-data-for-different-calculations" title="Permalink to this headline">¶</a></h3>
+<section id="collect-values">
+<h4>Collect values<a class="headerlink" href="#collect-values" title="Permalink to this headline">¶</a></h4>
 <p>To build flows between nodes and calculate cross-unit flows, initial flow values are necessary. For example, if the amount of energy required to withdraw a gallon of water from a larger water supply for the public water supply is a desired flow in the ultimate output, then the amount of water withdrawn from the water supply by the public water supply sector is a required input. Initial values must be supplied in the following way:</p>
 <ul class="simple">
 <li><p>The calculation type (data position 2) must be equal to “A_collect”</p></li>
@@ -308,6 +310,9 @@ Primary Node units refers to the units that that sector name (which will be assi
 </tr>
 </tbody>
 </table>
+</section>
+<section id="calculate-values">
+<h4>Calculate values<a class="headerlink" href="#calculate-values" title="Permalink to this headline">¶</a></h4>
 <p>Consistent naming and spelling with sectors is very important as values (both collected and calculated) are assigned to the node names provided. The model looks for node names at level 5 granularity to retrieve and calculate values.</p>
 <p>In order to calculate secondary unit flow values from collected flow values, the data must be in the following format:</p>
 <ul class="simple">
@@ -374,6 +379,9 @@ Primary Node units refers to the units that that sector name (which will be assi
 </tr>
 </tbody>
 </table>
+</section>
+<section id="source-values">
+<h4>Source values<a class="headerlink" href="#source-values" title="Permalink to this headline">¶</a></h4>
 <p>Once secondary unit flow values have been calculated by the model, their aggregate value is split into individual flows from various source. For example, if the public water supply sector receives 80% its energy from the electricity sector and 20% from natural gas generators, we would want 80% of our total calculated energy value to be represented as a flow from the electricity node to the public water supply sector and the remaining 20% from the natural gas fuel supply</p>
 <p>To split calculated values into sources, the following is required:</p>
 <ul class="simple">
@@ -457,6 +465,9 @@ Primary Node units refers to the units that that sector name (which will be assi
 </tbody>
 </table>
 <p>As many source rows should be provided as there are sources for a particular value. If five nodes feed into a single node, five rows with five fractions that sum to 1 should be provided.</p>
+</section>
+<section id="discharge-values">
+<h4>Discharge values<a class="headerlink" href="#discharge-values" title="Permalink to this headline">¶</a></h4>
 <p>Discharging values follows similar logic as determining source flows in that an aggregate value is split into multiple based on provided fractions. This time, however, the flows being determined are those that are discharged from the primary node (e.g., electricity generation to rejected energy, public water supply to conveyance losses)</p>
 <p>To split calculated and collected values into discharges, the following is required:</p>
 <ul class="simple">
@@ -542,10 +553,11 @@ Primary Node units refers to the units that that sector name (which will be assi
 <p>As many discharge rows should be provided as there are discharges for a particular value. If one values should be discharged to five downstream nodes, five rows with five fractions that sum to 1 should be provided.</p>
 <p>For source and discharge fractions, it is not a strict requirement that the fractions per primary node value sum to one. Note that, not having them sum to 1 will lead to unbalanced flows (greater inflows than outflows or vice versa)</p>
 </section>
+</section>
 <section id="map-data-requirements">
 <h3>Map Data requirements<a class="headerlink" href="#map-data-requirements" title="Permalink to this headline">¶</a></h3>
 <p>In order to use the optional cloropleth map visualization output that is included in the package, a GeoJSON file containing geometry information for the specified region(s) must be included. The feature.id in the GeoJSON file should match the region column in the output data in order to display correctly. The <strong>interflow</strong> package comes with a GeoJSON file for US counties, an example of what the GeoJSON file structure looks like is provided below:</p>
-<p>![image](<a class="reference external" href="https://user-images.githubusercontent.com/74064300/157086892-edb4027d-b6c5-40d3-80c1-107060a0b07d.png">https://user-images.githubusercontent.com/74064300/157086892-edb4027d-b6c5-40d3-80c1-107060a0b07d.png</a>)</p>
+<a class="reference internal image-reference" href="_images/json_data_example.png"><img alt="_images/json_data_example.png" src="_images/json_data_example.png" style="width: 250px;" /></a>
 <p>The image above and the GeoJSON file used for the sample data is part of Plotly’s sample datasets. For more information on the sample GeoJSON file, see the Geospatial section under the US Sample Data Methodology Page.</p>
 <p>The cloropleth map output uses the plotly python package. For more information on the GeoJSON input see the GeoJSON with feature.id section within the Plotly cloropleth documentation (<a class="reference external" href="https://plotly.com/python/choropleth-maps/">https://plotly.com/python/choropleth-maps/</a>)</p>
 </section>

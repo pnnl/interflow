@@ -131,7 +131,7 @@ The input data for the flow package must have 16 columns described below and eac
 
 The first item in the data should include the name of the region provided as a string. Note that **interflow** will treat inconsistent spelling of regions as multiple regions.
 
-Calculation type (columm 2)
+*Calculation type (columm 2)*
 """"""""""""""""""""""""""""""
 The value of the calculation type must equal one of the following verbatim:
 * A_collect
@@ -141,23 +141,23 @@ The value of the calculation type must equal one of the following verbatim:
 
 Each of these inputs tells the model what type of calculation it should be conducting for that row of data.
 
-Primary Node Information (columms 3-8)
+*Primary Node Information (columms 3-8)*
 """"""""""""""""""""""""""""""""""""""""""""
 Data positions 3 through 8 provide information on the primary node (PN). The primary node should be interpreted as the node for which inflows and outflows are determined.
 Level 1 name refers to the major sector name, Level 2 refers to the sub-sector name, and so on through level 5. For more information on these levels see the Fundamental Concepts section.
 Primary Node units refers to the units that that sector name (which will be assigned to a value) is associated with.
 
-Secondary Node Information (columms 9-14)
+*Secondary Node Information (columms 9-14)*
 """"""""""""""""""""""""""""""""""""""""""""
 
 These data inputs follow the same structure as the primary node but are used to describe the node that is being linked to the primary node as either a source (inflow from),a target node (discharge to), or a node upon which an alternate unit value is calculated (described in greater detail later on this page).
 
-Parameter (columms 15)
+*Parameter (columms 15)*
 """"""""""""""""""""""""""""""""""""""""""""
 
 This data item identifies the type of value in the value column (position 16). The value of this data position can be changed by the user with no effect on calculated outcome. It is provided as an optional data position for the user to organize their input data. Examples (consistent with those in the same data) are shown later on this page.
 
-Value (columms 16)
+*Value (columms 16)*
 """"""""""""""""""""""""""""""""""""""""""""
 
 This data item providing one of the following: (1) an input flow value in primary node units, (2) an intensity coefficient (unit 2 required per unit 1) (3) a source flow fraction, or (4) a discharge flow fraction.
@@ -166,7 +166,7 @@ Creating input data for different calculations
 *************************************************
 
 Collect values
-"""""""""""""""""""""""""""""""""""""""""""
+-------------------------
 
 To build flows between nodes and calculate cross-unit flows, initial flow values are necessary. For example, if the amount of energy required to withdraw a gallon of water from a larger water supply for the public water supply is a desired flow in the ultimate output, then the amount of water withdrawn from the water supply by the public water supply sector is a required input. Initial values must be supplied in the following way:
 
@@ -189,7 +189,7 @@ Example:
 
 
 Calculate values
-"""""""""""""""""""""""""""""""""""""""""""
+-------------------------
 Consistent naming and spelling with sectors is very important as values (both collected and calculated) are assigned to the node names provided. The model looks for node names at level 5 granularity to retrieve and calculate values.
 
 In order to calculate secondary unit flow values from collected flow values, the data must be in the following format:
@@ -210,7 +210,7 @@ Example:
 +----------+-----------------+--------------------+-------+---------------+-----------+-------+---------+---------------------+-------+---------------+------------+-------+---------+-----------+-------+
 
 Source values
-"""""""""""""""""""""""""""""""""""""""""""
+-------------------------
 
 Once secondary unit flow values have been calculated by the model, their aggregate value is split into individual flows from various source. For example, if the public water supply sector receives 80% its energy from the electricity sector and 20% from natural gas generators, we would want 80% of our total calculated energy value to be represented as a flow from the electricity node to the public water supply sector and the remaining 20% from the natural gas fuel supply
 
@@ -236,7 +236,7 @@ As many source rows should be provided as there are sources for a particular val
 
 
 Discharge values
-"""""""""""""""""""""""""""""""""""""""""""
+-------------------------
 Discharging values follows similar logic as determining source flows in that an aggregate value is split into multiple based on provided fractions. This time, however, the flows being determined are those that are discharged from the primary node (e.g., electricity generation to rejected energy, public water supply to conveyance losses)
 
 To split calculated and collected values into discharges, the following is required:
@@ -267,7 +267,8 @@ Map Data requirements
 
 In order to use the optional cloropleth map visualization output that is included in the package, a GeoJSON file containing geometry information for the specified region(s) must be included. The feature.id in the GeoJSON file should match the region column in the output data in order to display correctly. The **interflow** package comes with a GeoJSON file for US counties, an example of what the GeoJSON file structure looks like is provided below:
 
-![image](https://user-images.githubusercontent.com/74064300/157086892-edb4027d-b6c5-40d3-80c1-107060a0b07d.png)
+.. image:: json_data_example.png
+  :width: 250
 
 The image above and the GeoJSON file used for the sample data is part of Plotly's sample datasets. For more information on the sample GeoJSON file, see the Geospatial section under the US Sample Data Methodology Page.
 
