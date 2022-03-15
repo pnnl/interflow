@@ -5,6 +5,11 @@ Sample Data
 Introduction
 ##############
 
+The sample data provided for the interflow package includes water and energy resource values at the U.S. county level for a variety of sectors. This page documents the data sources, the methodology used to convert (where necessary) and organize the input data values. This sample data was aggregated as a subtask of the Integrated Water Power Resilience Project at Pacific Northwest National Laboratory.
+
+Project Background
+############################
+
 The motivation of the Integrated Water Power Resilience Project is to identify and develop opportunities to improve resilience in the water and power sectors through coordinated planning, investment, and operations and thereby provide benefits to power and water utilities, consumers, and the environment.
 Water and power utilities are interdependent, subject to many of the same natural and manmade hazards, and critical for the well-being of communities and society. Because of the interconnectedness of water and power systems there are substantial economic, social, and environmental benefits to co-managing the market sectors for resilience, instead of managing them separately.
 To support this initiative and future research in this area, the **interflow** model was developed to build, calculate, and visualize interconnections in water and energy between various sectors.
