@@ -345,7 +345,7 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
                 # create the figure
                 fig = go.Figure(data=[go.Sankey(
                     node=dict(
-                        pad=20,  # space between nodes (vertically)
+                        pad=20,  # space between nodes
                         thickness=10,  # node thickness
                         line=dict(color="black", width=1),  # node border color and thickness
                         label=sankey_number,  # node label, refers to list of indexed names
@@ -438,7 +438,6 @@ def plot_sector_bar(data, unit_type, region_name, sector_list, inflow=True, stri
                  color_discrete_sequence=px.colors.qualitative.Prism,
                  template="simple_white")
     fig.update_layout(
-        # title_text = 'Expedited Process Availability by State', # Create a Title
         legend_title_text='Subsector',
         legend_title_font_size=15,
         legend_font_size=15,
@@ -622,6 +621,7 @@ def plot_map(jsonfile: dict, data:pd.DataFrame, level=1, region_col=None, strip=
     fig.update_layout(title_text="Map of Selected Flow Value",
                       title_x=0.0,
                       margin={"r": 10, "t": 60, "l": 0, "b": 0})
+
     # update dropdown list
     fig.update_layout(updatemenus=[dict(active=0,
                                         buttons=my_buttons,

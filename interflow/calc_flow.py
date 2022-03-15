@@ -44,7 +44,7 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
         raise ValueError(m)
 
     # load input data
-    df = data  # read file path in as a dataframe with no leading zeros applied
+    df = data
 
     # check to make sure data has correct number of columns
     if len(df.columns.to_list()) == 16:
