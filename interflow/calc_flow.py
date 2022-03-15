@@ -88,7 +88,6 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
                 # collect input flow values
                 for t1 in f_dict[r][f_type]:
                     l1_value = 0
-                    t5_value = 0
                     for t2 in f_dict[r][f_type][t1]:
                         l2_value = 0
                         for t3 in f_dict[r][f_type][t1][t2]:
@@ -97,7 +96,6 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
                                 for t5 in f_dict[r][f_type][t1][t2][t3][t4]:
                                     l4_value = 0
                                     for u1 in f_dict[r][f_type][t1][t2][t3][t4][t5]:
-                                        t5_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
                                         for s1 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1]:
                                             l1_name = f'{r}_{s1}_to_{t1}_{u1}'
                                             for s2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1]:
@@ -132,7 +130,6 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
                                                                     l5_total_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
                                                                     l5_total_value = l5_total_value + l5_value
                                                                     total_dict.update({l5_total_name: l5_total_value})
-
 
             # calculate new flows based on intensity values
             elif f_type == 'B_calculate':
@@ -226,6 +223,7 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
                                                                         # update total dictionary
                                                                         l5_s_value = l5_s_value + sl5_value
                                                                         total_dict.update({l5s_name: l5_s_value})
+
             # split total flow values into discharge flows from discharge fractions
             elif f_type == 'D_discharge':
                 for t1 in f_dict[r][f_type]:
@@ -324,7 +322,7 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
                                                                 else:
                                                                     pass
 
-                                                                # level 3 dictioanry
+                                                                # level 3 dictionary
                                                                 if t3_name in l3_dict:
                                                                     del l3_dict[t3_name]
                                                                 else:
@@ -389,7 +387,7 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
         m = 'incorrect level of granularity specified. Must be an integer between 1 and 5, inclusive.'
         raise ValueError(m)
 
-    # save to output file if output file name specified
+    # save output to csv if output file path specified
     if output_file_path is None:
         pass
     else:
