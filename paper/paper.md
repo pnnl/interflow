@@ -1,5 +1,5 @@
 ---
-title: 'interflow: A Python package to organize, calculate, and visualize sectoral interdependency flow data’
+title: 'interflow: A Python package to organize, calculate, and visualize sectoral interdependency flow data'
 tags:
   - Python
   - sectoral interdependencies
