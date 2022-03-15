@@ -28,7 +28,7 @@ Investigating interdependencies and relationships between sectors can reveal mul
 
 The `interflow` package is presented as a flexible tool to organize, calculate, and visualize sectoral interdependency data (Figure 1). Its output can help decision makers, researchers, and other audiences more easily analyze and pull meaning from data on the interdependencies between sectors, within sectors, and across regions. The `interflow` package can help us answer questions such as (1) which sectors have high cross-resource dependencies, (2) how does demand for a resource in various sectors compare across regions, and (3) where are the sectoral and regional opportunities for enhancement and resiliency development based on the dependencies presented.
 
-![Figure 1. Example Flow Diagram Showing a Resource Passing Across Sectors.\label{fig:fig1}](fig1.png)
+![Example Sankey Diagram Demonstrating the Flow of a Resource Across Sectors.\label{fig:fig1}](fig1.png)
 
 # Statement of Need
 
