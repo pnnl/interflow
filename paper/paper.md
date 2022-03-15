@@ -1,12 +1,11 @@
+
 ---
 title: 'interflow: A Python package to organize, calculate, and visualize sectoral interdependency flow data’
 tags:
   - Python
   - sectoral interdependencies
   - sankey diagrams
-  - flow diagrams
-
-
+  - flow diagrams 
 authors:
   - name: Kendall L. Mongird
     orcid: 0000-0003-2807-7088
@@ -18,8 +17,8 @@ authors:
   - name: Jennie S. Rice
     affiliation: 1
 affiliations:
- - name: Pacific Northwest National Laboratory, Richland, WA, USA
-   index: 1
+  - name: Pacific Northwest National Laboratory, Richland, WA, USA
+    index: 1
 date: 1 April 2022
 bibliography: paper.bib
 ---
