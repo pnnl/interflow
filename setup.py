@@ -19,8 +19,7 @@ setup(
     license='BSD2-Clause',
     author='Kendall Mongird',
     author_email='kendall.mongird@pnnl.gov',
-    description='An open-source Python package for calculating multi-sectoral '
-                'and multi-unit flows and interdependencies',
+    description='An open-source Python package for calculating and organizing sectoral flows and interdependencies',
     long_description=readme(),
     long_description_content_type="text/markdown",
     python_requires='>=3.7.*, <4',
