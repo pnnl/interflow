@@ -52,7 +52,7 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
     # replacing characters for missing data with value of zero
     df.replace("--", 0, inplace=True)
 
-    # creating a dictionary of required variables from full dataset with required naming
+    # creating a dictionary of required variables from full dataset
     variables_list = ['FIPS', 'STATE', 'COUNTY', 'TP-TotPop',
                       'PS-WGWFr', 'PS-WSWFr', 'PS-WGWSa', 'PS-WSWSa',
                       'DO-PSDel', 'DO-WGWFr', 'DO-WSWFr',
