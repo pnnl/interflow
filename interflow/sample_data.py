@@ -116,7 +116,7 @@ def calc_irrigation_consumption() -> pd.DataFrame:
     on consumptive use in those sub-sectors. Additionally, water withdrawal values for crop irrigation are filled in
     with general irrigation values for counties with missing crop irrigation data.
 
-    :return:                               Dataframe of 2015 water flow values and irrigation subsector consumption
+    :return:                               Dataframe of 2015 water flow values and irrigation sub-sector consumption
                                             fractions
     """
 

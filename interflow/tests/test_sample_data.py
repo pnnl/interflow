@@ -23,7 +23,6 @@ class MyTestCase(unittest.TestCase):
     def test_prep_water_use_2015(self):
         # test that, when run with no parameters, it just returns county list
         output = prep_water_use_2015()
-
         expected_columns = ['FIPS', 'State', 'County']
         output_columns = output.columns.to_list()
         self.assertEqual(output_columns, expected_columns)
@@ -90,6 +89,29 @@ class MyTestCase(unittest.TestCase):
             check_list.append(output[col].min() < 0)
         expected = "True" in check_list
         self.assertEqual(expected, False)
+
+    def test_rename_water_data_2015(self):
+
+        # get output
+        output = rename_water_data_2015()
+
+        # test that there are 3,142 counties included
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+        # test that, when run with no parameters, it just returns county list
+        expected_columns = ['FIPS', 'State', 'County']
+        output_columns = output.columns.to_list()
+        self.assertEqual(output_columns, expected_columns)
+
+        # check that specifying a list of variables will return those variables
+        output = rename_water_data_2015(variables=['FIPS', 'County', 'State',
+                                                'PWS_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd'])
+        output_columns = output.columns.to_list()
+        expected_columns = ['FIPS', 'County', 'State',
+                            'PWS_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd']
+        self.assertEqual(output_columns, expected_columns)
 
 
 if __name__ == '__main__':
