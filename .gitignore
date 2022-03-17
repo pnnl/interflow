@@ -2,13 +2,13 @@
 venv
 
 # ignore docs build
-#docs/build/
+docs/build/
 
 # pyenv
 .python-version
 
 # jupyter
-notebooks/.ipynb_checkpoints/
+.ipynb_checkpoints/
 
 #build/
 #*.pyc
