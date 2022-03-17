@@ -5,8 +5,10 @@ from interflow.reader import *
 
 def convert_kwh_bbtu(value: float) -> float:
     """converts energy in kWh to energy in billion btu.
+    :param value:           value in kilowatt-hours of energy
+    :type value:            float
 
-    :return:                Value in bbtu
+    :return:                value in bbtu
 
     """
     bbtu = value * 0.000003412140
@@ -16,8 +18,10 @@ def convert_kwh_bbtu(value: float) -> float:
 
 def convert_mwh_bbtu(value: float) -> float:
     """converts energy in MWh to energy in billion btu.
+    :param value:           value in megawatt-hours of energy
+    :type value:            float
 
-    :return:                Value in bbtu
+    :return:                value in bbtu
 
     """
     bbtu = value * 0.003412
