@@ -113,7 +113,7 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
 def calc_irrigation_consumption() -> pd.DataFrame:
     """
     Takes 2015 USGS water flow data and calculates consumption fractions for crop irrigation and golf irrigation based
-    on consumptive use in those subsectors. Additionally, water withdrawal values for crop irrigation are filled in
+    on consumptive use in those sub-sectors. Additionally, water withdrawal values for crop irrigation are filled in
     with general irrigation values for counties with missing crop irrigation data.
 
     :return:                               Dataframe of 2015 water flow values and irrigation subsector consumption
@@ -135,7 +135,7 @@ def calc_irrigation_consumption() -> pd.DataFrame:
                                     df['IC-CUsFr'] / (df['IC-WGWFr'] + df['IC-WSWFr'] + df['IC-RecWW']),
                                     0)
 
-    # calculate fresh surface water consumption fractions for crop irrigation where data is available
+    # calculate fresh surface water consumption fractions for golf irrigation where data is available
     df['IG_CU_FSW_frac'] = np.where((df['IG-WGWFr'] + df['IG-WSWFr'] + df['IG-RecWW']) > 0,
                                     df['IG-CUsFr'] / (df['IG-WGWFr'] + df['IG-WSWFr'] + df['IG-RecWW']),
                                     0)
@@ -174,7 +174,7 @@ def calc_irrigation_consumption() -> pd.DataFrame:
         df['IC_CU_RWW_frac'] = np.where(df['State'] == state, df['IR_CU_RWW_frac'],
                                         df['IC_CU_RWW_frac'])  # reclaimed
 
-    # set interbasin transfer to crop irrigation consumption equal to fresh surface water consumption
+    # preset interbasin transfer to crop irrigation consumption equal to fresh surface water consumption
     df['IC_CU_ibt_frac'] = df['IC_CU_FSW_frac']
 
     # rename variables
@@ -191,14 +191,16 @@ def calc_irrigation_consumption() -> pd.DataFrame:
     df = df[variable_dict]
     df = df.rename(columns=variable_dict)
 
+    # create a list of sector water withdrawal variable name starters
     flow_list = ['AGR_crop_fresh_surfacewater_withdrawal_mgd', 'AGR_crop_fresh_groundwater_withdrawal_mgd',
                  'AGR_crop_reclaimed_wastewater_import_mgd', 'AGR_golf_fresh_surfacewater_withdrawal_mgd',
                  'AGR_golf_fresh_groundwater_withdrawal_mgd', 'AGR_golf_reclaimed_wastewater_import_mgd',
                  'AGR_crop_ibt_total_import_mgd']
 
-    # consumption name adder
+    # create a consumption name adder to add on to variable names
     adder = '_to_CMP_total_total_total_total_mgd_fraction'
 
+    # build full variable names
     for var in flow_list:
         df = df.rename(columns={var: var + adder})
 
