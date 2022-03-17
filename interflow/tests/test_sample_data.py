@@ -165,6 +165,36 @@ class MyTestCase(unittest.TestCase):
         expected = county_pop / state_pop
         self.assertEqual(output, expected)
 
+    def test_prep_water_use_1995(self):
+
+        # load data
+        output = prep_water_use_1995()
+
+        # test that, when run with no parameters, it just returns county list
+        output = prep_water_use_2015()
+        expected_columns = ['FIPS', 'State', 'County']
+        output_columns = output.columns.to_list()
+        self.assertEqual(output_columns, expected_columns)
+
+        # test that there are 3,142 counties included
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+        # check that specifying a list of variables will return those variables
+        output = prep_water_use_1995(variables=['FIPS', 'PS-GWPop'])
+        output_columns = output.columns.to_list()
+        expected_columns = ['FIPS', 'PS-GWPop']
+        self.assertEqual(output_columns, expected_columns)
+
+        # check that PR is not in output
+        self.assertEqual("PR" in output['State'], False)
+
+        # check that VI is not in output
+        self.assertEqual("VI" in output['State'], False)
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

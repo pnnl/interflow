@@ -277,9 +277,17 @@ def calc_population_county_weight(df: pd.DataFrame) -> pd.DataFrame:
 
 def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
     """prepping 1995 water use data from USGS by replacing missing values, fixing FIPS codes,
-     and reducing to needed variables
+     and reducing to needed variables.
 
-    :return:                DataFrame of water values for 1995 at the county level
+    :param variables:                   None if no specific variables required in addition to FIPS code.
+                                        Default is None, otherwise a list of additional variables to include in
+                                        returned dataframe.
+    :type variables:                    list
+
+    :param all_variables:               Include all available variables in returned dataframe. Default is False.
+    :type all_variables:                bool
+
+    :return:                            DataFrame of water values for 1995 at the county level
 
     """
     # read in 1995 water data
@@ -289,22 +297,27 @@ def prep_water_use_1995(variables=None, all_variables=False) -> pd.DataFrame:
     df["FIPS"] = df["StateCode"] + df["CountyCode"]
 
     # address FIPS code changes between 1995 and 2015
+    df['FIPS'] = np.where(df['FIPS'] == "02232", "02105", df['FIPS'])  # Create Hoonah-Angoon Census Area, AK
+    df['FIPS'] = np.where(df['FIPS'] == "02280", "02195", df['FIPS'])  # Create Petersburg Borough, AK
     df['FIPS'] = np.where(df['FIPS'] == "12025", "12086", df['FIPS'])  # Miami-Dade County, FL
     df['FIPS'] = np.where(df['FIPS'] == "46113", "46102", df['FIPS'])  # Oglala Lakota County, SD
-    df['FIPS'] = np.where(df['FIPS'] == "02232", "02105", df['FIPS'])  # Hoonah-Angoon Census Area, AK
     df['FIPS'] = np.where(df['FIPS'] == "02270", "02158", df['FIPS'])  # Kusilvak Census Area, AK
-    df['FIPS'] = np.where(df['FIPS'] == "02280", "02195", df['FIPS'])  # Petersburg Borough, AK
     df['FIPS'] = np.where(df['FIPS'] == "02201", "02198", df['FIPS'])  # Wales-Hyder Census Area, AK
 
-    # Copy data from counties that split into multiple FIPS codes between 1995 and 2015 into new rows and assigns FIPS
-    wrangell_petersburg_index = df.index[df['FIPS'] == "02195"].tolist()  # Wrangell, AK from Wrangell-Petersburg, AK
-    df = df.append(df.loc[wrangell_petersburg_index * 1].assign(FIPS="02275"), ignore_index=True)
-
+    # creation of Skagway Municipality from former Skagway-Hoonah-Angoon Census Area
     skagway_index = df.index[df['FIPS'] == "02105"].tolist()  # Hoonah-Angoon, AK from Skagway-Hoonah-Angoon, AK
-    df = df.append(df.loc[skagway_index * 1].assign(FIPS="02230"), ignore_index=True)
+    concat_list = [df, df.loc[skagway_index * 1].assign(FIPS="02230")]
+    df = pd.concat(concat_list, ignore_index=True)
 
+    # creation of Wrangell, AK from Wrangell-Petersburg, AK
+    wrangell_petersburg_index = df.index[df['FIPS'] == "02195"].tolist()  # Wrangell, AK from Wrangell-Petersburg, AK
+    concat_list = [df, df.loc[wrangell_petersburg_index * 1].assign(FIPS="02275")]
+    df = pd.concat(concat_list, ignore_index=True)
+
+    # creation of Broomfield County from Boulder County
     boulder_index = df.index[df['FIPS'] == "08013"].tolist()  # Broomfield County, CO from Boulder County, CO
-    df = df.append(df.loc[boulder_index * 1].assign(FIPS="08014"), ignore_index=True)
+    concat_list = [df, df.loc[boulder_index * 1].assign(FIPS="08014")]
+    df = pd.concat(concat_list, ignore_index=True)
 
     # remove puerto rico and virgin islands values
     state_remove_list = ['PR', 'VI']
