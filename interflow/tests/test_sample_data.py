@@ -7,27 +7,27 @@ class MyTestCase(unittest.TestCase):
     """Conduct tests for functions of sample_data.py."""
 
     def test_convert_kwh_bbtu(self):
-        # test that the outcome is as expected
+        # test_interflow that the outcome is as expected
         output = convert_kwh_bbtu(500)
         expected = 0.00170607
 
         self.assertEqual(output, expected)
 
     def test_convert_mwh_bbtu(self):
-        # test that the outcome is as expected
+        # test_interflow that the outcome is as expected
         output = convert_mwh_bbtu(500)
         expected = 1.706
 
         self.assertEqual(output, expected)
 
     def test_prep_water_use_2015(self):
-        # test that, when run with no parameters, it just returns county list
+        # test_interflow that, when run with no parameters, it just returns county list
         output = prep_water_use_2015()
         expected_columns = ['FIPS', 'State', 'County']
         output_columns = output.columns.to_list()
         self.assertEqual(output_columns, expected_columns)
 
-        # test that there are 3,142 counties included
+        # test_interflow that there are 3,142 counties included
         output_county_count = len(output['FIPS'])
         expected_county_county = 3142
         self.assertEqual(output_county_count, expected_county_county)
@@ -62,7 +62,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(output_columns, expected_columns)
 
     def test_calc_irrigation_consumption(self):
-        # test that the expected columns are returned
+        # test_interflow that the expected columns are returned
         output = calc_irrigation_consumption()
 
         output_columns = output.columns.to_list()
@@ -76,7 +76,7 @@ class MyTestCase(unittest.TestCase):
                             'AGR_crop_ibt_total_import_mgd_to_CMP_total_total_total_total_mgd_fraction']
         self.assertEqual(output_columns, expected_columns)
 
-        # test that there are 3,142 counties included
+        # test_interflow that there are 3,142 counties included
         output_county_count = len(output['FIPS'])
         expected_county_county = 3142
         self.assertEqual(output_county_count, expected_county_county)
@@ -95,12 +95,12 @@ class MyTestCase(unittest.TestCase):
         # get output
         output = rename_water_data_2015()
 
-        # test that there are 3,142 counties included
+        # test_interflow that there are 3,142 counties included
         output_county_count = len(output['FIPS'])
         expected_county_county = 3142
         self.assertEqual(output_county_count, expected_county_county)
 
-        # test that, when run with no parameters, it just returns county list
+        # test_interflow that, when run with no parameters, it just returns county list
         expected_columns = ['FIPS', 'State', 'County']
         output_columns = output.columns.to_list()
         self.assertEqual(output_columns, expected_columns)
@@ -115,7 +115,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_calc_population_county_weight(self):
 
-        # prepare test data
+        # prepare test_interflow data
         df = get_electricity_demand_data()
         df = df[df.Year == 2015]
         df = df[df.State != 'US']
@@ -124,30 +124,30 @@ class MyTestCase(unittest.TestCase):
         # get output
         output = calc_population_county_weight(df)
 
-        # test that there are 3,242 counties in output
+        # test_interflow that there are 3,242 counties in output
         output_county_count = len(output['FIPS'])
         expected_county_county = 3142
         self.assertEqual(output_county_count, expected_county_county)
 
-        # test that the pop_weight column only includes values less than or equal to 1
+        # test_interflow that the pop_weight column only includes values less than or equal to 1
         x = output['pop_weight'].max() > 1
         self.assertEqual(x, False)
 
-        # test that the pop_weight column only includes values greater than or equal to 0
+        # test_interflow that the pop_weight column only includes values greater than or equal to 0
         x = output['pop_weight'].min() < 0
         self.assertEqual(x, False)
 
-        # test that the sum of population weights in each state are equal to 1
+        # test_interflow that the sum of population weights in each state are equal to 1
         output_state = output.groupby("State", as_index=False).sum()
         state_percent = output_state['pop_weight'].mean()
         self.assertEqual(state_percent, 1)
 
-        # test that there are 51 states accounted for
+        # test_interflow that there are 51 states accounted for
         output_state = output.groupby("State", as_index=False).sum()
         state_count = output_state['pop_weight'].count()
         self.assertEqual(state_count, 51)
 
-        # test that the county percentages are being correctly calculated
+        # test_interflow that the county percentages are being correctly calculated
         df = get_electricity_demand_data()
         df = df[df.Year == 2015]
         df = df[df.State != 'US']
@@ -170,13 +170,13 @@ class MyTestCase(unittest.TestCase):
         # load data
         output = prep_water_use_1995()
 
-        # test that, when run with no parameters, it just returns county list
+        # test_interflow that, when run with no parameters, it just returns county list
         output = prep_water_use_2015()
         expected_columns = ['FIPS', 'State', 'County']
         output_columns = output.columns.to_list()
         self.assertEqual(output_columns, expected_columns)
 
-        # test that there are 3,142 counties included
+        # test_interflow that there are 3,142 counties included
         output_county_count = len(output['FIPS'])
         expected_county_county = 3142
         self.assertEqual(output_county_count, expected_county_county)
@@ -216,6 +216,25 @@ class MyTestCase(unittest.TestCase):
         # check that all FIPS are unique
         self.assertTrue(output["FIPS"].is_unique)
 
+    def test_calc_irrigation_conveyance_loss_fraction(self):
+
+        # read in data
+        output = calc_irrigation_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.8)
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+        # check that all of the fraction columns are between 0 and the loss cap
+        loss_cap_amt = .8
+        col_list = output.columns[3:].to_list()
+        check_list = []
+        for col in col_list:
+            check_list.append(output[col].max() >= loss_cap_amt)
+            check_list.append(output[col].min() < 0)
+        expected = "True" in check_list
+        self.assertEqual(expected, False)
 
 
 if __name__ == '__main__':

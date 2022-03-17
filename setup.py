@@ -14,7 +14,7 @@ version = re.search(r"__version__ = ['\"]([^'\"]*)['\"]", open('interflow/__init
 setup(
     name='interflow',
     version=version,
-    packages=find_packages(),
+    packages=find_packages(exclude=["interflow"]),
     url='https://github.com/kmongird/interflow',
     license='BSD2-Clause',
     author='Kendall Mongird',
@@ -23,7 +23,7 @@ setup(
     long_description=readme(),
     long_description_content_type="text/markdown",
     python_requires='>=3.7.*, <4',
-    include_package_data=True,
+    include_package_data=False,
     install_requires=[
         'numpy>=1.19.4',
         'pandas>=1.3.4',

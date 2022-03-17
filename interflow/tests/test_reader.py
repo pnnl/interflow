@@ -3,7 +3,7 @@ from interflow.reader import *
 
 
 class TestReader(unittest.TestCase):
-    """Conduct test for functions of reader.py."""
+    """Conduct test_interflow for functions of reader.py."""
 
     def test_read_sample_data(self):
         """Test read_sample_data()."""

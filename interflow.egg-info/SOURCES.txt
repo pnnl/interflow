@@ -69,3 +69,4 @@ interflow/tests/test_calc_flow.py
 interflow/tests/test_construct.py
 interflow/tests/test_deconstruct.py
 interflow/tests/test_reader.py
+interflow/tests/test_sample_data.py
