@@ -188,11 +188,33 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(output_columns, expected_columns)
 
         # check that PR is not in output
+        output = prep_water_use_1995(variables=['FIPS', 'State'])
         self.assertEqual("PR" in output['State'], False)
 
         # check that VI is not in output
         self.assertEqual("VI" in output['State'], False)
 
+        # check that removed FIPS are not in FIPS column
+        removed_fips = ["02232", "02280", "12025", "46113", "02270",
+                        "02201"]
+        check_list = []
+        for fips in removed_fips:
+            check_list.append(fips in output['FIPS'])
+        expected = "True" in check_list
+
+        self.assertEqual(expected, False)
+
+        # check that added FIPS are in FIPS column
+        removed_fips = ["02105", "02195", "12086", "46102", "02158",
+                        "02198", "02230","02195", "08013"]
+        check_list = []
+        for fips in removed_fips:
+            check_list.append(fips in output['FIPS'])
+        expected = "False" in check_list
+        self.assertEqual(expected, False)
+
+        # check that all FIPS are unique
+        self.assertTrue(output["FIPS"].is_unique)
 
 
 
