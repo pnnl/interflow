@@ -231,7 +231,26 @@ class MyTestCase(unittest.TestCase):
         col_list = output.columns[3:].to_list()
         check_list = []
         for col in col_list:
-            check_list.append(output[col].max() >= loss_cap_amt)
+            check_list.append(output[col].max() > loss_cap_amt)
+            check_list.append(output[col].min() < 0)
+        expected = "True" in check_list
+        self.assertEqual(expected, False)
+
+    def test_calc_irrigation_discharge_flows(self):
+
+        # collect output
+        output = calc_irrigation_discharge_flows()
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+        # check that all of the fraction columns are between 0 and the loss cap
+        col_list = output.columns[3:].to_list()
+        check_list = []
+        for col in col_list:
+            check_list.append(output[col].max() > 1)
             check_list.append(output[col].min() < 0)
         expected = "True" in check_list
         self.assertEqual(expected, False)

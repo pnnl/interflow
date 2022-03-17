@@ -436,7 +436,10 @@ def calc_irrigation_discharge_flows():
     consumption_flow_variables = [var + '_to_CMP_total_total_total_total_mgd_fraction' for var in variable_list]
 
     # read in consumption flow variables from renamed 2015 USGS water data
-    consumption_flow_variables.extend(['FIPS', 'State', 'County'])
+    consumption_flow_variables.insert(0, 'County')
+    consumption_flow_variables.insert(0, 'State')
+    consumption_flow_variables.insert(0, 'FIPS')
+
     cons_df = calc_irrigation_consumption()
     cons_df = cons_df[consumption_flow_variables]
 
