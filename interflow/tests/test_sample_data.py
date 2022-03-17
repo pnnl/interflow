@@ -107,7 +107,7 @@ class MyTestCase(unittest.TestCase):
 
         # check that specifying a list of variables will return those variables
         output = rename_water_data_2015(variables=['FIPS', 'County', 'State',
-                                                'PWS_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd'])
+                                                   'PWS_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd'])
         output_columns = output.columns.to_list()
         expected_columns = ['FIPS', 'County', 'State',
                             'PWS_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd']
@@ -206,7 +206,7 @@ class MyTestCase(unittest.TestCase):
 
         # check that added FIPS are in FIPS column
         removed_fips = ["02105", "02195", "12086", "46102", "02158",
-                        "02198", "02230","02195", "08013"]
+                        "02198", "02230", "02195", "08013"]
         check_list = []
         for fips in removed_fips:
             check_list.append(fips in output['FIPS'])
@@ -280,6 +280,57 @@ class MyTestCase(unittest.TestCase):
         rows_with_NaN = output[row_has_NaN]
         result = len(rows_with_NaN)
         self.assertEqual(result, 0)
+
+    def test_prep_public_water_supply_fraction(self):
+
+        # collect output
+        output = prep_public_water_supply_fraction()
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+        # check that all of the fraction columns are between 0 and the loss cap
+        col_list = output.columns[3:].to_list()
+        check_list = []
+        for col in col_list:
+            check_list.append(output[col].max() > 1)
+            check_list.append(output[col].min() < 0)
+        expected = "True" in check_list
+        self.assertEqual(expected, False)
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # check that fraction calculations are computing correctly for commercial
+        fips = '56037'
+        result = output[output.FIPS == fips]
+        result = result['com_pws_fraction'].iloc[0]
+
+        input_df = prep_water_use_1995(variables=['FIPS', 'State', 'PS-DelDO',
+                                                  'PS-DelPT', 'PS-DelCO', 'PS-DelIN'])
+        input_df = input_df[input_df.FIPS == fips]
+        input_df['out'] = input_df['PS-DelCO'] / input_df['PS-DelDO'] + input_df['PS-DelPT']
+        expected = input_df['out'].iloc[0]
+
+        # check that fraction calculations are computing correctly for industrial
+        fips = '56037'
+        result = output[output.FIPS == fips]
+        result = result['ind_pws_fraction'].iloc[0]
+
+        input_df = prep_water_use_1995(variables=['FIPS', 'State', 'PS-DelDO',
+                                                  'PS-DelPT', 'PS-DelCO', 'PS-DelIN'])
+        input_df = input_df[input_df.FIPS == fips]
+        input_df['out'] = input_df['PS-DelIN'] / input_df['PS-DelDO'] + input_df['PS-DelPT']
+        expected = input_df['out'].iloc[0]
+
+        self.assertEqual(result, expected)
+
 
 if __name__ == '__main__':
     unittest.main()
