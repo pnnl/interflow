@@ -113,6 +113,58 @@ class MyTestCase(unittest.TestCase):
                             'PWS_fresh_groundwater_withdrawal_total_mgd_from_WSW_fresh_groundwater_total_total_mgd']
         self.assertEqual(output_columns, expected_columns)
 
+    def test_calc_population_county_weight(self):
+
+        # prepare test data
+        df = get_electricity_demand_data()
+        df = df[df.Year == 2015]
+        df = df[df.State != 'US']
+        df = df.loc[df['Industry Sector Category'] == 'Total Electric Industry']
+
+        # get output
+        output = calc_population_county_weight(df)
+
+        # test that there are 3,242 counties in output
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+        # test that the pop_weight column only includes values less than or equal to 1
+        x = output['pop_weight'].max() > 1
+        self.assertEqual(x, False)
+
+        # test that the pop_weight column only includes values greater than or equal to 0
+        x = output['pop_weight'].min() < 0
+        self.assertEqual(x, False)
+
+        # test that the sum of population weights in each state are equal to 1
+        output_state = output.groupby("State", as_index=False).sum()
+        state_percent = output_state['pop_weight'].mean()
+        self.assertEqual(state_percent, 1)
+
+        # test that there are 51 states accounted for
+        output_state = output.groupby("State", as_index=False).sum()
+        state_count = output_state['pop_weight'].count()
+        self.assertEqual(state_count, 51)
+
+        # test that the county percentages are being correctly calculated
+        df = get_electricity_demand_data()
+        df = df[df.Year == 2015]
+        df = df[df.State != 'US']
+        df = df.loc[df['Industry Sector Category'] == 'Total Electric Industry']
+        out = calc_population_county_weight(df)
+        out = out[out.State == 'AL']
+        x = out['pop_weight'].to_list()
+        output = x[0]
+
+        df_county = rename_water_data_2015(variables=['FIPS', 'State', 'County', 'population'])
+        county_pop = df_county['population'][0]
+        df_state = df_county.groupby("State", as_index=False).sum()
+        s = df_state[df_state.State == 'AL']
+        state_pop = s['population'][1]
+        expected = county_pop / state_pop
+        self.assertEqual(output, expected)
+
 
 if __name__ == '__main__':
     unittest.main()

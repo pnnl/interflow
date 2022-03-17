@@ -240,7 +240,11 @@ def rename_water_data_2015(variables=None, all_variables=False) -> pd.DataFrame:
 
 def calc_population_county_weight(df: pd.DataFrame) -> pd.DataFrame:
     """calculates the percentage of state total population by county and merges to provided dataframe
-    by 'State'. Used in splitting up state-level estimates to the county level.
+    by variable 'State'. Used in splitting up state-level estimates to the county level.
+
+    :parameter df:          dataframe of state-level values to combine with county population weights. Should only
+                            include State column as the regional identifier and include state-level values.
+    :type df:               Pandas DataFrame
 
     :return:                DataFrame of water consumption fractions for various sectors by county
 
@@ -2583,10 +2587,10 @@ def prep_electricity_demand_data() -> pd.DataFrame:
 
     """
     # Create efficiency assumptions (amount sent to energy services)
-    res_eff = .65
-    com_eff = .65
-    ind_eff = .49
-    tra_eff = .21
+    res_eff = .65  # residential
+    com_eff = .65  # commercial
+    ind_eff = .49  # industrial
+    tra_eff = .21  # transportation
 
     # Read in state-level electricity generation demand by sector
     df = get_electricity_demand_data()
