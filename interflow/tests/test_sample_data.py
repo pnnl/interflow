@@ -331,6 +331,23 @@ class MyTestCase(unittest.TestCase):
 
         self.assertEqual(result, expected)
 
+    def test_calc_pws_commercial_industrial_flows(self):
+
+        # get output
+        output = calc_pws_commercial_industrial_flows()
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
 
 if __name__ == '__main__':
     unittest.main()
