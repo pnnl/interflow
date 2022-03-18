@@ -2193,11 +2193,18 @@ def prep_electricity_cooling_flows() -> pd.DataFrame:
 
 
 def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) -> pd.DataFrame:
-    """calculating the water use required for a bbtu of hydroelectric generation. Daily water use (mgd) is
+    """calculates the water use (mgd) required per bbtu of hydroelectric generation. Daily water use (mgd) is
     combined with daily generation from hydropower for each region from 1995 USGS data. Discharge and source
-    fraction variables are also created.
+    fraction variables are also created. Only counties with hydroelectric generation in 2015 are assigned intensity
+    estimates.
 
-    :return:                DataFrame of water intensity of hydroelectric generation by county
+    :param intensity_cap:                   If set to true, applies a cap to the water intensity value in any county.
+    :type intensity_cap:                    bool
+
+    :param intensity_cap_amt:               Sets the amount of the water intensity cap in mgd per bbtu
+    :type intensity_cap_amt:
+
+    :return:                                DataFrame of water intensity of hydroelectric generation by county
 
     """
 
@@ -2240,10 +2247,10 @@ def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) ->
     # fill missing states with country average
     state_avg.fillna(state_avg['state_avg'].mean(), inplace=True)
 
-    # merge back with original county-level dataframe
+    # merge state average back with 1995 county-level dataframe
     df_mean_all = pd.merge(df, state_avg, how='left', on=['State'])
 
-    # replace counties with consumption fractions of zero with the state average to replace missing data
+    # replace counties with intensity values of zero with the state average to replace missing data
     df_mean_all[water_intensity_name].fillna(df_mean_all['state_avg'], inplace=True)
 
     # create discharge fraction variable
