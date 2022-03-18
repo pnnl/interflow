@@ -1072,9 +1072,6 @@ def prep_wastewater_data() -> pd.DataFrame:
     # read in list of full county list from 2015 USGS water data
     df_county_list = prep_water_use_2015()
 
-    # read in public water supply withdrawal data from 2015 USGS water data
-    df_2015_pws = prep_water_use_2015(variables=['FIPS', 'State', 'PS-Wtotl'])  # pws data
-
     # read in wastewater facility water flow data
     df_ww_flow = get_wastewater_flow_data()
 
@@ -1209,7 +1206,6 @@ def prep_wastewater_data() -> pd.DataFrame:
                                                    .05,
                                                    df_ww_dis['wastewater_consumption'])
 
-    # for treatment plants that discharge to another treatment plant, the values are redistributed
     # for treatment plants with discharge to another facility, assume 70% of discharge is to surface discharge
     df_ww_dis['wastewater_surface_discharge'] = np.where(df_ww_dis['wastewater_wastewater_discharge'] > 0,
                                                          df_ww_dis['wastewater_surface_discharge']
@@ -1303,13 +1299,8 @@ def prep_wastewater_data() -> pd.DataFrame:
     # group by FIPS code to get average wastewater discharge and treatment types by county
     df_ww_fractions = df_ww_fractions.groupby("FIPS", as_index=False).mean()
 
-    # combine with full county list to get values for each county and fill counties with no plants with 0
+    # combine with full county list to get values for each county
     df_ww_fractions = pd.merge(df_county_list, df_ww_fractions, how='left', on='FIPS')
-
-    # fill missing values with discharge fraction averages
-    discharge_list = df_ww_fractions.columns[3:-4].to_list()
-    for item in discharge_list:
-        df_ww_fractions[item].fillna(df_ww_fractions[item].mean(), inplace=True)
 
     # group by FIPS code to get average wastewater discharge and treatment types by county
     df_ww_flow = df_ww_flow.groupby("FIPS", as_index=False).mean()
@@ -1320,6 +1311,9 @@ def prep_wastewater_data() -> pd.DataFrame:
 
     # recombine flow and fraction dataframes
     df_ww = pd.merge(df_ww_flow, df_ww_fractions, how='left', on=['FIPS', 'State', 'County'])
+
+    # fill missing discharge and treatment fractions with zero for rows with no treatment flows
+    df_ww.fillna(0, inplace=True)
 
     # create output df
     df_out = df_ww.copy()
