@@ -542,7 +542,22 @@ class MyTestCase(unittest.TestCase):
             check_list.append(item in output['county_identifier'].to_list())
         self.assertFalse(True in check_list)
 
+    def test_prep_electricity_fuel(self):
 
+        # collect output
+        output = prep_electricity_fuel()
+
+        # check that plant code 99999 is not in dataset
+        self.assertFalse(99999 in output['plant_code'].to_list())
+
+        # check that pumped storage is not in the dataset
+        self.assertFalse('pumpedstorage' in output['prime_mover'].to_list())
+
+        # check that required columns are in output
+        column_list = ['plant_code', 'fuel_type', 'prime_mover', 'fuel_amt',
+                       'water_withdrawal_mgd', 'water_consumption_mgd',
+                       'withdrawal_pct', 'consumption_pct', 'generation_bbtu', 'FIPS']
+        self.assertEqual(column_list,output.columns.to_list())
 
 if __name__ == '__main__':
     unittest.main()
