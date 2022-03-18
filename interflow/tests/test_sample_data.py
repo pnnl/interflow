@@ -840,10 +840,15 @@ class MyTestCase(unittest.TestCase):
         result = len(rows_with_nan)
         self.assertEqual(result, 0)
 
-        # check that there are the correct number of counties
-        output_county_count = len(output['FIPS'])
-        expected_county_county = 3142
-        self.assertEqual(output_county_count, expected_county_county)
+        # test  that there are 51 states accounted for
+        output_state = output.groupby("State", as_index=False).sum()
+        state_count = output_state['State'].count()
+        self.assertEqual(state_count, 51)
+
+        # make sure that removed states are not in state list
+        self.assertFalse("X3" in output['State'].to_list())
+        self.assertFalse("X5" in output['State'].to_list())
+        self.assertFalse("US" in output['State'].to_list())
 
 
 
