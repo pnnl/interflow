@@ -503,7 +503,21 @@ class MyTestCase(unittest.TestCase):
             check_list.append(item in output.columns)
         self.assertFalse(True in check_list)
 
+    def test_combine_ww_data(self):
 
+        # collect output
+        output = calc_sc_ww_values()
+
+        # make sure only south carolina is included
+        output_state = output.groupby("State", as_index=False).sum()
+        self.assertEqual(1, len(output_state))
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
 
 
 if __name__ == '__main__':
