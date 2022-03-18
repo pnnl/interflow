@@ -713,6 +713,66 @@ class MyTestCase(unittest.TestCase):
         expected_county_county = 3142
         self.assertEqual(output_county_count, expected_county_county)
 
+    def test_prep_pws_treatment_dist_intensity_values(self):
+
+        # collect output
+        output = prep_pws_treatment_dist_intensity_values()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+        # test that the correct intensity values are assigned to the correct variables
+        fgw_treat = 'PWS_treatment_fresh_groundwater_total_bbtu_from_PWS_fresh_groundwater_withdrawal_total_mgd_intensity'
+        expected = convert_kwh_bbtu(205)
+        x = output[fgw_treat].mean()
+        self.assertAlmostEqual(x, expected, 10)
+
+        fsw_treat = 'PWS_treatment_fresh_surfacewater_total_bbtu_from_PWS_fresh_surfacewater_withdrawal_total_mgd_intensity'
+        expected = convert_kwh_bbtu(405)
+        x = output[fsw_treat].mean()
+        self.assertAlmostEqual(x, expected, 10)
+
+        sgw_treat = 'PWS_treatment_saline_groundwater_total_bbtu_from_PWS_saline_groundwater_withdrawal_total_mgd_intensity'
+        expected = convert_kwh_bbtu(12000)
+        x = output[sgw_treat].mean()
+        self.assertAlmostEqual(x, expected, 10)
+
+        ssw_treat = 'PWS_treatment_saline_surfacewater_total_bbtu_from_PWS_saline_surfacewater_withdrawal_total_mgd_intensity'
+        expected = convert_kwh_bbtu(12000)
+        x = output[ssw_treat].mean()
+        self.assertAlmostEqual(x, expected, 10)
+
+        fsw_dist = 'PWS_distribution_fresh_surfacewater_total_bbtu_from_PWS_fresh_surfacewater_withdrawal_total_mgd_intensity'
+        fgw_dist = 'PWS_distribution_fresh_groundwater_total_bbtu_from_PWS_fresh_groundwater_withdrawal_total_mgd_intensity'
+        ssw_dist = 'PWS_distribution_saline_surfacewater_total_bbtu_from_PWS_saline_surfacewater_withdrawal_total_mgd_intensity'
+        sgw_dist = 'PWS_distribution_saline_groundwater_total_bbtu_from_PWS_saline_groundwater_withdrawal_total_mgd_intensity'
+
+        expected = convert_kwh_bbtu(1040)
+        x = output[fsw_dist].mean()
+        self.assertAlmostEqual(x, expected, 10)
+
+        x = output[fgw_dist].mean()
+        self.assertAlmostEqual(x, expected, 10)
+
+        x = output[ssw_dist].mean()
+        self.assertAlmostEqual(x, expected, 10)
+
+        x = output[sgw_dist].mean()
+        self.assertAlmostEqual(x, expected, 10)
+
+
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
