@@ -2423,7 +2423,7 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
     """Prepares irrigation data so that the outcome is a dataframe of groundwater and surface water pumping energy
     intensities (billion BTU per million gallons) by county. For groundwater pumping intensity, The total differential
     height is calculated as the sum of the average well depth and the pressurization head. The pressure data is provided
-    in pounds per square inch (psi). This is converted to feet using a coefficient of 2.31. This analysis also follows
+    in pounds per square inch (psi). This is converted to feet using a conversion of 2.31. This analysis also follows
     the assumption that average well depth is used instead of depth to water to counteract some of the
     undocumented friction that would occur in the pumping process. Surface water pumping intensity follows the same
     methodology as groundwater pumping intensity except the total differential height has a value of zero for well
@@ -2432,6 +2432,13 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
     :return:                DataFrame of irrigation surface and groundwater pumping intensity per county
 
     """
+
+    # establish parameters
+    psi_psf_conversion = 2.31  # conversion of pounds per square inch (psi) to pounds per square foot (psf)
+    ag_pump_eff = .465  # assumed pump efficiency rate
+    mgd_gpm = 694.4  # 1 million gallons per day is equal to 694.4 gallons per minute
+    water_horsepower = 3960  # water horsepower
+    hpw_kwh = .746  # horsepower to kilowatt-hour conversion
 
     # read in irrigation well depth, pressure, and pump fuel type data
     df = get_irrigation_pumping_data()
@@ -2447,13 +2454,6 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
 
     # convert to dictionary
     name_dict = dict(zip(df_names.original_name, df_names.new_name))
-
-    # establish variables
-    psi_psf_conversion = 2.31  # conversion of pounds per square inch (psi) to pounds per square foot (psf)
-    ag_pump_eff = .465  # assumed pump efficiency rate
-    mgd_gpm = 694.4  # 1 million gallons per day is equal to 694.4 gallons per minute
-    water_horsepower = 3960  # water horsepower
-    hpw_kwh = .746  # horsepower to kilowatt-hour conversion
 
     # determine the total head to pump (pressurization head + well depth)
     df['head_ft'] = psi_psf_conversion * df[
