@@ -519,6 +519,30 @@ class MyTestCase(unittest.TestCase):
         result = len(rows_with_nan)
         self.assertEqual(result, 0)
 
+    def test_prep_power_plant_location(self):
+
+        # collect output
+        output = prep_power_plant_location()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # check that the fixed cities are not in data
+        city_list = ['VAchesapeakecity', 'VAportsmouthcity', 'VAhopewellcity', 'VAalexandriacity',
+                     'VAcovingtoncity', 'VAsuffolkcity', 'VAharrisonburgcity', 'VAsalemcity',
+                     'VAlynchburgcity', 'VAdanvillecity', 'VAmanassascity', 'VAhamptoncity',
+                     'VAvirginiabeachcity', 'VAbristolcity', 'MOstlouiscity']
+
+        check_list = []
+        for item in city_list:
+            check_list.append(item in output['county_identifier'].to_list())
+        self.assertFalse(True in check_list)
+
+
 
 if __name__ == '__main__':
     unittest.main()

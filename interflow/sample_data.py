@@ -1598,9 +1598,10 @@ def combine_ww_data() -> pd.DataFrame:
 
 def prep_power_plant_location() -> pd.DataFrame:
     """prepping power plant location information to provide a dataframe of power plant codes and their associated
-    FIPS code.
+    FIPS code. Power plants with unidentified counties are removed from the dataframe. These missing FIPS codes are
+    addressed, if needed, in alternative functions.
 
-    :return:                DataFrame of power plant codes and associated FIPS codes
+    :return:                                    DataFrame of power plant IDs and associated FIPS codes
 
     """
     # read in power plant location data
@@ -1667,6 +1668,9 @@ def prep_power_plant_location() -> pd.DataFrame:
     # merge power plant location data with county identifier-FIPS crosswalk
     df_plant = pd.merge(df_plant, df_county, how="left", on="county_identifier")  # merge dataframes
     df_plant = df_plant.rename(columns={"Plant Code": "plant_code"})  # rename column
+
+    # drop rows with missing FIPS codes
+    df_plant = df_plant.dropna(subset=["FIPS"])
 
     return df_plant
 
@@ -1807,7 +1811,7 @@ def prep_electricity_fuel() -> pd.DataFrame:
     # merging power plant location data with power plant generation data
     df = pd.merge(df, df_gen_loc, how='left', on='plant_code')
 
-   # reduce dataframe
+    # reduce dataframe
     df = df[['plant_code', 'fuel_type', 'prime_mover', 'fuel_amt', 'water_withdrawal_mgd', 'water_consumption_mgd',
              'withdrawal_pct', 'consumption_pct', 'generation_bbtu', 'FIPS']]
 
