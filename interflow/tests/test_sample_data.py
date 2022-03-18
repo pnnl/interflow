@@ -907,6 +907,27 @@ class MyTestCase(unittest.TestCase):
                        'con_water_int', 'con_fsw_frac', 'con_fgw_frac']
         self.assertEqual(out_columns, output.columns.to_list())
 
+    def test_prep_natgas_water_intensity(self):
+
+        # collect output
+        output = prep_natgas_water_intensity()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+        # check that for rows with natural gas production, source sum is equal to 1
+        output_ng = output[output.natgas_water_intensity > 0]
+        output_ng['source_sum'] = output_ng['natgas_fsw_frac'] + output_ng['natgas_fgw_frac']
+        self.assertEqual(output_ng['source_sum'].mean(), 1)
 
 if __name__ == '__main__':
     unittest.main()

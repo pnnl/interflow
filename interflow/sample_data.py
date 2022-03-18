@@ -3149,6 +3149,7 @@ def prep_natgas_water_intensity():
 
     return df
 
+    # TODO pick up tests here
 
 def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
     """prepares a dataframe of produced water intensities, consumption fractions, and discharge fractions for
