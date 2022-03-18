@@ -480,8 +480,7 @@ class MyTestCase(unittest.TestCase):
         expected_county_county = 3142
         self.assertEqual(output_county_count, expected_county_county)
 
-        # check that rows with wastewater flows have discharge percents
-        
+
 
 if __name__ == '__main__':
     unittest.main()
