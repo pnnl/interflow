@@ -446,6 +446,23 @@ class MyTestCase(unittest.TestCase):
         expected_county_county = 3142
         self.assertEqual(output_county_count, expected_county_county)
 
+    def test_prep_county_identifier(self):
+
+        # collect output
+        output = prep_pws_to_pwd()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
 
 if __name__ == '__main__':
     unittest.main()

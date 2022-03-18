@@ -939,7 +939,7 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     return df
 
 
-def prep_pws_to_pwd():
+def prep_pws_to_pwd() -> pd.DataFrame:
     """
     Calculates public water supply exports, imports, and flows to public water demand based on total public water
     demand from residential, commercial, and industrial and total public water supply from direct withdrawals and
