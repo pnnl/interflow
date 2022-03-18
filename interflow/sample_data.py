@@ -2283,17 +2283,17 @@ def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) ->
 
 
 def prep_pumping_energy_fuel_data() -> pd.DataFrame:
-    """prepping pumping fuel source data so that the outcome is a dataframe showing the percent of energy for
-    crop irrigation, golf irrigation, aquaculture, livestock, and public water supply, that comes from each fuel
+    """prepping pumping fuel source data so that the output is a dataframe showing the percent of energy for
+    crop irrigation, golf irrigation, aquaculture, livestock, and public water supply that comes from each fuel
     source type (e.g., electricity, natural gas). Also includes discharge fractions for rejected energy and energy
     services.
 
     :return:                DataFrame fuel source fractions, rejected energy fractions, and energy services fractions
 
     """
-    # establish pumping efficiency assumption
-    # TODO update efficiency assumptions
-    EFFICIENCY = .65
+    # establish efficiency assumptions for pumping and other applications
+    pumping_efficiency = .465
+    other_efficiency = .65
 
     # read in irrigation pumping dataset
     df = get_irrigation_pumping_data()
@@ -2364,10 +2364,10 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
 
             # rejected energy name
             rej_flow = sector + rejected_energy_flow
-            output_df[rej_flow] = 1 - EFFICIENCY
+            output_df[rej_flow] = 1 - pumping_efficiency
 
             esv_flow = sector + energy_services_flow
-            output_df[esv_flow] = EFFICIENCY
+            output_df[esv_flow] = pumping_efficiency
 
     # electricity source name
     egd_name = '_from_EGD_total_total_total_total_bbtu_fraction'
@@ -2386,10 +2386,10 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
         output_df[sector_source_name] = 1  # set all energy flow to 100% from electricity
 
         rej_flow_name = sector + rejected_energy_flow
-        output_df[rej_flow_name] = 1 - EFFICIENCY
+        output_df[rej_flow_name] = 1 - pumping_efficiency
 
         esv_flow_name = sector + energy_services_flow
-        output_df[esv_flow_name] = EFFICIENCY
+        output_df[esv_flow_name] = pumping_efficiency
 
     # public water supply sector names
     pws_sector_list = ['PWS_pumping_fresh_surfacewater_total_bbtu',
@@ -2411,10 +2411,10 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
         output_df[sector_source_name] = 1  # set all energy flow to 100% from electricity
 
         rej_flow_name = sector + rejected_energy_flow
-        output_df[rej_flow_name] = 1 - EFFICIENCY
+        output_df[rej_flow_name] = 1 - other_efficiency  # create rejected energy fraction
 
         esv_flow_name = sector + energy_services_flow
-        output_df[esv_flow_name] = EFFICIENCY
+        output_df[esv_flow_name] = other_efficiency  # create energy service fraction
 
     return output_df
 

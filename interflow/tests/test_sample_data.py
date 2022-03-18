@@ -384,7 +384,7 @@ class MyTestCase(unittest.TestCase):
         expected_county_county = 3142
         self.assertEqual(output_county_count, expected_county_county)
 
-        # check that all of the fraction columns are between 0 and the loss cap
+        # check that all of the fraction columns are between 0 and 1
         col_list = output.columns[3:].to_list()
         check_list = []
         for col in col_list:
@@ -661,7 +661,40 @@ class MyTestCase(unittest.TestCase):
         min_val = output[column].min() < 0
         self.assertFalse(min_val)
 
+        # check that all of the fraction columns are between 0 and a
+        loss_cap_amt = 6000000
+        column = output.columns[3]
+        max_val = output[column].max() > loss_cap_amt
+        self.assertFalse(max_val)
 
+        min_val = output[column].min() < 0
+        self.assertFalse(min_val)
+
+    def test_prep_pumping_energy_fuel_data(self):
+
+        # collect output
+        output = prep_pumping_energy_fuel_data()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+        # check that all of the fraction columns are between 0 and 1
+        col_list = output.columns[3:].to_list()
+        check_list = []
+        for col in col_list:
+            check_list.append(output[col].max() > 1)
+            check_list.append(output[col].min() < 0)
+        expected = "True" in check_list
+        self.assertEqual(expected, False)
 
 if __name__ == '__main__':
     unittest.main()
