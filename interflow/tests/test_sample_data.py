@@ -557,7 +557,44 @@ class MyTestCase(unittest.TestCase):
         column_list = ['plant_code', 'fuel_type', 'prime_mover', 'fuel_amt',
                        'water_withdrawal_mgd', 'water_consumption_mgd',
                        'withdrawal_pct', 'consumption_pct', 'generation_bbtu', 'FIPS']
-        self.assertEqual(column_list,output.columns.to_list())
+        self.assertEqual(column_list, output.columns.to_list())
+
+    def test_prep_electricity_cooling(self):
+
+        # collect output
+        output = prep_electricity_cooling()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        column_list = ['plant_code', 'fuel_type', 'prime_mover', 'fuel_amt', 'generation_bbtu', 'FIPS',
+                       'COOLING_TYPE', 'WATER_SOURCE_CODE', 'WATER_TYPE_CODE', 'WITHDRAWAL', 'CONSUMPTION',
+                       'SURFACE_DISCHARGE_MGD', 'OCEAN_DISCHARGE_MGD']
+
+        self.assertEqual(column_list, output.columns.to_list())
+
+        # check to make sure that power plant types with no cooling have zero cooling
+        result = output.loc[output['fuel_type'] == 'hydro']['WITHDRAWAL'].mean()
+        self.assertEqual(result, 0)
+        result = output.loc[output['fuel_type'] == 'wind']['WITHDRAWAL'].mean()
+        self.assertEqual(result, 0)
+        result = output.loc[output['fuel_type'] == 'solar']['WITHDRAWAL'].mean()
+        self.assertEqual(result, 0)
+        result = output.loc[output['fuel_type'] == 'geothermal']['WITHDRAWAL'].mean()
+        self.assertEqual(result, 0)
+
+        # check that withdrawals are equal to discharges
+        result = output['WITHDRAWAL'].sum() - \
+                 (output['CONSUMPTION'].sum() + output['SURFACE_DISCHARGE_MGD'].sum()
+                  + output['OCEAN_DISCHARGE_MGD'].sum())
+        self.assertEqual(result, 0)
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

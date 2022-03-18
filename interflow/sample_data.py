@@ -1819,7 +1819,8 @@ def prep_electricity_fuel() -> pd.DataFrame:
 
 
 def prep_electricity_cooling() -> pd.DataFrame:
-    """ Maps cooling water data to power plant generation data and fills blank values.
+    """ Maps cooling water data to power plant generation data and fills missing values with established methodology
+    using water withdrawal and consumption intensity estimates.
 
     :return:                                        Dataframe of cooling water values by plant.
     """
@@ -1857,7 +1858,7 @@ def prep_electricity_cooling() -> pd.DataFrame:
     df_cooling['OCEAN_DISCHARGE_MGD'] = np.where(df_cooling['NAME_OF_WATER_SOURCE'].str.contains('Ocean', regex=False),
                                                  df_cooling['WITHDRAWAL'] - df_cooling['CONSUMPTION'],
                                                  0)
-    # gulf of mexico
+    # set withdrawals from the gulf of mexico to ocean discharge
     df_cooling['OCEAN_DISCHARGE_MGD'] = np.where(df_cooling['NAME_OF_WATER_SOURCE'].str.contains('Gulf', regex=False),
                                                  df_cooling['WITHDRAWAL'] - df_cooling['CONSUMPTION'],
                                                  df_cooling['OCEAN_DISCHARGE_MGD'])
@@ -1867,21 +1868,21 @@ def prep_electricity_cooling() -> pd.DataFrame:
                                                  df_cooling['WATER_TYPE_CODE'] == "SA",
                                                  df_cooling['WITHDRAWAL'] - df_cooling['CONSUMPTION'],
                                                  df_cooling['OCEAN_DISCHARGE_MGD'])
-    # harbors
+    # set harbors with saline water withdrawal to ocean discharge
     df_cooling['OCEAN_DISCHARGE_MGD'] = np.where(
         df_cooling['NAME_OF_WATER_SOURCE'].str.contains('Harbor', regex=False) &
         df_cooling['WATER_TYPE_CODE'] == "SA",
         df_cooling['WITHDRAWAL'] - df_cooling['CONSUMPTION'],
         df_cooling['OCEAN_DISCHARGE_MGD'])
 
-    # channels
+    # set channels with saline water withdrawal to ocean discharge
     df_cooling['OCEAN_DISCHARGE_MGD'] = np.where(
         df_cooling['NAME_OF_WATER_SOURCE'].str.contains('Channel', regex=False) &
         df_cooling['WATER_TYPE_CODE'] == "SA",
         df_cooling['WITHDRAWAL'] - df_cooling['CONSUMPTION'],
         df_cooling['OCEAN_DISCHARGE_MGD'])
 
-    # sounds
+    # set sounds with saline water withdrawal to ocean discharge
     df_cooling['OCEAN_DISCHARGE_MGD'] = np.where(df_cooling['NAME_OF_WATER_SOURCE'].str.contains('Sound', regex=False) &
                                                  df_cooling['WATER_TYPE_CODE'] == "SA",
                                                  df_cooling['WITHDRAWAL'] - df_cooling['CONSUMPTION'],
