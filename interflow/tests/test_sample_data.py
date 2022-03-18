@@ -7,27 +7,27 @@ class MyTestCase(unittest.TestCase):
     """Conduct tests for functions of sample_data.py."""
 
     def test_convert_kwh_bbtu(self):
-        # test_interflow that the outcome is as expected
+        # test that the outcome is as expected
         output = convert_kwh_bbtu(500)
         expected = 0.00170607
 
         self.assertEqual(output, expected)
 
     def test_convert_mwh_bbtu(self):
-        # test_interflow that the outcome is as expected
+        # test that the outcome is as expected
         output = convert_mwh_bbtu(500)
         expected = 1.706
 
         self.assertEqual(output, expected)
 
     def test_prep_water_use_2015(self):
-        # test_interflow that, when run with no parameters, it just returns county list
+        # test that, when run with no parameters, it just returns county list
         output = prep_water_use_2015()
         expected_columns = ['FIPS', 'State', 'County']
         output_columns = output.columns.to_list()
         self.assertEqual(output_columns, expected_columns)
 
-        # test_interflow that there are 3,142 counties included
+        # test that there are 3,142 counties included
         output_county_count = len(output['FIPS'])
         expected_county_county = 3142
         self.assertEqual(output_county_count, expected_county_county)
@@ -62,7 +62,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(output_columns, expected_columns)
 
     def test_calc_irrigation_consumption(self):
-        # test_interflow that the expected columns are returned
+        # test that the expected columns are returned
         output = calc_irrigation_consumption()
 
         output_columns = output.columns.to_list()
@@ -76,7 +76,7 @@ class MyTestCase(unittest.TestCase):
                             'AGR_crop_ibt_total_import_mgd_to_CMP_total_total_total_total_mgd_fraction']
         self.assertEqual(output_columns, expected_columns)
 
-        # test_interflow that there are 3,142 counties included
+        # test that there are 3,142 counties included
         output_county_count = len(output['FIPS'])
         expected_county_county = 3142
         self.assertEqual(output_county_count, expected_county_county)
@@ -95,12 +95,12 @@ class MyTestCase(unittest.TestCase):
         # get output
         output = rename_water_data_2015()
 
-        # test_interflow that there are 3,142 counties included
+        # test that there are 3,142 counties included
         output_county_count = len(output['FIPS'])
         expected_county_county = 3142
         self.assertEqual(output_county_count, expected_county_county)
 
-        # test_interflow that, when run with no parameters, it just returns county list
+        # test that, when run with no parameters, it just returns county list
         expected_columns = ['FIPS', 'State', 'County']
         output_columns = output.columns.to_list()
         self.assertEqual(output_columns, expected_columns)
@@ -115,7 +115,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_calc_population_county_weight(self):
 
-        # prepare test_interflow data
+        # prepare test data
         df = get_electricity_demand_data()
         df = df[df.Year == 2015]
         df = df[df.State != 'US']
@@ -124,30 +124,30 @@ class MyTestCase(unittest.TestCase):
         # get output
         output = calc_population_county_weight(df)
 
-        # test_interflow that there are 3,242 counties in output
+        # test that there are 3,242 counties in output
         output_county_count = len(output['FIPS'])
         expected_county_county = 3142
         self.assertEqual(output_county_count, expected_county_county)
 
-        # test_interflow that the pop_weight column only includes values less than or equal to 1
+        # test that the pop_weight column only includes values less than or equal to 1
         x = output['pop_weight'].max() > 1
         self.assertEqual(x, False)
 
-        # test_interflow that the pop_weight column only includes values greater than or equal to 0
+        # test that the pop_weight column only includes values greater than or equal to 0
         x = output['pop_weight'].min() < 0
         self.assertEqual(x, False)
 
-        # test_interflow that the sum of population weights in each state are equal to 1
+        # test  that the sum of population weights in each state are equal to 1
         output_state = output.groupby("State", as_index=False).sum()
         state_percent = output_state['pop_weight'].mean()
         self.assertEqual(state_percent, 1)
 
-        # test_interflow that there are 51 states accounted for
+        # test  that there are 51 states accounted for
         output_state = output.groupby("State", as_index=False).sum()
         state_count = output_state['pop_weight'].count()
         self.assertEqual(state_count, 51)
 
-        # test_interflow that the county percentages are being correctly calculated
+        # test that the county percentages are being correctly calculated
         df = get_electricity_demand_data()
         df = df[df.Year == 2015]
         df = df[df.State != 'US']
@@ -170,13 +170,13 @@ class MyTestCase(unittest.TestCase):
         # load data
         output = prep_water_use_1995()
 
-        # test_interflow that, when run with no parameters, it just returns county list
+        # test that, when run with no parameters, it just returns county list
         output = prep_water_use_2015()
         expected_columns = ['FIPS', 'State', 'County']
         output_columns = output.columns.to_list()
         self.assertEqual(output_columns, expected_columns)
 
-        # test_interflow that there are 3,142 counties included
+        # test that there are 3,142 counties included
         output_county_count = len(output['FIPS'])
         expected_county_county = 3142
         self.assertEqual(output_county_count, expected_county_county)
@@ -828,6 +828,22 @@ class MyTestCase(unittest.TestCase):
         expected_county_county = 3142
         self.assertEqual(output_county_count, expected_county_county)
 
+    def test_prep_state_fuel_production_data(self):
+
+        # collect output
+        output = prep_state_fuel_production_data()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
 
 
 

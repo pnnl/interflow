@@ -4,7 +4,7 @@ from interflow.reader import *
 
 
 class TestConstruct(unittest.TestCase):
-    """Conduct test_interflow for functions of construct.py."""
+    """Conduct tests for functions of construct.py."""
 
     def test_construct_nested_dictionary(self):
 
@@ -16,23 +16,23 @@ class TestConstruct(unittest.TestCase):
         first_column = sample_data.columns[0]
         sample_data = sample_data.loc[sample_data[first_column] == first_region]
 
-        # test_interflow too few columns raises error
+        # test too few columns raises error
         data_few = sample_data.drop(sample_data.columns[0], axis=1)
 
         with self.assertRaises(ValueError):
             construct_nested_dictionary(df=data_few)
 
-        # test_interflow too many columns raises error
+        # test too many columns raises error
         data_extra = sample_data.copy()
         data_extra['a'] = 1
         with self.assertRaises(ValueError):
             construct_nested_dictionary(df=data_extra)
 
-        # test_interflow that with the correct data input, the output is a dictionary
+        # test that with the correct data input, the output is a dictionary
         output = construct_nested_dictionary(df=sample_data)
         self.assertTrue(type(output) == dict)
 
-        # test_interflow that the output dictionary has the correct number of levels
+        # test that the output dictionary has the correct number of levels
         def calc_dictionary_levels(d: dict):
             nest_count = max(calc_dictionary_levels(v) if isinstance(v, dict) else 0 for v in d.values()) + 1
             return nest_count
