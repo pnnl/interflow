@@ -803,7 +803,7 @@ class MyTestCase(unittest.TestCase):
         com_eff = .65  # commercial
         ind_eff = .49  # industrial
         tra_eff = .21  # transportation
-        self.assertTrue(output[output.columns[7]].mean(), 1-res_eff)
+        self.assertTrue(output[output.columns[7]].mean(), 1 - res_eff)
         self.assertTrue(output[output.columns[8]].mean(), res_eff)
         self.assertTrue(output[output.columns[9]].mean(), 1 - com_eff)
         self.assertTrue(output[output.columns[10]].mean(), com_eff)
@@ -876,6 +876,36 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(output[output.FIPS == '16075']['oil_pct'].mean(), 1)
         self.assertTrue(output[output.FIPS == '02185']['oil_pct'].mean(), .9738)
         self.assertTrue(output[output.FIPS == '02122']['oil_pct'].mean(), .0262)
+
+    def test_prep_petroleum_water_intensity(self):
+
+        # collect output
+        output = prep_petroleum_water_intensity()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+        # check that fresh surface water fraction is always .8 for conventional
+        conv_output = output[output.con_fsw_frac > 0]
+        self.assertAlmostEqual(conv_output['con_fsw_frac'].mean(), .8, 10)
+
+        # check that fresh groundwater fraction is always .2 for conventional
+        conv_output = output[output.con_fgw_frac > 0]
+        self.assertAlmostEqual(conv_output['con_fgw_frac'].mean(), .2, 10)
+
+        # confirm that output columns match expected
+        out_columns = ['FIPS', 'State', 'County', 'un_water_intensity', 'un_fsw_frac', 'un_fgw_frac',
+                       'con_water_int', 'con_fsw_frac', 'con_fgw_frac']
+        self.assertEqual(out_columns, output.columns.to_list())
 
 
 if __name__ == '__main__':

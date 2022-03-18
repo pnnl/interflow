@@ -186,7 +186,7 @@ No county level water use or water intensity estimates exist for unconventional 
 
 For conventional petroleum water intensity, gallon of water per gallon of oil (WOR) estimates were provided by Greenberg et al. [4]. For states that were not included in the dataset but had 2015 conventional petroleum production, the average US WOR value was applied.
 
-It is assumed that 80% of water withdrawals for petroleum production are from fresh surface water sources and the remainder is from fresh groundwater sources following Greenberg et al. [4]. No saline water is assumed to be used in the production of petroleum. 0% of water flows to natural gas are assumed to come from wastewater reuse.
+It is assumed that 80% of water withdrawals for conventional petroleum production are from fresh surface water sources and the remainder is from fresh groundwater sources following Greenberg et al. [4]. No saline water is assumed to be used in the production of petroleum. 0% of water flows to petroleum are assumed to come from wastewater reuse.
 
 *Produced Water*
 ----------------------------------------------------------
