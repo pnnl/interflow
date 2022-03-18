@@ -1489,7 +1489,7 @@ def prep_wastewater_data() -> pd.DataFrame:
          'total_wastewater_mgd', 'municipal_wastewater_mgd', 'wastewater_no_treatment', 'wastewater_primary_treatment',
          'wastewater_advanced_treatment', 'wastewater_secondary_treatment'], axis=1)
 
-    return df_ww
+    return df_out
 
 
 def calc_sc_ww_values():
@@ -1592,9 +1592,6 @@ def combine_ww_data() -> pd.DataFrame:
     # combine full wastewater dataframe with south carolina dataframe
     concatenate_list = [df_ww, df_sc]
     df = pd.concat(concatenate_list)
-
-    # fill discharge values for south carolina with established percentages
-
 
     return df
 
