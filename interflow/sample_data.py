@@ -2702,6 +2702,9 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     # reduce dataframe
     df = df[df['MSN'].isin(msn_list)]  # using MSN codes that are relevant
 
+    # remove US total
+    df = df[df.State != 'US']
+
     # pivoting dataframe to get fuel codes as columns
     df = pd.pivot_table(df, values='2015', index=['State'],  # pivot
                         columns=['MSN'], aggfunc=np.sum)
@@ -2717,6 +2720,15 @@ def prep_fuel_demand_data() -> pd.DataFrame:
     for d in energy_columns:
         df[d] = (df[d] * df['pop_weight'])  # multiply out each county by population percentage of state
         df[d] = df[d] / 365  # change from annual values to daily values
+
+    # move fips and county to beginning of dataframe
+    fips_name = "FIPS"
+    first_col = df.pop(fips_name)
+    df.insert(0, fips_name, first_col)
+
+    county_name = 'County'
+    sec_col = df.pop(county_name)
+    df.insert(2, county_name, sec_col)
 
     # rename columns to add descriptive language
     df.rename(columns=df_names, inplace=True)

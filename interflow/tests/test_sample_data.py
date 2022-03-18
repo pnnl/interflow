@@ -812,6 +812,7 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(output[output.columns[13]].mean(), 1 - tra_eff)
         self.assertTrue(output[output.columns[14]].mean(), tra_eff)
 
+    def test_prep_fuel_demand_data(self):
 
 
 
