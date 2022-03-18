@@ -769,6 +769,49 @@ class MyTestCase(unittest.TestCase):
         x = output[sgw_dist].mean()
         self.assertAlmostEqual(x, expected, 10)
 
+    def test_prep_electricity_demand_data(self):
+
+        # collect output
+        output = prep_electricity_demand_data()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+        # check that all of the fraction columns are between 0 and 1
+        col_list = output.columns[7:].to_list()
+        check_list = []
+        for col in col_list:
+            check_list.append(output[col].max() > 1)
+            check_list.append(output[col].min() < 0)
+        expected = "True" in check_list
+        self.assertEqual(expected, False)
+
+        # make sure US total is not in the dataset
+        self.assertFalse("US" in output['State'].to_list())
+
+        # make sure the efficiency values are being appropriately applied
+        res_eff = .65  # residential
+        com_eff = .65  # commercial
+        ind_eff = .49  # industrial
+        tra_eff = .21  # transportation
+        self.assertTrue(output[output.columns[7]].mean(), 1-res_eff)
+        self.assertTrue(output[output.columns[8]].mean(), res_eff)
+        self.assertTrue(output[output.columns[9]].mean(), 1 - com_eff)
+        self.assertTrue(output[output.columns[10]].mean(), com_eff)
+        self.assertTrue(output[output.columns[11]].mean(), 1 - ind_eff)
+        self.assertTrue(output[output.columns[12]].mean(), ind_eff)
+        self.assertTrue(output[output.columns[13]].mean(), 1 - tra_eff)
+        self.assertTrue(output[output.columns[14]].mean(), tra_eff)
+
 
 
 
