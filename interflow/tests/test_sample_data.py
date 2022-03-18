@@ -348,6 +348,32 @@ class MyTestCase(unittest.TestCase):
         result = len(rows_with_nan)
         self.assertEqual(result, 0)
 
+    def test_calc_discharge_fractions(self):
+
+        # collect output
+        output = calc_discharge_fractions()
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+        # check that all of the fraction columns are between 0 and the loss cap
+        col_list = output.columns[3:].to_list()
+        check_list = []
+        for col in col_list:
+            check_list.append(output[col].max() > 1)
+            check_list.append(output[col].min() < 0)
+        expected = "True" in check_list
+        self.assertEqual(expected, False)
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -509,7 +509,7 @@ def prep_consumption_fraction() -> pd.DataFrame:
     # Replacing infinite (from divide by zero) with with null
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
 
-    # Create groundwater consumption fractions for each sector from surface water consumption fractions
+    # Create groundwater consumption fractions for each sector equal to surface water consumption fractions
     df["DO_gCF_Fr"] = df["DO_sCF_Fr"]
     df["DO_pCF_Fr"] = df["DO_sCF_Fr"]
     df["IN_gCF_Fr"] = df["IN_sCF_Fr"]
@@ -665,7 +665,7 @@ def calc_discharge_fractions():
         and calculates their discharge fractions to the surface and ocean.
         All water that is not consumed by these sectors is assumed to be discharged to either the surface or ocean.
 
-    :return:
+    :return:                            DataFrame of discharge fractions
     """
 
     # load prepared consumption fraction data for sectors
@@ -2599,7 +2599,7 @@ def prep_electricity_demand_data() -> pd.DataFrame:
     """prepping electricity demand data by sector from EIA electricity sales data.
     Produces a dataframe of demand data by county.
 
-    :return:                DataFrame of electricity demand data
+    :return:                DataFrame of electricity demand data by county
 
     """
     # Create efficiency assumptions (amount sent to energy services)
