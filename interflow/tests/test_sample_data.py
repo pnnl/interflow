@@ -850,6 +850,32 @@ class MyTestCase(unittest.TestCase):
         self.assertFalse("X5" in output['State'].to_list())
         self.assertFalse("US" in output['State'].to_list())
 
+    def test_prep_county_petroleum_production_data(self):
+
+        # collect output
+        output = prep_county_petroleum_production_data()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # make sure that the ratio of unconventional to conventional is correct
+        output['frac'] = output['petroleum_unconventional_production_bbtu'] / \
+                         (output['petroleum_unconventional_production_bbtu'] +
+                          output['petroleum_conventional_production_bbtu'])
+        self.assertEqual(output['frac'].mean(), .63)
+
+        # make sure that all of the state percentages add to 1
+        output_state = output.groupby("State", as_index=False).sum()
+        self.assertEqual(output_state['oil_pct'].mean(), 1)
+
+        # make sure the added Alaska and Idaho counties are correct
+        self.assertTrue(output[output.FIPS == '16075']['oil_pct'].mean(), 1)
+        self.assertTrue(output[output.FIPS == '02185']['oil_pct'].mean(), .9738)
+        self.assertTrue(output[output.FIPS == '02122']['oil_pct'].mean(), .0262)
 
 
 if __name__ == '__main__':

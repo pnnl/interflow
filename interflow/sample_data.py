@@ -1317,8 +1317,8 @@ def prep_wastewater_data() -> pd.DataFrame:
 
     # fill south carolina discharge estimates with established percentages to prepare for flows calculated later
     df_ww['wastewater_consumption'] = np.where(df_ww.State == 'SC', .05, df_ww['wastewater_consumption'])
-    df_ww['wastewater_groundwater_discharge']= np.where(df_ww.State == 'SC', .19,
-                                                        df_ww['wastewater_groundwater_discharge'])
+    df_ww['wastewater_groundwater_discharge'] = np.where(df_ww.State == 'SC', .19,
+                                                         df_ww['wastewater_groundwater_discharge'])
     df_ww['wastewater_irrigation_discharge'] = np.where(df_ww.State == 'SC', .08,
                                                         df_ww['wastewater_irrigation_discharge'])
     df_ww['wastewater_surface_discharge'] = np.where(df_ww.State == 'SC', .68, df_ww['wastewater_surface_discharge'])
@@ -1921,10 +1921,10 @@ def prep_electricity_cooling() -> pd.DataFrame:
     df_cooling = pd.merge(df_gen, df_cooling, how='left', on='plant_code')
 
     # multiply Plant-level water values from USGS by generator water percents calculated previously
-    df_cooling['WITHDRAWAL'] = df_cooling['WITHDRAWAL']*df_cooling['withdrawal_pct']
-    df_cooling['CONSUMPTION'] = df_cooling['CONSUMPTION']*df_cooling['consumption_pct']
-    df_cooling['SURFACE_DISCHARGE_MGD'] = df_cooling['SURFACE_DISCHARGE_MGD']*df_cooling['withdrawal_pct']
-    df_cooling['OCEAN_DISCHARGE_MGD'] = df_cooling['OCEAN_DISCHARGE_MGD']*df_cooling['withdrawal_pct']
+    df_cooling['WITHDRAWAL'] = df_cooling['WITHDRAWAL'] * df_cooling['withdrawal_pct']
+    df_cooling['CONSUMPTION'] = df_cooling['CONSUMPTION'] * df_cooling['consumption_pct']
+    df_cooling['SURFACE_DISCHARGE_MGD'] = df_cooling['SURFACE_DISCHARGE_MGD'] * df_cooling['withdrawal_pct']
+    df_cooling['OCEAN_DISCHARGE_MGD'] = df_cooling['OCEAN_DISCHARGE_MGD'] * df_cooling['withdrawal_pct']
 
     # create a list of generation that does not require cooling
     no_cool_list = ['hydro', 'wind', 'solar', 'geothermal']
@@ -2889,7 +2889,7 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     2015 values on a county level. For states that do not have county values in the 2011 estimate, individually-sourced
     information is supplemented.
 
-    :return:                DataFrame of a oil production (bbtu) by county
+    :return:                DataFrame of a petroleum production (bbtu) by county
 
     """
 
@@ -4067,8 +4067,7 @@ def compile_sample_data():
     out_df['FIPS'] = out_df['FIPS'].apply(lambda x: '{0:0>5}'.format(x))
 
     # save csv to data folder
-    data = pkg_resources.resource_filename('interflow', 'input_data/us_county_sample_data.csv.zip',)
+    data = pkg_resources.resource_filename('interflow', 'input_data/us_county_sample_data.csv.zip', )
     out_df.to_csv(data, index=False, compression="zip")
 
     return out_df
-
