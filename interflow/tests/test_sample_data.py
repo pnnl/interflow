@@ -400,6 +400,13 @@ class MyTestCase(unittest.TestCase):
         result = len(rows_with_nan)
         self.assertEqual(result, 0)
 
+    def test_prep_interbasin_transfer_data(self):
+
+        # collect output
+        output = prep_interbasin_transfer_data()
+
+        # check that all FIPS are unique
+        self.assertTrue(output["FIPS"].is_unique)
 
 if __name__ == '__main__':
     unittest.main()

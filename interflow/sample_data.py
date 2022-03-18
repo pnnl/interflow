@@ -785,17 +785,17 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     """Prepares interbasin water transfer data so that output is a dataframe of energy use (BBTU) and total
         water transferred for irrigation and public water supply in total.
 
-    :return:                DataFrame of a number of water values for 2015 at the county level
+    :return:                DataFrame of interbasin transfer water values for 2015 at the county level
 
     """
 
     # read in TX interbasin data
     df_tx = get_tx_ibt_data()
 
-    # get_west_inter_basin_transfer_data
+    # collect western states interbasin transfer data
     df_west = get_west_ibt_data()
 
-    # read in pws to irr water ratio
+    # read in pws to irrigation water ratio
     df_ratio = prep_irrigation_pws_ratio()
 
     # read in full county list
@@ -859,6 +859,9 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
 
     # calculate energy intensity bbtu per mg
     df_tx['ibt_energy_intensity_bbtu'] = df_tx["electricity_interbasin_bbtu"] / df_tx["water_interbasin_mgd"]
+
+    # group by FIPS to get single value per county
+    df_tx = df_tx.groupby(["FIPS"], as_index=False).sum()  # group by county fips code
 
     # prep western state interbasin transfer energy
     df_west = df_west[['FIPS', 'Mwh/yr (Low)', 'Mwh/yr (High)', 'Water Delivery (AF/yr)', 'cfs']]
