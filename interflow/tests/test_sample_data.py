@@ -929,5 +929,6 @@ class MyTestCase(unittest.TestCase):
         output_ng['source_sum'] = output_ng['natgas_fsw_frac'] + output_ng['natgas_fgw_frac']
         self.assertEqual(output_ng['source_sum'].mean(), 1)
 
+
 if __name__ == '__main__':
     unittest.main()
