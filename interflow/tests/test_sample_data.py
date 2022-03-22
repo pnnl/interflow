@@ -929,7 +929,179 @@ class MyTestCase(unittest.TestCase):
         output_ng['source_sum'] = output_ng['natgas_fsw_frac'] + output_ng['natgas_fgw_frac']
         self.assertEqual(output_ng['source_sum'].mean(), 1)
 
-    def test_prep_petroleum_gas_discharge_Data(self):
+    def test_prep_petroleum_gas_discharge_data(self):
+        # collect output
+        output = prep_petroleum_gas_discharge_data()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+    def test_rename_natgas_petroleum_data(self):
+        # collect output
+        output = rename_natgas_petroleum_data()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+    def test_prep_county_coal_production_data(self):
+
+        # collect output
+        output = prep_county_coal_production_data()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # make sure that the underground mine intensity is the same
+        x = output['underground_water_int'].mean()
+        self.assertAlmostEqual(x, 0.00144, 10)
+
+        # make sure that the surface mine intensity is the same
+        x = output['surface_water_int'].mean()
+        self.assertAlmostEqual(x, 0.00034, 10)
+
+    def test_prep_county_coal_data(self):
+        # collect output
+        output = prep_county_coal_data()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+    def test_remove_double_counting_from_mining(self):
+
+        # collect output
+        output = remove_double_counting_from_mining()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+    def test_prep_county_ethanol_production_data(self):
+
+        # collect output
+        output = prep_county_ethanol_production_data()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+    def test_remove_industrial_water_double_counting(self):
+
+        # collect output
+        output = remove_industrial_water_double_counting()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+    def test_prep_county_water_corn_biomass_data(self):
+        # collect output
+        output = prep_county_water_corn_biomass_data()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+    def test_remove_irrigation_water_double_counting(self):
+        # collect output
+        output = remove_irrigation_water_double_counting()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
+        # confirm that output columns match expected
+        crop_fsw = 'AGR_crop_fresh_surfacewater_withdrawal_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
+        crop_fgw = 'AGR_crop_fresh_groundwater_withdrawal_mgd_from_WSW_fresh_groundwater_total_total_mgd'
+        out_columns = ['FIPS', 'State', 'County', crop_fsw, crop_fgw]
+        self.assertEqual(out_columns, output.columns.to_list())
+
+    def test_prep_corn_crop_irr_flows(self):
+        # collect output
+        output = prep_corn_crop_irr_flows()
+
+        # make sure there are no blank values
+        is_nan = output.isnull()
+        row_has_nan = is_nan.any(axis=1)
+        rows_with_nan = output[row_has_nan]
+        result = len(rows_with_nan)
+        self.assertEqual(result, 0)
+
+        # check that there are the correct number of counties
+        output_county_count = len(output['FIPS'])
+        expected_county_county = 3142
+        self.assertEqual(output_county_count, expected_county_county)
+
 
 
 if __name__ == '__main__':

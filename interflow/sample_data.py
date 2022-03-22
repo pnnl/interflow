@@ -3298,7 +3298,7 @@ def prep_county_coal_production_data() -> pd.DataFrame:
     :return:                DataFrame of coal production values in bbtu by county
 
     """
-    # TODO make sure below intensities are correct
+
     # create water intensity variables by mine type (million gallon per bbtu)
     UNDERGROUND_INTENSITY = 0.00144
     SURFACE_INTENSITY = 0.00034
