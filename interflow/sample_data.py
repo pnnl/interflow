@@ -3149,7 +3149,6 @@ def prep_natgas_water_intensity():
 
     return df
 
-    # TODO pick up tests here
 
 def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
     """prepares a dataframe of produced water intensities, consumption fractions, and discharge fractions for
@@ -3160,6 +3159,10 @@ def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
                             for unconventional natural gas and petroleum production
 
     """
+    # establish conversion factors
+    WATER_BARREL_TO_MG_CONVERSION = 0.000042
+    OIL_BARREL_TO_BBTU_CONVERSION = 0.005691
+    GAS_MMCF_TO_BBTU_CONVERSION = 1
 
     # read in state level water discharge data from oil and natural gas
     df = get_state_petroleum_natgas_water_data()
@@ -3172,11 +3175,6 @@ def prep_petroleum_gas_discharge_data() -> pd.DataFrame:
 
     # read in natural gas production data by county
     df_ng = prep_county_natgas_production_data()
-
-    # establish conversion factors
-    WATER_BARREL_TO_MG_CONVERSION = 0.000042
-    OIL_BARREL_TO_BBTU_CONVERSION = 0.005691
-    GAS_MMCF_TO_BBTU_CONVERSION = 1
 
     # convert barrels of water per barrel of oil to million gallons per bbtu of oil
     df['un_petrol_produced_int'] = df['WOR (bbl/bbl)'] * (WATER_BARREL_TO_MG_CONVERSION / OIL_BARREL_TO_BBTU_CONVERSION)
