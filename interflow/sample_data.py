@@ -188,7 +188,8 @@ def calc_irrigation_consumption() -> pd.DataFrame:
                      'IG_CU_FGW_frac': 'AGR_golf_fresh_groundwater_withdrawal_mgd',
                      'IG_CU_RWW_frac': 'AGR_golf_reclaimed_wastewater_import_mgd',
                      'IC_CU_ibt_frac': 'AGR_crop_ibt_total_import_mgd'}
-    df = df[variable_dict]
+    variable_list = list(variable_dict.keys())
+    df = df[variable_list]
     df = df.rename(columns=variable_dict)
 
     # create a list of sector water withdrawal variable name starters
@@ -556,7 +557,8 @@ def prep_consumption_fraction() -> pd.DataFrame:
         df_all[col].fillna(df_all[mean_name], inplace=True)
 
     # reduce output to required variables
-    df_all = df_all[rename_dict]
+    rename_list = list(rename_dict.keys())
+    df_all = df_all[rename_list].copy()
 
     # rename columns to add descriptive language from key
     df_all.rename(columns=rename_dict, inplace=True)
