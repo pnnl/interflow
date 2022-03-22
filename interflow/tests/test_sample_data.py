@@ -925,7 +925,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(output_county_count, expected_county_county)
 
         # check that for rows with natural gas production, source sum is equal to 1
-        output_ng = output[output.natgas_water_intensity > 0]
+        output_ng = output[output.natgas_water_intensity > 0].copy()
         output_ng['source_sum'] = output_ng['natgas_fsw_frac'] + output_ng['natgas_fgw_frac']
         self.assertEqual(output_ng['source_sum'].mean(), 1)
 

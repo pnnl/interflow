@@ -2922,9 +2922,15 @@ def prep_county_petroleum_production_data() -> pd.DataFrame:
     idaho_df = {'State': 'ID', 'FIPS': '16075', 'oil_pct': 1}  # Idaho
     ak_arctic_df = {'State': 'AK', 'FIPS': '02185', 'oil_pct': .9738}  # Alaska, arctic slope region
     ak_cook_df = {'State': 'AK', 'FIPS': '02122', 'oil_pct': .0262}  # Alaska, cook inlet basin (Kenai peninsula)
+
+    # add the counties on to the full location dataframe
     oil_list = [idaho_df, ak_arctic_df, ak_cook_df]
-    for oil_county in oil_list:
-        df_petroleum_loc = df_petroleum_loc.append(oil_county, ignore_index=True)
+    county_list = []
+    for county in oil_list:
+        county_list.append(county)
+    county_df = pd.DataFrame(county_list)
+    df_list = [df_petroleum_loc, county_df]
+    df_petroleum_loc = pd.concat(df_list)
 
     # merge county level percent data with 2015 state-level production data
     df = pd.merge(df_petroleum_loc, df, how='left', on="State")
@@ -3074,10 +3080,14 @@ def prep_county_natgas_production_data() -> pd.DataFrame:
     nv_nye_df = {'State': 'NV', 'FIPS': '32023', 'gas_pct': 1}  # Nevada, Nye County
     or_columbia_df = {'State': 'OR', 'FIPS': '41009', 'gas_pct': 1}  # Oregon, Columbia County
 
+    # add the counties on to the full location dataframe
     ng_list = [idaho_df, ak_arctic_df, ak_cook_df, md_garret_df, md_allegany_df, nv_nye_df, or_columbia_df]
-
+    county_list = []
     for county in ng_list:
-        df_ng_loc = df_ng_loc.append(county, ignore_index=True)
+        county_list.append(county)
+    county_df = pd.DataFrame(county_list)
+    df_list = [df_ng_loc, county_df]
+    df_ng_loc = pd.concat(df_list)
 
     # merge 2015 state-level production data with 2011 county level percent data
     ng_df = pd.merge(df_ng_loc, df, how='left', on="State")
@@ -3667,7 +3677,10 @@ def prep_county_ethanol_production_data() -> pd.DataFrame:
 
     # add missing row for wyoming county ethanol production
     wy_df = {'State': 'WY', 'FIPS': '56015', 'ethanol_pct': 1}  # Goshen County, Wyoming
-    df_ethanol_loc = df_ethanol_loc.append(wy_df, ignore_index=True)
+    county_list = [wy_df]
+    county_df = pd.DataFrame(county_list)
+    df_list = [df_ethanol_loc, county_df]
+    df_ethanol_loc = pd.concat(df_list)
 
     # add leading zero to FIPS code
     df_ethanol_loc['FIPS'] = df_ethanol_loc['FIPS'].apply(lambda x: '{0:0>5}'.format(x))
