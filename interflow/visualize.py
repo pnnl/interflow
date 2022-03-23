@@ -36,7 +36,7 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
                                             Removes values at all levels for specified sector.
         :type remove_sectors:               list
 
-        :return:                            interactive sankey diagram of flow values
+        :return:                            interactive Sankey diagram of flow values
             """
 
     # get data
@@ -98,7 +98,6 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
                 df_1['S12'] = df_1['S12'].str.replace(remove, "")
                 df_1['T12'] = df_1['T12'].str.replace(remove, "")
 
-
             sankey_number = pd.unique(df_1[['S12', 'T12']].values.ravel('K'))
 
             var_dict = dict()
@@ -111,8 +110,8 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
 
         elif output_level == 3:
 
-            df_1['S123'] = df_1['S1'] + '-' + df_1['S2']+ '-' + df_1['S3']
-            df_1['T123'] = df_1['T1'] + '-' + df_1['T2']+ '-' + df_1['T3']
+            df_1['S123'] = df_1['S1'] + '-' + df_1['S2'] + '-' + df_1['S3']
+            df_1['T123'] = df_1['T1'] + '-' + df_1['T2'] + '-' + df_1['T3']
 
             if strip is None:
                 df_1['S123'] = df_1['S123']
@@ -133,8 +132,8 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
 
         elif output_level == 4:
 
-            df_1['S1234'] = df_1['S1'] + '-' + df_1['S2']+ '-' + df_1['S3']+ '-' + df_1['S4']
-            df_1['T1234'] = df_1['T1'] + '-' + df_1['T2']+ '-' + df_1['T3']+ '-' + df_1['T4']
+            df_1['S1234'] = df_1['S1'] + '-' + df_1['S2'] + '-' + df_1['S3'] + '-' + df_1['S4']
+            df_1['T1234'] = df_1['T1'] + '-' + df_1['T2'] + '-' + df_1['T3'] + '-' + df_1['T4']
 
             if strip is None:
                 df_1['S1234'] = df_1['S1234']
@@ -155,8 +154,8 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
 
         else:
 
-            df_1['S12345'] = df_1['S1'] + '-' + df_1['S2']+ '-' + df_1['S3']+ '-' + df_1['S4']+ '-' + df_1['S5']
-            df_1['T12345'] = df_1['T1'] + '-' + df_1['T2']+ '-' + df_1['T3']+ '-' + df_1['T4']+ '-' + df_1['T5']
+            df_1['S12345'] = df_1['S1'] + '-' + df_1['S2'] + '-' + df_1['S3'] + '-' + df_1['S4'] + '-' + df_1['S5']
+            df_1['T12345'] = df_1['T1'] + '-' + df_1['T2'] + '-' + df_1['T3'] + '-' + df_1['T4'] + '-' + df_1['T5']
 
             if strip is None:
                 df_1['S12345'] = df_1['S12345']
@@ -200,7 +199,7 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
                 color='rgba(102, 195, 216, 0.7)'
             ))])
 
-        fig.update_layout(title_text=f"{unit_type1} flows for {region_name}", font_size=12)  #title
+        fig.update_layout(title_text=f"{unit_type1} flows for {region_name}", font_size=12)  # title
         fig.update_traces(valuesuffix=f'{unit_type1}', selector=dict(type='sankey'))  # adds value suffix
 
         fig.show()
@@ -264,7 +263,6 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
                     df_2["source"] = df_2["S12"].apply(lambda x: var_dict.get(x))
                     df_2["target"] = df_2["T12"].apply(lambda x: var_dict.get(x))
 
-
                 elif output_level == 3:
 
                     df_2['S123'] = df_2['S1'] + '-' + df_2['S2'] + '-' + df_2['S3']
@@ -311,8 +309,10 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
 
                 else:
 
-                    df_2['S12345'] = df_2['S1'] + '-' + df_2['S2'] + '-' + df_2['S3'] + '-' + df_2['S4'] + '-' + df_2['S5']
-                    df_2['T12345'] = df_2['T1'] + '-' + df_2['T2'] + '-' + df_2['T3'] + '-' + df_2['T4'] + '-' + df_2['T5']
+                    df_2['S12345'] = df_2['S1'] + '-' + df_2['S2'] + '-' + df_2['S3'] + '-' + df_2['S4'] + '-' + df_2[
+                        'S5']
+                    df_2['T12345'] = df_2['T1'] + '-' + df_2['T2'] + '-' + df_2['T3'] + '-' + df_2['T4'] + '-' + df_2[
+                        'T5']
 
                     if strip is None:
                         df_2['S12345'] = df_2['S12345']
@@ -349,7 +349,7 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
                         thickness=10,  # node thickness
                         line=dict(color="black", width=1),  # node border color and thickness
                         label=sankey_number,  # node label, refers to list of indexed names
-                        color = 'rgba(209, 155, 30, 1)'
+                        color='rgba(209, 155, 30, 1)'
                     ),
                     link=dict(
                         source=source_list,  # list of source node indices
@@ -462,7 +462,7 @@ def plot_sector_bar(data, unit_type, region_name, sector_list, inflow=True, stri
     fig.show()
 
 
-def plot_map(jsonfile: dict, data:pd.DataFrame, level=1, region_col=None, strip="total", center=None):
+def plot_map(jsonfile: dict, data: pd.DataFrame, level=1, region_col=None, strip=None, center=None):
     """ Takes flow package output and plots a cloropleth map of an individual value. Displaying the first flow value
      in the dataset by default and produces a drop-down menu of the remaining flows to select from and update the map.
      Requires a GeoJSON file containing the geometry information for the region of interest. The feature.id in the file
@@ -473,7 +473,7 @@ def plot_map(jsonfile: dict, data:pd.DataFrame, level=1, region_col=None, strip=
      points to the column in the input data with this information.
 
     :param jsonfile:                        loaded GeoJSON dictionary containing geometry information for the values to
-                                            be plotted on the map. the feature.id in the file must align with the region
+                                            be plotted on the map. The feature.id in the file must align with the region
                                             data column in the dataframe of input values to display.
     :type jsonfile:                         dict
 
@@ -481,7 +481,7 @@ def plot_map(jsonfile: dict, data:pd.DataFrame, level=1, region_col=None, strip=
     :type data:                             Dataframe
 
     :param level:                           level of granularity to display for values. Level should be between 1 and
-                                            5 inclusive.
+                                            5 inclusive. Default is set to level 1 granularity.
     :type level:                            int
 
     :param region_col:                      optional parameter to indicate an additional regional identifier column that
@@ -492,7 +492,8 @@ def plot_map(jsonfile: dict, data:pd.DataFrame, level=1, region_col=None, strip=
 
     :param strip:                           optional parameter to provide a string that will be removed from the labels
                                             in the output. For example, if the input data has a repeated word such as
-                                            'total' for numerous levels, the word 'total' will be stripped.
+                                            'total' for numerous levels, the word 'total' will be stripped. Default is
+                                            set so that no words are stripped.
     :type  strip:                           str
 
     :param center:                          dictionary of coordinates in the form of {"lat": 37.0902, "lon": -95.7129}
@@ -527,27 +528,30 @@ def plot_map(jsonfile: dict, data:pd.DataFrame, level=1, region_col=None, strip=
         df['TARGET'] = df['T1']
 
     elif level == 2:
-        df['SOURCE'] = df['S1']+'-'+ df['S2']
-        df['TARGET'] = df['T1']+'-'+ df['T2']
+        df['SOURCE'] = df['S1'] + '-' + df['S2']
+        df['TARGET'] = df['T1'] + '-' + df['T2']
 
     elif level == 3:
-        df['SOURCE'] = df['S1']+'-'+ df['S2']+'-'+ df['S3']
-        df['TARGET'] = df['T1']+'-'+ df['T2']+'-'+ df['T3']
+        df['SOURCE'] = df['S1'] + '-' + df['S2'] + '-' + df['S3']
+        df['TARGET'] = df['T1'] + '-' + df['T2'] + '-' + df['T3']
 
     elif level == 4:
-        df['SOURCE'] = df['S1']+'-'+ df['S2']+'-'+ df['S3']+'-'+ df['S4']
-        df['TARGET'] = df['T1']+'-'+ df['T2']+'-'+ df['T3']+'-'+ df['T4']
+        df['SOURCE'] = df['S1'] + '-' + df['S2'] + '-' + df['S3'] + '-' + df['S4']
+        df['TARGET'] = df['T1'] + '-' + df['T2'] + '-' + df['T3'] + '-' + df['T4']
 
     elif level == 5:
-        df['SOURCE'] = df['S1']+'-'+ df['S2']+'-'+ df['S3']+'-'+ df['S4']+'-'+ df['S5']
-        df['TARGET'] = df['T1']+'-'+ df['T2']+'-'+ df['T3']+'-'+ df['T4']+'-'+ df['T5']
+        df['SOURCE'] = df['S1'] + '-' + df['S2'] + '-' + df['S3'] + '-' + df['S4'] + '-' + df['S5']
+        df['TARGET'] = df['T1'] + '-' + df['T2'] + '-' + df['T3'] + '-' + df['T4'] + '-' + df['T5']
     else:
         m = 'incorrect level specified. Must be an integer between 1 and 5 inclusive'
 
     # strip extra word from from names
-    remove = "-" + strip
-    df['SOURCE'] = df['SOURCE'].str.replace(remove, "")
-    df['TARGET'] = df['TARGET'].str.replace(remove, "")
+    if strip is None:
+        pass
+    else:
+        remove = "-" + strip
+        df['SOURCE'] = df['SOURCE'].str.replace(remove, "")
+        df['TARGET'] = df['TARGET'].str.replace(remove, "")
 
     # build a single link name
     df['Link'] = df['SOURCE'] + ' to ' + df['TARGET'] + ', ' + df['units']
@@ -597,7 +601,8 @@ def plot_map(jsonfile: dict, data:pd.DataFrame, level=1, region_col=None, strip=
                            args=[{
                                "z": [df[c]],
                                "hovertemplate": "Region: %{customdata}" + \
-                                                '<br>Value: %{z}<extra></extra>' # %<extra></extra> gets rid of trace box
+                                                '<br>Value: %{z}<extra></extra>'
+                               # %<extra></extra> gets rid of trace box
                            }]) for c in cols]
 
         # create figure
