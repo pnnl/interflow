@@ -5,12 +5,13 @@ from interflow.analyze import *
 
 
 def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=None, strip=None, remove_sectors=None):
-    """Plots interactive sankey diagram(s) for a given region at a given level of granularity from flow package output
+    """Plots interactive sankey diagram(s) for a given region at a given level of granularity from package output
     data. Requires that variable naming is consistent with flow package output variable naming. At least one unit type
     must be specified as a parameter. Output level can be specified to display sankey diagrams at different levels of
     granularity. Sankey diagram(s) can only display a single region at a time. If no region name is
     specified, the flow data provided must be for a single region. Contains the option to strip strings from node names
-    to remove replicated placeholder names such as 'total'.
+    to remove replicated placeholder names such as 'total'. On hover, the flow values are displayed. Note that an 'm'
+    following a value indicates that the value shown is a decimal. For example, 80m is equivalent to .80.
 
 
         :param data:                        dataframe of flow values from source to target
@@ -50,7 +51,7 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
         df = df[~df['S1'].isin(subset)]
         df = df[~df['T1'].isin(subset)]
 
-    # reduce data to appropriate units
+    # create a dataframe that only includes unit_type1
     df_1 = df[df.units == unit_type1]
 
     # if no region name is provided
@@ -67,39 +68,42 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
     else:
         df_1 = df_1[df_1.region == region_name]
 
-    group_results(df_1, output_level=output_level)
+    # group results
+    df_1 = group_results(df_1, output_level=output_level)
 
     available_levels = [1, 2, 3, 4, 5]
     remove = f'-{strip}'
 
+    # if the granularity level specified is appropriate
     if output_level in available_levels:
 
+        # if the specified level of granularity is equal to 1
         if output_level == 1:
-
-            sankey_number = pd.unique(df[['S1', 'T1']].values.ravel('K'))
-
-            var_dict = dict()
+            sankey_number = pd.unique(df_1[['S1', 'T1']].values.ravel('K'))  # get unique nodes in a flattened array
+            var_dict = dict()  # create an empty dictionary
             for index, value in enumerate(sankey_number):
-                var_dict[index] = value
-            var_dict = {y: x for x, y in var_dict.items()}
+                var_dict[index] = value  # add index value and node name to the empty dictionary
+            var_dict = {y: x for x, y in var_dict.items()}  # set node name to be the key in the dictionary
 
-            df_1["source"] = df_1["S1"].apply(lambda x: var_dict.get(x))
-            df_1["target"] = df_1["T1"].apply(lambda x: var_dict.get(x))
+            df_1["source"] = df_1["S1"].apply(lambda x: var_dict.get(x))  # assign the numerical node value to source
+            df_1["target"] = df_1["T1"].apply(lambda x: var_dict.get(x))  # assign the numerical node value to target
 
+        # if the specified level of granularity is equal to 2, repeat with level 2 names and values
         elif output_level == 2:
-
             df_1['S12'] = df_1['S1'] + '-' + df_1['S2']
             df_1['T12'] = df_1['T1'] + '-' + df_1['T2']
 
+            # if no string is specified to be removed from labels
             if strip is None:
                 df_1['S12'] = df_1['S12']
                 df_1['T12'] = df_1['T12']
+
+            # if a string is specified to be removed from labels
             else:
                 df_1['S12'] = df_1['S12'].str.replace(remove, "")
                 df_1['T12'] = df_1['T12'].str.replace(remove, "")
 
             sankey_number = pd.unique(df_1[['S12', 'T12']].values.ravel('K'))
-
             var_dict = dict()
             for index, value in enumerate(sankey_number):
                 var_dict[index] = value
@@ -108,6 +112,7 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
             df_1["source"] = df_1["S12"].apply(lambda x: var_dict.get(x))
             df_1["target"] = df_1["T12"].apply(lambda x: var_dict.get(x))
 
+        # if the specified level of granularity is equal to 3
         elif output_level == 3:
 
             df_1['S123'] = df_1['S1'] + '-' + df_1['S2'] + '-' + df_1['S3']
@@ -121,7 +126,6 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
                 df_1['T123'] = df_1['T123'].str.replace(remove, "")
 
             sankey_number = pd.unique(df_1[['S123', 'T123']].values.ravel('K'))
-
             var_dict = dict()
             for index, value in enumerate(sankey_number):
                 var_dict[index] = value
@@ -130,8 +134,8 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
             df_1["source"] = df_1["S123"].apply(lambda x: var_dict.get(x))
             df_1["target"] = df_1["T123"].apply(lambda x: var_dict.get(x))
 
+        # if the specified level of granularity is equal to 4
         elif output_level == 4:
-
             df_1['S1234'] = df_1['S1'] + '-' + df_1['S2'] + '-' + df_1['S3'] + '-' + df_1['S4']
             df_1['T1234'] = df_1['T1'] + '-' + df_1['T2'] + '-' + df_1['T3'] + '-' + df_1['T4']
 
@@ -143,7 +147,6 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
                 df_1['T1234'] = df_1['T1234'].str.replace(remove, "")
 
             sankey_number = pd.unique(df_1[['S1234', 'T1234']].values.ravel('K'))
-
             var_dict = dict()
             for index, value in enumerate(sankey_number):
                 var_dict[index] = value
@@ -152,6 +155,7 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
             df_1["source"] = df_1["S1234"].apply(lambda x: var_dict.get(x))
             df_1["target"] = df_1["T1234"].apply(lambda x: var_dict.get(x))
 
+        # if the specified level of granularity is equal to 5
         else:
 
             df_1['S12345'] = df_1['S1'] + '-' + df_1['S2'] + '-' + df_1['S3'] + '-' + df_1['S4'] + '-' + df_1['S5']
@@ -199,11 +203,13 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
                 color='rgba(102, 195, 216, 0.7)'
             ))])
 
-        fig.update_layout(title_text=f"{unit_type1} flows for {region_name}", font_size=12)  # title
+        fig.update_layout(title_text=f"{unit_type1} Flows for Region {region_name}", font_size=12)  # title
         fig.update_traces(valuesuffix=f'{unit_type1}', selector=dict(type='sankey'))  # adds value suffix
 
+        # show figure
         fig.show()
 
+        # if a second unit is specified, repeat process with secondary unit
         if unit_type2 is None:
             pass
         else:
@@ -222,7 +228,7 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
             else:
                 df_2 = df_2[df_2.region == region_name]
 
-            group_results(df_2, output_level=output_level)
+            df_2 = group_results(df_2, output_level=output_level)
 
             available_levels = [1, 2, 3, 4, 5]
             remove = f'-{strip}'
@@ -230,9 +236,7 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
             if output_level in available_levels:
 
                 if output_level == 1:
-
-                    sankey_number = pd.unique(df[['S1', 'T1']].values.ravel('K'))
-
+                    sankey_number = pd.unique(df_2[['S1', 'T1']].values.ravel('K'))
                     var_dict = dict()
                     for index, value in enumerate(sankey_number):
                         var_dict[index] = value
@@ -338,7 +342,6 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
                 else:
 
                     source_list = df_2['source'].tolist()
-
                     target_list = df_2['target'].tolist()
                     value_list = df_2['value'].to_list()
 
@@ -358,7 +361,7 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
                         color='rgba(252, 230, 112, 1)'
                     ))])
 
-                fig.update_layout(title_text=f"{unit_type2} flows for {region_name}", font_size=12)  # title
+                fig.update_layout(title_text=f"{unit_type2} Flows for Region {region_name}", font_size=12)  # title
                 fig.update_traces(valuesuffix=f'{unit_type2}', selector=dict(type='sankey'))  # adds value suffix
 
                 fig.show()
