@@ -363,30 +363,42 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
 
                 fig.show()
 
-
     else:
         m = 'Incorrect level specified. Level must be an integer between 1 and 5, inclusive.'
 
 
 def plot_sector_bar(data, unit_type, region_name, sector_list, inflow=True, strip=None):
     """
-    Plots a stacked barchart for a single region of inflows or outflows for selected sectors in selected units.
+    Plots a stacked barchart for a single region of inflows or outflows for selected sectors in selected units. The
+    stacked bars represent the highest level of granularity available for each major sector. For example, if there are
+    values for water flows into the public water supply sector, specifically tied to the water flows for fresh surface
+    water imports, then one of the stacked components in the public water supply bar in the chart will be equal to the
+    value of this specific sub-sector flow.
 
     :param data:                            dataframe of flow values from source to target
     :type data:                             DataFrame
 
-    :param unit_type:                       unit type to be displayed, must be equal to unit type in input data
+    :param unit_type:                       unit type to be displayed, must be equal to resource unit type in input data
     :type  unit_type:                       str
 
-    :param region_name:                     name of region to display values for
+    :param region_name:                     name of region to display values for.
     :type  region_name:                     str
 
-    :param sector_list:                     list of sectors to include stacked values for. Must be provided at level 1
-                                            granularity.
+    :param sector_list:                     list of major sectors to include stacked values for as strings. Strings
+                                            must be provided at level 1 granularity. For example, providing
+                                            sector_list=['Public Water Supply', 'Residential'] will show all of the
+                                            subsector inflows or outflows for those sectors.
     :type  sector_list:                     list
 
     :param inflow:                          If true, shows inflows into each specified sector. If false, shows outflows.
-                                            Default is set to True
+                                            Default is set to True. Note that inflows are reflected in terms of the
+                                            destination subsector not the source of the inflow. For example, indicating
+                                            public water supply as a sector and setting inflows to True will show the
+                                            values attributed to each of the public water supply subsectors, e.g.,
+                                            energy demand for fresh surface water pumping in the public water supply
+                                            sector. Outflows, on the other hand, reflect the destination of the outflow.
+                                            For example, if inflow is set to False, we would see which downstream sector
+                                            the indicated major sector was sending its resources.
     :type  inflow:                          bool
 
     :param strip:                           optional parameter to provide a string that will be removed from the labels
@@ -480,8 +492,8 @@ def plot_map(jsonfile: dict, data: pd.DataFrame, level=1, strip=None, center=Non
     :param data:                            dataframe of flow values from source to target by region
     :type data:                             Dataframe
 
-    :param level:                           level of granularity to display for values. Level should be between 1 and
-                                            5 inclusive. Default is set to level 1 granularity.
+    :param level:                           level of granularity to display for values. Level should be an integer
+                                            between 1 and 5 inclusive. Default is set to level 1 granularity.
     :type level:                            int
 
     :param strip:                           optional parameter to provide a string that will be removed from the labels
@@ -491,12 +503,15 @@ def plot_map(jsonfile: dict, data: pd.DataFrame, level=1, strip=None, center=Non
     :type  strip:                           str
 
     :param center:                          dictionary of coordinates in the form of {"lat": 37.0902, "lon": -95.7129}
-                                            which centers the displayed map. Default center coordinates are for the US.
+                                            which centers the displayed map. Default center coordinates are
+                                            {"lat": 37.0902, "lon": -95.7129}.
     :type center:                           dict
 
     :return:                                cloropleth map shaded by value for all regions provided at level specified
                                             and for specified units.
     """
+
+    # check that the level of granularity specified is an appropriate value
     acceptable_values = [1, 2, 3, 4, 5]
     if level in acceptable_values:
         pass
@@ -516,6 +531,7 @@ def plot_map(jsonfile: dict, data: pd.DataFrame, level=1, strip=None, center=Non
     else:
         center = center
 
+    # build dropdown menu label depending on level of granularity specified
     if level == 1:
         # create a flow name
         df['SOURCE'] = df['S1']
@@ -539,7 +555,7 @@ def plot_map(jsonfile: dict, data: pd.DataFrame, level=1, strip=None, center=Non
     else:
         m = 'incorrect level specified. Must be an integer between 1 and 5 inclusive'
 
-    # strip extra word from from names
+    # strip extra word from from names if provided
     if strip is None:
         pass
     else:
@@ -560,6 +576,7 @@ def plot_map(jsonfile: dict, data: pd.DataFrame, level=1, strip=None, center=Non
     # create a list of variable columns
     cols = df.columns[1:].to_list()
 
+    # create dropdown buttons
     my_buttons = [dict(method='update',
                        label=c,
                        args=[{
@@ -596,5 +613,5 @@ def plot_map(jsonfile: dict, data: pd.DataFrame, level=1, strip=None, center=Non
                                         y=1.12,
                                         yanchor="top")])
     fig.show()
-    
-    return df
+
+
