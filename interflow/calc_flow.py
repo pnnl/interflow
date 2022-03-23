@@ -96,6 +96,7 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
                                 for t5 in f_dict[r][f_type][t1][t2][t3][t4]:
                                     l4_value = 0
                                     for u1 in f_dict[r][f_type][t1][t2][t3][t4][t5]:
+                                        l5_total_value = 0
                                         for s1 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1]:
                                             l1_name = f'{r}_{s1}_to_{t1}_{u1}'
                                             for s2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1]:
@@ -107,7 +108,7 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
                                                         for s5 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
                                                             l5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
                                                             for u2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5]:
-                                                                l5_total_value = 0
+
                                                                 for p in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2]:
 
                                                                     # collect level 5 flow value
@@ -134,37 +135,44 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
             # calculate new flows based on intensity values
             elif f_type == 'B_calculate':
                 for t1 in f_dict[r][f_type]:
-                    l5t_value_total = 0
+
                     for t2 in f_dict[r][f_type][t1]:
                         for t3 in f_dict[r][f_type][t1][t2]:
                             for t4 in f_dict[r][f_type][t1][t2][t3]:
                                 for t5 in f_dict[r][f_type][t1][t2][t3][t4]:
                                     for u1 in f_dict[r][f_type][t1][t2][t3][t4][t5]:
                                         l5t_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
-                                        for s1 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1]:
-                                            for s2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1]:
-                                                for s3 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2]:
-                                                    for s4 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
-                                                        for s5 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
-                                                            for u2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5]:
-                                                                for p in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2]:
-                                                                    l5s_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_{u2}'
-                                                                    intensity = f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2][p]
 
-                                                                    # determine if the required input data is there
-                                                                    if l5s_name not in total_dict:
-                                                                        pass
-                                                                    else:
-                                                                        # flow value new value is based on
-                                                                        l5s_value = total_dict[l5s_name]
-                                                                        # new flow value
-                                                                        l5t_value = l5s_value * intensity
+                                        # check if a total value already exists for calculated flow to add on to
+                                        if l5t_name in total_dict:
+                                            l5t_value_total = total_dict[l5t_name]
+                                        else:
+                                            l5t_value_total = 0
 
-                                                                        # add to total
-                                                                        l5t_value_total = l5t_value_total + l5t_value
+                                            for s1 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1]:
+                                                for s2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1]:
+                                                    for s3 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2]:
+                                                        for s4 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
+                                                            for s5 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
+                                                                for u2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5]:
+                                                                    for p in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2]:
+                                                                        l5s_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_{u2}'
+                                                                        intensity = f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2][p]
 
-                                                                        # update total dictionary
-                                                                        total_dict.update({l5t_name: l5t_value_total})
+                                                                        # determine if the required input data is there
+                                                                        if l5s_name not in total_dict:
+                                                                            pass
+                                                                        else:
+                                                                            # flow value new value is based on
+                                                                            l5s_value = total_dict[l5s_name]
+                                                                            # new flow value
+                                                                            l5t_value = l5s_value * intensity
+
+                                                                            # add to total
+                                                                            l5t_value_total = l5t_value_total + l5t_value
+
+                                                                            # update total dictionary
+                                                                            total_dict.update({l5t_name: l5t_value_total})
 
             # split total flow values into source flows from source fractions
             elif f_type == 'C_source':

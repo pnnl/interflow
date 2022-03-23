@@ -38,7 +38,7 @@ Note that **interflow** does not require node inputs and outputs to be balanced.
 
 Additionally, while the capability is provided to calculate alternate-unit flows (step 2 above) from input values, this is not a requirement. That is to say, a user could simply provide flow values connecting various nodes in step 1 and the model will simply return those flows unless told to do otherwise.
 
-The example walked through above is a high level example of the flow process that demonstrates what is referred to in this documentation as "level 1" granularity. **flow** is capable of calculating and handling sectors up to five levels of granularity. To equate that to the previous example, a level 1 sector would be the public water supply sector. Level 2 and beyond splits up the level 1 sector into subsectors, sub-subsectors, and so on. An example of a level 2 granularity using the above example would be Water Supply - Fresh (i.e., the portion of the total Water Supply sector that is fresh water as opposed to saline water).
+The example walked through above is a high level example of the flow process that demonstrates what is referred to in this documentation as "level 1" granularity. **interflow** is capable of calculating and handling sectors up to five levels of granularity. To equate that to the previous example, a level 1 sector would be the public water supply sector. Level 2 and beyond splits up the level 1 sector into subsectors, sub-subsectors, and so on. An example of a level 2 granularity using the above example would be Water Supply - Fresh (i.e., the portion of the total Water Supply sector that is fresh water as opposed to non-fresh water).
 
 Up to five levels of granularity can be specified for each node. Various examples of level 5 granularity include the following:
 
@@ -57,10 +57,7 @@ More information on generalizability and input data format requirements can be f
 Aggregation and Output Granularity
 **************************************
 
-While highly granular data can provide significant insight into the finer details of a sector, big picture relationships can also be informative. As **interflow** loops through the provided sectors as the various levels of granularity and builds connections, it also tracks sums for each level of granularity so that a level of output granularity can be specified when the model is run. For example, if **interflow** calculates energy demand in the public water supply sector for public water supply treatment and public water supply distribution, it will simultaneously be calculating total energy in the public water supply (i.e., their sum).
-
-This aggregation is done based off of both initial input values and calculated values. For example, if electricity delivery to the residential sector is provided as input data, but natural gas delivery to the residential sector is later calculated based on intensity factors, the energy delivered to the residential sector (level 1 granularity) will sum both.
-
+While highly granular data can provide significant insight into the finer details of a sector, big picture relationships can also be informative. As **interflow** loops through the provided sectors as the various levels of granularity and builds connections, it also tracks sums for each level of granularity so that a level of output granularity can be specified when the model is run. For example, if **interflow** calculates energy demand in the public water supply sector for public water supply treatment and public water supply distribution, it will simultaneously be calculating total energy in the public water supply (i.e., their sum). Whichever level of granularity is specified (between one and five, inclusive) as a parameter when the model is run will be returned in the output.
 
 Generalizability
 ################################
@@ -73,7 +70,7 @@ Introduction
 
 Though the **interflow** package comes with sample data for the US for the year 2015 to calculate water and energy interdependencies, alternative input data can be provided to calculate different flows for any region or set of regions, any unit or set of units, and any sector or set of sectors so long as the input data is provided in the correct format.
 
-The **interflow** package requires a csv file with strict guidelines as input data to run calculations. Though different types of calculations are conducted in the **interflow** package, the input into each calculation is provided in the same input file.
+The **interflow** package requires a Pandas DataFrame with strict guidelines as input data to run calculations. Though different types of calculations are conducted in the **interflow** package, the data and information used to run each calculation is provided in the same input file.
 
 The four different types of calculations the **interflow** package conducts include the following:
 
@@ -129,7 +126,7 @@ The input data for the flow package must have 16 columns described below and eac
 *Region (columm 1)*
 """"""""""""""""""""""""""""""
 
-The first item in the data should include the name of the region provided as a string. Note that **interflow** will treat inconsistent spelling of regions as multiple regions.
+The first item in the data should include the name of the region provided as a string. Note that **interflow** will treat inconsistent spelling of regions as different regions.
 
 *Calculation type (columm 2)*
 """"""""""""""""""""""""""""""
@@ -140,28 +137,28 @@ The value of the calculation type must equal one of the following verbatim:
 * C_source
 * D_discharge
 
-Each of these inputs tells the model what type of calculation it should be conducting for that row of data.
+Each of these inputs tells the model what type of calculation it should be conducting using that row of data.
 
 *Primary Node Information (columms 3-8)*
 """"""""""""""""""""""""""""""""""""""""""""
-Data positions 3 through 8 provide information on the primary node (PN). The primary node should be interpreted as the node for which inflows and outflows are determined.
+Columns 3 through 8 provide information on the primary node (PN). The primary node should be interpreted as the node for which inflows and outflows are determined.
 Level 1 name refers to the major sector name, Level 2 refers to the sub-sector name, and so on through level 5. For more information on these levels see the Fundamental Concepts section.
-Primary Node units refers to the units that that sector name (which will be assigned to a value) is associated with.
+Primary Node units refers to the resource units (e.g., gallons) that that sector flow name (which will be assigned to a value) is associated with.
 
 *Secondary Node Information (columms 9-14)*
 """"""""""""""""""""""""""""""""""""""""""""
 
-These data inputs follow the same structure as the primary node but are used to describe the node that is being linked to the primary node as either a source (inflow from),a target node (discharge to), or a node upon which an alternate unit value is calculated (described in greater detail later on this page).
+These data inputs follow the same structure as the primary node but are used to describe the node that is being linked to the primary node as either a source (inflow from),a target node (discharge to), or building a new node to carry an calculated secondary unit value (described in greater detail later on this page).
 
-*Parameter (columms 15)*
+*Parameter (columm 15)*
 """"""""""""""""""""""""""""""""""""""""""""
 
-This data item identifies the type of value in the value column (position 16). The value of this data position can be changed by the user with no effect on calculated outcome. It is provided as an optional data position for the user to organize their input data. Examples (consistent with those in the same data) are shown later on this page.
+This data item identifies the type of value in the value column (position 16). The value of this data position can be changed by the user with no effect on calculated outcome. It is provided as an optional data position for the user to organize their input data in a more readable manner. Examples (consistent with those in the same data) are shown later on this page.
 
 *Value (columms 16)*
 """"""""""""""""""""""""""""""""""""""""""""
 
-This data item providing one of the following: (1) an input flow value in primary node units, (2) an intensity coefficient (unit 2 required per unit 1) (3) a source flow fraction, or (4) a discharge flow fraction.
+This data item providing one of the following: (1) an input flow value in primary node units, (2) an intensity coefficient (amount of unit 2 required per unit 1) (3) a source flow fraction, or (4) a discharge flow fraction.
 
 Creating input data for different calculations
 *************************************************
@@ -172,15 +169,17 @@ Collect values
 To build flows between nodes and calculate cross-unit flows, initial flow values are necessary. For example, if the amount of energy required to withdraw a gallon of water from a larger water supply for the public water supply is a desired flow in the ultimate output, then the amount of water withdrawn from the water supply by the public water supply sector is a required input. Initial values must be supplied in the following way:
 
 * The calculation type (data position 2) must be equal to "A_collect"
-* The primary node information (data positions 3-8) must describe the node that is *receiving* the flow from another node
-* The secondary node information (data positions 9-14) must describe the node that is discharging to the primary node
-* The value (data position 16) must be equal to value of the flow from the secondary to the primary node
+* The primary node information (columns 3-8) must describe the node that is *receiving* the flow from another node
+* The secondary node information (columns 9-14) must describe the node that is discharging (i.e., upstream) to the primary node
+* The value (column 16) must be equal to value of the flow from the secondary to the primary node
 
-Note that, as shown in the below example, while all data positions must be provided, they do not have to be unique. If there is only level 1 through 3 granularity for some of the input data, the remaining levels can be the same and filled with "total" or something equivalent.
+Note that, as shown in the below example, while all data positions must be provided, they do not have to be unique. If there is only level 1 through 3 granularity for some of the input data, the remaining levels can be the same and filled with "total" or an equivalent.
 
-Additionally, some input flow values may be provided that the user does not have a source node for but still wants to calculate secondary unit flows based on. An example might be the production of fuels such as coal. These arguably don't have a source node since they are the original source, but we may still want to calculate water use based on a water intensity factor. These values can be provided to the model as circular flows. In this scenario, the primary node name will be equal to the secondary node name. The option is provided in the flow calculate function to remove circular flows from the output dataframe.
+Additionally, some input flow values may be provided that the user does not have a source node for but still wants to calculate secondary unit flows based on. An example might be the production of fuels such as coal. These arguably don't have a source node when working with water and energy as the two resource types since the coal is the original and most upstream source of the energy, but we may still want to calculate water use based on a water intensity factor for the production of that coal. These values can be provided to the model as circular flows. In this scenario, the primary node information (columns 3-8) will be equal to the secondary node information (columns 9-14). An option is provided in the 'calculate()' function to remove circular flows from the output dataframe if desired.
 
 Example:
+
+The below example is collecting a provided flow value equal to 200 mgd that starts from the "Water Supply - Fresh - Surface Water - Total - Total" node and ends at the "Public Water Supply - Fresh - Surface Water - Withdrawal  - Total" node
 
 +----------+--------------------+--------------------+-------+---------------+-------------+-------+---------+--------------+-------+---------------+-------+-------+---------+-----------+-------+
 |Region    |Calculation type    |PN L1               |PN L2  |PN L3          |PN L4        |PN L5  |PN Units |SN L1         |SN L2  |SN L3          |SN L4  |SN L5  |SN Units | Parameter | value |
@@ -191,18 +190,20 @@ Example:
 
 Calculate values
 -------------------------
-Consistent naming and spelling with sectors is very important as values (both collected and calculated) are assigned to the node names provided. The model looks for node names at level 5 granularity to retrieve and calculate values.
+Consistent naming and spelling with sectors is very important as values (both collected and calculated) are assigned to the node names provided. The model looks for node names at level 5 granularity to retrieve known flow values and calculate new flow values based on intensity factors.
 
 In order to calculate secondary unit flow values from collected flow values, the data must be in the following format:
 
-* The calculation type (data position 2) must be equal to "B_calculate"
-* The primary node information (data positions 3-8) must describe the node that is *being built* in the secondary units (E.g., public water supply pumping energy in btu)
-* The secondary node information (data positions 9-14) must describe the node that the new value is based on and be equal to a node that has been collected.
-* The value (data position 16) must be equal to the intensity value to calculate the secondary unit flow from the first unit flow. Examples include kilowatt-hours per gallon, gallons per btu, etc.
+* The calculation type (column 2) must be equal to "B_calculate"
+* The primary node information (columns 3-8) must describe the new node that is *being built* in the secondary units (e.g., public water supply pumping energy in btu) based on the intensity factor.
+* The secondary node information (columns 9-14) must describe the node name that the new value is based on and be equal to a node that has already been collected or calculated.
+* The value (column 16) must be equal to the intensity value to calculate the secondary unit flow from the first unit flow. Examples include kilowatt-hours per gallon, gallons per btu, etc.
 
-Note that when calculating a secondary unit flow for a sector that has flows in both units, the names of those sectors/nodes do not have to be consistent. In the below example, we are naming the level2 through level5 different than we did for the water flows. This is because different nodes are calculated for different units.
+Note that when calculating a secondary unit flow for a sector that has flows in both units, the names of those sectors/nodes do not have to be consistent as final output values are provided by unit type. In the below example, we are naming the level2 through level5 different than we did for the water flows.
 
 Example:
+
+The example below tells the model to calculate a new energy (bbtu) value and assign it to a new node with a level 5 granularity name of "Public Water Supply - Fresh - Surface Water - Withdrawal - Total" where each dash separates the different granularity levels. The new node and value are being created off of the known level 5 granularity water (mgd) flow value associated with the node name "Public Water Supply - Fresh - Surface Water - Withdrawal - Total". The intensity factor used to calculate the amount of bbtu per mgd is 2.
 
 +----------+-----------------+--------------------+-------+---------------+-----------+-------+---------+---------------------+-------+---------------+------------+-------+---------+-----------+-------+
 |Region    |Calculation type |PN L1               |PN L2  |PN L3          |PN L4      |PN L5  |PN Units |SN L1                |SN L2  |SN L3          |SN L4       |SN L5  |SN Units | Parameter | value |
