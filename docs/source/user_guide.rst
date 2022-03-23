@@ -211,6 +211,8 @@ The example below tells the model to calculate a new energy (bbtu) value and ass
 | Region_1 | B_calculate     |Public Water Supply |Fresh  | Surface Water | pumping   | Total | btu     | Public Water Supply |Fresh  | Surface Water | Withdrawal | Total | mgd     |intensity  | 2     |
 +----------+-----------------+--------------------+-------+---------------+-----------+-------+---------+---------------------+-------+---------------+------------+-------+---------+-----------+-------+
 
+Note that calculated flow values do not have to be in a secondary unit type. If an intensity value exists that is dependent on the same unit type, the model is capable of handling this. For example, say the amount of water (units = mgd) in the public water supply that was saline was dependent on the the amount of water (units = mgd) in the public water supply that is fresh. So long as a row of data accurately with the intensity factor to determine the saline water quantity in mgd is provided, the model will build it. Additionally, following this example, if a subsequent cross-resource calculation is made on the the total water in public water supply (e.g., energy based on total water), it will base it off the new total water so long as the row to calculate the additional mgd is provided before the row to calculate the energy in the input data.
+
 Source values
 -------------------------
 
@@ -218,10 +220,10 @@ Once secondary unit flow values have been calculated by the model, their aggrega
 
 To split calculated values into sources, the following is required:
 
-* The calculation type (data position 2) must be equal to "C_source"
-*  The primary node information (data positions 3-8) must describe the node that is *receiving* the flow from another node (e.g., energy use in public water supply)
-*  The secondary node information (data positions 9-14) must describe the node that is discharging to the primary node (e.g., electricity sector)
-*  The value (data position 16) must be the fraction of the calculated value that is coming from the secondary node.
+* The calculation type (column 2) must be equal to "C_source"
+*  The primary node information (columns 3-8) must describe the node that is *receiving* the flow from another node (e.g., energy use in public water supply)
+*  The secondary node information (columns 9-14) must describe the node that is discharging to the primary node (e.g., electricity sector)
+*  The value (column 16) must be the fraction of the calculated value that is coming from the secondary node.
 
 
 Example:
