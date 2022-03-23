@@ -2,14 +2,15 @@ import pandas as pd
 
 
 def group_results(df: pd.DataFrame, output_level=1):
-    """ Groups package run output to level of granularity specified in parameters. Returns a dataframe of values with
+    """ Groups package run output to level of granularity specified. Returns a dataframe of values with
     source to target flows by region.
 
-    :param df:                                          Dataframe of run output values.
+    :param df:                                          Dataframe of package run output values.
     :type df:                                           DataFrame
 
     :param output_level:                                Level of granularity output will be grouped to. Must be an
                                                         integer between one and five, inclusive. Default value is set to
+                                                        level 1 granularity.
     :type output_level:                                 int
 
     :return:                                            DataFrame of values organized as source to target flow values
