@@ -10,7 +10,7 @@ The interflow model (interflow) gives us the capability to organize and evaluate
 1. Which sectors have a high reliance on upstream sectors?
 2. Which sectors represent pivotal nodes for passing on resource flows to downstream flows?
 3. How do resource intensities in sectors compare across regions?
-4. What does the network map of resource flows in a region look like visually?
+4. What does the network of resource flows in a region look like?
 5. Where are the opportunities for network enhancement, optimization, and resiliency improvement?
 
 In addition to calculating and organizing flows across sectors, **interflow** also provides visualization options to pull meaning from the aggregated data output. For more information on the output of the interflow package, see the `Key Outputs <https://kmongird.github.io/interflow/user_guide.html#key-outputs>`_ section

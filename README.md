@@ -6,7 +6,7 @@
 resource interdependencies and flows.
 
 ## Purpose
-`interflow` was created to provide a flexible, adaptable, and updatable method to evaluate the interdependencies 
+`interflow` provides a flexible, adaptable, and updatable method to evaluate the interdependencies 
 between sectors and across regions for multiple resource types. The interdependencies and relationships between 
 sectors offer multi-faceted and multi-scale opportunities as well as vulnerabilities. Whether it is water, energy, 
 or otherwise, resources pass from source to discharge by flowing through sectors and are oftentimes a critical 

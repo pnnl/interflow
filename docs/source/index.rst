@@ -30,7 +30,7 @@ The package collects known flow values between sectors provided by the user, cal
 Statement of Need
 #########################################
 
-Existing tools in this research space are oftentimes limited to the visualization of known sectoral flow values. These are typically in the form of Sankey diagrams which are valuable for evaluation relationships between sectors, but these tools can generally only visualize known flow values, they do not offer a way to calculate the demand of a cross-resource type and build out new sectoral connections based on the result. The interflow package aims to fill this gap and serve as a flexible and open-source option for conducting multi-resource sectoral interdependency data calculations while also visualizing the results from a variety of perspectives.
+Existing tools in this research space are oftentimes limited to the visualization of known sectoral flow values. These are typically in the form of Sankey diagrams which are valuable for evaluation relationships between sectors, but these tools can generally only visualize known flow values, they do not offer a way to calculate the demand of a cross-resource type and build out new sectoral connections based on the result. The **interflow** package aims to fill this gap and serve as a flexible and open-source option for conducting multi-resource sectoral interdependency data calculations while also visualizing the results from a variety of perspectives.
 
 
 
