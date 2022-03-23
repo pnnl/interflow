@@ -15,7 +15,7 @@ setup(
     name='interflow',
     version=version,
     packages=find_packages(exclude=["interflow"]),
-    url='https://github.com/kmongird/interflow',
+    url='https://github.com/pnnl/interflow',
     license='BSD2-Clause',
     author='Kendall Mongird',
     author_email='kendall.mongird@pnnl.gov',

@@ -49,6 +49,6 @@ If you're interested in background information and explanations on how the model
 
 ## Contributing to interflow
 
-Spotted a bug or have a suggestion to improve the model? We'd love your input. See our [guidelines for contributing](https://kmongird.github.io/interflow/contributing.html).
+Spotted a bug or have a suggestion to improve the model? We'd love your input! See our [guidelines for contributing](https://kmongird.github.io/interflow/contributing.html).
 
 
