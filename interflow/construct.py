@@ -36,19 +36,19 @@ def construct_nested_dictionary(df: pd.DataFrame) -> dict:
         parameter = df.columns[-2]
         value = df.columns[-1]
         d = df.groupby(group1).apply(
-            lambda a: dict(a.groupby(group2).apply(
-            lambda b: dict(b.groupby(group3).apply(
-            lambda c: dict(c.groupby(group4).apply(
-            lambda d: dict(d.groupby(group5).apply(
-            lambda e: dict(e.groupby(group6).apply(
-            lambda f: dict(f.groupby(group7).apply(
-            lambda g: dict(g.groupby(group8).apply(
-            lambda h: dict(h.groupby(group9).apply(
-            lambda i: dict(i.groupby(group10).apply(
-            lambda k: dict(k.groupby(group11).apply(
-            lambda l: dict(l.groupby(group12).apply(
-            lambda m: dict(m.groupby(group13).apply(
-            lambda n: dict(n.groupby(group14).apply(
+            lambda a: dict(a.groupby(group2,sort=False).apply(
+            lambda b: dict(b.groupby(group3,sort=False).apply(
+            lambda c: dict(c.groupby(group4,sort=False).apply(
+            lambda d: dict(d.groupby(group5,sort=False).apply(
+            lambda e: dict(e.groupby(group6,sort=False).apply(
+            lambda f: dict(f.groupby(group7,sort=False).apply(
+            lambda g: dict(g.groupby(group8,sort=False).apply(
+            lambda h: dict(h.groupby(group9,sort=False).apply(
+            lambda i: dict(i.groupby(group10,sort=False).apply(
+            lambda k: dict(k.groupby(group11,sort=False).apply(
+            lambda l: dict(l.groupby(group12,sort=False).apply(
+            lambda m: dict(m.groupby(group13,sort=False).apply(
+            lambda n: dict(n.groupby(group14,sort=False).apply(
             lambda x: dict(zip(x[parameter], x[value])))))))))))))))))))))))))))))
         d = d.to_dict()
 
