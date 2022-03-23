@@ -29,5 +29,11 @@ setup(
         'pandas>=1.3.4',
         'plotly>=5.5.0',
         'json5>=0.9.6'
-    ]
+    ],
+    extras_require={
+        'dev': ['build>=0.7.0',
+                'setuptools>=58.2.0',
+                'sphinx>=4.4.0',
+                'twine>=3.8.0',
+                'sphinxemoji>=0.2.0']}
 )
