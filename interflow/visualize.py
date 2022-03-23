@@ -564,7 +564,7 @@ def plot_map(jsonfile: dict, data: pd.DataFrame, level=1, strip=None, center=Non
                        label=c,
                        args=[{
                            "z": [df[c]],
-                           "hovertemplate": 'Value: %{z}<extra></extra>'
+                           "hovertemplate": 'Value: %{z}<extra>Region: %{customdata}</extra>'
                        }]) for c in cols]
 
     # create figure
@@ -572,7 +572,8 @@ def plot_map(jsonfile: dict, data: pd.DataFrame, level=1, strip=None, center=Non
         geojson=geo_id,
         locations=df['region'],
         z=df[df.columns[1]],
-        hovertemplate='Value: %{z}<extra></extra>',
+        customdata=df[df.columns[0]],
+        hovertemplate='Value: %{z}<extra>Region: %{customdata}</extra>',
         coloraxis="coloraxis",
         marker_opacity=0.75,
         marker_line_width=0.5))
@@ -595,3 +596,5 @@ def plot_map(jsonfile: dict, data: pd.DataFrame, level=1, strip=None, center=Non
                                         y=1.12,
                                         yanchor="top")])
     fig.show()
+    
+    return df
