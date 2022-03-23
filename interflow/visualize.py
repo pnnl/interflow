@@ -462,7 +462,7 @@ def plot_sector_bar(data, unit_type, region_name, sector_list, inflow=True, stri
     fig.show()
 
 
-def plot_map(jsonfile: dict, data: pd.DataFrame, level=1, region_col=None, strip=None, center=None):
+def plot_map(jsonfile: dict, data: pd.DataFrame, level=1, strip=None, center=None):
     """ Takes flow package output and plots a cloropleth map of an individual value. Displaying the first flow value
      in the dataset by default and produces a drop-down menu of the remaining flows to select from and update the map.
      Requires a GeoJSON file containing the geometry information for the region of interest. The feature.id in the file
@@ -483,12 +483,6 @@ def plot_map(jsonfile: dict, data: pd.DataFrame, level=1, region_col=None, strip
     :param level:                           level of granularity to display for values. Level should be between 1 and
                                             5 inclusive. Default is set to level 1 granularity.
     :type level:                            int
-
-    :param region_col:                      optional parameter to indicate an additional regional identifier column that
-                                            can be displayed on hover in the figure. Examples include the associated
-                                            US county name belonging to the region code. Default is set to no additional
-                                            region information displayed.
-    :type region_col:                       int
 
     :param strip:                           optional parameter to provide a string that will be removed from the labels
                                             in the output. For example, if the input data has a repeated word such as
@@ -563,59 +557,25 @@ def plot_map(jsonfile: dict, data: pd.DataFrame, level=1, region_col=None, strip
     df = df.rename_axis(None, axis=1)  # drop index name
     df.fillna(0, inplace=True)
 
-    # create drop-down buttons based on columns created starting at one past indicated region column
-    if region_col is None:
-        button_columns = 1
-        starting_column = 1
-    else:
-        button_columns = region_col + 1
-        starting_column = region_col + 1
-
     # create a list of variable columns
-    cols = df.columns[button_columns:].to_list()
+    cols = df.columns[1:].to_list()
 
-    if region_col is None:
-        my_buttons = [dict(method='update',
-                           label=c,
-                           args=[{
-                               "z": [df[c]],
-                               "hovertemplate": 'Value: %{z}<extra></extra>'
-                               # %<extra></extra> gets rid of trace box
-                           }]) for c in cols]
+    my_buttons = [dict(method='update',
+                       label=c,
+                       args=[{
+                           "z": [df[c]],
+                           "hovertemplate": 'Value: %{z}<extra></extra>'
+                       }]) for c in cols]
 
-        # create figure
-        fig = go.Figure(go.Choroplethmapbox(
-            geojson=geo_id,
-            locations=df['region'],
-            z=df[df.columns[starting_column]],
-            hovertemplate='Value: %{z}<extra></extra>',
-            coloraxis="coloraxis",
-            marker_opacity=0.75,
-            marker_line_width=0.5))
-
-    else:
-        mycustomdata = df[df.columns[region_col]].to_list()
-        # loop through columns and create buttons
-        my_buttons = [dict(method='update',
-                           label=c,
-                           args=[{
-                               "z": [df[c]],
-                               "hovertemplate": "Region: %{customdata}" + \
-                                                '<br>Value: %{z}<extra></extra>'
-                               # %<extra></extra> gets rid of trace box
-                           }]) for c in cols]
-
-        # create figure
-        fig = go.Figure(go.Choroplethmapbox(
-            geojson=geo_id,
-            locations=df['region'],
-            z=df[df.columns[starting_column]],
-            customdata=mycustomdata,
-            hovertemplate="Region: %{customdata}" + \
-                          '<br>Value: %{z}<extra></extra>',
-            coloraxis="coloraxis",
-            marker_opacity=1,
-            marker_line_width=0.5))
+    # create figure
+    fig = go.Figure(go.Choroplethmapbox(
+        geojson=geo_id,
+        locations=df['region'],
+        z=df[df.columns[1]],
+        hovertemplate='Value: %{z}<extra></extra>',
+        coloraxis="coloraxis",
+        marker_opacity=0.75,
+        marker_line_width=0.5))
 
     # update map layout
     fig.update_layout(coloraxis_colorscale='Purples',
