@@ -2,15 +2,14 @@ cff-version: 1.2.0
 message: "If you use this software, please use the following citation:"
 authors:
 - family-names: "Mongird"
-  given-names: "Kendall"
-  orcid: "https://orcid.org/0000-0003-2807-7088"
+  given-names: "Kendall L."
 - family-names: "Oikonomou"
   given-names: "Konstantinos"
 - family-names: "Homer"
-  given-names: "Juliet"
+  given-names: "Juliet S."
 - family-names: "Rice"
   given-names: "Jennie S."
 title: "interflow: a Python package for collecting, calculating, organizing, and visualizing cross-sectoral resource interdependencies and flows."
-version: 1.0.0
-date-released: 2022-03-01
-url: "https://github.com/kmongird/flow"
+version: 0.1.0
+date-released: 2022-04-01
+url: "https://github.com/pnnl/interflow"
