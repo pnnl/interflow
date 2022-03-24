@@ -22,7 +22,7 @@ intensity values
 dependencies, how resources flow through sectors in an individual region, and how these dependencies compare across 
 regions.
 
-![image](https://user-images.githubusercontent.com/74064300/135877886-91cac5ec-614a-4fee-b9d2-3561bb69d62c.png)
+![image](https://user-images.githubusercontent.com/74064300/160015899-589b5928-bdac-4319-ab99-62413fa05210.png)
 
 
 Though the package comes equipped with sample data for water and energy values across multiple sectors at the US county 
