@@ -39,6 +39,30 @@ Using interflow
 
 For information on installation, dependencies, and other similar topics, see the `Getting Started <https://kmongird.github.io/interflow/getting_started.html>`_ page.
 
+Navigation
+##############################
+
+.. toctree::
+   :maxdepth: 2
+
+   getting_started
+
+   user_guide
+
+   quickstarter
+
+   api
+
+   sample_data
+
+   contributing
+
+   authors
+
+   license
+
+   acknowledgement
+
 
 Disclaimer
 ##############################
