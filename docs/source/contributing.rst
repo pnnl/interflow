@@ -5,11 +5,11 @@ Contributing
 
 Bugs |:bug:|
 ################################
-If you found a bug in interflow, please `open an issue request in GitHub. <https://github.com/kmongird/interflow/issues>`_ Bugs should be appropriately labeled with the 'bug' issue type. Please be as descriptive as possible in your description.
+If you found a bug in interflow, please `open an issue request in GitHub. <https://github.com/pnnl/interflow/issues>`_ Bugs should be appropriately labeled with the 'bug' issue type. Please be as descriptive as possible in your description.
 
 Feature suggestions |:bulb:|
 ################################
-If you'd like to suggest a feature to be added to interflow, please `open an issue request in GitHub. <https://github.com/kmongird/interflow/issues>`_ and describe your feature appropriately. Feature suggestions should be tagged as 'enhancement'.
+If you'd like to suggest a feature to be added to interflow, please `open an issue request in GitHub. <https://github.com/pnnl/interflow/issues>`_ and describe your feature appropriately. Feature suggestions should be tagged as 'enhancement'.
 
 
 Contributing |:computer:|
