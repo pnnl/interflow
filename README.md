@@ -28,7 +28,7 @@ level, the interflow package can be used for any region, set of regions, set of 
 the appropriate data is provided by the user. 
 
 For more information on how the interflow package works, how to generalize it with your own data, see [the 
-documentation](https://kmongird.github.io/interflow/).
+documentation](https://pnnl.github.io/interflow/).
 
 ## Installation
 
@@ -44,10 +44,10 @@ See interflow in action with our [Quickstarter Jupyter Notebook](https://mybinde
 
 ## User Guide
 
-If you're interested in background information and explanations on how the model works visit out [User Guide](https://kmongird.github.io/interflow/user_guide.html)
+If you're interested in background information and explanations on how the model works visit out [User Guide](https://pnnl.github.io/interflow/user_guide.html)
 
 ## Contributing to interflow
 
-Spotted a bug or have a suggestion to improve the model? We'd love your input! See our [guidelines for contributing](https://kmongird.github.io/interflow/contributing.html).
+Spotted a bug or have a suggestion to improve the model? We'd love your input! See our [guidelines for contributing](https://pnnl.github.io/interflow/contributing.html).
 
 
