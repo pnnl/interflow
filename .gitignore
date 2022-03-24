@@ -12,7 +12,7 @@ docs/build/
 
 #build/
 #*.pyc
-flow.egg-info/
+.interflow.egg-info/
 dist/
 
 # pycharm
