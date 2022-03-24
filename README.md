@@ -1,5 +1,8 @@
 [![build](https://github.com/pnnl/interflow/actions/workflows/build.yml/badge.svg)](https://github.com/pnnl/interflow/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/pnnl/interflow/branch/main/graph/badge.svg)](https://codecov.io/gh/pnnl/interflow)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/pnnl/interflow/664ea82edcf66725bf3be0e7e4917a4bea022fe4?urlpath=lab%2Ftree%2FQuickstarter.ipynb)
+
+
 
 # interflow
 
