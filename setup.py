@@ -14,7 +14,7 @@ version = re.search(r"__version__ = ['\"]([^'\"]*)['\"]", open('interflow/__init
 setup(
     name='interflow',
     version=version,
-    packages=find_packages(exclude=["interflow"]),
+    packages=find_packages(),
     url='https://github.com/pnnl/interflow',
     license='BSD2-Clause',
     author='Kendall Mongird',
