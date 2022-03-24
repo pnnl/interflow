@@ -1,4 +1,6 @@
 [![build](https://github.com/pnnl/interflow/actions/workflows/build.yml/badge.svg)](https://github.com/pnnl/interflow/actions/workflows/build.yml)
+[![codecov](https://codecov.io/gh/pnnl/interflow/branch/main/graph/badge.svg)](https://codecov.io/gh/pnnl/interflow)
+
 # interflow
 
 `interflow` is an open-source Python package for collecting, calculating, organizing, and visualizing cross-sectoral 
