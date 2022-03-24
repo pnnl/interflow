@@ -45,7 +45,7 @@ pip install interflow
 
 ## Quickstarter
 
-See interflow in action with our [Quickstarter Jupyter Notebook](https://mybinder.org/v2/gh/kmongird/interflow/31ec8ffa075ccb3b7b0723dada704e18965f8d3d?urlpath=lab%2Ftree%2FQuickstarter.ipynb) hosted on binder!
+See interflow in action with our [Quickstarter Jupyter Notebook](https://mybinder.org/v2/gh/pnnl/interflow/664ea82edcf66725bf3be0e7e4917a4bea022fe4?urlpath=lab%2Ftree%2FQuickstarter.ipynb) hosted on binder!
 
 ## User Guide
 
