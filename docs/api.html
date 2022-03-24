@@ -40,14 +40,15 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.analyze.group_results">
 <span class="sig-prename descclassname"><span class="pre">interflow.analyze.</span></span><span class="sig-name descname"><span class="pre">group_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#interflow.analyze.group_results" title="Permalink to this definition">¶</a></dt>
-<dd><p>Groups package run output to level of granularity specified in parameters. Returns a dataframe of values with
+<dd><p>Groups package run output to level of granularity specified. Returns a dataframe of values with
 source to target flows by region.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>df</strong> (<em>DataFrame</em>) – Dataframe of run output values.</p></li>
+<li><p><strong>df</strong> (<em>DataFrame</em>) – Dataframe of package run output values.</p></li>
 <li><p><strong>output_level</strong> (<em>int</em>) – Level of granularity output will be grouped to. Must be an
-integer between one and five, inclusive. Default value is set to</p></li>
+integer between one and five, inclusive. Default value is set to
+level 1 granularity.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -393,7 +394,7 @@ All water that is not consumed by these sectors is assumed to be discharged to e
 </dl>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
+<dd class="field-odd"><p>DataFrame of discharge fractions</p>
 </dd>
 </dl>
 </dd></dl>
@@ -401,12 +402,19 @@ All water that is not consumed by these sectors is assumed to be discharged to e
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.sample_data.calc_hydro_water_intensity">
 <span class="sig-prename descclassname"><span class="pre">interflow.sample_data.</span></span><span class="sig-name descname"><span class="pre">calc_hydro_water_intensity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">intensity_cap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity_cap_amt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6000000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#interflow.sample_data.calc_hydro_water_intensity" title="Permalink to this definition">¶</a></dt>
-<dd><p>calculating the water use required for a bbtu of hydroelectric generation. Daily water use (mgd) is
+<dd><p>calculates the water use (mgd) required per bbtu of hydroelectric generation. Daily water use (mgd) is
 combined with daily generation from hydropower for each region from 1995 USGS data. Discharge and source
-fraction variables are also created.</p>
+fraction variables are also created. Only counties with hydroelectric generation in 2015 are assigned intensity
+estimates.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>DataFrame of water intensity of hydroelectric generation by county</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>intensity_cap</strong> (<em>bool</em>) – If set to true, applies a cap to the water intensity value in any county.</p></li>
+<li><p><strong>intensity_cap_amt</strong> – Sets the amount of the water intensity cap in mgd per bbtu</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>DataFrame of water intensity of hydroelectric generation by county</p>
 </dd>
 </dl>
 </dd></dl>
@@ -415,11 +423,11 @@ fraction variables are also created.</p>
 <dt class="sig sig-object py" id="interflow.sample_data.calc_irrigation_consumption">
 <span class="sig-prename descclassname"><span class="pre">interflow.sample_data.</span></span><span class="sig-name descname"><span class="pre">calc_irrigation_consumption</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#interflow.sample_data.calc_irrigation_consumption" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes 2015 USGS water flow data and calculates consumption fractions for crop irrigation and golf irrigation based
-on consumptive use in those subsectors. Additionally, water withdrawal values for crop irrigation are filled in
+on consumptive use in those sub-sectors. Additionally, water withdrawal values for crop irrigation are filled in
 with general irrigation values for counties with missing crop irrigation data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Dataframe of 2015 water flow values and irrigation subsector consumption
+<dd class="field-odd"><p>Dataframe of 2015 water flow values and irrigation sub-sector consumption
 fractions</p>
 </dd>
 </dl>
@@ -467,10 +475,14 @@ conveyance losses, and surface discharge</p>
 <dt class="sig sig-object py" id="interflow.sample_data.calc_population_county_weight">
 <span class="sig-prename descclassname"><span class="pre">interflow.sample_data.</span></span><span class="sig-name descname"><span class="pre">calc_population_county_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#interflow.sample_data.calc_population_county_weight" title="Permalink to this definition">¶</a></dt>
 <dd><p>calculates the percentage of state total population by county and merges to provided dataframe
-by ‘State’. Used in splitting up state-level estimates to the county level.</p>
+by variable ‘State’. Used in splitting up state-level estimates to the county level.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>DataFrame of water consumption fractions for various sectors by county</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df</strong> (<em>Pandas DataFrame</em>) – dataframe of state-level values to combine with county population weights. Should only
+include State column as the regional identifier and include state-level values.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>DataFrame of water consumption fractions for various sectors by county</p>
 </dd>
 </dl>
 </dd></dl>
@@ -530,10 +542,12 @@ Python package.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.sample_data.convert_kwh_bbtu">
 <span class="sig-prename descclassname"><span class="pre">interflow.sample_data.</span></span><span class="sig-name descname"><span class="pre">convert_kwh_bbtu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#interflow.sample_data.convert_kwh_bbtu" title="Permalink to this definition">¶</a></dt>
-<dd><p>converts energy in kWh to energy in billion btu.</p>
+<dd><p>converts energy in kWh to energy in billion btu.
+:param value:           value in kilowatt-hours of energy
+:type value:            float</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Value in bbtu</p>
+<dd class="field-odd"><p>value in bbtu</p>
 </dd>
 </dl>
 </dd></dl>
@@ -541,10 +555,12 @@ Python package.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.sample_data.convert_mwh_bbtu">
 <span class="sig-prename descclassname"><span class="pre">interflow.sample_data.</span></span><span class="sig-name descname"><span class="pre">convert_mwh_bbtu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#interflow.sample_data.convert_mwh_bbtu" title="Permalink to this definition">¶</a></dt>
-<dd><p>converts energy in MWh to energy in billion btu.</p>
+<dd><p>converts energy in MWh to energy in billion btu.
+:param value:           value in megawatt-hours of energy
+:type value:            float</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Value in bbtu</p>
+<dd class="field-odd"><p>value in bbtu</p>
 </dd>
 </dl>
 </dd></dl>
@@ -657,7 +673,7 @@ state total. These percent of state total values from 2011 are mapped to 2015 st
 information is supplemented.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>DataFrame of a oil production (bbtu) by county</p>
+<dd class="field-odd"><p>DataFrame of a petroleum production (bbtu) by county</p>
 </dd>
 </dl>
 </dd></dl>
@@ -677,7 +693,8 @@ crop irrigation is applied to the irrigation used in the production of corn for 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.sample_data.prep_electricity_cooling">
 <span class="sig-prename descclassname"><span class="pre">interflow.sample_data.</span></span><span class="sig-name descname"><span class="pre">prep_electricity_cooling</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#interflow.sample_data.prep_electricity_cooling" title="Permalink to this definition">¶</a></dt>
-<dd><p>Maps cooling water data to power plant generation data and fills blank values.</p>
+<dd><p>Maps cooling water data to power plant generation data and fills missing values with established methodology
+using water withdrawal and consumption intensity estimates.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Dataframe of cooling water values by plant.</p>
@@ -704,7 +721,7 @@ consumption, surface discharge, and ocean discharge.</p>
 Produces a dataframe of demand data by county.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>DataFrame of electricity demand data</p>
+<dd class="field-odd"><p>DataFrame of electricity demand data by county</p>
 </dd>
 </dl>
 </dd></dl>
@@ -754,7 +771,7 @@ electricity generation demand, and electricity generation to rejected energy.</p
 </dl>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>DataFrame of a number of water values for 2015 at the county level</p>
+<dd class="field-odd"><p>DataFrame of interbasin transfer water values for 2015 at the county level</p>
 </dd>
 </dl>
 </dd></dl>
@@ -816,10 +833,11 @@ both unconventional and conventional petroleum production.</p>
 <dt class="sig sig-object py" id="interflow.sample_data.prep_power_plant_location">
 <span class="sig-prename descclassname"><span class="pre">interflow.sample_data.</span></span><span class="sig-name descname"><span class="pre">prep_power_plant_location</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#interflow.sample_data.prep_power_plant_location" title="Permalink to this definition">¶</a></dt>
 <dd><p>prepping power plant location information to provide a dataframe of power plant codes and their associated
-FIPS code.</p>
+FIPS code. Power plants with unidentified counties are removed from the dataframe. These missing FIPS codes are
+addressed, if needed, in alternative functions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>DataFrame of power plant codes and associated FIPS codes</p>
+<dd class="field-odd"><p>DataFrame of power plant IDs and associated FIPS codes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -842,8 +860,8 @@ Used in calculation of public water supply demand to commercial and industrial s
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.sample_data.prep_pumping_energy_fuel_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.sample_data.</span></span><span class="sig-name descname"><span class="pre">prep_pumping_energy_fuel_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#interflow.sample_data.prep_pumping_energy_fuel_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>prepping pumping fuel source data so that the outcome is a dataframe showing the percent of energy for
-crop irrigation, golf irrigation, aquaculture, livestock, and public water supply, that comes from each fuel
+<dd><p>prepping pumping fuel source data so that the output is a dataframe showing the percent of energy for
+crop irrigation, golf irrigation, aquaculture, livestock, and public water supply that comes from each fuel
 source type (e.g., electricity, natural gas). Also includes discharge fractions for rejected energy and energy
 services.</p>
 <dl class="field-list simple">
@@ -859,7 +877,7 @@ services.</p>
 <dd><p>Prepares irrigation data so that the outcome is a dataframe of groundwater and surface water pumping energy
 intensities (billion BTU per million gallons) by county. For groundwater pumping intensity, The total differential
 height is calculated as the sum of the average well depth and the pressurization head. The pressure data is provided
-in pounds per square inch (psi). This is converted to feet using a coefficient of 2.31. This analysis also follows
+in pounds per square inch (psi). This is converted to feet using a conversion of 2.31. This analysis also follows
 the assumption that average well depth is used instead of depth to water to counteract some of the
 undocumented friction that would occur in the pumping process. Surface water pumping intensity follows the same
 methodology as groundwater pumping intensity except the total differential height has a value of zero for well
@@ -873,7 +891,7 @@ depth.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.sample_data.prep_pws_to_pwd">
-<span class="sig-prename descclassname"><span class="pre">interflow.sample_data.</span></span><span class="sig-name descname"><span class="pre">prep_pws_to_pwd</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.sample_data.prep_pws_to_pwd" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">interflow.sample_data.</span></span><span class="sig-name descname"><span class="pre">prep_pws_to_pwd</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#interflow.sample_data.prep_pws_to_pwd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates public water supply exports, imports, and flows to public water demand based on total public water
 demand from residential, commercial, and industrial and total public water supply from direct withdrawals and
 interbasin transfers.</p>
@@ -924,12 +942,20 @@ datafile by FIPS county code.</p>
 <dt class="sig sig-object py" id="interflow.sample_data.prep_water_use_1995">
 <span class="sig-prename descclassname"><span class="pre">interflow.sample_data.</span></span><span class="sig-name descname"><span class="pre">prep_water_use_1995</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#interflow.sample_data.prep_water_use_1995" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
-<dt>prepping 1995 water use data from USGS by replacing missing values, fixing FIPS codes,</dt><dd><p>and reducing to needed variables</p>
+<dt>prepping 1995 water use data from USGS by replacing missing values, fixing FIPS codes,</dt><dd><p>and reducing to needed variables.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>DataFrame of water values for 1995 at the county level</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>variables</strong> (<em>list</em>) – None if no specific variables required in addition to FIPS code.
+Default is None, otherwise a list of additional variables to include in
+returned dataframe.</p></li>
+<li><p><strong>all_variables</strong> (<em>bool</em>) – Include all available variables in returned dataframe. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>DataFrame of water values for 1995 at the county level</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1021,7 +1047,7 @@ natural gas and petroleum to energy demand of natural gas and petroleum.</p>
 
 <span class="target" id="module-interflow.visualize"></span><dl class="py function">
 <dt class="sig sig-object py" id="interflow.visualize.plot_map">
-<span class="sig-prename descclassname"><span class="pre">interflow.visualize.</span></span><span class="sig-name descname"><span class="pre">plot_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jsonfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'total'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#interflow.visualize.plot_map" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">interflow.visualize.</span></span><span class="sig-name descname"><span class="pre">plot_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jsonfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#interflow.visualize.plot_map" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Takes flow package output and plots a cloropleth map of an individual value. Displaying the first flow value</dt><dd><p>in the dataset by default and produces a drop-down menu of the remaining flows to select from and update the map.
 Requires a GeoJSON file containing the geometry information for the region of interest. The feature.id in the file
@@ -1036,20 +1062,18 @@ points to the column in the input data with this information.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>jsonfile</strong> (<em>dict</em>) – loaded GeoJSON dictionary containing geometry information for the values to
-be plotted on the map. the feature.id in the file must align with the region
+be plotted on the map. The feature.id in the file must align with the region
 data column in the dataframe of input values to display.</p></li>
 <li><p><strong>data</strong> (<em>Dataframe</em>) – dataframe of flow values from source to target by region</p></li>
-<li><p><strong>level</strong> (<em>int</em>) – level of granularity to display for values. Level should be between 1 and
-5 inclusive.</p></li>
-<li><p><strong>region_col</strong> (<em>int</em>) – optional parameter to indicate an additional regional identifier column that
-can be displayed on hover in the figure. Examples include the associated
-US county name belonging to the region code. Default is set to no additional
-region information displayed.</p></li>
+<li><p><strong>level</strong> (<em>int</em>) – level of granularity to display for values. Level should be an integer
+between 1 and 5 inclusive. Default is set to level 1 granularity.</p></li>
 <li><p><strong>strip</strong> (<em>str</em>) – optional parameter to provide a string that will be removed from the labels
 in the output. For example, if the input data has a repeated word such as
-‘total’ for numerous levels, the word ‘total’ will be stripped.</p></li>
+‘total’ for numerous levels, the word ‘total’ will be stripped. Default is
+set so that no words are stripped.</p></li>
 <li><p><strong>center</strong> (<em>dict</em>) – dictionary of coordinates in the form of {“lat”: 37.0902, “lon”: -95.7129}
-which centers the displayed map. Default center coordinates are for the US.</p></li>
+which centers the displayed map. Default center coordinates are
+{“lat”: 37.0902, “lon”: -95.7129}.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1062,12 +1086,13 @@ and for specified units.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.visualize.plot_sankey">
 <span class="sig-prename descclassname"><span class="pre">interflow.visualize.</span></span><span class="sig-name descname"><span class="pre">plot_sankey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_type1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_type2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_sectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#interflow.visualize.plot_sankey" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plots interactive sankey diagram(s) for a given region at a given level of granularity from flow package output
+<dd><p>Plots interactive sankey diagram(s) for a given region at a given level of granularity from package output
 data. Requires that variable naming is consistent with flow package output variable naming. At least one unit type
 must be specified as a parameter. Output level can be specified to display sankey diagrams at different levels of
 granularity. Sankey diagram(s) can only display a single region at a time. If no region name is
 specified, the flow data provided must be for a single region. Contains the option to strip strings from node names
-to remove replicated placeholder names such as ‘total’.</p>
+to remove replicated placeholder names such as ‘total’. On hover, the flow values are displayed. Note that an ‘m’
+following a value indicates that the value shown is a decimal. For example, 80m is equivalent to .80.</p>
 <blockquote>
 <div><dl class="field-list simple">
 <dt class="field-odd">param data</dt>
@@ -1115,7 +1140,7 @@ Removes values at all levels for specified sector.</p>
 <dd class="field-even"><p>list</p>
 </dd>
 <dt class="field-odd">return</dt>
-<dd class="field-odd"><p>interactive sankey diagram of flow values</p>
+<dd class="field-odd"><p>interactive Sankey diagram of flow values</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -1124,17 +1149,30 @@ Removes values at all levels for specified sector.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.visualize.plot_sector_bar">
 <span class="sig-prename descclassname"><span class="pre">interflow.visualize.</span></span><span class="sig-name descname"><span class="pre">plot_sector_bar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sector_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inflow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#interflow.visualize.plot_sector_bar" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plots a stacked barchart for a single region of inflows or outflows for selected sectors in selected units.</p>
+<dd><p>Plots a stacked barchart for a single region of inflows or outflows for selected sectors in selected units. The
+stacked bars represent the highest level of granularity available for each major sector. For example, if there are
+values for water flows into the public water supply sector, specifically tied to the water flows for fresh surface
+water imports, then one of the stacked components in the public water supply bar in the chart will be equal to the
+value of this specific sub-sector flow.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<em>DataFrame</em>) – dataframe of flow values from source to target</p></li>
-<li><p><strong>unit_type</strong> (<em>str</em>) – unit type to be displayed, must be equal to unit type in input data</p></li>
-<li><p><strong>region_name</strong> (<em>str</em>) – name of region to display values for</p></li>
-<li><p><strong>sector_list</strong> (<em>list</em>) – list of sectors to include stacked values for. Must be provided at level 1
-granularity.</p></li>
+<li><p><strong>unit_type</strong> (<em>str</em>) – unit type to be displayed, must be equal to resource unit type in input data</p></li>
+<li><p><strong>region_name</strong> (<em>str</em>) – name of region to display values for.</p></li>
+<li><p><strong>sector_list</strong> (<em>list</em>) – list of major sectors to include stacked values for as strings. Strings
+must be provided at level 1 granularity. For example, providing
+sector_list=[‘Public Water Supply’, ‘Residential’] will show all of the
+subsector inflows or outflows for those sectors.</p></li>
 <li><p><strong>inflow</strong> (<em>bool</em>) – If true, shows inflows into each specified sector. If false, shows outflows.
-Default is set to True</p></li>
+Default is set to True. Note that inflows are reflected in terms of the
+destination subsector not the source of the inflow. For example, indicating
+public water supply as a sector and setting inflows to True will show the
+values attributed to each of the public water supply subsectors, e.g.,
+energy demand for fresh surface water pumping in the public water supply
+sector. Outflows, on the other hand, reflect the destination of the outflow.
+For example, if inflow is set to False, we would see which downstream sector
+the indicated major sector was sending its resources.</p></li>
 <li><p><strong>strip</strong> (<em>str</em>) – optional parameter to provide a string that will be removed from the labels
 in the output. For example, if the input data has a repeated word such as
 ‘total’ for numerous levels, the word ‘total’ will be stripped.</p></li>
@@ -1161,7 +1199,7 @@ sectors in selected units.</p>
 
 
 
-<p class="blurb">a multi-sector multi-resource flow builder</p>
+<p class="blurb">a multi-resource sectoral interdependency flow builder</p>
 
 
 
@@ -1170,7 +1208,7 @@ sectors in selected units.</p>
 
 <h3>Navigation</h3>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstarter.html">Quickstarter</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Documentation</a><ul>
