@@ -12,13 +12,6 @@ setup.py
 .github/ISSUE_TEMPLATE/feature_request.md
 .github/workflows/build.yml
 .github/workflows/draft-pdf.yml
-.ipynb_checkpoints/Interconnection_Sankeys-checkpoint.ipynb
-.ipynb_checkpoints/Quickstarter-checkpoint.ipynb
-.ipynb_checkpoints/Untitled1-checkpoint.ipynb
-.ipynb_checkpoints/Untitled2-checkpoint.ipynb
-.ipynb_checkpoints/Untitled3-checkpoint.ipynb
-.ipynb_checkpoints/Untitled4-checkpoint.ipynb
-.ipynb_checkpoints/flow_notebook-checkpoint.ipynb
 docs/.buildinfo
 docs/.nojekyll
 docs/Makefile
@@ -222,7 +215,6 @@ interflow/tests/test_construct.py
 interflow/tests/test_deconstruct.py
 interflow/tests/test_reader.py
 interflow/tests/test_sample_data.py
-notebooks/Quickstarter.ipynb
 paper/fig1.png
 paper/paper.bib
 paper/paper.md

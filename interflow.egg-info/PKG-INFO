@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: interflow
-Version: 1.0.0
+Version: 1.0.1
 Summary: An open-source Python package for calculating and organizing sectoral flows and interdependencies
 Home-page: https://github.com/pnnl/interflow
 Author: Kendall Mongird
@@ -39,7 +39,7 @@ intensity values
 dependencies, how resources flow through sectors in an individual region, and how these dependencies compare across 
 regions.
 
-![image](https://user-images.githubusercontent.com/74064300/160015899-589b5928-bdac-4319-ab99-62413fa05210.png)
+![fig](https://user-images.githubusercontent.com/74064300/160175598-a48f218c-ac9f-4226-a599-4072a280733c.png)
 
 
 Though the package comes equipped with sample data for water and energy values across multiple sectors at the US county 
@@ -59,7 +59,7 @@ pip install interflow
 
 ## Quickstarter
 
-See interflow in action with our [Quickstarter Jupyter Notebook](https://mybinder.org/v2/gh/kmongird/interflow/31ec8ffa075ccb3b7b0723dada704e18965f8d3d?urlpath=lab%2Ftree%2FQuickstarter.ipynb) hosted on binder!
+See interflow in action with our [Quickstarter Jupyter Notebook](https://mybinder.org/v2/gh/pnnl/interflow/664ea82edcf66725bf3be0e7e4917a4bea022fe4?urlpath=lab%2Ftree%2FQuickstarter.ipynb) hosted on binder!
 
 ## User Guide
 
