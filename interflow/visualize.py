@@ -14,7 +14,8 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
     following a value indicates that the value shown is a decimal. For example, 80m is equivalent to .80.
 
 
-        :param data:                        dataframe of flow values from source to target
+        :param data:                        dataframe of flow values from source to target, must be provided at level
+                                            5 granularity.
         :type data:                         DataFrame
 
         :param unit_type1:                  units of the first set of flow values (e.g., mgd)
@@ -42,6 +43,13 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
 
     # get data
     df = data
+
+    # check that the correct number of columns is provided
+    if len(df.columns) != 13:
+        m = 'Data provided is not at the correct granularity level. Must be at granularity level 5.'
+        raise ValueError(m)
+    else:
+        pass
 
     # remove sectors specified
     if remove_sectors is None:
