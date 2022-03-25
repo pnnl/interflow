@@ -371,3 +371,7 @@ The **interflow** package also comes with the ability to plot flow values on a r
 .. image:: map_example.png
   :width: 700
 
+
+Using the Sample Data
+**********************************
+Sample data including extensive water and energy data for US counties for the year 2015 is included in the input files folder in the package. This data can be loaded as a pandas DataFrame by running the function '.read_sample_data()'. The full sample data is included in the zip file called 'us_county_sample_data.csv.zip'. The code used to develop this sample data file is included in the sample_data.py module and all input data files used to compile the sample data file are in the input_data folder as well. For more information on the methodology and data sources used to compiles the sample data, see the `sample data documentation<https://pnnl.github.io/interflow/sample_data.html>`_. 
