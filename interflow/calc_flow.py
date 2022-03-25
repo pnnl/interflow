@@ -87,14 +87,10 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
             if f_type == 'A_collect':
                 # collect input flow values
                 for t1 in f_dict[r][f_type]:
-                    l1_value = 0
                     for t2 in f_dict[r][f_type][t1]:
-                        l2_value = 0
                         for t3 in f_dict[r][f_type][t1][t2]:
-                            l3_value = 0
                             for t4 in f_dict[r][f_type][t1][t2][t3]:
                                 for t5 in f_dict[r][f_type][t1][t2][t3][t4]:
-                                    l4_value = 0
                                     for u1 in f_dict[r][f_type][t1][t2][t3][t4][t5]:
                                         l5_total_value = 0
                                         for s1 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1]:
@@ -114,10 +110,28 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
                                                                     l5_value = f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2][p]
 
                                                                     # add to other level totals
-                                                                    l4_value = l4_value + l5_value
-                                                                    l3_value = l3_value + l5_value
-                                                                    l2_value = l2_value + l5_value
-                                                                    l1_value = l1_value + l5_value
+                                                                    if l1_name in l1_dict:
+                                                                        l1_value = l1_dict[l1_name] + l5_value
+                                                                    else:
+                                                                        l1_value = l5_value
+
+                                                                    # add to level 2 dictionary total
+                                                                    if l2_name in l2_dict:
+                                                                        l2_value = l2_dict[l2_name] + l5_value
+                                                                    else:
+                                                                        l2_value = l5_value
+
+                                                                    # add to level 3 dictionary total
+                                                                    if l3_name in l3_dict:
+                                                                        l3_value = l3_dict[l3_name] + l5_value
+                                                                    else:
+                                                                        l3_value = l5_value
+
+                                                                    # add to level 4 dictionary total
+                                                                    if l4_name in l4_dict:
+                                                                        l4_value = l4_dict[l4_name] + l5_value
+                                                                    else:
+                                                                        l4_value = l5_value
 
                                                                     # update output dictionaries
                                                                     l1_dict.update({l1_name: l1_value})
@@ -134,7 +148,6 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
             # calculate new flows based on intensity values
             elif f_type == 'B_calculate':
                 for t1 in f_dict[r][f_type]:
-
                     for t2 in f_dict[r][f_type][t1]:
                         for t3 in f_dict[r][f_type][t1][t2]:
                             for t4 in f_dict[r][f_type][t1][t2][t3]:
@@ -164,6 +177,7 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
                                                                         else:
                                                                             # flow value new value is based on
                                                                             l5s_value = total_dict[l5s_name]
+
                                                                             # new flow value
                                                                             l5t_value = l5s_value * intensity
 
