@@ -284,7 +284,7 @@ Key Outputs
 Data Outputs
 **********************************
 
-interflow returns a Pandas DataFrame when calling `interflow.calculate() <https://kmongird.github.io/interflow/api.html#interflow.calc_flow.calculate>`_. The DataFrame contains the following for each flow value for each region included in the input data when the level parameter is set to 5:
+interflow returns a Pandas DataFrame when calling `interflow.calculate() <https://pnnl.github.io/interflow/api.html#interflow.calc_flow.calculate>`_. The DataFrame contains the following for each flow value for each region included in the input data when the level parameter is set to 5:
 
 +-------------+-----------------------------------------------+-------+
 | Column Name | Description                                   | Type  |
@@ -341,7 +341,7 @@ In addition to the Pandas DataFrame output, a variety of visualization and analy
 Single-unit sankey diagrams
 ------------------------------
 
-Sankey diagrams are used to visualize flows from source nodes to target nodes where links between nodes have variable width depending on the value of the flow. The `interflow.plot_sankey() <https://kmongird.github.io/interflow/api.html#interflow.visualize.plot_sankey>`_ function plots up to two sankey diagrams (one for each unit specified) based on the run output that is provided to the function. Users can specify a level of granularity to show flows from level 1 (major sector aggregates only) to level 5 (the highest level of granularity available). For more information on the specific function parameters, defaults, and other components, see the function_guide section.
+Sankey diagrams are used to visualize flows from source nodes to target nodes where links between nodes have variable width depending on the value of the flow. The `interflow.plot_sankey() <https://pnnl.github.io/interflow/api.html#interflow.visualize.plot_sankey>`_ function plots up to two sankey diagrams (one for each unit specified) based on the run output that is provided to the function. Users can specify a level of granularity to show flows from level 1 (major sector aggregates only) to level 5 (the highest level of granularity available). For more information on the specific function parameters, defaults, and other components, see the function_guide section.
 
 .. image:: sankey_example.png
   :width: 700
@@ -351,7 +351,7 @@ Sankey diagrams are used to visualize flows from source nodes to target nodes wh
 Single region stacked barcharts of sectors
 --------------------------------------------
 
-In addition to the Sankey diagrams, there is also the option to plot output in a stacked barchart for any number of sectors. The `interflow.plot_sector_bar() <https://kmongird.github.io/interflow/api.html#interflow.visualize.plot_sector_bar>`_ function takes a list input of the level 1 sector names (e.g., public water supply) and proceeds to plot inflows or outflows (chosen by the user) into that sector for the specified units. Inflows and outflows are displayed in stacked values of level 5 subsectors within each sector. The barcharts are intended to be used to compare sectors within an individual region for an individual unit.
+In addition to the Sankey diagrams, there is also the option to plot output in a stacked barchart for any number of sectors. The `interflow.plot_sector_bar() <https://pnnl.github.io/interflow/api.html#interflow.visualize.plot_sector_bar>`_ function takes a list input of the level 1 sector names (e.g., public water supply) and proceeds to plot inflows or outflows (chosen by the user) into that sector for the specified units. Inflows and outflows are displayed in stacked values of level 5 subsectors within each sector. The barcharts are intended to be used to compare sectors within an individual region for an individual unit.
 
 An example output for energy flows into the agricultural and public water supply sectors for an individual US county from the sample data is shown below.
 
@@ -363,10 +363,10 @@ Likewise, the additional figure below shows the energy outflows from those secto
 .. image:: bar_outflow_example.png
   :width: 700
 
-Cloropleth map displaying single flow values across regions
+Choropleth map displaying single flow values across regions
 -------------------------------------------------------------
 
-The **interflow** package also comes with the ability to plot flow values on a regional basis. By providing  `interflow.plot_map() <https://kmongird.github.io/interflow/api.html#interflow.visualize.plot_map>`_ function requires a GeoJSON file to plot a cloropleth map of a selected value. The selectable values are generated as a dropdown list of all available flow values for the specified level of granularity. For example, if level 1 granularity is specified, the drop-down list contains only flows between level 1 nodes. Users can select up to level 5 granularity when running the function and the output will respond appropriately. Below is an example of the cloropleth map output for level 1 granularity for a single flow value using the US county sample data.
+The **interflow** package also comes with the ability to plot flow values on a regional basis. By providing  `interflow.plot_map() <https://pnnl.github.io/interflow/api.html#interflow.visualize.plot_map>`_ function requires a GeoJSON file to plot a cloropleth map of a selected value. The selectable values are generated as a dropdown list of all available flow values for the specified level of granularity. For example, if level 1 granularity is specified, the drop-down list contains only flows between level 1 nodes. Users can select up to level 5 granularity when running the function and the output will respond appropriately. Below is an example of the cloropleth map output for level 1 granularity for a single flow value using the US county sample data.
 
 .. image:: map_example.png
   :width: 700
