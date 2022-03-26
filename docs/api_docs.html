@@ -15,6 +15,8 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Sample Data" href="sample_data.html" />
+    <link rel="prev" title="Quickstarter" href="quickstarter.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -116,8 +118,12 @@ region(s)</p>
 <span class="target" id="module-interflow.reader"></span><dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_coal_mine_location_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_coal_mine_location_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_coal_mine_location_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in data with information on the county location of individual coal mines.
-:return:                        dataframe of coal mine location values</p>
+<dd><p>Read in data with information on the county location of individual coal mines.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of coal mine location values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -134,36 +140,56 @@ region(s)</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_corn_irrigation_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_corn_irrigation_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_corn_irrigation_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in data from USDA Farm and Ranch Irrigation Survey on total irrigation to all crops and corn production.
-:return:                        dataframe of irrigation values</p>
+<dd><p>Read in data from USDA Farm and Ranch Irrigation Survey on total irrigation to all crops and corn production.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of irrigation values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_corn_production_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_corn_production_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_corn_production_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in data from USDA on the total corn production for 2015 at the county level.
-:return:                        dataframe of county-level corn production values</p>
+<dd><p>Read in data from USDA on the total corn production for 2015 at the county level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of county-level corn production values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_county_fips_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_county_fips_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_county_fips_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in data to map the 2015 county alphanumeric names to county FIPS codes.
-:return:                        dataframe of county names and FIPS codes</p>
+<dd><p>Read in data to map the 2015 county alphanumeric names to county FIPS codes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of county names and FIPS codes</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_county_petroleum_natgas_production_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_county_petroleum_natgas_production_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_county_petroleum_natgas_production_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in data on county level petroleum and natural gas production data.
-:return:                        dataframe of natural gas and petroleum production values</p>
+<dd><p>Read in data on county level petroleum and natural gas production data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of natural gas and petroleum production values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_electricity_cooling_flow_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_electricity_cooling_flow_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_electricity_cooling_flow_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in USGS 2015 data on thermoelectric cooling withdrawals and water consumption for individual power plants.
-:return:                        dataframe of thermoelectric cooling values</p>
+<dd><p>Read in USGS 2015 data on thermoelectric cooling withdrawals and water consumption for individual power plants.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of thermoelectric cooling values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -181,37 +207,57 @@ industrial, and transportation sector.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_electricity_generation_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_electricity_generation_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_electricity_generation_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in electricity generation and fuel use by individual power plants in the US for 2015.
-:return:                        dataframe of electricity generation and fuel use values</p>
+<dd><p>Read in electricity generation and fuel use by individual power plants in the US for 2015.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of electricity generation and fuel use values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_electricity_water_intensity_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_electricity_water_intensity_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_electricity_water_intensity_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in water intensity data for various types of power plant technologies.
-:return:                        dataframe of water intensity values</p>
+<dd><p>Read in water intensity data for various types of power plant technologies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of water intensity values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_ethanol_plant_location_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_ethanol_plant_location_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_ethanol_plant_location_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in data on ethanol plant locations for 2015.
-:return:                        dataframe of ethanol plant location values</p>
+<dd><p>Read in data on ethanol plant locations for 2015.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of ethanol plant location values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_fuel_demand_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_fuel_demand_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_fuel_demand_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read in data from US EIA for 2015 on the total fuel demand in each state by the residential, commercial,
-industrial, and transportation sector.
-:return:                        dataframe of fuel demand values</p>
+industrial, and transportation sector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of fuel demand values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_fuel_renaming_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_fuel_renaming_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_fuel_renaming_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in data to rename fuel demand variables.
-:return:                        dataframe of new variable names to map to old variable names</p>
+<dd><p>Read in data to rename fuel demand variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of new variable names to map to old variable names</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -219,8 +265,12 @@ industrial, and transportation sector.
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_irrigation_pumping_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_irrigation_pumping_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read in data from USDA Farm and Ranch Irrigation Survey 2013 with information on average_well_depth_ft,
 average operating pressure (psi),average pumping capacity (gpm), and the amount of irrigation pumping using
-electricity, natural gas, propane, and diesel at the state-level.
-:return:                        dataframe of irrigation pumping values</p>
+electricity, natural gas, propane, and diesel at the state-level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of irrigation pumping values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -238,30 +288,46 @@ electricity, natural gas, propane, and diesel at the state-level.
 <dt class="sig sig-object py" id="interflow.reader.get_power_plant_location_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_power_plant_location_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_power_plant_location_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read in data that includes information on the location (county, state) of individual power plants (by plant code)
-in the US for 2015
-:return:                        dataframe of power plants and their locations</p>
+in the US for 2015</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of power plants and their locations</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_pumping_intensity_rename_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_pumping_intensity_rename_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_pumping_intensity_rename_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in data to rename pumping intensity variables.
-:return:                        dataframe of rename values to map to old names</p>
+<dd><p>Read in data to rename pumping intensity variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of rename values to map to old names</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_state_fips_crosswalk_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_state_fips_crosswalk_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_state_fips_crosswalk_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in data with state names, state abbreviations, and state-level FIPS codes.
-:return:                        dataframe of state identification values</p>
+<dd><p>Read in data with state names, state abbreviations, and state-level FIPS codes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of state identification values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_state_fuel_production_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_state_fuel_production_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_state_fuel_production_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read in data from US EIA for 2015 with state-level fuel production data including biomass, natural gas, and
-petroleum.
-:return:                        dataframe of fuel production values</p>
+petroleum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of fuel production values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -279,106 +345,166 @@ from each that is injected, consumed, or discharged to the surface.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_state_water_to_conventional_oil_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_state_water_to_conventional_oil_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_state_water_to_conventional_oil_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in data on the water to oil ratio by PADD region for conventional oil production.
-:return:                        dataframe of water intensity values</p>
+<dd><p>Read in data on the water to oil ratio by PADD region for conventional oil production.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of water intensity values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_state_water_to_unconventional_production_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_state_water_to_unconventional_production_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_state_water_to_unconventional_production_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in state-level data on water use in the production of unconventional natural gas and petroleum.
-:return:                        dataframe of water use values</p>
+<dd><p>Read in state-level data on water use in the production of unconventional natural gas and petroleum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of water use values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_tx_ibt_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_tx_ibt_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_tx_ibt_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in data on Texas interbasin water transfers for 2015.
-:return:                        dataframe of interbasin transfer values</p>
+<dd><p>Read in data on Texas interbasin water transfers for 2015.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of interbasin transfer values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_wastewater_discharge_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_wastewater_discharge_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_wastewater_discharge_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in data of wastewater facility discharge data.
-:return:                        dataframe of wastewater discharge values</p>
+<dd><p>Read in data of wastewater facility discharge data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of wastewater discharge values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_wastewater_flow_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_wastewater_flow_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_wastewater_flow_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in data of wastewater facility water flow data.
-:return:                        dataframe of wastewater flow values</p>
+<dd><p>Read in data of wastewater facility water flow data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of wastewater flow values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_wastewater_location_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_wastewater_location_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_wastewater_location_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in data of wastewater facility location data.
-:return:                        dataframe of wastewater location values</p>
+<dd><p>Read in data of wastewater facility location data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of wastewater location values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_wastewater_type_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_wastewater_type_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_wastewater_type_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in data of wastewater facility treatment type data.
-:return:                        dataframe of wastewater treatment values</p>
+<dd><p>Read in data of wastewater facility treatment type data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of wastewater treatment values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_water_consumption_rename_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_water_consumption_rename_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_water_consumption_rename_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in 1995 water use rename key data.
-:return:                        dataframe of variable names to map to original names</p>
+<dd><p>Read in 1995 water use rename key data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of variable names to map to original names</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_water_use_1995_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_water_use_1995_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_water_use_1995_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in 1995 USGS water use data
-:return:                        dataframe of water use values</p>
+<dd><p>Read in 1995 USGS water use data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of water use values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_water_use_2015_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_water_use_2015_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_water_use_2015_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in 2015 USGS water use data
-:return:                        dataframe of 2015 water use values</p>
+<dd><p>Read in 2015 USGS water use data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of 2015 water use values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_water_use_rename_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_water_use_rename_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_water_use_rename_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in variable renaming key for USGS 2015 water use data
-:return:                        dataframe of variable names to map to original names</p>
+<dd><p>Read in variable renaming key for USGS 2015 water use data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of variable names to map to original names</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.get_west_ibt_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">get_west_ibt_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.get_west_ibt_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in data on western interbasin water transfers.
-:return:                        dataframe of interbasin transfer values for western states</p>
+<dd><p>Read in data on western interbasin water transfers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of interbasin transfer values for western states</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.load_sample_data_output">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">load_sample_data_output</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#interflow.reader.load_sample_data_output" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in a copy of the run output for all US counties.
-:return:                        dataframe of county output values</p>
+<dd><p>Read in a copy of the run output for all US counties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of county output values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.load_sample_geojson_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">load_sample_geojson_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.reader.load_sample_geojson_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in GeoJSON file with county-level information for mapping all US counties.
-:return:                        dataframe of county-level corn production values</p>
+<dd><p>Read in GeoJSON file with county-level information for mapping all US counties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dataframe of county-level corn production values</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.reader.read_sample_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.reader.</span></span><span class="sig-name descname"><span class="pre">read_sample_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#interflow.reader.read_sample_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in complete sample input csv data as a Pandas DataFrame.
-:return:                        DataFrame of complete sample data values for US Counties</p>
+<dd><p>Read in complete sample input csv data as a Pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>DataFrame of complete sample data values for US Counties</p>
+</dd>
+</dl>
 </dd></dl>
 
 <span class="target" id="module-interflow.sample_data"></span><dl class="py function">
@@ -1090,58 +1216,25 @@ granularity. Sankey diagram(s) can only display a single region at a time. If no
 specified, the flow data provided must be for a single region. Contains the option to strip strings from node names
 to remove replicated placeholder names such as ‘total’. On hover, the flow values are displayed. Note that an ‘m’
 following a value indicates that the value shown is a decimal. For example, 80m is equivalent to .80.</p>
-<blockquote>
-<div><dl class="field-list simple">
-<dt class="field-odd">param data</dt>
-<dd class="field-odd"><p>dataframe of flow values from source to target, must be provided at level
-5 granularity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>DataFrame</em>) – dataframe of flow values from source to target, must be provided at level
+5 granularity.</p></li>
+<li><p><strong>unit_type1</strong> (<em>string</em>) – units of the first set of flow values (e.g., mgd)</p></li>
+<li><p><strong>output_level</strong> (<em>int</em>) – level of granularity of values returned in the figure.</p></li>
+<li><p><strong>unit_type2</strong> (<em>string</em>) – units of the second set of flow values (e.g., bbtu)</p></li>
+<li><p><strong>region_name</strong> (<em>string</em>) – Name of region to display values for if input data includes multiple.
+If none is specified, data must be for a single region.</p></li>
+<li><p><strong>strip</strong> (<em>string</em>) – Optional parameter. Provides a string to remove from variable labels.</p></li>
+<li><p><strong>remove_sectors</strong> (<em>list</em>) – Optional parameter to remove all flows into and out of a level 1 sector.
+Removes values at all levels for specified sector.</p></li>
+</ul>
 </dd>
-<dt class="field-even">type data</dt>
-<dd class="field-even"><p>DataFrame</p>
-</dd>
-<dt class="field-odd">param unit_type1</dt>
-<dd class="field-odd"><p>units of the first set of flow values (e.g., mgd)</p>
-</dd>
-<dt class="field-even">type unit_type1</dt>
-<dd class="field-even"><p>string</p>
-</dd>
-<dt class="field-odd">param output_level</dt>
-<dd class="field-odd"><p>level of granularity of values returned in the figure.</p>
-</dd>
-<dt class="field-even">type output_level</dt>
-<dd class="field-even"><p>int</p>
-</dd>
-<dt class="field-odd">param unit_type2</dt>
-<dd class="field-odd"><p>units of the second set of flow values (e.g., bbtu)</p>
-</dd>
-<dt class="field-even">type unit_type2</dt>
-<dd class="field-even"><p>string</p>
-</dd>
-<dt class="field-odd">param region_name</dt>
-<dd class="field-odd"><p>Name of region to display values for if input data includes multiple.
-If none is specified, data must be for a single region.</p>
-</dd>
-<dt class="field-even">type region_name</dt>
-<dd class="field-even"><p>string</p>
-</dd>
-<dt class="field-odd">param strip</dt>
-<dd class="field-odd"><p>Optional parameter. Provides a string to remove from variable labels.</p>
-</dd>
-<dt class="field-even">type strip</dt>
-<dd class="field-even"><p>string</p>
-</dd>
-<dt class="field-odd">param remove_sectors</dt>
-<dd class="field-odd"><p>Optional parameter to remove all flows into and out of a level 1 sector.
-Removes values at all levels for specified sector.</p>
-</dd>
-<dt class="field-even">type remove_sectors</dt>
-<dd class="field-even"><p>list</p>
-</dd>
-<dt class="field-odd">return</dt>
-<dd class="field-odd"><p>interactive Sankey diagram of flow values</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>interactive Sankey diagram of flow values</p>
 </dd>
 </dl>
-</div></blockquote>
 </dd></dl>
 
 <dl class="py function">
@@ -1205,11 +1298,14 @@ sectors in selected units.</p>
 
 
 <h3>Navigation</h3>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstarter.html">Quickstarter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-interflow.analyze">Modules and Functions</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="sample_data.html">Sample Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
@@ -1221,6 +1317,8 @@ sectors in selected units.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="quickstarter.html" title="previous chapter">Quickstarter</a></li>
+      <li>Next: <a href="sample_data.html" title="next chapter">Sample Data</a></li>
   </ul></li>
 </ul>
 </div>

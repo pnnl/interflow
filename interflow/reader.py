@@ -462,7 +462,7 @@ def load_sample_data_output() -> pd.DataFrame:
     """Read in a copy of the run output for all US counties.
 
     :return:                        dataframe of county output values
-    
+
     """
 
     # collect file

@@ -14,32 +14,33 @@ def plot_sankey(data, unit_type1, output_level=1, unit_type2=None, region_name=N
     following a value indicates that the value shown is a decimal. For example, 80m is equivalent to .80.
 
 
-        :param data:                        dataframe of flow values from source to target, must be provided at level
-                                            5 granularity.
-        :type data:                         DataFrame
+    :param data:                        dataframe of flow values from source to target, must be provided at level
+                                        5 granularity.
+    :type data:                         DataFrame
 
-        :param unit_type1:                  units of the first set of flow values (e.g., mgd)
-        :type unit_type1:                   string
+    :param unit_type1:                  units of the first set of flow values (e.g., mgd)
+    :type unit_type1:                   string
 
-        :param output_level:                level of granularity of values returned in the figure.
-        :type output_level:                 int
+    :param output_level:                level of granularity of values returned in the figure.
+    :type output_level:                 int
 
-        :param unit_type2:                  units of the second set of flow values (e.g., bbtu)
-        :type unit_type2:                   string
+    :param unit_type2:                  units of the second set of flow values (e.g., bbtu)
+    :type unit_type2:                   string
 
-        :param region_name:                 Name of region to display values for if input data includes multiple.
-                                            If none is specified, data must be for a single region.
-        :type region_name:                  string
+    :param region_name:                 Name of region to display values for if input data includes multiple.
+                                        If none is specified, data must be for a single region.
+    :type region_name:                  string
 
-        :param strip:                       Optional parameter. Provides a string to remove from variable labels.
-        :type strip:                        string
+    :param strip:                       Optional parameter. Provides a string to remove from variable labels.
+    :type strip:                        string
 
-        :param remove_sectors:              Optional parameter to remove all flows into and out of a level 1 sector.
-                                            Removes values at all levels for specified sector.
-        :type remove_sectors:               list
+    :param remove_sectors:              Optional parameter to remove all flows into and out of a level 1 sector.
+                                        Removes values at all levels for specified sector.
+    :type remove_sectors:               list
 
-        :return:                            interactive Sankey diagram of flow values
-            """
+    :return:                            interactive Sankey diagram of flow values
+
+        """
 
     # get data
     df = data
