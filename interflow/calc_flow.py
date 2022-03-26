@@ -6,7 +6,7 @@ import interflow.analyze as an
 
 def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, output_file_path=None) -> pd.DataFrame:
     """Loops through input data for each region provided or specified and (1) collects flows for input data,  (2)
-    calculates any cross unit flows based on input flow intensity values  (3) builds source flows for calculated
+    calculates any cross unit flows based on input flow intensity values, (3) builds source flows for calculated
     intensities based on source fraction assumptions, and (4) builds discharge flows for calculated intensities and
     input data based on discharge fractions. Finally, outputs are aggregated to specified level of granularity.
     This function also removes all self-provided (i.e., looped) flows if remove_loops parameter is set to True.

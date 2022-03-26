@@ -12,7 +12,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath(r'C:\Users\mong275\Local Files\Repos\interflow'))
+sys.path.insert(0, os.path.abspath(r'C:\Users\mong275\repos\interflow'))
 
 
 # -- Project information -----------------------------------------------------

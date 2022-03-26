@@ -15,8 +15,6 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Sample Data" href="sample_data.html" />
-    <link rel="prev" title="Quickstarter" href="quickstarter.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -61,11 +59,10 @@ summed to level of granularity specified.</p>
 <span class="target" id="module-interflow.calc_flow"></span><dl class="py function">
 <dt class="sig sig-object py" id="interflow.calc_flow.calculate">
 <span class="sig-prename descclassname"><span class="pre">interflow.calc_flow.</span></span><span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_loops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#interflow.calc_flow.calculate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loops through input data for each region provided or specified and (1) collects flows for input data, (2)
-calculates totals for input flows at level 1 through level 5 granularity (2) calculates any cross unit flows based
-on input flow intensity values at level 1 through level 5 granularity (3) builds source flows for calculated
-intensities based on source fraction assumptions at level 1 through level 5 granularity, and (4) builds discharge
-flows for calculated intensities and input data based on discharge fractions at level 1 through level 5 granularity.
+<dd><p>Loops through input data for each region provided or specified and (1) collects flows for input data,  (2)
+calculates any cross unit flows based on input flow intensity values, (3) builds source flows for calculated
+intensities based on source fraction assumptions, and (4) builds discharge flows for calculated intensities and
+input data based on discharge fractions. Finally, outputs are aggregated to specified level of granularity.
 This function also removes all self-provided (i.e., looped) flows if remove_loops parameter is set to True.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1096,7 +1093,8 @@ following a value indicates that the value shown is a decimal. For example, 80m 
 <blockquote>
 <div><dl class="field-list simple">
 <dt class="field-odd">param data</dt>
-<dd class="field-odd"><p>dataframe of flow values from source to target</p>
+<dd class="field-odd"><p>dataframe of flow values from source to target, must be provided at level
+5 granularity.</p>
 </dd>
 <dt class="field-even">type data</dt>
 <dd class="field-even"><p>DataFrame</p>
@@ -1207,14 +1205,11 @@ sectors in selected units.</p>
 
 
 <h3>Navigation</h3>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstarter.html">Quickstarter</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-interflow.analyze">Modules and Functions</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sample_data.html">Sample Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
@@ -1226,8 +1221,6 @@ sectors in selected units.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="quickstarter.html" title="previous chapter">Quickstarter</a></li>
-      <li>Next: <a href="sample_data.html" title="next chapter">Sample Data</a></li>
   </ul></li>
 </ul>
 </div>
@@ -1261,7 +1254,7 @@ sectors in selected units.</p>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="_sources/api.rst.txt"
+      <a href="_sources/api_docs.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

@@ -51,7 +51,7 @@ Navigation
 
    quickstarter
 
-   api
+   api_docs
 
    sample_data
 
