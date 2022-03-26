@@ -1,14 +1,14 @@
 from .reader import *
 import interflow.construct as co
 import interflow.deconstruct as de
+import interflow.analyze as an
 
 
 def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, output_file_path=None) -> pd.DataFrame:
-    """Loops through input data for each region provided or specified and (1) collects flows for input data, (2)
-    calculates totals for input flows at level 1 through level 5 granularity (2) calculates any cross unit flows based
-    on input flow intensity values at level 1 through level 5 granularity (3) builds source flows for calculated
-    intensities based on source fraction assumptions at level 1 through level 5 granularity, and (4) builds discharge
-    flows for calculated intensities and input data based on discharge fractions at level 1 through level 5 granularity.
+    """Loops through input data for each region provided or specified and (1) collects flows for input data,  (2)
+    calculates any cross unit flows based on input flow intensity values  (3) builds source flows for calculated
+    intensities based on source fraction assumptions, and (4) builds discharge flows for calculated intensities and
+    input data based on discharge fractions. Finally, outputs are aggregated to specified level of granularity.
     This function also removes all self-provided (i.e., looped) flows if remove_loops parameter is set to True.
 
 
@@ -76,10 +76,6 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
     # establish empty dictionaries to add calculated values to
     total_dict = {}  # dictionary of sector totals
     l5_dict = {}  # dictionary of level 5 granularity flows
-    l4_dict = {}  # dictionary of level 4 granularity flows
-    l3_dict = {}  # dictionary of level 3 granularity flows
-    l2_dict = {}  # dictionary of level 2 granularity flows
-    l1_dict = {}  # dictionary of level 1 granularity flows
 
     # loop through data
     for r in f_dict:
@@ -92,15 +88,10 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
                             for t4 in f_dict[r][f_type][t1][t2][t3]:
                                 for t5 in f_dict[r][f_type][t1][t2][t3][t4]:
                                     for u1 in f_dict[r][f_type][t1][t2][t3][t4][t5]:
-                                        l5_total_value = 0
                                         for s1 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1]:
-                                            l1_name = f'{r}_{s1}_to_{t1}_{u1}'
                                             for s2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1]:
-                                                l2_name = f'{r}_{s1}_{s2}_to_{t1}_{t2}_{u1}'
                                                 for s3 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2]:
-                                                    l3_name = f'{r}_{s1}_{s2}_{s3}_to_{t1}_{t2}_{t3}_{u1}'
                                                     for s4 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
-                                                        l4_name = f'{r}_{s1}_{s2}_{s3}_{s4}_to_{t1}_{t2}_{t3}_{t4}_{u1}'
                                                         for s5 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
                                                             l5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
                                                             for u2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5]:
@@ -108,41 +99,15 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
 
                                                                     # collect level 5 flow value
                                                                     l5_value = f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5][u2][p]
-
-                                                                    # add to other level totals
-                                                                    if l1_name in l1_dict:
-                                                                        l1_value = l1_dict[l1_name] + l5_value
-                                                                    else:
-                                                                        l1_value = l5_value
-
-                                                                    # add to level 2 dictionary total
-                                                                    if l2_name in l2_dict:
-                                                                        l2_value = l2_dict[l2_name] + l5_value
-                                                                    else:
-                                                                        l2_value = l5_value
-
-                                                                    # add to level 3 dictionary total
-                                                                    if l3_name in l3_dict:
-                                                                        l3_value = l3_dict[l3_name] + l5_value
-                                                                    else:
-                                                                        l3_value = l5_value
-
-                                                                    # add to level 4 dictionary total
-                                                                    if l4_name in l4_dict:
-                                                                        l4_value = l4_dict[l4_name] + l5_value
-                                                                    else:
-                                                                        l4_value = l5_value
-
-                                                                    # update output dictionaries
-                                                                    l1_dict.update({l1_name: l1_value})
-                                                                    l2_dict.update({l2_name: l2_value})
-                                                                    l3_dict.update({l3_name: l3_value})
-                                                                    l4_dict.update({l4_name: l4_value})
                                                                     l5_dict.update({l5_name: l5_value})
 
                                                                     # update total dictionary with level 5 value
                                                                     l5_total_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
-                                                                    l5_total_value = l5_total_value + l5_value
+                                                                    if l5_total_name in total_dict:
+                                                                        l5_total_value = total_dict[
+                                                                                             l5_total_name] + l5_value
+                                                                    else:
+                                                                        l5_total_value = l5_value
                                                                     total_dict.update({l5_total_name: l5_total_value})
 
             # calculate new flows based on intensity values
@@ -197,17 +162,9 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
                                 for t5 in f_dict[r][f_type][t1][t2][t3][t4]:
                                     for u1 in f_dict[r][f_type][t1][t2][t3][t4][t5]:
                                         for s1 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1]:
-                                            l1_name = f'{r}_{s1}_to_{t1}_{u1}'
-                                            sl1_value = 0
                                             for s2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1]:
-                                                l2_name = f'{r}_{s1}_{s2}_to_{t1}_{t2}_{u1}'
-                                                sl2_value = 0
                                                 for s3 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2]:
-                                                    l3_name = f'{r}_{s1}_{s2}_{s3}_to_{t1}_{t2}_{t3}_{u1}'
-                                                    sl3_value = 0
                                                     for s4 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
-                                                        l4_name = f'{r}_{s1}_{s2}_{s3}_{s4}_to_{t1}_{t2}_{t3}_{t4}_{u1}'
-                                                        sl4_value = 0
                                                         for s5 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
                                                             l5t_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
                                                             l5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
@@ -228,17 +185,7 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
                                                                         # calculate source to target flow value
                                                                         sl5_value = l5t_value * fraction
 
-                                                                        # update other level output values
-                                                                        sl4_value = sl4_value + sl5_value
-                                                                        sl3_value = sl3_value + sl5_value
-                                                                        sl2_value = sl2_value + sl5_value
-                                                                        sl1_value = sl1_value + sl5_value
-
-                                                                        # update output dictionaries
-                                                                        l1_dict.update({l1_name: sl1_value})
-                                                                        l2_dict.update({l2_name: sl2_value})
-                                                                        l3_dict.update({l3_name: sl3_value})
-                                                                        l4_dict.update({l4_name: sl4_value})
+                                                                        # update output dictionary
                                                                         l5_dict.update({l5_name: sl5_value})
 
                                                                         # update total dictionary
@@ -255,17 +202,9 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
                                 for t5 in f_dict[r][f_type][t1][t2][t3][t4]:
                                     for u1 in f_dict[r][f_type][t1][t2][t3][t4][t5]:
                                         for s1 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1]:
-                                            l1_name = f'{r}_{t1}_to_{s1}_{u1}'
-                                            dl1_value = 0
                                             for s2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1]:
-                                                l2_name = f'{r}_{t1}_{t2}_to_{s1}_{s2}_{u1}'
-                                                dl2_value = 0
                                                 for s3 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2]:
-                                                    l3_name = f'{r}_{t1}_{t2}_{t3}_to_{s1}_{s2}_{s3}_{u1}'
-                                                    dl3_value = 0
                                                     for s4 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3]:
-                                                        l4_name = f'{r}_{t1}_{t2}_{t3}_{t4}_to_{s1}_{s2}_{s3}_{s4}_{u1}'
-                                                        dl4_value = 0
                                                         for s5 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4]:
                                                             l5t_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
                                                             l5_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_to_{s1}_{s2}_{s3}_{s4}_{s5}_{u1}'
@@ -284,18 +223,6 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
 
                                                                         # calculate split to discharge
                                                                         dl5_value = l5t_value * fraction
-
-                                                                        # add to other level totals
-                                                                        dl4_value = dl4_value + dl5_value
-                                                                        dl3_value = dl3_value + dl5_value
-                                                                        dl2_value = dl2_value + dl5_value
-                                                                        dl1_value = dl1_value + dl5_value
-
-                                                                        # update output dictionaries
-                                                                        l1_dict.update({l1_name: dl1_value})
-                                                                        l2_dict.update({l2_name: dl2_value})
-                                                                        l3_dict.update({l3_name: dl3_value})
-                                                                        l4_dict.update({l4_name: dl4_value})
                                                                         l5_dict.update({l5_name: dl5_value})
 
                                                                         # add to total dictionary
@@ -320,68 +247,12 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
                                                             for u2 in f_dict[r][f_type][t1][t2][t3][t4][t5][u1][s1][s2][s3][s4][s5]:
 
                                                                 # create level names for target and source
-                                                                t1_name = f'{r}_{t1}_to_{t1}_{u1}'
-                                                                s1_name = f'{r}_{s1}_to_{s1}_{u2}'
-                                                                t2_name = f'{r}_{t1}_{t2}_to_{t1}_{t2}_{u1}'
-                                                                s2_name = f'{r}_{s1}_{s2}_to_{s1}_{s2}_{u2}'
-                                                                t3_name = f'{r}_{t1}_{t2}_{t3}_to_{t1}_{t2}_{t3}_{u1}'
-                                                                s3_name = f'{r}_{s1}_{s2}_{s3}_to_{s1}_{s2}_{s3}_{u2}'
-                                                                t4_name = f'{r}_{t1}_{t2}_{t3}_{t4}_to_{t1}_{t2}_{t3}_{t4}_{u1}'
-                                                                s4_name = f'{r}_{s1}_{s2}_{s3}_{s4}_to_{s1}_{s2}_{s3}_{s4}_{u2}'
                                                                 t5_name = f'{r}_{t1}_{t2}_{t3}_{t4}_{t5}_to_{t1}_{t2}_{t3}_{t4}_{t5}_{u1}'
                                                                 s5_name = f'{r}_{s1}_{s2}_{s3}_{s4}_{s5}_to_{s1}_{s2}_{s3}_{s4}_{s5}_{u2}'
-
-                                                                # level 1 dictionary
-                                                                if t1_name in l1_dict:
-                                                                    del l1_dict[t1_name]
-                                                                else:
-                                                                    pass
-
-                                                                # level 2 dictionary
-                                                                if t2_name in l2_dict:
-                                                                    del l2_dict[t2_name]
-                                                                else:
-                                                                    pass
-
-                                                                # level 3 dictionary
-                                                                if t3_name in l3_dict:
-                                                                    del l3_dict[t3_name]
-                                                                else:
-                                                                    pass
-
-                                                                # level 4 dictionary
-                                                                if t4_name in l4_dict:
-                                                                    del l4_dict[t4_name]
-                                                                else:
-                                                                    pass
 
                                                                 # level 5 dictionary
                                                                 if t5_name in l5_dict:
                                                                     del l5_dict[t5_name]
-                                                                else:
-                                                                    pass
-
-                                                                # level 1 dictionary
-                                                                if s1_name in l1_dict:
-                                                                    del l1_dict[s1_name]
-                                                                else:
-                                                                    pass
-
-                                                                # level 2 dictionary
-                                                                if s2_name in l2_dict:
-                                                                    del l2_dict[s2_name]
-                                                                else:
-                                                                    pass
-
-                                                                # level 3 dictionary
-                                                                if s3_name in l3_dict:
-                                                                    del l3_dict[s3_name]
-                                                                else:
-                                                                    pass
-
-                                                                # level 4 dictionary
-                                                                if s4_name in l4_dict:
-                                                                    del l4_dict[s4_name]
                                                                 else:
                                                                     pass
 
@@ -393,17 +264,20 @@ def calculate(data: pd.DataFrame, level=5, region_name=None, remove_loops=True, 
     else:
         pass
 
+    # deconstruct nested dictionary into dataframe
+    df = de.deconstruct_dictionary(l5_dict)
+
     # return output at specified level of granularity
     if level == 1:
-        df = de.deconstruct_dictionary(l1_dict)
+        df = an.group_results(df=df, output_level=1)
     elif level == 2:
-        df = de.deconstruct_dictionary(l2_dict)
+        df = an.group_results(df=df, output_level=2)
     elif level == 3:
-        df = de.deconstruct_dictionary(l3_dict)
+        df = an.group_results(df=df, output_level=3)
     elif level == 4:
-        df = de.deconstruct_dictionary(l4_dict)
+        df = an.group_results(df=df, output_level=4)
     elif level == 5:
-        df = de.deconstruct_dictionary(l5_dict)
+        df = df
     else:
         m = 'incorrect level of granularity specified. Must be an integer between 1 and 5, inclusive.'
         raise ValueError(m)
