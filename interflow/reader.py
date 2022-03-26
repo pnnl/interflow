@@ -5,6 +5,7 @@ import json
 
 def read_sample_data() -> pd.DataFrame:
     """Read in complete sample input csv data as a Pandas DataFrame.
+
     :return:                        DataFrame of complete sample data values for US Counties
     """
 
@@ -29,6 +30,7 @@ def read_sample_data() -> pd.DataFrame:
 
 def get_water_use_2015_data():
     """Read in 2015 USGS water use data
+
     :return:                        dataframe of 2015 water use values
     """
 
@@ -40,6 +42,7 @@ def get_water_use_2015_data():
 
 def get_water_use_rename_data():
     """Read in variable renaming key for USGS 2015 water use data
+
     :return:                        dataframe of variable names to map to original names
     """
 
@@ -51,6 +54,7 @@ def get_water_use_rename_data():
 
 def get_water_use_1995_data():
     """Read in 1995 USGS water use data
+
     :return:                        dataframe of water use values
     """
 
@@ -62,6 +66,7 @@ def get_water_use_1995_data():
 
 def get_water_consumption_rename_data():
     """Read in 1995 water use rename key data.
+
     :return:                        dataframe of variable names to map to original names
     """
 
@@ -73,6 +78,7 @@ def get_water_consumption_rename_data():
 
 def get_tx_ibt_data():
     """Read in data on Texas interbasin water transfers for 2015.
+
     :return:                        dataframe of interbasin transfer values
     """
 
@@ -88,6 +94,7 @@ def get_tx_ibt_data():
 
 def get_west_ibt_data():
     """Read in data on western interbasin water transfers.
+
     :return:                        dataframe of interbasin transfer values for western states
     """
 
@@ -99,6 +106,7 @@ def get_west_ibt_data():
 
 def get_county_fips_data():
     """Read in data to map the 2015 county alphanumeric names to county FIPS codes.
+
     :return:                        dataframe of county names and FIPS codes
     """
 
@@ -110,6 +118,7 @@ def get_county_fips_data():
 
 def get_wastewater_flow_data():
     """Read in data of wastewater facility water flow data.
+
     :return:                        dataframe of wastewater flow values
     """
 
@@ -121,6 +130,7 @@ def get_wastewater_flow_data():
 
 def get_wastewater_type_data():
     """Read in data of wastewater facility treatment type data.
+
     :return:                        dataframe of wastewater treatment values
     """
 
@@ -132,6 +142,7 @@ def get_wastewater_type_data():
 
 def get_wastewater_location_data():
     """Read in data of wastewater facility location data.
+
     :return:                        dataframe of wastewater location values
     """
 
@@ -143,6 +154,7 @@ def get_wastewater_location_data():
 
 def get_wastewater_discharge_data():
     """Read in data of wastewater facility discharge data.
+
     :return:                        dataframe of wastewater discharge values
     """
 
@@ -155,6 +167,7 @@ def get_wastewater_discharge_data():
 def get_power_plant_location_data():
     """Read in data that includes information on the location (county, state) of individual power plants (by plant code)
      in the US for 2015
+
      :return:                        dataframe of power plants and their locations
      """
 
@@ -166,6 +179,7 @@ def get_power_plant_location_data():
 
 def get_electricity_generation_data():
     """Read in electricity generation and fuel use by individual power plants in the US for 2015.
+
     :return:                        dataframe of electricity generation and fuel use values
     """
 
@@ -177,6 +191,7 @@ def get_electricity_generation_data():
 
 def get_electricity_water_intensity_data():
     """Read in water intensity data for various types of power plant technologies.
+
     :return:                        dataframe of water intensity values
     """
 
@@ -188,6 +203,7 @@ def get_electricity_water_intensity_data():
 
 def get_electricity_cooling_flow_data():
     """Read in USGS 2015 data on thermoelectric cooling withdrawals and water consumption for individual power plants.
+
     :return:                        dataframe of thermoelectric cooling values
     """
 
@@ -203,6 +219,7 @@ def get_irrigation_pumping_data():
     """Read in data from USDA Farm and Ranch Irrigation Survey 2013 with information on average_well_depth_ft,
     average operating pressure (psi),average pumping capacity (gpm), and the amount of irrigation pumping using
     electricity, natural gas, propane, and diesel at the state-level.
+
     :return:                        dataframe of irrigation pumping values
     """
 
@@ -214,7 +231,9 @@ def get_irrigation_pumping_data():
 
 def get_pumping_intensity_rename_data():
     """Read in data to rename pumping intensity variables.
+
     :return:                        dataframe of rename values to map to old names
+
     """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/variable_rename_key_pump_intensity.csv')
@@ -228,6 +247,7 @@ def get_electricity_demand_data():
     industrial, and transportation sector.
 
     :return:                        dataframe of electricity demand values
+
     """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/eia_sales_annual.csv')
@@ -241,7 +261,9 @@ def get_electricity_demand_data():
 def get_fuel_demand_data():
     """Read in data from US EIA for 2015 on the total fuel demand in each state by the residential, commercial,
     industrial, and transportation sector.
+
     :return:                        dataframe of fuel demand values
+
     """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/use_all_btu.csv')
@@ -252,7 +274,9 @@ def get_fuel_demand_data():
 
 def get_fuel_renaming_data():
     """Read in data to rename fuel demand variables.
+
     :return:                        dataframe of new variable names to map to old variable names
+
     """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/variable_rename_key_fuel_demand.csv')
@@ -264,7 +288,9 @@ def get_fuel_renaming_data():
 def get_state_fuel_production_data():
     """Read in data from US EIA for 2015 with state-level fuel production data including biomass, natural gas, and
     petroleum.
+
     :return:                        dataframe of fuel production values
+
     """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/eia_SEDS_Prod_dataset.csv')
@@ -275,7 +301,9 @@ def get_state_fuel_production_data():
 
 def get_county_petroleum_natgas_production_data():
     """Read in data on county level petroleum and natural gas production data.
+
     :return:                        dataframe of natural gas and petroleum production values
+
     """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/oilgascounty.csv')
@@ -286,7 +314,9 @@ def get_county_petroleum_natgas_production_data():
 
 def get_state_water_to_conventional_oil_data():
     """Read in data on the water to oil ratio by PADD region for conventional oil production.
+
     :return:                        dataframe of water intensity values
+
     """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/PADD_intensity.csv')
@@ -297,7 +327,9 @@ def get_state_water_to_conventional_oil_data():
 
 def get_state_water_to_unconventional_production_data():
     """Read in state-level data on water use in the production of unconventional natural gas and petroleum.
+
     :return:                        dataframe of water use values
+
     """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/Unconventional_Oil_NG_State.csv')
@@ -324,6 +356,7 @@ def get_petroleum_natgas_rename_data():
     """Read in data to rename original petroleum and natural gas values to their long-form descriptive name.
 
     :return:                        dataframe of new variable names to map to old variable names
+
     """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/variable_rename_key_ng_petroleum.csv')
@@ -336,6 +369,7 @@ def get_coal_production_data():
     """Read in 2015 data from US EIA on coal production and mine type at the coal-mine level.
 
     :return:                        dataframe of coal mine production values
+
     """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/coalpublic2015.csv')
@@ -346,7 +380,9 @@ def get_coal_production_data():
 
 def get_coal_mine_location_data():
     """Read in data with information on the county location of individual coal mines.
+
     :return:                        dataframe of coal mine location values
+
     """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/Coal_Mine_Loc.csv')
@@ -357,7 +393,9 @@ def get_coal_mine_location_data():
 
 def get_state_fips_crosswalk_data():
     """Read in data with state names, state abbreviations, and state-level FIPS codes.
+
     :return:                        dataframe of state identification values
+
     """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/State_FIPS_Code.csv')
@@ -368,7 +406,9 @@ def get_state_fips_crosswalk_data():
 
 def get_ethanol_plant_location_data():
     """Read in data on ethanol plant locations for 2015.
+
     :return:                        dataframe of ethanol plant location values
+
     """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/eia819_ethanolcapacity_2015.csv')
@@ -379,7 +419,9 @@ def get_ethanol_plant_location_data():
 
 def get_corn_irrigation_data():
     """Read in data from USDA Farm and Ranch Irrigation Survey on total irrigation to all crops and corn production.
+
     :return:                        dataframe of irrigation values
+
     """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/USDA_FRIS.csv')
@@ -390,7 +432,9 @@ def get_corn_irrigation_data():
 
 def get_corn_production_data():
     """Read in data from USDA on the total corn production for 2015 at the county level.
+
     :return:                        dataframe of county-level corn production values
+
     """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/USDA_NASS_CornProd_2015.csv')
@@ -401,7 +445,9 @@ def get_corn_production_data():
 
 def load_sample_geojson_data():
     """Read in GeoJSON file with county-level information for mapping all US counties.
+
     :return:                        dataframe of county-level corn production values
+
     """
 
     data = pkg_resources.resource_filename('interflow', 'input_data/geojson-counties-fips.json')
@@ -414,7 +460,9 @@ def load_sample_geojson_data():
 
 def load_sample_data_output() -> pd.DataFrame:
     """Read in a copy of the run output for all US counties.
+
     :return:                        dataframe of county output values
+    
     """
 
     # collect file

@@ -44,6 +44,7 @@ def prep_water_use_2015(variables=None, all_variables=False) -> pd.DataFrame:
 
     :return:                            DataFrame of a water withdrawal and consumption values for 2015
                                         at the county level
+
     """
 
     # read in 2015 USGS data
@@ -118,6 +119,7 @@ def calc_irrigation_consumption() -> pd.DataFrame:
 
     :return:                               Dataframe of 2015 water flow values and irrigation sub-sector consumption
                                             fractions
+
     """
 
     # read in prepared 2015 USGS water data
@@ -213,6 +215,7 @@ def rename_water_data_2015(variables=None, all_variables=False) -> pd.DataFrame:
     Takes USGS 2015 flow values and calculated consumption fractions and renames them for higher description.
 
     :return:                 returns a DataFrame of 2015 water flows and consumption fractions for agriculture
+
     """
 
     # read in USGS 2015 flows and irrigation consumption calculations
