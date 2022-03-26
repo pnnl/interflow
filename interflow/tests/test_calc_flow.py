@@ -117,10 +117,6 @@ class TestCalcFlow(unittest.TestCase):
         self.assertEqual(df5.iloc[1]['value'], 4)
         self.assertEqual(df5.iloc[2]['value'], 1)
 
-        # test that the sum of the above two values is returned when level 1 granularity is specified
-        df1 = calculate(data=data, level=1)
-        self.assertEqual(df1.iloc[1]['value'], df5.iloc[1]['value'] + df5.iloc[2]['value'])
-
         # create data to test sum of level 3 differentiation for source fractions
         inputs = [['01', 'A_collect', 'A1w', 'A2w', 'A3w', 'A4w', 'A5w', 'Aunit','B1', 'B2', 'B3', 'B4', 'B5',
                             'Bunit', 'flow_value', 10],
@@ -146,9 +142,6 @@ class TestCalcFlow(unittest.TestCase):
         # test that the third value where the split occurs is calculated correctly
         self.assertEqual(df5.iloc[1]['value'], 2)
         self.assertEqual(df5.iloc[2]['value'], 3)
-
-        df1 = calculate(data=data, level=1)
-        self.assertEqual(df1.iloc[1]['value'], df5.iloc[1]['value'] + df5.iloc[2]['value'])
 
         # create data to test sum of level 4 differentiation for source fractions
         inputs = [['01', 'A_collect', 'A1w', 'A2w', 'A3w', 'A4w', 'A5w', 'Aunit','B1', 'B2', 'B3', 'B4', 'B5',
@@ -176,9 +169,6 @@ class TestCalcFlow(unittest.TestCase):
         self.assertEqual(df5.iloc[1]['value'], 4.4)
         self.assertEqual(df5.iloc[2]['value'], 0.6)
 
-        df1 = calculate(data=data, level=1)
-        self.assertEqual(df1.iloc[1]['value'], df5.iloc[1]['value'] + df5.iloc[2]['value'])
-
         # create data to test sum of level 5 differentiation for source fractions
         inputs = [['01', 'A_collect', 'A1w', 'A2w', 'A3w', 'A4w', 'A5w', 'Aunit','B1', 'B2', 'B3', 'B4', 'B5',
                             'Bunit', 'flow_value', 10],
@@ -204,9 +194,6 @@ class TestCalcFlow(unittest.TestCase):
         # test that the fourth value where the split occurs is calculated correctly
         self.assertEqual(df5.iloc[1]['value'], .2)
         self.assertEqual(df5.iloc[2]['value'], 4.8)
-
-        df1 = calculate(data=data, level=1)
-        self.assertEqual(df1.iloc[1]['value'], df5.iloc[1]['value'] + df5.iloc[2]['value'])
 
         # create data to test sum of level 2 differentiation for discharge fractions
         inputs = [['01', 'A_collect', 'A1w', 'A2w', 'A3w', 'A4w', 'A5w', 'Aunit', 'B1', 'B2', 'B3', 'B4', 'B5',
@@ -244,10 +231,6 @@ class TestCalcFlow(unittest.TestCase):
         self.assertEqual(df5.iloc[4]['value'], 4)
         self.assertEqual(df5.iloc[5]['value'], 6)
 
-        # test that the sum of the above two values is returned when level 1 granularity is specified
-        df1 = calculate(data=data, level=1)
-        self.assertEqual(df1.iloc[1]['value'], df5.iloc[1]['value'] + df5.iloc[2]['value'])
-
         # create data to test sum of level 3 differentiation for discharge fractions\
         inputs = [['01', 'A_collect', 'A1w', 'A2w', 'A3w', 'A4w', 'A5w', 'Aunit', 'B1', 'B2', 'B3', 'B4', 'B5',
                    'Bunit', 'flow_value', 10],
@@ -283,10 +266,6 @@ class TestCalcFlow(unittest.TestCase):
         # test that the value where the split occurs is calculated correctly
         self.assertEqual(df5.iloc[4]['value'], 5)
         self.assertEqual(df5.iloc[5]['value'], 5)
-
-        # test that the sum of the above two values is returned when level 1 granularity is specified
-        df1 = calculate(data=data, level=1)
-        self.assertEqual(df1.iloc[1]['value'], df5.iloc[1]['value'] + df5.iloc[2]['value'])
 
         # create data to test sum of level 4 differentiation for discharge fractions\
         inputs = [['01', 'A_collect', 'A1w', 'A2w', 'A3w', 'A4w', 'A5w', 'Aunit', 'B1', 'B2', 'B3', 'B4', 'B5',
@@ -324,11 +303,6 @@ class TestCalcFlow(unittest.TestCase):
         self.assertEqual(df5.iloc[4]['value'], .4)
         self.assertEqual(df5.iloc[5]['value'], 9.6)
 
-        # test that the sum of the above two values is returned when level 1 granularity is specified
-        df1 = calculate(data=data, level=1)
-        self.assertEqual(df1.iloc[1]['value'], df5.iloc[1]['value'] + df5.iloc[2]['value'])
-
-
         # create data to test sum of level 5 differentiation for discharge fractions\
         inputs = [['01', 'A_collect', 'A1w', 'A2w', 'A3w', 'A4w', 'A5w', 'Aunit', 'B1', 'B2', 'B3', 'B4', 'B5',
                    'Bunit', 'flow_value', 10],
@@ -364,10 +338,6 @@ class TestCalcFlow(unittest.TestCase):
         # test that the value where the split occurs is calculated correctly
         self.assertEqual(df5.iloc[4]['value'], 4)
         self.assertEqual(df5.iloc[5]['value'], 6)
-
-        # test that the sum of the above two values is returned when level 1 granularity is specified
-        df1 = calculate(data=data, level=1)
-        self.assertEqual(df1.iloc[1]['value'], df5.iloc[1]['value'] + df5.iloc[2]['value'])
 
         # create data to test that multiple regions give distinct values
         inputs = [['01', 'A_collect', 'A1w', 'A2w', 'A3w', 'A4w', 'A5w', 'Aunit', 'B1', 'B2', 'B3', 'B4', 'B5',
