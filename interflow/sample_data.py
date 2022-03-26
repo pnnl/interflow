@@ -2378,12 +2378,12 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
     egd_name = '_from_EGD_total_total_total_total_bbtu_fraction'
 
     # list of non-irrigation sectors which are assumed to only take electricity
-    non_irr_sector_list = ['AGR_aquaculture_pumping_fresh_surfacewater_bbtu',
+    non_irr_sector_list = ['AGR_aquaculture_pumping_fresh_groundwater_bbtu',
                            'AGR_aquaculture_pumping_fresh_surfacewater_bbtu',
-                           'AGR_aquaculture_pumping_saline_surfacewater_bbtu',
+                           'AGR_aquaculture_pumping_saline_groundwater_bbtu',
                            'AGR_aquaculture_pumping_saline_surfacewater_bbtu',
                            'AGR_livestock_pumping_fresh_groundwater_bbtu',
-                           'AGR_livestock_pumping_fresh_groundwater_bbtu']
+                           'AGR_livestock_pumping_fresh_surfacewater_bbtu']
 
     # loop through non-irrigation sectors and build full variable names and values
     for sector in non_irr_sector_list:
