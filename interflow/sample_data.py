@@ -787,8 +787,8 @@ def prep_irrigation_pws_ratio() -> pd.DataFrame:
 
 
 def prep_interbasin_transfer_data() -> pd.DataFrame:
-    """Prepares interbasin water transfer data so that output is a dataframe of energy use (BBTU) and total
-        water transferred for irrigation and public water supply in total.
+    """Prepares interbasin water transfer data so that output is a dataframe of energy use (BBTU) and total water
+    transferred for irrigation and public water supply in total.
 
     :return:                DataFrame of interbasin transfer water values for 2015 at the county level
 
