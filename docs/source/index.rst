@@ -12,32 +12,33 @@ Intro
 
 Background
 ##############################
-**interflow** was created to provide a flexible, adaptable, and updatable method to evaluate the interdependencies between sectors and across regions for multiple resource types. The interdependencies and relationships between sectors offer multi-faceted and multi-scale opportunities as well as vulnerabilities. Whether it is water, energy, or otherwise, resources pass from sector to sector and are oftentimes a critical component of a sector's functionality.
+The interdependencies and relationships between sectors can offer multi-faceted and multi-scale opportunities as well as vulnerabilities. Well known examples of sectoral interdependencies include the water required by energy-application sectors (e.g., thermoelectric cooling in the electricity generation sector) or the energy required by water-application sectors (e.g., electricity in the public water supply sector). Many economic sectors such as these rely on a consistent upstream supply of a resource type to conduct their primary operations and may be compromised if a break in the resource flow were to occur.
 
-Well known examples of some of these dependencies include the water required by energy-application sectors (e.g., thermoelectric cooling in the electricity generation sector) and the energy required by water-application sectors (e.g., electricity in the public water supply sector). The ties between sectors can be complex to track, visualize, and/or pull meaningful information from. Many sectors rely on the uninterrupted flow between an "upstream" sector and themselves, leaving them vulnerable to adverse effects should something interrupt that resource handoff or compromise it in some way. The impacts of an event occurring in one sector or subsector may not necessarily be contained within that sector but may instead flow through its connecting network. This package was developed to offer a flexible way to organize known flows, trace resource flows between sectors, calculate new resource flows from existing alternative resource flow values based on sectoral intensity factors, and visualize the results on both a sectoral and regional basis.
+Ties between sectors can be complex to track, visualize, and/or pull meaningful information from. Understanding these interdependencies and evaluating where the greatest cross-sectoral intensities and flows exist can reveal opportunities to enhance the overall network. **interflow** was created to provide a flexible, adaptable, and updatable method to evaluate the interdependencies between sectors within and across regions for multiple resource types.
 
-Being able to understand the ties between sectors, trace the flow of resources, and evaluate where the greatest cross-sectoral intensities exist can reveal opportunities for enhancement in the system at a whole.
-
-In addition to being flexible in handling any number of resource types (e.g., energy and water), the **interflow** package is also flexible in its ability to handle:
+In addition to being flexible in handling any number of resource types (e.g., energy, water, food), the **interflow** package is also flexible in its ability to handle:
 
 * Any number of regions to conduct calculations across
-* Any sector type (e.g., public water supply, electricity generation)
-* Handle up to five levels of granularity within each sector
+* Any sector type (e.g., public water supply, electricity generation, agriculture)
+* Handle up to five levels of granularity within each sector (major sector + 4 levels of subsectors)
 
-The package collects known flow values between sectors provided by the user, calculates other sector connections based on provided resource intensity estimates, source sector fractions, and downstream sector fractions, and compiles the results in a way that can be utilized in a variety of data visualizations. The output of the package can be used to compare dependencies between all sectors as well as compare relative contributions by subsectors to overall sectoral flow values. Given that **interflow** collects and calculates values for each region provided in the input data, the output can additionally be used for region-wise comparisons of flows and intensities.
+The package collects known flow values between sectors provided by the user and calculates additional sector connections based on provided resource intensity estimates, source sector fractions, or downstream sector discharge fractions. Collected and calculated flows are then compiled in a way that can be utilized in a variety of data visualizations offered in the package. The primary output is a Pandas DataFrame of resource flows between each sector which can be used to compare dependencies between all sectors as well as compare relative contributions by subsectors to overall sectoral flow values. Given that **interflow** collects and calculates values for each region provided in the input data, the output can additionally be used for region-wise comparisons of flows and intensities.
 
 
 Statement of Need
 #########################################
 
-Existing tools in this research space are oftentimes limited to the visualization of known sectoral flow values. These are typically in the form of Sankey diagrams which are valuable for evaluation relationships between sectors, but these tools can generally only visualize known flow values, they do not offer a way to calculate the demand of a cross-resource type and build out new sectoral connections based on the result. The **interflow** package aims to fill this gap and serve as a flexible and open-source option for conducting multi-resource sectoral interdependency data calculations while also visualizing the results from a variety of perspectives.
-
+Existing tools in this research space are oftentimes limited to the visualization of known sectoral flow values. These are typically in the form of Sankey diagrams which are valuable for evaluation relationships between sectors, but these tools can generally only visualize known flow values, they do not offer a way to calculate the demand of a cross-resource type and build out new sectoral connections based on the result. The **interflow** package aims to fill this gap and serve as a flexible and open-source option for conducting multi-resource sectoral interdependency data calculations while also visualizing the results in a variety of ways.
 
 
 Using interflow
 ###################################
-
 For information on installation, dependencies, and other similar topics, see the `Getting Started <https://kmongird.github.io/interflow/getting_started.html>`_ page.
+
+Quickstarter
+###################################
+A Jupyter Notebook quickstarter for **interflow** is available (see `Quickstarter.ipynb <https://github.com/pnnl/interflow/blob/main/Quickstarter.ipynb>`_) both as a standalone file and on binder so that it can be opened in an executable environment without the user having to install or download the package (`interflow Quickstarter on binder <https://mybinder.org/v2/gh/pnnl/interflow/main?labpath=Quickstarter.ipynb>`_).
+
 
 Navigation
 ##############################
