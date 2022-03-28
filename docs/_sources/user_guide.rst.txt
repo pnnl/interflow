@@ -57,7 +57,7 @@ More information on generalizability and input data format requirements can be f
 Aggregation and Output Granularity
 **************************************
 
-While highly granular data can provide significant insight into the finer details of a sector, big picture relationships can also be informative. As **interflow** loops through the provided sectors as the various levels of granularity and builds connections, it also tracks sums for each level of granularity so that a level of output granularity can be specified when the model is run. For example, if **interflow** calculates energy demand in the public water supply sector for public water supply treatment and public water supply distribution, it will simultaneously be calculating total energy in the public water supply (i.e., their sum). Whichever level of granularity is specified (between one and five, inclusive) as a parameter when the model is run will be returned in the output.
+While highly granular data can provide significant insight into the finer details of a sector, big picture relationships can also be informative. Though **interflow** loops through the provided sectors and builds connections at level 5 granularity, it has the capability to aggregate the results to a specified level of granularity. For example, if **interflow** calculates energy demand in the public water supply sector for public water supply treatment and public water supply distribution, it is capable of returning the total energy in the public water supply (i.e., their sum). Whatever level of granularity is specified (between one and five, inclusive) as a parameter when the model is run will be returned in the output.
 
 Generalizability
 ################################
@@ -70,14 +70,14 @@ Introduction
 
 Though the **interflow** package comes with sample data for the US for the year 2015 to calculate water and energy interdependencies, alternative input data can be provided to calculate different flows for any region or set of regions, any unit or set of units, and any sector or set of sectors so long as the input data is provided in the correct format.
 
-The **interflow** package requires a Pandas DataFrame with strict guidelines as input data to run calculations. Though different types of calculations are conducted in the **interflow** package, the data and information used to run each calculation is provided in the same input file.
+The .calculate() function, which is responsible for calculating and organizing the resource flows, requires a Pandas DataFrame with strict guidelines as input data to run calculations. Though different types of calculations are conducted in the **interflow** package, the data and information used to run each calculation is provided in the same input file.
 
 The four different types of calculations the **interflow** package conducts include the following:
 
-1. Collect input starting values from Node A to Node B in unit type 1
-2. Calculate an alternative unit flow value based on an intensity factor for Node B
-3. Calculate a source inflow connecting Node C to Node B
-4. Calculate a discharge outflow connecting Node B to Node D
+1. Collect an input flow value to a primary node from a secondary node in specified units
+2. Calculate an alternative unit flow value based on an intensity factor and the specified primary node flow value
+3. Calculate a source inflow connecting an upstream node to the primary node in the alternative units based on a source fraction
+4. Calculate a discharge outflow connecting the primary node to a downstream node for the alternative units based on a discharge fraction
 
 Each of the above calculation types requires a specific format in the input data that are described in more detail below.
 
@@ -284,7 +284,7 @@ Key Outputs
 Data Outputs
 **********************************
 
-interflow returns a Pandas DataFrame when calling `interflow.calculate() <https://pnnl.github.io/interflow/api.html#interflow.calc_flow.calculate>`_. The DataFrame contains the following for each flow value for each region included in the input data when the level parameter is set to 5:
+**interflow** returns a Pandas DataFrame when calling `interflow.calculate() <https://pnnl.github.io/interflow/api.html#interflow.calc_flow.calculate>`_. The DataFrame contains the following for each flow value for each region included in the input data when the level parameter is set to 5:
 
 +-------------+-----------------------------------------------+-------+
 | Column Name | Description                                   | Type  |
@@ -316,7 +316,7 @@ interflow returns a Pandas DataFrame when calling `interflow.calculate() <https:
 | value       | value of flow connecting source to target     | flt   |
 +-------------+-----------------------------------------------+-------+
 
-Note that setting the level parameter equal to a value less than 5 will reduce the output accordingly to only show the appropriate levels, aggregated to the level specified. For example, specifying level 1 will return the following DataFrame instead.
+Note that setting the level parameter equal to a value less than 5 will aggregate the output accordingly to the specified levels. For example, specifying level 1 will return the following DataFrame instead.
 
 +-------------+-----------------------------------------------+-------+
 | Column Name | Description                                   | Type  |

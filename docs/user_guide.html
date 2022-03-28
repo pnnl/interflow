@@ -104,7 +104,7 @@ and builds connections to and from additional sectors to carry those values (e.g
 </section>
 <section id="aggregation-and-output-granularity">
 <h3>Aggregation and Output Granularity<a class="headerlink" href="#aggregation-and-output-granularity" title="Permalink to this headline">¶</a></h3>
-<p>While highly granular data can provide significant insight into the finer details of a sector, big picture relationships can also be informative. As <strong>interflow</strong> loops through the provided sectors as the various levels of granularity and builds connections, it also tracks sums for each level of granularity so that a level of output granularity can be specified when the model is run. For example, if <strong>interflow</strong> calculates energy demand in the public water supply sector for public water supply treatment and public water supply distribution, it will simultaneously be calculating total energy in the public water supply (i.e., their sum). Whichever level of granularity is specified (between one and five, inclusive) as a parameter when the model is run will be returned in the output.</p>
+<p>While highly granular data can provide significant insight into the finer details of a sector, big picture relationships can also be informative. Though <strong>interflow</strong> loops through the provided sectors and builds connections at level 5 granularity, it has the capability to aggregate the results to a specified level of granularity. For example, if <strong>interflow</strong> calculates energy demand in the public water supply sector for public water supply treatment and public water supply distribution, it is capable of returning the total energy in the public water supply (i.e., their sum). Whatever level of granularity is specified (between one and five, inclusive) as a parameter when the model is run will be returned in the output.</p>
 </section>
 </section>
 <section id="generalizability">
@@ -114,13 +114,13 @@ and builds connections to and from additional sectors to carry those values (e.g
 <section id="introduction">
 <h4>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h4>
 <p>Though the <strong>interflow</strong> package comes with sample data for the US for the year 2015 to calculate water and energy interdependencies, alternative input data can be provided to calculate different flows for any region or set of regions, any unit or set of units, and any sector or set of sectors so long as the input data is provided in the correct format.</p>
-<p>The <strong>interflow</strong> package requires a Pandas DataFrame with strict guidelines as input data to run calculations. Though different types of calculations are conducted in the <strong>interflow</strong> package, the data and information used to run each calculation is provided in the same input file.</p>
+<p>The .calculate() function, which is responsible for calculating and organizing the resource flows, requires a Pandas DataFrame with strict guidelines as input data to run calculations. Though different types of calculations are conducted in the <strong>interflow</strong> package, the data and information used to run each calculation is provided in the same input file.</p>
 <p>The four different types of calculations the <strong>interflow</strong> package conducts include the following:</p>
 <ol class="arabic simple">
-<li><p>Collect input starting values from Node A to Node B in unit type 1</p></li>
-<li><p>Calculate an alternative unit flow value based on an intensity factor for Node B</p></li>
-<li><p>Calculate a source inflow connecting Node C to Node B</p></li>
-<li><p>Calculate a discharge outflow connecting Node B to Node D</p></li>
+<li><p>Collect an input flow value to a primary node from a secondary node in specified units</p></li>
+<li><p>Calculate an alternative unit flow value based on an intensity factor and the specified primary node flow value</p></li>
+<li><p>Calculate a source inflow connecting an upstream node to the primary node in the alternative units based on a source fraction</p></li>
+<li><p>Calculate a discharge outflow connecting the primary node to a downstream node for the alternative units based on a discharge fraction</p></li>
 </ol>
 <p>Each of the above calculation types requires a specific format in the input data that are described in more detail below.</p>
 </section>
@@ -570,7 +570,7 @@ Primary Node units refers to the resource units (e.g., gallons) that that sector
 <h2>Key Outputs<a class="headerlink" href="#key-outputs" title="Permalink to this headline">¶</a></h2>
 <section id="data-outputs">
 <h3>Data Outputs<a class="headerlink" href="#data-outputs" title="Permalink to this headline">¶</a></h3>
-<p>interflow returns a Pandas DataFrame when calling <a class="reference external" href="https://pnnl.github.io/interflow/api.html#interflow.calc_flow.calculate">interflow.calculate()</a>. The DataFrame contains the following for each flow value for each region included in the input data when the level parameter is set to 5:</p>
+<p><strong>interflow</strong> returns a Pandas DataFrame when calling <a class="reference external" href="https://pnnl.github.io/interflow/api.html#interflow.calc_flow.calculate">interflow.calculate()</a>. The DataFrame contains the following for each flow value for each region included in the input data when the level parameter is set to 5:</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 19%" />
@@ -638,7 +638,7 @@ Primary Node units refers to the resource units (e.g., gallons) that that sector
 </tr>
 </tbody>
 </table>
-<p>Note that setting the level parameter equal to a value less than 5 will reduce the output accordingly to only show the appropriate levels, aggregated to the level specified. For example, specifying level 1 will return the following DataFrame instead.</p>
+<p>Note that setting the level parameter equal to a value less than 5 will aggregate the output accordingly to the specified levels. For example, specifying level 1 will return the following DataFrame instead.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 19%" />
@@ -733,7 +733,7 @@ Primary Node units refers to the resource units (e.g., gallons) that that sector
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="quickstarter.html">Quickstarter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_docs.html">API Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sample_data.html">Sample Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
