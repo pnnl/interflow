@@ -6,7 +6,7 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../'))
+sys.path.insert(0, os.path.abspath(r'C:\Users\mong275\Local Files\Repos\interflow'))
 
 
 # -- Project information -----------------------------------------------------
