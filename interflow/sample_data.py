@@ -419,11 +419,11 @@ def calc_irrigation_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.90) ->
 
 def calc_irrigation_discharge_flows():
     """ Recalculates the consumption fractions for crop and golf irrigation given the calculated conveyance loss
-        fractions. Returns irrigation discharges to consumption, conveyance losses, and surface discharge. The fraction
-        sent to consumption is assumed to be the prior consumption fraction multiplied by any remaining water after
-        conveyance losses. Surface discharge fraction is calculated as any remaining percentage after consumption.
+    fractions. Returns irrigation discharges to consumption, conveyance losses, and surface discharge. The fraction
+    sent to consumption is assumed to be the prior consumption fraction multiplied by any remaining water after
+    conveyance losses. Surface discharge fraction is calculated as any remaining percentage after consumption.
 
-    :return:                                        Dataframe of recalculated irrgiation consumption fractions,
+    :return:                                        Dataframe of recalculated irrigation consumption fractions,
                                                     conveyance losses, and surface discharge
     """
 
@@ -666,9 +666,9 @@ def calc_pws_commercial_industrial_flows() -> pd.DataFrame:
 
 
 def calc_discharge_fractions():
-    """ Takes water flows to residential, commercial, industrial, mining, and non-irrigation agriculture sectors
-        and calculates their discharge fractions to the surface and ocean.
-        All water that is not consumed by these sectors is assumed to be discharged to either the surface or ocean.
+    """ Takes water flows to residential, commercial, industrial, mining, and non-irrigation agriculture sectors and
+    calculates their discharge fractions to the surface and ocean.
+    All water that is not consumed by these sectors is assumed to be discharged to either the surface or ocean.
 
     :return:                            DataFrame of discharge fractions
     """
