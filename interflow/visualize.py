@@ -487,7 +487,7 @@ def plot_sector_bar(data, unit_type, region_name, sector_list, inflow=True, stri
 
 
 def plot_map(jsonfile: dict, data: pd.DataFrame, level=1, strip=None, center=None):
-    """ Takes flow package output and plots a cloropleth map of an individual value. Displaying the first flow value
+    """ Takes flow package output and plots a choropleth map of an individual value. Displaying the first flow value
      in the dataset by default and produces a drop-down menu of the remaining flows to select from and update the map.
      Requires a GeoJSON file containing the geometry information for the region of interest. The feature.id in the file
      must align with the region data column in the dataframe of input values to display. Flow values can be displayed
@@ -519,7 +519,7 @@ def plot_map(jsonfile: dict, data: pd.DataFrame, level=1, strip=None, center=Non
                                             {"lat": 37.0902, "lon": -95.7129}.
     :type center:                           dict
 
-    :return:                                cloropleth map shaded by value for all regions provided at level specified
+    :return:                                choropleth map shaded by value for all regions provided at level specified
                                             and for specified units.
     """
 
