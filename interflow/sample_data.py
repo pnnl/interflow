@@ -3629,8 +3629,8 @@ def remove_double_counting_from_mining():
 
 def prep_county_ethanol_production_data() -> pd.DataFrame:
     """ Takes 2015 eia data on ethanol plant capacity with locational data and combines with state level biomass
-     (ethanol) production data to split out state total by county. Returns a dataframe of ethanol production (bbtu) by
-     county FIPS for each county in the US for 2015.
+    (ethanol) production data to split out state total by county. Returns a dataframe of ethanol production (bbtu) by
+    county FIPS for each county in the US for 2015.
 
     :return:                DataFrame of county-level ethanol production values
 
