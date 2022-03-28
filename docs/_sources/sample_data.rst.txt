@@ -105,7 +105,7 @@ Reference numbers correspond with those included in the Methodology subsections.
 13. U.S. Energy Information Administration (EIA). (2016). Form EIA-923 detailed data with previous form data (EIA-906/920). U.S. EIA. Retrieved January 15 from https://www.eia.gov/electricity/data/eia923/
 14. Harris, M.A., and Diehl, T.H., 2019, Withdrawal and consumption of water by thermoelectric power plants in the United States, 2015: U.S. Geological Survey Scientific Investigations Report 2019–5103, p., https://doi.org/10.3133/sir20195103.
 15. Macknick et al. (2012) Environ. Res. Lett.7 045802. https://iopscience.iop.org/article/10.1088/1748-9326/7/4/045802/meta
-16. https://www.usgs.gov/u.s.-board-on-geographic-names/download-gnis-data
+16. USGS (2021). US Board on Geographic Names. https://www.usgs.gov/u.s.-board-on-geographic-names/download-gnis-data
 17. U.S. EIA (2016). Annual Coal Report 2015. https://www.eia.gov/coal/annual/
 18. U.S. Department of Labor- Mine Safety and Health Administration. (2021). Mine Data Retrieval System. Mine Safety and Health Administration. Retrieved September 13 from https://www.msha.gov/mine-data-retrieval-system
 19. Plotly. 2022. GeooJSON-Counties-FIPS. https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json
