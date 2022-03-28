@@ -510,11 +510,9 @@ from each that is injected, consumed, or discharged to the surface.</p>
 <span class="target" id="module-interflow.sample_data"></span><dl class="py function">
 <dt class="sig sig-object py" id="interflow.sample_data.calc_discharge_fractions">
 <span class="sig-prename descclassname"><span class="pre">interflow.sample_data.</span></span><span class="sig-name descname"><span class="pre">calc_discharge_fractions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.sample_data.calc_discharge_fractions" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Takes water flows to residential, commercial, industrial, mining, and non-irrigation agriculture sectors</dt><dd><p>and calculates their discharge fractions to the surface and ocean.
+<dd><p>Takes water flows to residential, commercial, industrial, mining, and non-irrigation agriculture sectors and
+calculates their discharge fractions to the surface and ocean.
 All water that is not consumed by these sectors is assumed to be discharged to either the surface or ocean.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>DataFrame of discharge fractions</p>
@@ -580,15 +578,13 @@ replaced by the specified cap amount. The default value is .90.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.sample_data.calc_irrigation_discharge_flows">
 <span class="sig-prename descclassname"><span class="pre">interflow.sample_data.</span></span><span class="sig-name descname"><span class="pre">calc_irrigation_discharge_flows</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#interflow.sample_data.calc_irrigation_discharge_flows" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Recalculates the consumption fractions for crop and golf irrigation given the calculated conveyance loss</dt><dd><p>fractions. Returns irrigation discharges to consumption, conveyance losses, and surface discharge. The fraction
+<dd><p>Recalculates the consumption fractions for crop and golf irrigation given the calculated conveyance loss
+fractions. Returns irrigation discharges to consumption, conveyance losses, and surface discharge. The fraction
 sent to consumption is assumed to be the prior consumption fraction multiplied by any remaining water after
 conveyance losses. Surface discharge fraction is calculated as any remaining percentage after consumption.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Dataframe of recalculated irrgiation consumption fractions,
+<dd class="field-odd"><p>Dataframe of recalculated irrigation consumption fractions,
 conveyance losses, and surface discharge</p>
 </dd>
 </dl>
@@ -745,11 +741,9 @@ surface and underground water intensity per bbtu variable.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.sample_data.prep_county_ethanol_production_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.sample_data.</span></span><span class="sig-name descname"><span class="pre">prep_county_ethanol_production_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#interflow.sample_data.prep_county_ethanol_production_data" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Takes 2015 eia data on ethanol plant capacity with locational data and combines with state level biomass</dt><dd><p>(ethanol) production data to split out state total by county. Returns a dataframe of ethanol production (bbtu) by
+<dd><p>Takes 2015 eia data on ethanol plant capacity with locational data and combines with state level biomass
+(ethanol) production data to split out state total by county. Returns a dataframe of ethanol production (bbtu) by
 county FIPS for each county in the US for 2015.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>DataFrame of county-level ethanol production values</p>
@@ -888,10 +882,8 @@ electricity generation demand, and electricity generation to rejected energy.</p
 <dl class="py function">
 <dt class="sig sig-object py" id="interflow.sample_data.prep_interbasin_transfer_data">
 <span class="sig-prename descclassname"><span class="pre">interflow.sample_data.</span></span><span class="sig-name descname"><span class="pre">prep_interbasin_transfer_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#interflow.sample_data.prep_interbasin_transfer_data" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Prepares interbasin water transfer data so that output is a dataframe of energy use (BBTU) and total</dt><dd><p>water transferred for irrigation and public water supply in total.</p>
-</dd>
-</dl>
+<dd><p>Prepares interbasin water transfer data so that output is a dataframe of energy use (BBTU) and total water
+transferred for irrigation and public water supply in total.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>DataFrame of interbasin transfer water values for 2015 at the county level</p>
@@ -1172,7 +1164,7 @@ natural gas and petroleum to energy demand of natural gas and petroleum.</p>
 <dt class="sig sig-object py" id="interflow.visualize.plot_map">
 <span class="sig-prename descclassname"><span class="pre">interflow.visualize.</span></span><span class="sig-name descname"><span class="pre">plot_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jsonfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#interflow.visualize.plot_map" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
-<dt>Takes flow package output and plots a cloropleth map of an individual value. Displaying the first flow value</dt><dd><p>in the dataset by default and produces a drop-down menu of the remaining flows to select from and update the map.
+<dt>Takes flow package output and plots a choropleth map of an individual value. Displaying the first flow value</dt><dd><p>in the dataset by default and produces a drop-down menu of the remaining flows to select from and update the map.
 Requires a GeoJSON file containing the geometry information for the region of interest. The feature.id in the file
 must align with the region data column in the dataframe of input values to display. Flow values can be displayed
 on the map and represented in the dropdown menu for the indicated level of granularity (level 1 through level 5,
@@ -1200,7 +1192,7 @@ which centers the displayed map. Default center coordinates are
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>cloropleth map shaded by value for all regions provided at level specified
+<dd class="field-even"><p>choropleth map shaded by value for all regions provided at level specified
 and for specified units.</p>
 </dd>
 </dl>
