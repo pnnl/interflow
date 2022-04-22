@@ -3,7 +3,7 @@ from interflow.analyze import *
 from interflow.calc_flow import *
 
 
-class MyTestCase(unittest.TestCase):
+class TestAnalyze(unittest.TestCase):
     def test_group_results(self):
         """Test group_results()."""
 
