@@ -3,7 +3,7 @@ from interflow.sample_data import *
 from interflow.reader import *
 
 
-class MyTestCase(unittest.TestCase):
+class TestSampleData(unittest.TestCase):
     """Conduct tests for functions of sample_data.py."""
 
     def test_convert_kwh_bbtu(self):
