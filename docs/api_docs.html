@@ -1269,6 +1269,42 @@ sectors in selected units.</p>
 </dd></dl>
 
 </section>
+<section id="test-validation-suite">
+<h2>Test Validation Suite<a class="headerlink" href="#test-validation-suite" title="Permalink to this headline">¶</a></h2>
+<p><strong>interflow</strong> contains automated tests for checking correctness. Tests are automatically run using pytest, a unittest framework, with Github Actions anytime a push or a pull request is made. Test files developed for <strong>interflow</strong> can also be run locally as individual scripts using the unittest module. All test scripts and can be found in the <a class="reference external" href="https://github.com/pnnl/interflow/tree/main/interflow/tests">tests folder</a> in the <strong>interflow</strong> repository. For more information on unittest and instructions on how to run test files through the command line see the <a class="reference external" href="https://docs.python.org/3/library/unittest.html">unittest documentation</a></p>
+<p>Below are short descriptions of some of the test cases within the test suite. This is not intended to be an exhaustive list of tests included in the package but instead provides a general idea of the types of tests included. To see the test files for the package, visit the test directory linked above.</p>
+<p><strong>test_analyze.py</strong> - Includes tests for functions of analyze.py. Tests to make sure function returns the expected data structure (e.g., Pandas DataFrame), that grouping results at various levels gives expected DataFrame shape, and that grouping data at various levels through parameter inputs gives the correct sum of data values in the output.</p>
+<p><strong>test_calc_flow.py</strong> - Includes tests for functions of calc_flow.py. There are various types of tests within test_cal_flow.py including:</p>
+<ul class="simple">
+<li><p>tests to confirm that a ValueError gets raised if incorrect input data is provided (e.g., invalid output granularity specified, invalid region name specified, incorrect input data shape provided)</p></li>
+<li><p>tests that specifying a desired output level as a parameter gives the expected output granularity</p></li>
+<li><p>tests various combinations of sample data values to check that output flows are calculated as expected</p></li>
+</ul>
+<p><strong>test_construct.py</strong> - Includes tests for functions of construct.py including:</p>
+<ul class="simple">
+<li><p>tests to confirm that a ValueError gets raised if incorrect input data is provided (e.g., invalid input DataFrame shape)</p></li>
+<li><p>tests that the output is in the expected format (e.g., Pandas DataFrame)</p></li>
+<li><p>tests that the output is at the expected level of data granularity.</p></li>
+</ul>
+<p><strong>test_deconstruct.py</strong> - Includes tests for functions of construct.py including the following:</p>
+<ul class="simple">
+<li><p>tests that the output is in the expected data format (e.g., Pandas DataFrame)</p></li>
+<li><p>tests that tabular output DataFrames are the expected shape</p></li>
+<li><p>tests to make sure there are no missing values in output</p></li>
+<li><p>tests to confirm that a ValueError gets raised if incorrect input data is provided (e.g., invalid input data structure)</p></li>
+</ul>
+<p><strong>test_reader.py</strong> - Includes tests for functions of reader.py. Functions within reader are used to read in data files for use in other functions. Each of the functions in reader.py, therefore, are tested to make sure they are loading the input file and returning the expected data structure type.</p>
+<p><strong>test_sample_data.py</strong> - Includes tests for functions of sample_data.py. The functions within sample_data.py collect and organize the US county sample input data provided with the package. The tests of these functions can vary given that each function handles different sample data organization components. Some of the general types of tests included in test_sample_data.py are:</p>
+<ul class="simple">
+<li><p>tests of conversion functions to confirm they are correctly converting units</p></li>
+<li><p>tests that output DataFrames have the expected shape</p></li>
+<li><p>tests to make sure no data is missing in output DataFrames</p></li>
+<li><p>tests to make sure that removed data items do not appear in output DataFrames</p></li>
+<li><p>tests to make sure that output DataFrames include the expected columns</p></li>
+<li><p>tests to make sure that values in output DataFrames are within the expected range (e.g., fractions fall between 0 and 1, inclusive)</p></li>
+<li><p>tests that when functions are run with default parameters that the output is as expected</p></li>
+</ul>
+</section>
 </section>
 
 
@@ -1296,6 +1332,7 @@ sectors in selected units.</p>
 <li class="toctree-l1"><a class="reference internal" href="quickstarter.html">Quickstarter</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-interflow.analyze">Modules and Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#test-validation-suite">Test Validation Suite</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="sample_data.html">Sample Data</a></li>
