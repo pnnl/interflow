@@ -2197,7 +2197,7 @@ def prep_electricity_cooling_flows() -> pd.DataFrame:
     return output_df
 
 
-def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) -> pd.DataFrame:
+def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000) -> pd.DataFrame:
     """calculates the water use (mgd) required per bbtu of hydroelectric generation. Daily water use (mgd) is
     combined with daily generation from hydropower for each region from 1995 USGS data. Discharge and source
     fraction variables are also created. Only counties with hydroelectric generation in 2015 are assigned intensity
@@ -2226,8 +2226,8 @@ def calc_hydro_water_intensity(intensity_cap=True, intensity_cap_amt=6000000) ->
                          'EGS_hydro_instream_nocooling_total_bbtu_to_EGD_total_total_total_total_bbtu_fraction',
                          'EGS_hydro_instream_nocooling_total_bbtu_from_EPD_hydro_total_total_total_bbtu']]
 
-    # convert from mwh of generation to bbtu
-    df["HY-InPow"] = df["HY-InPow"].apply(convert_mwh_bbtu)
+    # convert from gwh of generation to bbtu
+    df["HY-InPow"] = (df["HY-InPow"] * 3.412) / 0.35
 
     # get daily power generation from annual generation
     df["HY-InPow"] = df["HY-InPow"] / 365
