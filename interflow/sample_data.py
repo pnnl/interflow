@@ -2961,6 +2961,7 @@ def prep_petroleum_water_intensity():
     GALLON_OIL_TO_BBTU_CONVERSION = 0.0001355  # gallon of oil to billion btu conversion
     MILLION_MULTIPLIER = 1000000
     CONVENTIONAL_SURFACE_WATER = .80  # percent of water in conventional oil that comes from surface
+    PETROLEUM_SCALER = 1.45  # coefficient to adjust 2015 petroleum production to 2012 values
 
     # read in county list
     df_loc = prep_water_use_2015()
@@ -2991,7 +2992,8 @@ def prep_petroleum_water_intensity():
     df_unconventional['total_water'] = df_unconventional['fsw_unconventional_mgd'] \
                                        + df_unconventional['fgw_unconventional_mgd']
     df_unconventional['un_water_intensity'] = df_unconventional['total_water'] \
-                                              / df_unconventional['petroleum_unconventional_production_bbtu']
+                                              / (df_unconventional['petroleum_unconventional_production_bbtu'] \
+                                                 / PETROLEUM_SCALER)
 
     # calculate the surface water fraction of total water use
     df_unconventional['un_fsw_frac'] = df_unconventional['fsw_unconventional_mgd'] / df_unconventional['total_water']
@@ -3114,6 +3116,8 @@ def prep_natgas_water_intensity():
     :return:
     """
 
+    NATGAS_SCALER = 1.11  # coefficient to adjust 2015 natural gas production to 2012 values
+
     # read in full county list data
     df_loc = prep_water_use_2015()
 
@@ -3133,7 +3137,7 @@ def prep_natgas_water_intensity():
 
     # calculate county level water intensity based on county level natural gas production
     df['total_water'] = df['fsw_natgas_mgd'] + df['fgw_natgas_mgd']
-    df['natgas_water_intensity'] = df['total_water'] / df['natgas_county_bbtu']
+    df['natgas_water_intensity'] = df['total_water'] / (df['natgas_county_bbtu'] / NATGAS_SCALER)
 
     # calculate the surface water fraction of total water use
     df['natgas_fsw_frac'] = df['fsw_natgas_mgd'] / df['total_water']
