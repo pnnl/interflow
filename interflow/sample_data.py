@@ -1307,8 +1307,8 @@ def prep_wastewater_data() -> pd.DataFrame:
     # combine with full county list to get values for each county
     df_ww_fractions = pd.merge(df_county_list, df_ww_fractions, how='left', on='FIPS')
 
-    # group by FIPS code to get average wastewater discharge and treatment types by county
-    df_ww_flow = df_ww_flow.groupby("FIPS", as_index=False).mean()
+    # group by FIPS code to get total wastewater discharge and treatment types by county
+    df_ww_flow = df_ww_flow.groupby("FIPS", as_index=False).sum()
 
     # combine with full county list to get values for each county and fill counties with no plants with 0
     df_ww_flow = pd.merge(df_county_list, df_ww_flow, how='left', on='FIPS')
