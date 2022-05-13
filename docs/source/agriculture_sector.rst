@@ -13,6 +13,7 @@ Water Supply Withdrawals
 -----------------------------
 Water withdrawals to the various agriculture sectors are provided by US Geological Survey (USGS) (Dieter et al. [1]) and are provided in million gallons per day (mgd) for each county in 2015. This includes fresh and saline water from both surface and ground sources.
 For crop irrigation and golf irrigation, a subset of states did not provide water withdrawal values for these sectors but did provide total irrigation withdrawals (fresh surface and fresh groundwater). For these states, the water withdrawals to total irrigation were used as the values for water withdrawals to crop irrigation. In these states, no water withdrawals were estimated to golf irrigation.
+USGS 2015 (Dieter et al. [1]) defines irrigation water use as all “water that is applied by an irrigation system to sustain plant growth in agricultural and horticultural practices” and “includes self-supplied withdrawals and deliveries from irrigation companies or districts, cooperatives, or governmental entities.” This is interpreted to mean that the water demand provided in the USGS data includes all water withdrawn from local surface and groundwater as well as all water delivered via interbasin transfers, described below.
 
 Water Supply Imports (Interbasin transfers)
 ---------------------------------------------------------
