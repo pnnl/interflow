@@ -31,7 +31,7 @@ Many economic sectors rely on an uninterrupted “upstream” supply of a resour
 
 The `interflow` package provides a flexible tool to organize, calculate, and visualize (using Sankey diagrams and other visualizations) sectoral interdependency flows for multiple subsectors and resources (Figure 1).  This tool can help decision-makers, researchers, and other audiences more easily pull meaning from these interdependencies to reveal multi-faceted opportunities and risks. `interflow` can help investigate questions such as (1) which sectors have high cross-resource dependencies, (2) how does demand for a resource in various sectors compare across regions, and (3) where the sectoral and regional opportunities are for enhanced efficiency, security, and resiliency.
 
-![Example Sankey Diagram Demonstrating the Flow of a Resource Across Sectors.\label{fig:fig1}](fig1.png)
+![Example Sankey Diagrams Demonstrating the Flow of Two Resources Across Sectors in a Single Region.\label{fig:fig1}](fig1.png)
 
 # Statement of Need
 
