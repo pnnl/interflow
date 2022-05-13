@@ -176,9 +176,6 @@ def calc_irrigation_consumption() -> pd.DataFrame:
         df['IC_CU_RWW_frac'] = np.where(df['State'] == state, df['IR_CU_RWW_frac'],
                                         df['IC_CU_RWW_frac'])  # reclaimed
 
-    # preset interbasin transfer to crop irrigation consumption equal to fresh surface water consumption
-    df['IC_CU_ibt_frac'] = df['IC_CU_FSW_frac']
-
     # rename variables
     variable_dict = {'FIPS': 'FIPS',
                      'State': 'State',
@@ -188,8 +185,7 @@ def calc_irrigation_consumption() -> pd.DataFrame:
                      'IC_CU_RWW_frac': 'AGR_crop_reclaimed_wastewater_import_mgd',
                      'IG_CU_FSW_frac': 'AGR_golf_fresh_surfacewater_withdrawal_mgd',
                      'IG_CU_FGW_frac': 'AGR_golf_fresh_groundwater_withdrawal_mgd',
-                     'IG_CU_RWW_frac': 'AGR_golf_reclaimed_wastewater_import_mgd',
-                     'IC_CU_ibt_frac': 'AGR_crop_ibt_total_import_mgd'}
+                     'IG_CU_RWW_frac': 'AGR_golf_reclaimed_wastewater_import_mgd'}
     variable_list = list(variable_dict.keys())
     df = df[variable_list]
     df = df.rename(columns=variable_dict)
@@ -197,8 +193,7 @@ def calc_irrigation_consumption() -> pd.DataFrame:
     # create a list of sector water withdrawal variable name starters
     flow_list = ['AGR_crop_fresh_surfacewater_withdrawal_mgd', 'AGR_crop_fresh_groundwater_withdrawal_mgd',
                  'AGR_crop_reclaimed_wastewater_import_mgd', 'AGR_golf_fresh_surfacewater_withdrawal_mgd',
-                 'AGR_golf_fresh_groundwater_withdrawal_mgd', 'AGR_golf_reclaimed_wastewater_import_mgd',
-                 'AGR_crop_ibt_total_import_mgd']
+                 'AGR_golf_fresh_groundwater_withdrawal_mgd', 'AGR_golf_reclaimed_wastewater_import_mgd']
 
     # create a consumption name adder to add on to variable names
     adder = '_to_CMP_total_total_total_total_mgd_fraction'
@@ -399,7 +394,6 @@ def calc_irrigation_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.90) ->
     created_variable_list = ['AGR_crop_fresh_surfacewater_withdrawal_mgd',
                              'AGR_crop_fresh_groundwater_withdrawal_mgd',
                              'AGR_crop_reclaimed_wastewater_import_mgd',
-                             'AGR_crop_ibt_total_import_mgd',
                              'AGR_golf_fresh_surfacewater_withdrawal_mgd',
                              'AGR_golf_fresh_groundwater_withdrawal_mgd',
                              'AGR_golf_reclaimed_wastewater_import_mgd']
@@ -431,7 +425,6 @@ def calc_irrigation_discharge_flows():
     variable_list = ['AGR_crop_fresh_surfacewater_withdrawal_mgd',
                      'AGR_crop_fresh_groundwater_withdrawal_mgd',
                      'AGR_crop_reclaimed_wastewater_import_mgd',
-                     'AGR_crop_ibt_total_import_mgd',
                      'AGR_golf_fresh_surfacewater_withdrawal_mgd',
                      'AGR_golf_fresh_groundwater_withdrawal_mgd',
                      'AGR_golf_reclaimed_wastewater_import_mgd']
@@ -900,8 +893,8 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     # merge data with pws and irrigation ratio data
     df = pd.merge(df, df_ratio, how='left', on='FIPS')
 
-    crop_with_name = 'AGR_crop_ibt_total_import_mgd'
-    pws_with_name = 'PWS_fresh_surfacewater_import_total_mgd'
+    crop_with_name = 'IBT_agriculture_total_total_import_mgd'
+    pws_with_name = 'IBT_publicwater_total_total_total_mgd'
     ibt_flow_name = '_from_WSI_ibt_fresh_surfacewater_total_mgd'
 
     # creates water flows to each sector from ibt imports
@@ -974,13 +967,12 @@ def prep_pws_to_pwd() -> pd.DataFrame:
     fsw_flow = 'PWS_fresh_surfacewater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
     sgw_flow = 'PWS_saline_groundwater_withdrawal_total_mgd_from_WSW_saline_groundwater_total_total_mgd'
     ssw_flow = 'PWS_saline_surfacewater_withdrawal_total_mgd_from_WSW_saline_surfacewater_total_total_mgd'
-    ibt_flow = 'PWS_fresh_surfacewater_import_total_mgd_from_WSI_ibt_fresh_surfacewater_total_mgd'
 
     # calculate total supply
-    df['total_supply'] = df[fgw_flow] + df[fsw_flow] + df[sgw_flow] + df[ssw_flow] + df[ibt_flow]
+    df['total_supply'] = df[fgw_flow] + df[fsw_flow] + df[sgw_flow] + df[ssw_flow] #+ df[ibt_flow]
 
     # fraction of supply from each source type
-    df['fsw_frac'] = (df[fsw_flow] + df[ibt_flow]) / df['total_supply']
+    df['fsw_frac'] = (df[fsw_flow]) / df['total_supply']
     df['fgw_frac'] = df[fgw_flow] / df['total_supply']
     df['sgw_frac'] = df[sgw_flow] / df['total_supply']
     df['ssw_frac'] = df[ssw_flow] / df['total_supply']
@@ -991,7 +983,7 @@ def prep_pws_to_pwd() -> pd.DataFrame:
     # reduce dataframe
     out_df = df[['FIPS', 'State', 'County', 'total_demand', 'total_supply', 'net_supply',
                  'fsw_frac', 'fgw_frac', 'sgw_frac', 'ssw_frac',
-                 fgw_flow, fsw_flow, sgw_flow, ssw_flow, ibt_flow]].copy()
+                 fgw_flow, fsw_flow, sgw_flow, ssw_flow]].copy()
 
     # if net supply is > 0, then calculate exports and demand
     pws_fsw_exports = 'PWX_total_total_total_total_mgd_from_PWS_fresh_surfacewater_withdrawal_total_mgd'
@@ -2519,7 +2511,7 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
         df[gw] = df['groundwater_pumping_bbtu_per_mg']
 
     # reduce dataframe to variables in renaming dictionary
-    df = df[name_dict]
+    df = df[name_dict].copy()
 
     # rename columns based on dictionary
     df.rename(columns=name_dict, inplace=True)
@@ -4058,6 +4050,8 @@ def compile_sample_data():
     out_df = pd.merge(out_df, x21, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x22, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x23, how='left', on=['FIPS', 'State', 'County'])
+
+    out_df = out_df[out_df.State == 'CA']
 
     # restructure merged dataframes into proper format
     value_columns = out_df.columns[3:].to_list()
