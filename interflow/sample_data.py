@@ -2694,7 +2694,9 @@ def prep_fuel_demand_data() -> pd.DataFrame:
                 "SORCB",  # Solar, residential sector (bbtu)
                 "WDRCB",  # Wood energy, residential sector (bbtu)
                 "WWCCB",  # Wood and waste energy, commercial sector (bbtu)
-                "WWICB"]  # Wind energy, commercial sector (bbtu)
+                "WWICB",  # Wood and waste energy, industrial sector (bbtu)
+                "WYCCB",  # Wind energy consumed by the commercial sector (bbtu)
+                "WYICB"]  # Wind energy consumed by the industrial sector (bbtu)
 
     # reduce dataframe
     df = df[df['MSN'].isin(msn_list)]  # using MSN codes that are relevant
@@ -2732,12 +2734,12 @@ def prep_fuel_demand_data() -> pd.DataFrame:
 
     # create rejected energy and energy service variables for each fuel type
     coal_demand_list = ['COM', 'IND']
-    biomass_demand_list = ['TRA', 'RES', 'COM']
+    biomass_demand_list = ['TRA', 'RES', 'COM', 'IND']
     geothermal_demand_list = ['COM', 'RES']
     natgas_demand_list = ['TRA', 'COM', 'IND', 'RES']
     petroleum_demand_list = ['TRA', 'COM', 'IND', 'RES']
     solar_demand_list = ['COM', 'RES']
-    wind_demand_list = ['COM']
+    wind_demand_list = ['COM', 'IND']
 
     rej_name = '_to_REJ_'
     esv_name = '_to_ESV_'
