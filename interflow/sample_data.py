@@ -3505,7 +3505,7 @@ def prep_county_coal_data() -> pd.DataFrame:
 
     for type in water_types:
         # subtract coal calculated values from water to other mining
-        other_mining_prefix = 'MIN_other_total_total_total_mgd_from_'
+        other_mining_prefix = 'MIN_other_total_' + type + '_mgd_from_'
         other_mining_suffix = 'WSW_' + type + '_total_total_mgd'
         other_mining_total = other_mining_prefix + other_mining_suffix
         if type == 'fresh_surfacewater':
@@ -3554,7 +3554,7 @@ def remove_double_counting_from_mining():
     water_types = ['fresh_surfacewater', 'fresh_groundwater', 'saline_surfacewater', 'saline_groundwater']
     variable_list = []
     for type in water_types:
-        other_mining_prefix = 'MIN_other_total_total_total_mgd_from_'
+        other_mining_prefix = 'MIN_other_total_' + type + '_mgd_from_'
         other_mining_suffix = 'WSW_' + type + '_total_total_mgd'
         other_mining_total = other_mining_prefix + other_mining_suffix
         variable_list.append(other_mining_total)
@@ -3602,8 +3602,8 @@ def remove_double_counting_from_mining():
     df_mining = pd.merge(df_mining, df_energy, how='left', on=['FIPS'])
 
     # Subtract natural gas and petroleum water use from other mining
-    fsw_name = 'MIN_other_total_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
-    fgw_name = 'MIN_other_total_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd'
+    fsw_name = 'MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
+    fgw_name = 'MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd'
     df_mining[fsw_name] = np.where((df_mining[fsw_name] - df_mining['fsw_total']) < 0,
                                    0,
                                    (df_mining[fsw_name] - df_mining['fsw_total']))
@@ -4025,10 +4025,10 @@ def compile_sample_data():
     x23 = prep_corn_crop_irr_flows()
 
     # remove extra coal mining variables
-    x18 = x18.drop(['MIN_other_total_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
-                    'MIN_other_total_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd',
-                    'MIN_other_total_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
-                    'MIN_other_total_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd'], axis=1)
+    x18 = x18.drop(['MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
+                    'MIN_other_total_saline_surfacewater_mgd_from_WSW_saline_surfacewater_total_total_mgd',
+                    'MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd',
+                    'MIN_other_total_saline_groundwater_mgd_from_WSW_saline_groundwater_total_total_mgd'], axis=1)
 
     # merge output dataframes
     out_df = pd.merge(x1, x2, how='left', on=['FIPS', 'State', 'County'])
@@ -4052,8 +4052,6 @@ def compile_sample_data():
     out_df = pd.merge(out_df, x21, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x22, how='left', on=['FIPS', 'State', 'County'])
     out_df = pd.merge(out_df, x23, how='left', on=['FIPS', 'State', 'County'])
-
-    out_df = out_df[out_df.State == 'CA']
 
     # restructure merged dataframes into proper format
     value_columns = out_df.columns[3:].to_list()
