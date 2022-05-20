@@ -3536,6 +3536,10 @@ def prep_county_coal_data() -> pd.DataFrame:
     output_variable_list.append('FIPS')
     df = df[output_variable_list]
 
+    # add an energy discharge to energy production
+    df['MIN_coal_surface_total_total_bbtu_to_EPD_coal_total_total_total_bbtu_fraction'] = 1
+    df['MIN_coal_underground_total_total_bbtu_to_EPD_coal_total_total_total_bbtu_fraction'] = 1
+
     # merge with county location data
     df = pd.merge(df_loc, df, how='left', on='FIPS')
     df.fillna(0, inplace=True)
