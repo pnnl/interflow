@@ -72,8 +72,8 @@ class TestSampleData(unittest.TestCase):
                             'AGR_crop_reclaimed_wastewater_import_mgd_to_CMP_total_total_total_total_mgd_fraction',
                             'AGR_golf_fresh_surfacewater_withdrawal_mgd_to_CMP_total_total_total_total_mgd_fraction',
                             'AGR_golf_fresh_groundwater_withdrawal_mgd_to_CMP_total_total_total_total_mgd_fraction',
-                            'AGR_golf_reclaimed_wastewater_import_mgd_to_CMP_total_total_total_total_mgd_fraction',
-                            'AGR_crop_ibt_total_import_mgd_to_CMP_total_total_total_total_mgd_fraction']
+                            'AGR_golf_reclaimed_wastewater_import_mgd_to_CMP_total_total_total_total_mgd_fraction'
+                            ]
         self.assertEqual(output_columns, expected_columns)
 
         # test that there are 3,142 counties included
