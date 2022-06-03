@@ -176,9 +176,6 @@ def calc_irrigation_consumption() -> pd.DataFrame:
         df['IC_CU_RWW_frac'] = np.where(df['State'] == state, df['IR_CU_RWW_frac'],
                                         df['IC_CU_RWW_frac'])  # reclaimed
 
-    # preset interbasin transfer to crop irrigation consumption equal to fresh surface water consumption
-    df['IC_CU_ibt_frac'] = df['IC_CU_FSW_frac']
-
     # rename variables
     variable_dict = {'FIPS': 'FIPS',
                      'State': 'State',
@@ -188,8 +185,7 @@ def calc_irrigation_consumption() -> pd.DataFrame:
                      'IC_CU_RWW_frac': 'AGR_crop_reclaimed_wastewater_import_mgd',
                      'IG_CU_FSW_frac': 'AGR_golf_fresh_surfacewater_withdrawal_mgd',
                      'IG_CU_FGW_frac': 'AGR_golf_fresh_groundwater_withdrawal_mgd',
-                     'IG_CU_RWW_frac': 'AGR_golf_reclaimed_wastewater_import_mgd',
-                     'IC_CU_ibt_frac': 'AGR_crop_ibt_total_import_mgd'}
+                     'IG_CU_RWW_frac': 'AGR_golf_reclaimed_wastewater_import_mgd'}
     variable_list = list(variable_dict.keys())
     df = df[variable_list]
     df = df.rename(columns=variable_dict)
@@ -197,8 +193,7 @@ def calc_irrigation_consumption() -> pd.DataFrame:
     # create a list of sector water withdrawal variable name starters
     flow_list = ['AGR_crop_fresh_surfacewater_withdrawal_mgd', 'AGR_crop_fresh_groundwater_withdrawal_mgd',
                  'AGR_crop_reclaimed_wastewater_import_mgd', 'AGR_golf_fresh_surfacewater_withdrawal_mgd',
-                 'AGR_golf_fresh_groundwater_withdrawal_mgd', 'AGR_golf_reclaimed_wastewater_import_mgd',
-                 'AGR_crop_ibt_total_import_mgd']
+                 'AGR_golf_fresh_groundwater_withdrawal_mgd', 'AGR_golf_reclaimed_wastewater_import_mgd']
 
     # create a consumption name adder to add on to variable names
     adder = '_to_CMP_total_total_total_total_mgd_fraction'
@@ -399,7 +394,6 @@ def calc_irrigation_conveyance_loss_fraction(loss_cap=True, loss_cap_amt=.90) ->
     created_variable_list = ['AGR_crop_fresh_surfacewater_withdrawal_mgd',
                              'AGR_crop_fresh_groundwater_withdrawal_mgd',
                              'AGR_crop_reclaimed_wastewater_import_mgd',
-                             'AGR_crop_ibt_total_import_mgd',
                              'AGR_golf_fresh_surfacewater_withdrawal_mgd',
                              'AGR_golf_fresh_groundwater_withdrawal_mgd',
                              'AGR_golf_reclaimed_wastewater_import_mgd']
@@ -431,7 +425,6 @@ def calc_irrigation_discharge_flows():
     variable_list = ['AGR_crop_fresh_surfacewater_withdrawal_mgd',
                      'AGR_crop_fresh_groundwater_withdrawal_mgd',
                      'AGR_crop_reclaimed_wastewater_import_mgd',
-                     'AGR_crop_ibt_total_import_mgd',
                      'AGR_golf_fresh_surfacewater_withdrawal_mgd',
                      'AGR_golf_fresh_groundwater_withdrawal_mgd',
                      'AGR_golf_reclaimed_wastewater_import_mgd']
@@ -900,8 +893,8 @@ def prep_interbasin_transfer_data() -> pd.DataFrame:
     # merge data with pws and irrigation ratio data
     df = pd.merge(df, df_ratio, how='left', on='FIPS')
 
-    crop_with_name = 'AGR_crop_ibt_total_import_mgd'
-    pws_with_name = 'PWS_fresh_surfacewater_import_total_mgd'
+    crop_with_name = 'IBT_agriculture_total_total_import_mgd'
+    pws_with_name = 'IBT_publicwater_total_total_total_mgd'
     ibt_flow_name = '_from_WSI_ibt_fresh_surfacewater_total_mgd'
 
     # creates water flows to each sector from ibt imports
@@ -974,13 +967,12 @@ def prep_pws_to_pwd() -> pd.DataFrame:
     fsw_flow = 'PWS_fresh_surfacewater_withdrawal_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
     sgw_flow = 'PWS_saline_groundwater_withdrawal_total_mgd_from_WSW_saline_groundwater_total_total_mgd'
     ssw_flow = 'PWS_saline_surfacewater_withdrawal_total_mgd_from_WSW_saline_surfacewater_total_total_mgd'
-    ibt_flow = 'PWS_fresh_surfacewater_import_total_mgd_from_WSI_ibt_fresh_surfacewater_total_mgd'
 
     # calculate total supply
-    df['total_supply'] = df[fgw_flow] + df[fsw_flow] + df[sgw_flow] + df[ssw_flow] + df[ibt_flow]
+    df['total_supply'] = df[fgw_flow] + df[fsw_flow] + df[sgw_flow] + df[ssw_flow] #+ df[ibt_flow]
 
     # fraction of supply from each source type
-    df['fsw_frac'] = (df[fsw_flow] + df[ibt_flow]) / df['total_supply']
+    df['fsw_frac'] = (df[fsw_flow]) / df['total_supply']
     df['fgw_frac'] = df[fgw_flow] / df['total_supply']
     df['sgw_frac'] = df[sgw_flow] / df['total_supply']
     df['ssw_frac'] = df[ssw_flow] / df['total_supply']
@@ -991,7 +983,7 @@ def prep_pws_to_pwd() -> pd.DataFrame:
     # reduce dataframe
     out_df = df[['FIPS', 'State', 'County', 'total_demand', 'total_supply', 'net_supply',
                  'fsw_frac', 'fgw_frac', 'sgw_frac', 'ssw_frac',
-                 fgw_flow, fsw_flow, sgw_flow, ssw_flow, ibt_flow]].copy()
+                 fgw_flow, fsw_flow, sgw_flow, ssw_flow]].copy()
 
     # if net supply is > 0, then calculate exports and demand
     pws_fsw_exports = 'PWX_total_total_total_total_mgd_from_PWS_fresh_surfacewater_withdrawal_total_mgd'
@@ -2378,13 +2370,14 @@ def prep_pumping_energy_fuel_data() -> pd.DataFrame:
     # electricity source name
     egd_name = '_from_EGD_total_total_total_total_bbtu_fraction'
 
-    # list of non-irrigation sectors which are assumed to only take electricity
+    # list of non-irrigation or golf sectors which are assumed to only take electricity
     non_irr_sector_list = ['AGR_aquaculture_pumping_fresh_groundwater_bbtu',
                            'AGR_aquaculture_pumping_fresh_surfacewater_bbtu',
                            'AGR_aquaculture_pumping_saline_groundwater_bbtu',
                            'AGR_aquaculture_pumping_saline_surfacewater_bbtu',
                            'AGR_livestock_pumping_fresh_groundwater_bbtu',
-                           'AGR_livestock_pumping_fresh_surfacewater_bbtu']
+                           'AGR_livestock_pumping_fresh_surfacewater_bbtu',
+                           'AGR_golf_pumping_reclaimed_wastewater_bbtu']
 
     # loop through non-irrigation sectors and build full variable names and values
     for sector in non_irr_sector_list:
@@ -2502,7 +2495,8 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
                'AGR_livestock_pumping_fresh_surfacewater_bbtu',
                'AGR_ethanol_pumping_fresh_surfacewater_bbtu',
                'PWS_pumping_fresh_surfacewater_total_bbtu',
-               'PWS_pumping_saline_surfacewater_total_bbtu']
+               'PWS_pumping_saline_surfacewater_total_bbtu',
+               'AGR_golf_pumping_reclaimed_wastewater_bbtu']
 
     for sw in sw_list:
         df[sw] = df['surface_water_pumping_bbtu_per_mg']
@@ -2520,7 +2514,7 @@ def prep_pumping_intensity_data() -> pd.DataFrame:
         df[gw] = df['groundwater_pumping_bbtu_per_mg']
 
     # reduce dataframe to variables in renaming dictionary
-    df = df[name_dict]
+    df = df[name_dict].copy()
 
     # rename columns based on dictionary
     df.rename(columns=name_dict, inplace=True)
@@ -2703,7 +2697,9 @@ def prep_fuel_demand_data() -> pd.DataFrame:
                 "SORCB",  # Solar, residential sector (bbtu)
                 "WDRCB",  # Wood energy, residential sector (bbtu)
                 "WWCCB",  # Wood and waste energy, commercial sector (bbtu)
-                "WWICB"]  # Wind energy, commercial sector (bbtu)
+                "WWICB",  # Wood and waste energy, industrial sector (bbtu)
+                "WYCCB",  # Wind energy consumed by the commercial sector (bbtu)
+                "WYICB"]  # Wind energy consumed by the industrial sector (bbtu)
 
     # reduce dataframe
     df = df[df['MSN'].isin(msn_list)]  # using MSN codes that are relevant
@@ -2741,12 +2737,12 @@ def prep_fuel_demand_data() -> pd.DataFrame:
 
     # create rejected energy and energy service variables for each fuel type
     coal_demand_list = ['COM', 'IND']
-    biomass_demand_list = ['TRA', 'RES', 'COM']
+    biomass_demand_list = ['TRA', 'RES', 'COM', 'IND']
     geothermal_demand_list = ['COM', 'RES']
     natgas_demand_list = ['TRA', 'COM', 'IND', 'RES']
     petroleum_demand_list = ['TRA', 'COM', 'IND', 'RES']
     solar_demand_list = ['COM', 'RES']
-    wind_demand_list = ['COM']
+    wind_demand_list = ['COM', 'IND']
 
     rej_name = '_to_REJ_'
     esv_name = '_to_ESV_'
@@ -2968,6 +2964,7 @@ def prep_petroleum_water_intensity():
     GALLON_OIL_TO_BBTU_CONVERSION = 0.0001355  # gallon of oil to billion btu conversion
     MILLION_MULTIPLIER = 1000000
     CONVENTIONAL_SURFACE_WATER = .80  # percent of water in conventional oil that comes from surface
+    PETROLEUM_SCALER = 1.45  # coefficient to adjust 2015 petroleum production to 2012 values
 
     # read in county list
     df_loc = prep_water_use_2015()
@@ -2998,7 +2995,8 @@ def prep_petroleum_water_intensity():
     df_unconventional['total_water'] = df_unconventional['fsw_unconventional_mgd'] \
                                        + df_unconventional['fgw_unconventional_mgd']
     df_unconventional['un_water_intensity'] = df_unconventional['total_water'] \
-                                              / df_unconventional['petroleum_unconventional_production_bbtu']
+                                              / (df_unconventional['petroleum_unconventional_production_bbtu'] \
+                                                 / PETROLEUM_SCALER)
 
     # calculate the surface water fraction of total water use
     df_unconventional['un_fsw_frac'] = df_unconventional['fsw_unconventional_mgd'] / df_unconventional['total_water']
@@ -3121,6 +3119,8 @@ def prep_natgas_water_intensity():
     :return:
     """
 
+    NATGAS_SCALER = 1.11  # coefficient to adjust 2015 natural gas production to 2012 values
+
     # read in full county list data
     df_loc = prep_water_use_2015()
 
@@ -3140,7 +3140,7 @@ def prep_natgas_water_intensity():
 
     # calculate county level water intensity based on county level natural gas production
     df['total_water'] = df['fsw_natgas_mgd'] + df['fgw_natgas_mgd']
-    df['natgas_water_intensity'] = df['total_water'] / df['natgas_county_bbtu']
+    df['natgas_water_intensity'] = df['total_water'] / (df['natgas_county_bbtu'] / NATGAS_SCALER)
 
     # calculate the surface water fraction of total water use
     df['natgas_fsw_frac'] = df['fsw_natgas_mgd'] / df['total_water']
@@ -3512,7 +3512,7 @@ def prep_county_coal_data() -> pd.DataFrame:
 
     for type in water_types:
         # subtract coal calculated values from water to other mining
-        other_mining_prefix = 'MIN_other_total_total_total_mgd_from_'
+        other_mining_prefix = 'MIN_other_total_' + type + '_mgd_from_'
         other_mining_suffix = 'WSW_' + type + '_total_total_mgd'
         other_mining_total = other_mining_prefix + other_mining_suffix
         if type == 'fresh_surfacewater':
@@ -3536,6 +3536,10 @@ def prep_county_coal_data() -> pd.DataFrame:
     # append FIPS codes to keep variable list and reduce dataframe to needed variables
     output_variable_list.append('FIPS')
     df = df[output_variable_list]
+
+    # add an energy discharge to energy production
+    df['MIN_coal_surface_total_total_bbtu_to_EPD_coal_total_total_total_bbtu_fraction'] = 1
+    df['MIN_coal_underground_total_total_bbtu_to_EPD_coal_total_total_total_bbtu_fraction'] = 1
 
     # merge with county location data
     df = pd.merge(df_loc, df, how='left', on='FIPS')
@@ -3561,7 +3565,7 @@ def remove_double_counting_from_mining():
     water_types = ['fresh_surfacewater', 'fresh_groundwater', 'saline_surfacewater', 'saline_groundwater']
     variable_list = []
     for type in water_types:
-        other_mining_prefix = 'MIN_other_total_total_total_mgd_from_'
+        other_mining_prefix = 'MIN_other_total_' + type + '_mgd_from_'
         other_mining_suffix = 'WSW_' + type + '_total_total_mgd'
         other_mining_total = other_mining_prefix + other_mining_suffix
         variable_list.append(other_mining_total)
@@ -3609,8 +3613,8 @@ def remove_double_counting_from_mining():
     df_mining = pd.merge(df_mining, df_energy, how='left', on=['FIPS'])
 
     # Subtract natural gas and petroleum water use from other mining
-    fsw_name = 'MIN_other_total_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
-    fgw_name = 'MIN_other_total_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd'
+    fsw_name = 'MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd'
+    fgw_name = 'MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd'
     df_mining[fsw_name] = np.where((df_mining[fsw_name] - df_mining['fsw_total']) < 0,
                                    0,
                                    (df_mining[fsw_name] - df_mining['fsw_total']))
@@ -4032,10 +4036,10 @@ def compile_sample_data():
     x23 = prep_corn_crop_irr_flows()
 
     # remove extra coal mining variables
-    x18 = x18.drop(['MIN_other_total_total_total_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
-                    'MIN_other_total_total_total_mgd_from_WSW_saline_surfacewater_total_total_mgd',
-                    'MIN_other_total_total_total_mgd_from_WSW_fresh_groundwater_total_total_mgd',
-                    'MIN_other_total_total_total_mgd_from_WSW_saline_groundwater_total_total_mgd'], axis=1)
+    x18 = x18.drop(['MIN_other_total_fresh_surfacewater_mgd_from_WSW_fresh_surfacewater_total_total_mgd',
+                    'MIN_other_total_saline_surfacewater_mgd_from_WSW_saline_surfacewater_total_total_mgd',
+                    'MIN_other_total_fresh_groundwater_mgd_from_WSW_fresh_groundwater_total_total_mgd',
+                    'MIN_other_total_saline_groundwater_mgd_from_WSW_saline_groundwater_total_total_mgd'], axis=1)
 
     # merge output dataframes
     out_df = pd.merge(x1, x2, how='left', on=['FIPS', 'State', 'County'])

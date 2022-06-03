@@ -30,7 +30,7 @@ Water flows were provided on a gallons/year basis. This was converted to million
 **Western States Interbasin Water Transfers**
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-Interbasin transfer flows were available for the states of Idaho, California, Arizona, Utah, Washington, Nevada, Colorado, Oregon, Montana, New Mexico, and Wyoming. Most rows in the dataset provided water flow values on a cubic feet per second basis, which were converted to mgd (1 cfs = 0.646317 mgd). For rows that did not provide cfs, acre-ft per year were provided and converted to mgd using the same methodology as the Texas calculation described above.
+Interbasin transfer flows were available for various western states. Most rows in the dataset provided water flow values on a cubic feet per second basis, which were converted to mgd (1 cfs = 0.646317 mgd). For rows that did not provide cfs, acre-ft per year were provided and converted to mgd using the same methodology as the Texas calculation described above.
 
 Water Discharges/Consumption
 **********************************
