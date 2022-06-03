@@ -1128,6 +1128,7 @@ def prep_wastewater_data() -> pd.DataFrame:
 
     # combine wastewater facility location data and county to FIPS crosswalk data to get a FIPS code for each plant
     df_ww_loc = pd.merge(df_ww_loc, df_county, how="left", on="county_identifier")  # merge dataframes
+    df_ww_loc = df_ww_loc.drop_duplicates(subset=["CWNS_NUMBER"], keep='first') # drop duplicate CWNS entries
     df_ww_loc = df_ww_loc[["CWNS_NUMBER", "FIPS", "STATE"]]  # reducing to required variables
 
     # prepare wastewater treatment flow data
@@ -1299,7 +1300,7 @@ def prep_wastewater_data() -> pd.DataFrame:
     # combine with full county list to get values for each county
     df_ww_fractions = pd.merge(df_county_list, df_ww_fractions, how='left', on='FIPS')
 
-    # group by FIPS code to get total wastewater discharge and treatment types by county
+    # group by FIPS code to get total wastewater by county
     df_ww_flow = df_ww_flow.groupby("FIPS", as_index=False).sum()
 
     # combine with full county list to get values for each county and fill counties with no plants with 0
