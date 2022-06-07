@@ -18,6 +18,8 @@ Interbasin transfer flows and energy intensities in each county are provided thr
 
 Interbasin transfers are used for both public water supply as well as for irrigation purposes. To determine how much of the total interbasin transfer flows in each county goes to crop irrigation versus public water supply, the methodology from Greenberg et al. [4] is adapted which uses the ratio of water flows to crop irrigation vs. public water supply to split the values. The ratio is determined by taking the ratio of all water withdrawals to crop irrigation (Fresh surface water and fresh groundwater) over the sum of all water withdrawals to crop irrigation and water withdrawals by the public water supply from Dieter et al. [1]. This determines the percent of total flows to both sectors that goes to crop irrigation. This fraction is multiplied by the total interbasin transfer flow to determine how much of the interbasin transfer flow goes to crop irrigation. Any interbasin transfer flow that does not go to crop irrigation is assumed to go to the public water supply. It should be noted that interbasin transfers are only assumed to go to crop irrigation and are not used for other agricultural applications such as golf irrigation or livestock.
 
+USGS 2015 [1] defines irrigation water use as all “water that is applied by an irrigation system to sustain plant growth in agricultural and horticultural practices” and “includes self-supplied withdrawals and deliveries from irrigation companies or districts, cooperatives, or governmental entities.” This is interpreted to mean that the water demand provided in the USGS data includes all water withdrawn from local surface and groundwater as well as all water delivered via interbasin transfers. For this reason, the interbasin transfers for agriculture and public water supply are considered only for the purpose of determining the energy demand by these sectors and should not be included in aggregate with the other water withdrawals by these sectors.
+
 **Texas Interbasin Transfers**
 """"""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -104,7 +106,7 @@ Energy Discharges
 Energy Services
 -----------------------------
 
-The public water supply sector is assumed to have an efficiency level of 65%, following the assumption made in Greenberg et al. [4]. Therefore, 65% of all energy demand by the public water suppy sector is assumed to go to energy services.
+The public water supply sector is assumed to have an efficiency level of 65%, following the assumption made in Greenberg et al. [4]. Therefore, 65% of all energy demand by the public water supply sector is assumed to go to energy services.
 
 Rejected Energy
 -----------------------------
