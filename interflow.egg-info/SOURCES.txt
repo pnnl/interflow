@@ -17,7 +17,7 @@ docs/.nojekyll
 docs/Makefile
 docs/acknowledgement.html
 docs/agriculture_sector.html
-docs/api.html
+docs/api_docs.html
 docs/authors.html
 docs/commercial_sector.html
 docs/contributing.html
@@ -45,6 +45,8 @@ docs/wastewater_sector.html
 docs/.doctrees/acknowledgement.doctree
 docs/.doctrees/agriculture_sector.doctree
 docs/.doctrees/api.doctree
+docs/.doctrees/api_doc.doctree
+docs/.doctrees/api_docs.doctree
 docs/.doctrees/authors.doctree
 docs/.doctrees/commercial_sector.doctree
 docs/.doctrees/contributing.doctree
@@ -74,6 +76,7 @@ docs/_images/sankey_example.png
 docs/_sources/acknowledgement.rst.txt
 docs/_sources/agriculture_sector.rst.txt
 docs/_sources/api.rst.txt
+docs/_sources/api_docs.rst.txt
 docs/_sources/authors.rst.txt
 docs/_sources/commercial_sector.rst.txt
 docs/_sources/contributing.rst.txt
@@ -112,7 +115,7 @@ docs/_static/underscore-1.13.1.js
 docs/_static/underscore.js
 docs/source/acknowledgement.rst
 docs/source/agriculture_sector.rst
-docs/source/api.rst
+docs/source/api_docs.rst
 docs/source/authors.rst
 docs/source/bar_inflow_example.png
 docs/source/bar_outflow_example.png
@@ -198,7 +201,7 @@ interflow/input_data/geojson-counties-fips.json
 interflow/input_data/natgas_eia.csv
 interflow/input_data/oilgascounty.csv
 interflow/input_data/petroleum_eia.csv
-interflow/input_data/us_county_sample_data.csv.zip
+interflow/input_data/us_county_sample_data.zip
 interflow/input_data/us_county_sample_output.csv
 interflow/input_data/usco1995.csv
 interflow/input_data/usco2015v2.0.csv
@@ -215,6 +218,10 @@ interflow/tests/test_construct.py
 interflow/tests/test_deconstruct.py
 interflow/tests/test_reader.py
 interflow/tests/test_sample_data.py
+interflow/tests/__pycache__/__init__.cpython-39.pyc
+interflow/tests/__pycache__/test_analyze.cpython-39.pyc
+interflow/tests/__pycache__/test_deconstruct.cpython-39.pyc
 paper/fig1.png
+paper/fig2.png
 paper/paper.bib
 paper/paper.md
