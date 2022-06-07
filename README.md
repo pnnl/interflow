@@ -1,6 +1,7 @@
 [![build](https://github.com/pnnl/interflow/actions/workflows/build.yml/badge.svg)](https://github.com/pnnl/interflow/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/pnnl/interflow/branch/main/graph/badge.svg)](https://codecov.io/gh/pnnl/interflow)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/pnnl/interflow/main?labpath=Quickstarter.ipynb)
+[![status](https://joss.theoj.org/papers/ae736aa6e75758498cf79ab8ec3fa886/status.svg)](https://joss.theoj.org/papers/ae736aa6e75758498cf79ab8ec3fa886)
 
 
 
