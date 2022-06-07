@@ -77,7 +77,7 @@ Water in Energy Production
 
 Water in energy production is calculated for the following energy types:
 - Coal (specifically, dust control in mining)
-- Biomass (specifically, water used in corn growth for ethanol production and water use in the production of ethanol from corn grain)
+- Biomass (specifically, water used in corn growth for ethanol production and water use in the industrial production of ethanol from corn grain)
 - Natural gas (water used in unconventional natural gas wells)
 - Petroleum (water used in conventional and unconventional oil wells)
 
@@ -157,7 +157,7 @@ Water discharged from the industrial production of ethanol is assumed to be equa
 
 *Water Withdrawal*
 ----------------------------------------------------------
-No county level water use or water intensity estimates exist for natural gas for the year 2015. Water use estimates for natural gas extraction for this analysis are used from Greenberg et al. [4].  Only state-level values for unconventional petroleum and natural gas extraction are available in their dataset. State-level values are split into county-level values following the same methodology used to split up the state-level natural gas production values described previously.
+No county level water use or water intensity estimates exist for natural gas for the year 2015. Water use estimates for natural gas extraction for this analysis are used from Greenberg et al. [4] for 2012. There was significant growth in the production of natural gas between 2012 and 2015, meaning that the water use estimates from [4] are likely significantly smaller than 2015. The values from [4] are therefore, scaled up by the growth of natural gas production between years (1.11x). Only state-level values for unconventional petroleum and natural gas extraction are available in their dataset. State-level values are split into county-level values following the same methodology used to split up the state-level natural gas production values described previously.
 
 The intensity of water use in unconventional natural gas drilling was determined by taking the total water to unconventional natural gas production in each county and dividing it by the total natural gas production per day in the same county. The average intensity value (million gallons per bbtu) was applied to counties that recorded unconventional natural gas production in 2015 but no water estimates were available.
 
@@ -182,7 +182,7 @@ See the Water Consumption/Evaporation section above.
 
 *Water Withdrawal*
 ----------------------------------------------------------
-No county level water use or water intensity estimates exist for unconventional petroleum for the year 2015. Water use estimates for unconventional petroleum extraction for this analysis are used from Greenberg et al. [4].  Only state-level values for unconventional petroleum and natural gas extraction are available in their dataset. State-level values are split into county-level values following the same methodology used to split up the state-level unconventional petroleum production values described previously.
+No county level water use or water intensity estimates exist for unconventional petroleum for the year 2015. Water use estimates for unconventional petroleum extraction for this analysis are used from Greenberg et al. [4].  There was significant growth in the production of petroleum between 2012 and 2015, meaning that the water use estimates from [4] are likely significantly smaller than 2015. The values from [4] are therefore, scaled up by the growth of petroleum production between years (1.48x).Only state-level values for unconventional petroleum and natural gas extraction are available in their dataset. State-level values are split into county-level values following the same methodology used to split up the state-level unconventional petroleum production values described previously.
 
 For conventional petroleum water intensity, gallon of water per gallon of oil (WOR) estimates were provided by Greenberg et al. [4]. For states that were not included in the dataset but had 2015 conventional petroleum production, the average US WOR value was applied.
 
