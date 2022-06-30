@@ -29,9 +29,8 @@ Consumption of water by the industrial sector is not provided in the Dieter et a
 -----------------------------
 
 * **Water Discharge to Surface** - It is assumed that all fresh water and all saline groundwater that is not from public water sources and is not consumed, is discharged to the surface.
-
 * **Water Discharge to Ocean** - It is assumed that all saline surface water withdrawn by the industrial sector and not consumed, is discharged to the ocean.
-* **Water Discharge to Wastewater Supply** - It is assumed that all public water deliveries to the industrial sector are discharged to wastewater supply.
+* **Water Discharge to Wastewater Supply** - It is assumed that all public water deliveries to the industrial sector that are not consumed are discharged to wastewater supply.
 
 Energy in the Industrial Sector
 ################################################

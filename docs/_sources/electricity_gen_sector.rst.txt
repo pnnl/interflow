@@ -20,8 +20,6 @@ Data regarding both the fuel input for each power plant on an annual basis and t
 +--------------+---------------------------------------------------+---------------+
 | GEO          | geothermal                                        | geothermal    |
 +--------------+---------------------------------------------------+---------------+
-| HPS          | hydro pumped storage                              | hydro         |
-+--------------+---------------------------------------------------+---------------+
 | HYC          | hydro conventional                                | hydro         |
 +--------------+---------------------------------------------------+---------------+
 | MLG          | biogenic municipal solid waste and landfill gas   | biomass       |
@@ -133,7 +131,9 @@ Water in Electricity Generation
 
 **Thermoelectric Cooling Water Withdrawals**
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-Estimates for water withdrawn for thermoelectric cooling were provided by two sources, Harris et al. [14] and Macknick et al. [15]. The first dataset includes water withdrawals (mgd) and consumption (mgd) by EIA power plant code ID. Some water withdrawal, consumption, and discharge estimates were missing for many of the plants provided in [14] when mapped to the EIA 923 [13] power plant generation data by plant code.
+Estimates for water withdrawn for thermoelectric cooling were provided by two sources, Harris et al. [14] and Macknick et al. [15]. The first dataset includes water withdrawals (mgd) and consumption (mgd) by EIA power plant code ID. Some water withdrawal, consumption, and discharge estimates were missing for some of the plants provided in [14] when mapped to the EIA 923 [13] power plant generation data by plant code.
+
+EIA 923 electricity generation data is on a generator-basis rather than a power plant basis. Therefore, to map the plant-level water withdrawal values from [14], water intensity estimates from [15] were applied to the generator-level electricity generation estimates in EIA 923 to get water withdrawals by generator. These value were then used to determine each generator's fraction of total estimated withdrawals by power plant ID. The percent of plant-level withdrawals was then multiplied by the plant-level water withdrawal total provided by [14] to get a final estimate for water withdrawals by generator.
 
 To fill in estimates for the remaining power plants, Macknick et al. [15] values were used. Given that the cooling type of each power plant is unknown, the average cooling water intensity for all cooling types for each generation technology (e.g., nuclear, natural gas) was used from [15]. No values were available for petroleum in [15]. For this generation type, the average of all other technologies was assumed. This same methodology was also applied to 'other' generation types. Though some renewable technologies such as Solar CSP require cooling, no withdrawal values were provided in [15]. Total water withdrawal per plant for missing estimates was calculated as the water withdrawal intensity (gallons/mwh of generation) multiplied by the estimated power plant generation in EIA 923 [13]. The same methodology was applied for consumption quantities using consumption intensity estimates from Macknick et al. [15].
 
