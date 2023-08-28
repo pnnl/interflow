@@ -22,7 +22,7 @@ setup(
     description='An open-source Python package for calculating and organizing sectoral flows and interdependencies',
     long_description=readme(),
     long_description_content_type="text/markdown",
-    python_requires='>=3.7.*, <4',
+    python_requires='>=3.7',
     include_package_data=False,
     install_requires=[
         'numpy>=1.19.4',
